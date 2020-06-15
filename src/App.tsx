@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
 type Book = {
   title: string;
 };
 
-const BookList = (props: { list: Book[] }) => (
+const BookList: React.FC<{ list: Book[] }> = (props) => (
   <ul>
     {props.list.map((book) => (
       <li>{book.title}</li>
@@ -13,18 +13,46 @@ const BookList = (props: { list: Book[] }) => (
   </ul>
 );
 
+const Form: React.FC<{
+  handleClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}> = (props) => {
+  return (
+    <form>
+      <label>
+        Title:
+        <input type="text" name="title" onChange={props.handleChange} />
+      </label>
+      <button onClick={props.handleClick}>Add</button>
+    </form>
+  );
+};
+
 const App: React.FC<{}> = () => {
-  const books = [
-    {
-      title: 'Book1',
-    },
-    {
-      title: 'Book2',
-    },
-  ];
+  // // Mock Data
+  // const books = [
+  //   {
+  //     title: 'Book1',
+  //   },
+  //   {
+  //     title: 'Book2',
+  //   },
+  // ];
+
+  const [list, setList] = useState([] as Book[]);
+  const [formTitle, setFormTitle] = useState('');
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormTitle(event.target.value);
+  };
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setList(list.concat({ title: formTitle }));
+  };
+
   return (
     <div className="App">
-      <BookList list={books} />
+      <Form handleChange={handleChange} handleClick={handleClick} />
+      <BookList list={list} />
     </div>
   );
 };
