@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { db } from './Firebase';
 
 type Book = {
@@ -20,13 +20,9 @@ const Form: React.FC<{}> = (props) => {
   };
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    // setList(list.concat({ title: formTitle }));
     db.collection('books')
       .add({
         title: formTitle,
-      })
-      .then((docRef) => {
-        console.log(`Firestore written: docRef.id`);
       });
   };
 
@@ -44,11 +40,16 @@ const Form: React.FC<{}> = (props) => {
 export const BookshelfApp: React.FC<{}> = () => {
   const [list, setList] = useState([] as Book[]);
 
-  db.collection('books')
-    .get()
-    .then((querySnapshot) => {
-      setList(querySnapshot.docs.map((doc) => doc.data()) as Book[]);
+  useEffect(() => {
+    const unsubscribe = db.collection('books').onSnapshot((querySnapshot) => {
+      const list = querySnapshot.docs.map((doc) => doc.data()) as Book[];
+      setList(list);
     });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
     <React.Fragment>
