@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { db } from './Firebase';
 
 type Book = {
   title: string;
@@ -12,45 +13,46 @@ const BookList: React.FC<{ list: Book[] }> = (props) => (
   </ul>
 );
 
-const Form: React.FC<{
-  handleClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-}> = (props) => {
-  return (
-    <form>
-      <label>
-        Title:
-        <input type="text" name="title" onChange={props.handleChange} />
-      </label>
-      <button onClick={props.handleClick}>Add</button>
-    </form>
-  );
-};
-
-export const BookshelfApp: React.FC<{}> = () => {
-  // // Mock Data
-  // const books = [
-  //   {
-  //     title: 'Book1',
-  //   },
-  //   {
-  //     title: 'Book2',
-  //   },
-  // ];
-
-  const [list, setList] = useState([] as Book[]);
+const Form: React.FC<{}> = (props) => {
   const [formTitle, setFormTitle] = useState('');
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormTitle(event.target.value);
   };
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setList(list.concat({ title: formTitle }));
+    // setList(list.concat({ title: formTitle }));
+    db.collection('books')
+      .add({
+        title: formTitle,
+      })
+      .then((docRef) => {
+        console.log(`Firestore written: docRef.id`);
+      });
   };
 
   return (
+    <form>
+      <label>
+        Title:
+        <input type="text" name="title" onChange={handleChange} />
+      </label>
+      <button onClick={handleClick}>Add</button>
+    </form>
+  );
+};
+
+export const BookshelfApp: React.FC<{}> = () => {
+  const [list, setList] = useState([] as Book[]);
+
+  db.collection('books')
+    .get()
+    .then((querySnapshot) => {
+      setList(querySnapshot.docs.map((doc) => doc.data()) as Book[]);
+    });
+
+  return (
     <React.Fragment>
-      <Form handleChange={handleChange} handleClick={handleClick} />
+      <Form />
       <BookList list={list} />
     </React.Fragment>
   );
