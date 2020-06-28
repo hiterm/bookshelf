@@ -5,6 +5,10 @@ type Book = {
   title: string;
 };
 
+function isBook(obj: any): obj is Book {
+  return obj.title !== undefined;
+}
+
 const BookList: React.FC<{ list: Book[] }> = (props) => (
   <ul>
     {props.list.map((book) => (
@@ -41,8 +45,17 @@ export const BookshelfApp: React.FC<{}> = () => {
 
   useEffect(() => {
     const unsubscribe = db.collection('books').onSnapshot((querySnapshot) => {
-      const list = querySnapshot.docs.map((doc) => doc.data()) as Book[];
-      setList(list);
+      const list = querySnapshot.docs.map((doc) => doc.data());
+      const filteredList = list
+        .map((data) => {
+          if (!isBook(data)) {
+            console.log(`data is not "Book" object: ${data}`);
+            return null;
+          }
+          return data;
+        })
+        .filter((data): data is Book => data !== null);
+      setList(filteredList);
     });
 
     return () => {
