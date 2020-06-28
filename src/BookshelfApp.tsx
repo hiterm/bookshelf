@@ -3,17 +3,18 @@ import { firebase, db } from './Firebase';
 import { useHistory } from 'react-router-dom';
 
 type Book = {
+  id: string;
   title: string;
 };
 
 function isBook(obj: any): obj is Book {
-  return obj.title !== undefined;
+  return typeof obj.id === 'string' && typeof obj.title === 'string';
 }
 
 const BookList: React.FC<{ list: Book[] }> = (props) => (
   <ul>
     {props.list.map((book) => (
-      <li>{book.title}</li>
+      <li key={book.id}>{book.title}</li>
     ))}
   </ul>
 );
@@ -46,7 +47,9 @@ export const BookshelfApp: React.FC<{}> = () => {
 
   useEffect(() => {
     const unsubscribe = db.collection('books').onSnapshot((querySnapshot) => {
-      const list = querySnapshot.docs.map((doc) => doc.data());
+      const list = querySnapshot.docs.map((doc) => {
+        return { id: doc.id, ...doc.data() };
+      });
       const filteredList = list
         .map((data) => {
           if (!isBook(data)) {
