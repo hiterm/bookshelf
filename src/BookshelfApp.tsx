@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { db } from './Firebase';
+import { firebase, db } from './Firebase';
+import { SignInScreen } from './SignInScreen';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  useHistory,
+} from 'react-router-dom';
 
 type Book = {
   title: string;
@@ -63,10 +70,39 @@ export const BookshelfApp: React.FC<{}> = () => {
     };
   }, []);
 
+  const [user, setUser] = useState(null as firebase.User | null);
+  const history = useHistory();
+  useEffect(() => {
+    const unlisten = firebase.auth().onAuthStateChanged((user) => {
+      if (user !== null) {
+        setUser(user);
+      } else {
+        history.push('/signin');
+      }
+    });
+    return () => {
+      unlisten();
+    };
+  }, [history]);
+
+  const handleSignOut = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    firebase.auth().signOut();
+  };
+
   return (
-    <React.Fragment>
-      <Form />
-      <BookList list={list} />
-    </React.Fragment>
+    <Router>
+      <Switch>
+        <Route path="/signin">
+          <SignInScreen />
+        </Route>
+        <Route path="/">
+          <div>{`user: ${user ? user.displayName : 'dummy'}`}</div>
+          <Form />
+          <BookList list={list} />
+          <button onClick={handleSignOut}>Sign Out</button>
+        </Route>
+      </Switch>
+    </Router>
   );
 };
