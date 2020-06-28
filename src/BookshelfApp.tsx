@@ -20,10 +20,9 @@ const Form: React.FC<{}> = (props) => {
   };
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    db.collection('books')
-      .add({
-        title: formTitle,
-      });
+    db.collection('books').add({
+      title: formTitle,
+    });
   };
 
   return (
