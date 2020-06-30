@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { firebase, db } from './Firebase';
-import { useHistory } from 'react-router-dom';
+import {
+  useHistory,
+  Route,
+  Switch,
+  Redirect,
+  Link,
+  useRouteMatch,
+  useParams,
+} from 'react-router-dom';
 import { Formik, Field, FieldArray, Form } from 'formik';
 import * as yup from 'yup';
 
@@ -32,11 +40,25 @@ const BookList: React.FC<{ list: Book[] }> = (props) => (
   <ul>
     {props.list.map((book) => (
       <li key={book.id}>
-        {book.title}, {book.authors.join(', ')}
+        <Link to={`/books/${book.id}`}>
+          {book.title}, {book.authors.join(', ')}
+        </Link>
       </li>
     ))}
   </ul>
 );
+
+const BookDetail: React.FC<{}> = () => {
+  const { id } = useParams();
+  const [bookData, setBookData] = useState();
+  db.collection('books')
+    .doc(id)
+    .get()
+    .then((doc) => setBookData(doc.data()));
+  /* const book = bookSchema.cast(bookData); */
+  /* console.log(JSON.stringify(book)); */
+  return <div>Title: {bookData?.title}</div>;
+};
 
 const AddBookForm: React.FC<{}> = () => {
   const handleSubmit = (values: any) => {
@@ -134,12 +156,19 @@ export const BookshelfApp: React.FC<{}> = () => {
     history.push('/signin');
   };
 
+  const { path, url } = useRouteMatch();
+
   return (
-    <React.Fragment>
-      <div>{`user: ${user ? user.displayName : 'dummy'}`}</div>
-      <AddBookForm />
-      <BookList list={list} />
-      <button onClick={handleSignOut}>Sign Out</button>
-    </React.Fragment>
+    <Switch>
+      <Route exact path={path}>
+        <div>{`user: ${user ? user.displayName : 'dummy'}`}</div>
+        <AddBookForm />
+        <BookList list={list} />
+        <button onClick={handleSignOut}>Sign Out</button>
+      </Route>
+      <Route path={`${path}/:id`}>
+        <BookDetail />
+      </Route>
+    </Switch>
   );
 };
