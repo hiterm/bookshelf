@@ -1,39 +1,92 @@
 import React, { useState, useEffect } from 'react';
 import { firebase, db } from './Firebase';
 import { useHistory } from 'react-router-dom';
-import { Formik, Field, Form } from 'formik';
+import { Formik, Field, FieldArray, Form } from 'formik';
+import * as yup from 'yup';
 
-type Book = {
-  id: string;
-  title: string;
-};
+const bookFormSchema = yup
+  .object({
+    title: yup.string().required(),
+    authors: yup.array().of(yup.string().required()).required().default([]),
+  })
+  .defined();
 
-function isBook(obj: any): obj is Book {
-  return typeof obj.id === 'string' && typeof obj.title === 'string';
-}
+const bookSchema = bookFormSchema.shape({
+  id: yup.string().required(),
+  isbn: yup.string().defined().nullable(),
+  read: yup.boolean().defined().nullable(),
+  priority: yup.number().defined().nullable(),
+  createdAt: yup
+    .date()
+    .required()
+    .default(() => Date.now()),
+  updatedAt: yup
+    .date()
+    .required()
+    .default(() => Date.now()),
+});
+
+type Book = yup.InferType<typeof bookSchema>;
 
 const BookList: React.FC<{ list: Book[] }> = (props) => (
   <ul>
     {props.list.map((book) => (
-      <li key={book.id}>{book.title}</li>
+      <li key={book.id}>
+        {book.title}, {book.authors.join(', ')}
+      </li>
     ))}
   </ul>
 );
 
-const AddBookForm: React.FC<{}> = (props) => {
+const AddBookForm: React.FC<{}> = () => {
+  const handleSubmit = (values: any) => {
+    return db.collection('books').add({
+      title: values.title,
+      authors: values.authors,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  };
+
   return (
     <Formik
-      initialValues={{ title: '' }}
-      onSubmit={(values, formikBag) => {
-        return db.collection('books').add({
-          title: values.title,
-        });
-      }}
+      initialValues={{ title: '', authors: [''] }}
+      validationSchema={bookFormSchema}
+      onSubmit={handleSubmit}
     >
-      <Form>
-        <Field name="title" type="text" />
-        <button type="submit">Add</button>
-      </Form>
+      {({ values, errors }) => (
+        <Form>
+          <div>
+            書名: <Field name="title" type="text" />
+          </div>
+          <div>
+            著者:
+            <FieldArray
+              name="authors"
+              render={(arrayHelpers) => (
+                <div>
+                  {values.authors.map((_author: string, index: number) => (
+                    <div key={index}>
+                      <Field name={`authors.${index}`} />
+                      <button
+                        type="button"
+                        onClick={() => arrayHelpers.remove(index)}
+                      >
+                        -
+                      </button>
+                    </div>
+                  ))}
+                  <button type="button" onClick={() => arrayHelpers.push('')}>
+                    +
+                  </button>
+                </div>
+              )}
+            />
+          </div>
+          {JSON.stringify(errors)}
+          <button type="submit">Add</button>
+        </Form>
+      )}
     </Formik>
   );
 };
@@ -44,18 +97,17 @@ export const BookshelfApp: React.FC<{}> = () => {
   useEffect(() => {
     const unsubscribe = db.collection('books').onSnapshot((querySnapshot) => {
       const list = querySnapshot.docs.map((doc) => {
-        return { id: doc.id, ...doc.data() };
+        return {
+          id: doc.id,
+          ...doc.data(),
+          createdAt: doc.data().createdAt?.toDate(),
+          updatedAt: doc.data().updatedAt?.toDate(),
+        };
       });
-      const filteredList = list
-        .map((data) => {
-          if (!isBook(data)) {
-            console.log(`data is not "Book" object: ${data}`);
-            return null;
-          }
-          return data;
-        })
-        .filter((data): data is Book => data !== null);
-      setList(filteredList);
+      const castedList = list.map((data) => bookSchema.cast(data));
+      // debug
+      // castedList.forEach((book) => console.log(JSON.stringify(book)));
+      setList(castedList);
     });
 
     return () => {
