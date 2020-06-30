@@ -11,24 +11,20 @@ const bookFormSchema = yup
   })
   .defined();
 
-const bookSchema = yup
-  .object({
-    id: yup.string().required(),
-    title: yup.string().required(),
-    authors: yup.array().of(yup.string().required()).required().default([]),
-    isbn: yup.string().defined().nullable(),
-    read: yup.boolean().defined().nullable(),
-    priority: yup.number().nullable().required(),
-    createdAt: yup
-      .date()
-      .required()
-      .default(() => Date.now()),
-    updatedAt: yup
-      .date()
-      .required()
-      .default(() => Date.now()),
-  })
-  .defined();
+const bookSchema = bookFormSchema.shape({
+  id: yup.string().required(),
+  isbn: yup.string().defined().nullable(),
+  read: yup.boolean().defined().nullable(),
+  priority: yup.number().nullable().required(),
+  createdAt: yup
+    .date()
+    .required()
+    .default(() => Date.now()),
+  updatedAt: yup
+    .date()
+    .required()
+    .default(() => Date.now()),
+});
 
 type Book = yup.InferType<typeof bookSchema>;
 
@@ -82,10 +78,7 @@ const AddBookForm: React.FC<{}> = () => {
                       </button>
                     </div>
                   ))}
-                  <button
-                    type="button"
-                    onClick={() => arrayHelpers.push('')}
-                  >
+                  <button type="button" onClick={() => arrayHelpers.push('')}>
                     +
                   </button>
                 </div>
