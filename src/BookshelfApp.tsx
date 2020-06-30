@@ -15,7 +15,7 @@ const bookSchema = bookFormSchema.shape({
   id: yup.string().required(),
   isbn: yup.string().defined().nullable(),
   read: yup.boolean().defined().nullable(),
-  priority: yup.number().nullable().required(),
+  priority: yup.number().defined().nullable(),
   createdAt: yup
     .date()
     .required()
@@ -48,9 +48,6 @@ const AddBookForm: React.FC<{}> = () => {
     });
   };
 
-  // <div>
-  //   著者: <Field name="authors" type="text" />
-  // </div>
   return (
     <Formik
       initialValues={{ title: '', authors: [''] }}
@@ -63,6 +60,7 @@ const AddBookForm: React.FC<{}> = () => {
             書名: <Field name="title" type="text" />
           </div>
           <div>
+            著者:
             <FieldArray
               name="authors"
               render={(arrayHelpers) => (
