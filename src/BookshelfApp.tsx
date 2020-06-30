@@ -3,10 +3,19 @@ import { firebase, db } from './Firebase';
 import { useHistory } from 'react-router-dom';
 import { Formik, Field, Form } from 'formik';
 
-type Book = {
+interface Book {
   id: string;
   title: string;
-};
+  isbn?: string;
+  authors: string[];
+  publisher?: string[];
+  priority?: number;
+  read?: boolean;
+  medium?: 'paper' | 'kindle';
+  genres?: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 function isBook(obj: any): obj is Book {
   return typeof obj.id === 'string' && typeof obj.title === 'string';
@@ -21,17 +30,24 @@ const BookList: React.FC<{ list: Book[] }> = (props) => (
 );
 
 const AddBookForm: React.FC<{}> = (props) => {
+  const handleSubmit = (values: any) => {
+    return db.collection('books').add({
+      title: values.title,
+      authors: values.authors.split(','),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  };
+
   return (
-    <Formik
-      initialValues={{ title: '' }}
-      onSubmit={(values, formikBag) => {
-        return db.collection('books').add({
-          title: values.title,
-        });
-      }}
-    >
+    <Formik initialValues={{ title: '', authors: '' }} onSubmit={handleSubmit}>
       <Form>
-        <Field name="title" type="text" />
+        <div>
+          書名: <Field name="title" type="text" />
+        </div>
+        <div>
+          著者: <Field name="authors" type="text" />
+        </div>
         <button type="submit">Add</button>
       </Form>
     </Formik>
@@ -49,7 +65,7 @@ export const BookshelfApp: React.FC<{}> = () => {
       const filteredList = list
         .map((data) => {
           if (!isBook(data)) {
-            console.log(`data is not "Book" object: ${data}`);
+            console.log(`data is not "Book" object: ${JSON.stringify(data)}`);
             return null;
           }
           return data;
