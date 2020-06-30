@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { firebase, db } from './Firebase';
 import { useHistory } from 'react-router-dom';
-import { Formik, Field, Form } from 'formik';
+import { Formik, Field, FieldArray, Form } from 'formik';
 import * as yup from 'yup';
+
+const bookFormSchema = yup
+  .object({
+    title: yup.string().required(),
+    authors: yup.array().of(yup.string().required()).required().default([]),
+  })
+  .defined();
 
 const bookSchema = yup
   .object({
     id: yup.string().required(),
     title: yup.string().required(),
     authors: yup.array().of(yup.string().required()).required().default([]),
-    isbn: yup.string().notRequired(),
-    read: yup.boolean().notRequired(),
-    priority: yup.number().notRequired(),
+    isbn: yup.string().defined().nullable(),
+    read: yup.boolean().defined().nullable(),
+    priority: yup.number().nullable().required(),
     createdAt: yup
       .date()
       .required()
@@ -39,23 +46,56 @@ const AddBookForm: React.FC<{}> = () => {
   const handleSubmit = (values: any) => {
     return db.collection('books').add({
       title: values.title,
-      authors: values.authors.split(','),
+      authors: values.authors,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
   };
 
+  // <div>
+  //   著者: <Field name="authors" type="text" />
+  // </div>
   return (
-    <Formik initialValues={{ title: '', authors: '' }} onSubmit={handleSubmit}>
-      <Form>
-        <div>
-          書名: <Field name="title" type="text" />
-        </div>
-        <div>
-          著者: <Field name="authors" type="text" />
-        </div>
-        <button type="submit">Add</button>
-      </Form>
+    <Formik
+      initialValues={{ title: '', authors: [''] }}
+      validationSchema={bookFormSchema}
+      onSubmit={handleSubmit}
+    >
+      {({ values, errors }) => (
+        <Form>
+          <div>
+            書名: <Field name="title" type="text" />
+          </div>
+          <div>
+            <FieldArray
+              name="authors"
+              render={(arrayHelpers) => (
+                <div>
+                  {values.authors.map((_author: string, index: number) => (
+                    <div key={index}>
+                      <Field name={`authors.${index}`} />
+                      <button
+                        type="button"
+                        onClick={() => arrayHelpers.remove(index)}
+                      >
+                        -
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => arrayHelpers.push('')}
+                  >
+                    +
+                  </button>
+                </div>
+              )}
+            />
+          </div>
+          {JSON.stringify(errors)}
+          <button type="submit">Add</button>
+        </Form>
+      )}
     </Formik>
   );
 };
@@ -75,7 +115,7 @@ export const BookshelfApp: React.FC<{}> = () => {
       });
       const castedList = list.map((data) => bookSchema.cast(data));
       // debug
-      castedList.forEach((book) => console.log(JSON.stringify(book)));
+      // castedList.forEach((book) => console.log(JSON.stringify(book)));
       setList(castedList);
     });
 
