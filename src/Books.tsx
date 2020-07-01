@@ -40,7 +40,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => (
     {props.list.map((book) => (
       <li key={book.id}>
         <Link to={`/books/${book.id}`}>
-          {book.title}, {book.authors.join(', ')}
+          題名：{book.title}, 著者：{book.authors.join(', ')}
         </Link>
       </li>
     ))}
@@ -155,7 +155,7 @@ export const Books: React.FC<{}> = () => {
     history.push('/signin');
   };
 
-  const { path, url } = useRouteMatch();
+  const { path } = useRouteMatch();
 
   return (
     <Switch>
