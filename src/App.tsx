@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookshelfApp } from './BookshelfApp';
+import { Books } from './Books';
 import { SignInScreen } from './SignInScreen';
 import {
   BrowserRouter as Router,
@@ -18,7 +18,7 @@ const App: React.FC<{}> = () => {
             <Redirect to="/books" />
               </Route>
           <Route path="/books">
-            <BookshelfApp />
+            <Books />
           </Route>
           <Route path="/signin">
             <SignInScreen />

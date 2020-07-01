@@ -4,7 +4,6 @@ import {
   useHistory,
   Route,
   Switch,
-  Redirect,
   Link,
   useRouteMatch,
   useParams,
@@ -60,7 +59,7 @@ const BookDetail: React.FC<{}> = () => {
   return <div>Title: {bookData?.title}</div>;
 };
 
-const AddBookForm: React.FC<{}> = () => {
+const BookAddForm: React.FC<{}> = () => {
   const handleSubmit = (values: any) => {
     return db.collection('books').add({
       title: values.title,
@@ -113,7 +112,7 @@ const AddBookForm: React.FC<{}> = () => {
   );
 };
 
-export const BookshelfApp: React.FC<{}> = () => {
+export const Books: React.FC<{}> = () => {
   const [list, setList] = useState([] as Book[]);
 
   useEffect(() => {
@@ -162,7 +161,7 @@ export const BookshelfApp: React.FC<{}> = () => {
     <Switch>
       <Route exact path={path}>
         <div>{`user: ${user ? user.displayName : 'dummy'}`}</div>
-        <AddBookForm />
+        <BookAddForm />
         <BookList list={list} />
         <button onClick={handleSignOut}>Sign Out</button>
       </Route>
