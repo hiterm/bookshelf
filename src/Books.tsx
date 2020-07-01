@@ -11,6 +11,15 @@ import {
 import { Formik, Field, FieldArray, Form } from 'formik';
 import { Book, bookFormSchema, bookSchema } from './schema';
 
+const firebaseDocToBook = (doc: firebase.firestore.DocumentData) => {
+  return {
+    id: doc.id,
+    ...doc.data(),
+    createdAt: doc.data().createdAt?.toDate(),
+    updatedAt: doc.data().updatedAt?.toDate(),
+  };
+}
+
 const BookList: React.FC<{ list: Book[] }> = (props) => (
   <ul>
     {props.list.map((book) => (
@@ -25,17 +34,21 @@ const BookList: React.FC<{ list: Book[] }> = (props) => (
 
 const BookDetail: React.FC<{}> = () => {
   const { id } = useParams();
-  const [bookData, setBookData] = useState();
+  const [bookData, setBookData] = useState(null as Book | null);
 
   useEffect(() => {
     db.collection('books')
       .doc(id)
       .get()
-      .then((doc) => setBookData(doc.data()));
+      .then((doc) => {
+        if (doc === undefined) {
+          setBookData(null);
+        } else {
+          setBookData(firebaseDocToBook(doc));
+        }
+      });
   });
 
-  /* const book = bookSchema.cast(bookData); */
-  /* console.log(JSON.stringify(book)); */
   return <div>Title: {bookData?.title}</div>;
 };
 
@@ -97,14 +110,7 @@ const BookIndex: React.FC<{}> = () => {
 
   useEffect(() => {
     const unsubscribe = db.collection('books').onSnapshot((querySnapshot) => {
-      const list = querySnapshot.docs.map((doc) => {
-        return {
-          id: doc.id,
-          ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate(),
-          updatedAt: doc.data().updatedAt?.toDate(),
-        };
-      });
+      const list = querySnapshot.docs.map(firebaseDocToBook);
       const castedList = list.map((data) => bookSchema.cast(data));
       // debug
       // castedList.forEach((book) => console.log(JSON.stringify(book)));
