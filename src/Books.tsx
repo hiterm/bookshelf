@@ -1,44 +1,78 @@
 import React, { useState, useEffect } from 'react';
 import { firebase, db } from './Firebase';
-import { useHistory } from 'react-router-dom';
+import {
+  useHistory,
+  Route,
+  Switch,
+  Link,
+  useRouteMatch,
+  useParams,
+} from 'react-router-dom';
 import { Formik, Field, FieldArray, Form } from 'formik';
-import * as yup from 'yup';
+import { Book, bookFormSchema, bookSchema } from './schema';
 
-const bookFormSchema = yup
-  .object({
-    title: yup.string().required(),
-    authors: yup.array().of(yup.string().required()).required().default([]),
-  })
-  .defined();
-
-const bookSchema = bookFormSchema.shape({
-  id: yup.string().required(),
-  isbn: yup.string().defined().nullable(),
-  read: yup.boolean().defined().nullable(),
-  priority: yup.number().defined().nullable(),
-  createdAt: yup
-    .date()
-    .required()
-    .default(() => Date.now()),
-  updatedAt: yup
-    .date()
-    .required()
-    .default(() => Date.now()),
-});
-
-type Book = yup.InferType<typeof bookSchema>;
+const firebaseDocToBook = (doc: firebase.firestore.DocumentData) => {
+  return bookSchema.cast({
+    id: doc.id,
+    ...doc.data(),
+    createdAt: doc.data().createdAt?.toDate(),
+    updatedAt: doc.data().updatedAt?.toDate(),
+  });
+};
 
 const BookList: React.FC<{ list: Book[] }> = (props) => (
   <ul>
     {props.list.map((book) => (
       <li key={book.id}>
-        {book.title}, {book.authors.join(', ')}
+        <Link to={`/books/${book.id}`}>
+          題名：{book.title}, 著者：{book.authors.join(', ')}
+        </Link>
       </li>
     ))}
   </ul>
 );
 
-const AddBookForm: React.FC<{}> = () => {
+const BookDetail: React.FC<{}> = () => {
+  const { id } = useParams();
+  const [book, setBook] = useState(null as Book | null);
+
+  useEffect(() => {
+    db.collection('books')
+      .doc(id)
+      .get()
+      .then((doc) => {
+        if (doc === undefined) {
+          setBook(null);
+        } else {
+          setBook(firebaseDocToBook(doc));
+        }
+      });
+  });
+
+  return (
+    <React.Fragment>
+      <div>書名: {book?.title}</div>
+      <div>著者：{book?.authors.join(', ')}</div>
+      <div>優先度：{book?.priority}</div>
+      <Formik
+        initialValues={{ priority: 50 }}
+        onSubmit={(values) => {
+          let docRef = db.collection('books').doc(book?.id);
+          docRef.update({
+            priority: values.priority,
+          });
+        }}
+      >
+        <Form>
+          <Field name="priority" type="number" />
+          <button type="submit">更新</button>
+        </Form>
+      </Formik>
+    </React.Fragment>
+  );
+};
+
+const BookAddForm: React.FC<{}> = () => {
   const handleSubmit = (values: any) => {
     return db.collection('books').add({
       title: values.title,
@@ -91,23 +125,15 @@ const AddBookForm: React.FC<{}> = () => {
   );
 };
 
-export const BookshelfApp: React.FC<{}> = () => {
+const BookIndex: React.FC<{}> = () => {
   const [list, setList] = useState([] as Book[]);
 
   useEffect(() => {
     const unsubscribe = db.collection('books').onSnapshot((querySnapshot) => {
-      const list = querySnapshot.docs.map((doc) => {
-        return {
-          id: doc.id,
-          ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate(),
-          updatedAt: doc.data().updatedAt?.toDate(),
-        };
-      });
-      const castedList = list.map((data) => bookSchema.cast(data));
+      const list = querySnapshot.docs.map(firebaseDocToBook);
       // debug
       // castedList.forEach((book) => console.log(JSON.stringify(book)));
-      setList(castedList);
+      setList(list);
     });
 
     return () => {
@@ -115,6 +141,15 @@ export const BookshelfApp: React.FC<{}> = () => {
     };
   }, []);
 
+  return (
+    <React.Fragment>
+      <BookAddForm />
+      <BookList list={list} />
+    </React.Fragment>
+  );
+};
+
+export const Books: React.FC<{}> = () => {
   const [user, setUser] = useState(null as firebase.User | null);
   useEffect(() => {
     const unlisten = firebase.auth().onAuthStateChanged((user) => {
@@ -134,11 +169,18 @@ export const BookshelfApp: React.FC<{}> = () => {
     history.push('/signin');
   };
 
+  const { path } = useRouteMatch();
+
   return (
     <React.Fragment>
-      <div>{`user: ${user ? user.displayName : 'dummy'}`}</div>
-      <AddBookForm />
-      <BookList list={list} />
+      <Switch>
+        <Route exact path={path}>
+          <BookIndex />
+        </Route>
+        <Route path={`${path}/:id`}>
+          <BookDetail />
+        </Route>
+      </Switch>
       <button onClick={handleSignOut}>Sign Out</button>
     </React.Fragment>
   );
