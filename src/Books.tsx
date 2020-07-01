@@ -18,7 +18,7 @@ const firebaseDocToBook = (doc: firebase.firestore.DocumentData) => {
     createdAt: doc.data().createdAt?.toDate(),
     updatedAt: doc.data().updatedAt?.toDate(),
   });
-}
+};
 
 const BookList: React.FC<{ list: Book[] }> = (props) => (
   <ul>
@@ -34,7 +34,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => (
 
 const BookDetail: React.FC<{}> = () => {
   const { id } = useParams();
-  const [bookData, setBookData] = useState(null as Book | null);
+  const [book, setBook] = useState(null as Book | null);
 
   useEffect(() => {
     db.collection('books')
@@ -42,14 +42,34 @@ const BookDetail: React.FC<{}> = () => {
       .get()
       .then((doc) => {
         if (doc === undefined) {
-          setBookData(null);
+          setBook(null);
         } else {
-          setBookData(firebaseDocToBook(doc));
+          setBook(firebaseDocToBook(doc));
         }
       });
   });
 
-  return <div>Title: {bookData?.title}</div>;
+  return (
+    <React.Fragment>
+      <div>書名: {book?.title}</div>
+      <div>著者：{book?.authors.join(', ')}</div>
+      <div>優先度：{book?.priority}</div>
+      <Formik
+        initialValues={{ priority: 50 }}
+        onSubmit={(values) => {
+          let docRef = db.collection('books').doc(book?.id);
+          docRef.update({
+            priority: values.priority,
+          });
+        }}
+      >
+        <Form>
+          <Field name="priority" type="number" />
+          <button type="submit">更新</button>
+        </Form>
+      </Formik>
+    </React.Fragment>
+  );
 };
 
 const BookAddForm: React.FC<{}> = () => {
@@ -126,8 +146,8 @@ const BookIndex: React.FC<{}> = () => {
       <BookAddForm />
       <BookList list={list} />
     </React.Fragment>
-  )
-}
+  );
+};
 
 export const Books: React.FC<{}> = () => {
   const [user, setUser] = useState(null as firebase.User | null);
