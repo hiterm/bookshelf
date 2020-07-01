@@ -9,31 +9,7 @@ import {
   useParams,
 } from 'react-router-dom';
 import { Formik, Field, FieldArray, Form } from 'formik';
-import * as yup from 'yup';
-
-const bookFormSchema = yup
-  .object({
-    title: yup.string().required(),
-    authors: yup.array().of(yup.string().required()).required().default([]),
-  })
-  .defined();
-
-const bookSchema = bookFormSchema.shape({
-  id: yup.string().required(),
-  isbn: yup.string().defined().nullable(),
-  read: yup.boolean().defined().nullable(),
-  priority: yup.number().defined().nullable(),
-  createdAt: yup
-    .date()
-    .required()
-    .default(() => Date.now()),
-  updatedAt: yup
-    .date()
-    .required()
-    .default(() => Date.now()),
-});
-
-type Book = yup.InferType<typeof bookSchema>;
+import { Book, bookFormSchema, bookSchema } from './schema';
 
 const BookList: React.FC<{ list: Book[] }> = (props) => (
   <ul>
@@ -50,10 +26,14 @@ const BookList: React.FC<{ list: Book[] }> = (props) => (
 const BookDetail: React.FC<{}> = () => {
   const { id } = useParams();
   const [bookData, setBookData] = useState();
-  db.collection('books')
-    .doc(id)
-    .get()
-    .then((doc) => setBookData(doc.data()));
+
+  useEffect(() => {
+    db.collection('books')
+      .doc(id)
+      .get()
+      .then((doc) => setBookData(doc.data()));
+  });
+
   /* const book = bookSchema.cast(bookData); */
   /* console.log(JSON.stringify(book)); */
   return <div>Title: {bookData?.title}</div>;
@@ -112,7 +92,7 @@ const BookAddForm: React.FC<{}> = () => {
   );
 };
 
-export const Books: React.FC<{}> = () => {
+const BookIndex: React.FC<{}> = () => {
   const [list, setList] = useState([] as Book[]);
 
   useEffect(() => {
@@ -136,6 +116,15 @@ export const Books: React.FC<{}> = () => {
     };
   }, []);
 
+  return (
+    <React.Fragment>
+      <BookAddForm />
+      <BookList list={list} />
+    </React.Fragment>
+  )
+}
+
+export const Books: React.FC<{}> = () => {
   const [user, setUser] = useState(null as firebase.User | null);
   useEffect(() => {
     const unlisten = firebase.auth().onAuthStateChanged((user) => {
@@ -158,16 +147,16 @@ export const Books: React.FC<{}> = () => {
   const { path } = useRouteMatch();
 
   return (
-    <Switch>
-      <Route exact path={path}>
-        <div>{`user: ${user ? user.displayName : 'dummy'}`}</div>
-        <BookAddForm />
-        <BookList list={list} />
-        <button onClick={handleSignOut}>Sign Out</button>
-      </Route>
-      <Route path={`${path}/:id`}>
-        <BookDetail />
-      </Route>
-    </Switch>
+    <React.Fragment>
+      <Switch>
+        <Route exact path={path}>
+          <BookIndex />
+        </Route>
+        <Route path={`${path}/:id`}>
+          <BookDetail />
+        </Route>
+      </Switch>
+      <button onClick={handleSignOut}>Sign Out</button>
+    </React.Fragment>
   );
 };
