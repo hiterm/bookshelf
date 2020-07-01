@@ -12,12 +12,12 @@ import { Formik, Field, FieldArray, Form } from 'formik';
 import { Book, bookFormSchema, bookSchema } from './schema';
 
 const firebaseDocToBook = (doc: firebase.firestore.DocumentData) => {
-  return {
+  return bookSchema.cast({
     id: doc.id,
     ...doc.data(),
     createdAt: doc.data().createdAt?.toDate(),
     updatedAt: doc.data().updatedAt?.toDate(),
-  };
+  });
 }
 
 const BookList: React.FC<{ list: Book[] }> = (props) => (
@@ -111,10 +111,9 @@ const BookIndex: React.FC<{}> = () => {
   useEffect(() => {
     const unsubscribe = db.collection('books').onSnapshot((querySnapshot) => {
       const list = querySnapshot.docs.map(firebaseDocToBook);
-      const castedList = list.map((data) => bookSchema.cast(data));
       // debug
       // castedList.forEach((book) => console.log(JSON.stringify(book)));
-      setList(castedList);
+      setList(list);
     });
 
     return () => {
