@@ -1,5 +1,5 @@
 import React from 'react';
-import { Books } from './Books';
+import { Books } from './book/Books';
 import { SignInScreen } from './SignInScreen';
 import {
   BrowserRouter as Router,
@@ -7,11 +7,14 @@ import {
   Route,
   Redirect,
 } from 'react-router-dom';
-import './App.css';
+import Container from '@material-ui/core/Container';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 const App: React.FC<{}> = () => {
   return (
-    <div className="App">
+    <Container>
+      <CssBaseline />
+      <h1>Bookshelf</h1>
       <Router>
         <Switch>
           <Route exact path="/">
@@ -25,7 +28,7 @@ const App: React.FC<{}> = () => {
           </Route>
         </Switch>
       </Router>
-    </div>
+    </Container>
   );
 };
 
