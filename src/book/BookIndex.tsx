@@ -24,10 +24,13 @@ const BookList: React.FC<{ list: Book[] }> = (props) => (
       </TableHead>
       <TableBody>
         {props.list.map((book) => (
-          <TableRow key={book.id}>
-            <TableCell>
-              <Link to={`/books/${book.id}`}>{book.title}</Link>
-            </TableCell>
+          <TableRow
+            component={Link}
+            hover={true}
+            to={`/books/${book.id}`}
+            key={book.id}
+          >
+            <TableCell>{book.title}</TableCell>
             <TableCell>{book.authors.join(', ')}</TableCell>
             <TableCell>{book.priority}</TableCell>
           </TableRow>
