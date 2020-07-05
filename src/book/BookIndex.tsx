@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Formik, Field, FieldArray, Form } from 'formik';
+import { TextField } from 'formik-material-ui';
+import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -58,18 +60,15 @@ const BookAddForm: React.FC<{}> = () => {
     >
       {({ values, errors }) => (
         <Form>
-          <div>
-            書名: <Field name="title" type="text" />
-          </div>
-          <div>
-            著者:
+            <Field component={TextField} name="title" label="タイトル" InputLabelProps={{shrink: true}} />
+            <InputLabel shrink={true}>著者</InputLabel>
             <FieldArray
               name="authors"
               render={(arrayHelpers) => (
                 <div>
                   {values.authors.map((_author: string, index: number) => (
                     <div key={index}>
-                      <Field name={`authors.${index}`} />
+                      <Field component={TextField} name={`authors.${index}`} />
                       <Button
                         variant="contained"
                         type="button"
@@ -84,13 +83,11 @@ const BookAddForm: React.FC<{}> = () => {
                     type="button"
                     onClick={() => arrayHelpers.push('')}
                   >
-                    +
+                    著者追加
                   </Button>
                 </div>
               )}
             />
-          </div>
-          {JSON.stringify(errors)}
           <Button variant="contained" color="primary" type="submit">
             Add
           </Button>
