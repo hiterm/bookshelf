@@ -31,7 +31,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => (
     </thead>
     <tbody>
       {props.list.map((book) => (
-        <tr>
+        <tr key={book.id}>
           <td>
             <Link to={`/books/${book.id}`}>{book.title}</Link>
           </td>
@@ -154,7 +154,39 @@ const BookIndex: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
+      <h2>追加</h2>
       <BookAddForm />
+      <h2>一覧</h2>
+      ソート：
+      <Formik
+        initialValues={{ sortBy: 'title' as keyof Book, order: 1 }}
+        onSubmit={(values) => {
+          const compareBy = (sortBy: keyof Book) => (a: Book, b: Book) => {
+            if (a[sortBy] < b[sortBy]) {
+              return -1 * values.order;
+            } else if (a[sortBy] > b[sortBy]) {
+              return 1 * values.order;
+            } else {
+              return 0;
+            }
+          };
+          const sorted = list.slice().sort(compareBy(values.sortBy));
+          setList(sorted);
+        }}
+      >
+        <Form>
+          <Field name="sortBy" as="select">
+            <option value="title">題名</option>
+            <option value="authors">著者</option>
+            <option value="priority">優先度</option>
+          </Field>
+          <Field name="order" as="select">
+            <option value="1">昇順</option>
+            <option value="-1">降順</option>
+          </Field>
+          <button type="submit">反映</button>
+        </Form>
+      </Formik>
       <BookList list={list} />
     </React.Fragment>
   );
