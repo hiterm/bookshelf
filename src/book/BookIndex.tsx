@@ -2,30 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Formik, Field, FieldArray, Form } from 'formik';
 import Button from '@material-ui/core/Button';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema, firebaseDocToBook } from './schema';
 
 const BookList: React.FC<{ list: Book[] }> = (props) => (
-  <table>
-    <thead>
-      <tr>
-        <th>題名</th>
-        <th>著者</th>
-        <th>優先度</th>
-      </tr>
-    </thead>
-    <tbody>
-      {props.list.map((book) => (
-        <tr key={book.id}>
-          <td>
-            <Link to={`/books/${book.id}`}>{book.title}</Link>
-          </td>
-          <td>{book.authors.join(', ')}</td>
-          <td>{book.priority}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
+  <TableContainer component={Paper}>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell>題名</TableCell>
+          <TableCell>著者</TableCell>
+          <TableCell>優先度</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {props.list.map((book) => (
+          <TableRow key={book.id}>
+            <TableCell>
+              <Link to={`/books/${book.id}`}>{book.title}</Link>
+            </TableCell>
+            <TableCell>{book.authors.join(', ')}</TableCell>
+            <TableCell>{book.priority}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </TableContainer>
 );
 
 const BookAddForm: React.FC<{}> = () => {
