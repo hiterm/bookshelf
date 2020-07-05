@@ -24,4 +24,13 @@ const bookSchema = bookFormSchema.shape({
 
 export type Book = yup.InferType<typeof bookSchema>;
 
-export { bookFormSchema, bookSchema };
+const firebaseDocToBook = (doc: firebase.firestore.DocumentData) => {
+  return bookSchema.cast({
+    id: doc.id,
+    ...doc.data(),
+    createdAt: doc.data().createdAt?.toDate(),
+    updatedAt: doc.data().updatedAt?.toDate(),
+  });
+};
+
+export { bookFormSchema, bookSchema, firebaseDocToBook };

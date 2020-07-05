@@ -1,24 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { firebase, db } from './Firebase';
-import {
-  useHistory,
-  Route,
-  Switch,
-  Link,
-  useRouteMatch,
-  useParams,
-} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Formik, Field, FieldArray, Form } from 'formik';
-import { Book, bookFormSchema, bookSchema } from './schema';
-
-const firebaseDocToBook = (doc: firebase.firestore.DocumentData) => {
-  return bookSchema.cast({
-    id: doc.id,
-    ...doc.data(),
-    createdAt: doc.data().createdAt?.toDate(),
-    updatedAt: doc.data().updatedAt?.toDate(),
-  });
-};
+import Button from '@material-ui/core/Button';
+import { firebase, db } from '../Firebase';
+import { Book, bookFormSchema, firebaseDocToBook } from './schema';
 
 const BookList: React.FC<{ list: Book[] }> = (props) => (
   <table>
@@ -42,46 +27,6 @@ const BookList: React.FC<{ list: Book[] }> = (props) => (
     </tbody>
   </table>
 );
-
-const BookDetail: React.FC<{}> = () => {
-  const { id } = useParams();
-  const [book, setBook] = useState(null as Book | null);
-
-  useEffect(() => {
-    db.collection('books')
-      .doc(id)
-      .get()
-      .then((doc) => {
-        if (doc === undefined) {
-          setBook(null);
-        } else {
-          setBook(firebaseDocToBook(doc));
-        }
-      });
-  });
-
-  return (
-    <React.Fragment>
-      <div>書名: {book?.title}</div>
-      <div>著者：{book?.authors.join(', ')}</div>
-      <div>優先度：{book?.priority}</div>
-      <Formik
-        initialValues={{ priority: 50 }}
-        onSubmit={(values) => {
-          let docRef = db.collection('books').doc(book?.id);
-          docRef.update({
-            priority: values.priority,
-          });
-        }}
-      >
-        <Form>
-          <Field name="priority" type="number" />
-          <button type="submit">更新</button>
-        </Form>
-      </Formik>
-    </React.Fragment>
-  );
-};
 
 const BookAddForm: React.FC<{}> = () => {
   const handleSubmit = (values: any) => {
@@ -113,23 +58,30 @@ const BookAddForm: React.FC<{}> = () => {
                   {values.authors.map((_author: string, index: number) => (
                     <div key={index}>
                       <Field name={`authors.${index}`} />
-                      <button
+                      <Button
+                        variant="contained"
                         type="button"
                         onClick={() => arrayHelpers.remove(index)}
                       >
                         -
-                      </button>
+                      </Button>
                     </div>
                   ))}
-                  <button type="button" onClick={() => arrayHelpers.push('')}>
+                  <Button
+                    variant="contained"
+                    type="button"
+                    onClick={() => arrayHelpers.push('')}
+                  >
                     +
-                  </button>
+                  </Button>
                 </div>
               )}
             />
           </div>
           {JSON.stringify(errors)}
-          <button type="submit">Add</button>
+          <Button variant="contained" color="primary" type="submit">
+            Add
+          </Button>
         </Form>
       )}
     </Formik>
@@ -184,7 +136,9 @@ const BookIndex: React.FC<{}> = () => {
             <option value="1">昇順</option>
             <option value="-1">降順</option>
           </Field>
-          <button type="submit">反映</button>
+          <Button variant="contained" type="submit">
+            反映
+          </Button>
         </Form>
       </Formik>
       <BookList list={list} />
@@ -192,39 +146,4 @@ const BookIndex: React.FC<{}> = () => {
   );
 };
 
-export const Books: React.FC<{}> = () => {
-  const [user, setUser] = useState(null as firebase.User | null);
-  useEffect(() => {
-    const unlisten = firebase.auth().onAuthStateChanged((user) => {
-      if (user !== null) {
-        setUser(user);
-      }
-    });
-    return () => {
-      unlisten();
-    };
-  }, []);
-
-  const history = useHistory();
-  const handleSignOut = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    firebase.auth().signOut();
-    history.push('/signin');
-  };
-
-  const { path } = useRouteMatch();
-
-  return (
-    <React.Fragment>
-      <Switch>
-        <Route exact path={path}>
-          <BookIndex />
-        </Route>
-        <Route path={`${path}/:id`}>
-          <BookDetail />
-        </Route>
-      </Switch>
-      <button onClick={handleSignOut}>Sign Out</button>
-    </React.Fragment>
-  );
-};
+export { BookIndex };
