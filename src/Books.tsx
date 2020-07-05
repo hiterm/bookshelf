@@ -21,15 +21,26 @@ const firebaseDocToBook = (doc: firebase.firestore.DocumentData) => {
 };
 
 const BookList: React.FC<{ list: Book[] }> = (props) => (
-  <ul>
-    {props.list.map((book) => (
-      <li key={book.id}>
-        <Link to={`/books/${book.id}`}>
-          題名：{book.title}, 著者：{book.authors.join(', ')}
-        </Link>
-      </li>
-    ))}
-  </ul>
+  <table>
+    <thead>
+      <tr>
+        <th>題名</th>
+        <th>著者</th>
+        <th>優先度</th>
+      </tr>
+    </thead>
+    <tbody>
+      {props.list.map((book) => (
+        <tr>
+          <td>
+            <Link to={`/books/${book.id}`}>{book.title}</Link>
+          </td>
+          <td>{book.authors.join(', ')}</td>
+          <td>{book.priority}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
 );
 
 const BookDetail: React.FC<{}> = () => {
