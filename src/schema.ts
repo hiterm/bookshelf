@@ -5,13 +5,13 @@ const bookFormSchema = yup
     title: yup.string().required(),
     authors: yup.array().of(yup.string().required()).required().default([]),
   })
-  .defined();
+  .required();
 
 const bookSchema = bookFormSchema.shape({
   id: yup.string().required(),
-  isbn: yup.string().defined().nullable(),
-  read: yup.boolean().defined().nullable(),
-  priority: yup.number().defined().nullable(),
+  isbn: yup.string().required().default(''),
+  read: yup.boolean().required().default(false),
+  priority: yup.number().required().default(50),
   createdAt: yup
     .date()
     .required()
