@@ -60,34 +60,39 @@ const BookAddForm: React.FC<{}> = () => {
     >
       {({ values, errors }) => (
         <Form>
-            <Field component={TextField} name="title" label="タイトル" InputLabelProps={{shrink: true}} />
-            <InputLabel shrink={true}>著者</InputLabel>
-            <FieldArray
-              name="authors"
-              render={(arrayHelpers) => (
-                <div>
-                  {values.authors.map((_author: string, index: number) => (
-                    <div key={index}>
-                      <Field component={TextField} name={`authors.${index}`} />
-                      <Button
-                        variant="contained"
-                        type="button"
-                        onClick={() => arrayHelpers.remove(index)}
-                      >
-                        -
-                      </Button>
-                    </div>
-                  ))}
-                  <Button
-                    variant="contained"
-                    type="button"
-                    onClick={() => arrayHelpers.push('')}
-                  >
-                    著者追加
-                  </Button>
-                </div>
-              )}
-            />
+          <Field
+            component={TextField}
+            name="title"
+            label="タイトル"
+            InputLabelProps={{ shrink: true }}
+          />
+          <InputLabel shrink={true}>著者</InputLabel>
+          <FieldArray
+            name="authors"
+            render={(arrayHelpers) => (
+              <div>
+                {values.authors.map((_author: string, index: number) => (
+                  <div key={index}>
+                    <Field component={TextField} name={`authors.${index}`} />
+                    <Button
+                      variant="contained"
+                      type="button"
+                      onClick={() => arrayHelpers.remove(index)}
+                    >
+                      -
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  variant="contained"
+                  type="button"
+                  onClick={() => arrayHelpers.push('')}
+                >
+                  著者追加
+                </Button>
+              </div>
+            )}
+          />
           <Button variant="contained" color="primary" type="submit">
             Add
           </Button>
