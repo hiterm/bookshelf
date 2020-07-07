@@ -9,9 +9,12 @@ const bookFormSchema = yup
 
 const bookSchema = bookFormSchema.shape({
   id: yup.string().required(),
-  isbn: yup.string().required().default(''),
+  isbn: yup.string().required().default('-'),
   read: yup.boolean().required().default(false),
   priority: yup.number().required().default(50),
+  media: yup.string().oneOf(['-', 'eBook', 'Printed']).required().default('-'),
+  store: yup.string().oneOf(['-', 'Kindle']).required().default('-'),
+  owned: yup.boolean().defined().nullable(),
   createdAt: yup
     .date()
     .required()

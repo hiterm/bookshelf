@@ -18,10 +18,11 @@ export const ImportBooks: React.FC<{}> = () => {
       const formattedBook = {
         title: book.title,
         authors: [book.author],
+        media: 'eBook',
+        store: 'Kindle',
         createdAt: new Date(year, month, date),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
-      /* console.log(formattedBook); */
       var newBookRef = db.collection('books').doc();
       batch.set(newBookRef, formattedBook);
     }
