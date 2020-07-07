@@ -127,17 +127,17 @@ const BookIndex: React.FC<{}> = () => {
       <Formik
         initialValues={{ sortBy: 'title' as keyof Book, order: 1 }}
         onSubmit={(values) => {
-          const compareBy = (sortBy: keyof Book) => (a: Book, b: Book) => {
-            if (a[sortBy] < b[sortBy]) {
-              return -1 * values.order;
-            } else if (a[sortBy] > b[sortBy]) {
-              return 1 * values.order;
-            } else {
-              return 0;
-            }
-          };
-          const sorted = list.slice().sort(compareBy(values.sortBy));
-          setList(sorted);
+          /* const compareBy = (sortBy: keyof Book) => (a: Book, b: Book) => { */
+          /*   if (a[sortBy] < b[sortBy]) { */
+          /*     return -1 * values.order; */
+          /*   } else if (a[sortBy] > b[sortBy]) { */
+          /*     return 1 * values.order; */
+          /*   } else { */
+          /*     return 0; */
+          /*   } */
+          /* }; */
+          /* const sorted = list.slice().sort(compareBy(values.sortBy)); */
+          /* setList(sorted); */
         }}
       >
         <Form>

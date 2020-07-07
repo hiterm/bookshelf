@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button';
 import { firebase } from '../Firebase';
 import { BookIndex } from './BookIndex';
 import { BookDetail } from './BookDetail';
+import { ImportBooks } from './ImportBooks';
 
 export const Books: React.FC<{}> = () => {
   const [user, setUser] = useState(null as firebase.User | null);
@@ -33,6 +34,9 @@ export const Books: React.FC<{}> = () => {
       <Switch>
         <Route exact path={path}>
           <BookIndex />
+        </Route>
+        <Route path={`${path}/import`}>
+          <ImportBooks />
         </Route>
         <Route path={`${path}/:id`}>
           <BookDetail />
