@@ -4,18 +4,25 @@ import { TextField } from 'formik-material-ui';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import MaterialTable from 'material-table';
 import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema, firebaseDocToBook } from './schema';
 
 const BookList: React.FC<{ list: Book[] }> = (props) => {
-  const [checked, setChecked] = React.useState(false);
+  const [checked, setChecked] = React.useState({
+    title: true,
+    authors: true,
+    format: true,
+    priority: true,
+  });
 
   const columns = [
     { title: '書名', field: 'title' },
-    { title: '著者', field: 'authors', hidden: checked },
-    { title: '形式', field: 'format' },
-    { title: '優先度', field: 'priority' },
+    { title: '著者', field: 'authors', hidden: !checked.authors },
+    { title: '形式', field: 'format', hidden: !checked.format },
+    { title: '優先度', field: 'priority', hidden: !checked.priority },
   ];
   const options = {
     pageSize: 20,
@@ -23,15 +30,46 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setChecked(event.target.checked);
+    setChecked({ ...checked, [event.target.name]: event.target.checked });
   };
 
   return (
     <React.Fragment>
-      <Checkbox
-        onChange={handleChange}
-        inputProps={{ 'aria-label': 'primary checkbox' }}
-      />
+      <FormGroup row>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={checked.authors}
+              onChange={handleChange}
+              name="authors"
+              color="primary"
+            />
+          }
+          label="著者"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={checked.format}
+              onChange={handleChange}
+              name="format"
+              color="primary"
+            />
+          }
+          label="形式"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={checked.priority}
+              onChange={handleChange}
+              name="priority"
+              color="primary"
+            />
+          }
+          label="優先度"
+        />
+      </FormGroup>
       <MaterialTable columns={columns} data={props.list} options={options} />
     </React.Fragment>
   );
