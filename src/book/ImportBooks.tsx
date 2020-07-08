@@ -18,7 +18,7 @@ export const ImportBooks: React.FC<{}> = () => {
       const formattedBook = {
         title: book.title,
         authors: [book.author],
-        media: 'eBook',
+        format: 'eBook',
         store: 'Kindle',
         createdAt: new Date(year, month, date),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),

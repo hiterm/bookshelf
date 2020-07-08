@@ -1,46 +1,79 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { Formik, Field, FieldArray, Form } from 'formik';
 import { TextField } from 'formik-material-ui';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import MaterialTable from 'material-table';
 import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema, firebaseDocToBook } from './schema';
 
-const BookList: React.FC<{ list: Book[] }> = (props) => (
-  <TableContainer component={Paper}>
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>題名</TableCell>
-          <TableCell>著者</TableCell>
-          <TableCell>優先度</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {props.list.map((book) => (
-          <TableRow
-            component={Link}
-            hover={true}
-            to={`/books/${book.id}`}
-            key={book.id}
-          >
-            <TableCell>{book.title}</TableCell>
-            <TableCell>{book.authors.join(', ')}</TableCell>
-            <TableCell>{book.priority}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  </TableContainer>
-);
+const BookList: React.FC<{ list: Book[] }> = (props) => {
+  const [checked, setChecked] = React.useState({
+    title: true,
+    authors: true,
+    format: true,
+    priority: true,
+  });
+
+  const columns = [
+    { title: '書名', field: 'title' },
+    { title: '著者', field: 'authors', hidden: !checked.authors },
+    { title: '形式', field: 'format', hidden: !checked.format },
+    { title: '優先度', field: 'priority', hidden: !checked.priority },
+  ];
+  const options = {
+    pageSize: 20,
+    filtering: true,
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked({ ...checked, [event.target.name]: event.target.checked });
+  };
+
+  return (
+    <React.Fragment>
+      <FormGroup row>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={checked.authors}
+              onChange={handleChange}
+              name="authors"
+              color="primary"
+            />
+          }
+          label="著者"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={checked.format}
+              onChange={handleChange}
+              name="format"
+              color="primary"
+            />
+          }
+          label="形式"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={checked.priority}
+              onChange={handleChange}
+              name="priority"
+              color="primary"
+            />
+          }
+          label="優先度"
+        />
+      </FormGroup>
+      <MaterialTable columns={columns} data={props.list} options={options} />
+    </React.Fragment>
+  );
+};
 
 const BookAddForm: React.FC<{}> = () => {
   const handleSubmit = (values: any) => {
@@ -123,38 +156,6 @@ const BookIndex: React.FC<{}> = () => {
       <h2>追加</h2>
       <BookAddForm />
       <h2>一覧</h2>
-      ソート：
-      <Formik
-        initialValues={{ sortBy: 'title' as keyof Book, order: 1 }}
-        onSubmit={(values) => {
-          /* const compareBy = (sortBy: keyof Book) => (a: Book, b: Book) => { */
-          /*   if (a[sortBy] < b[sortBy]) { */
-          /*     return -1 * values.order; */
-          /*   } else if (a[sortBy] > b[sortBy]) { */
-          /*     return 1 * values.order; */
-          /*   } else { */
-          /*     return 0; */
-          /*   } */
-          /* }; */
-          /* const sorted = list.slice().sort(compareBy(values.sortBy)); */
-          /* setList(sorted); */
-        }}
-      >
-        <Form>
-          <Field name="sortBy" as="select">
-            <option value="title">題名</option>
-            <option value="authors">著者</option>
-            <option value="priority">優先度</option>
-          </Field>
-          <Field name="order" as="select">
-            <option value="1">昇順</option>
-            <option value="-1">降順</option>
-          </Field>
-          <Button variant="contained" type="submit">
-            反映
-          </Button>
-        </Form>
-      </Formik>
       <BookList list={list} />
     </React.Fragment>
   );
