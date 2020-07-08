@@ -3,21 +3,37 @@ import { Formik, Field, FieldArray, Form } from 'formik';
 import { TextField } from 'formik-material-ui';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
 import MaterialTable from 'material-table';
 import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema, firebaseDocToBook } from './schema';
 
 const BookList: React.FC<{ list: Book[] }> = (props) => {
+  const [checked, setChecked] = React.useState(false);
+
   const columns = [
     { title: '書名', field: 'title' },
-    { title: '著者', field: 'authors' },
+    { title: '著者', field: 'authors', hidden: checked },
+    { title: '形式', field: 'format' },
+    { title: '優先度', field: 'priority' },
   ];
   const options = {
     pageSize: 20,
     filtering: true,
   };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+  };
+
   return (
-    <MaterialTable columns={columns} data={props.list} options={options} />
+    <React.Fragment>
+      <Checkbox
+        onChange={handleChange}
+        inputProps={{ 'aria-label': 'primary checkbox' }}
+      />
+      <MaterialTable columns={columns} data={props.list} options={options} />
+    </React.Fragment>
   );
 };
 
