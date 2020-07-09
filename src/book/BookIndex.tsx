@@ -9,6 +9,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import MaterialTable from 'material-table';
 import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema, firebaseDocToBook } from './schema';
+import { useHistory } from 'react-router-dom';
 
 const BookList: React.FC<{ list: Book[] }> = (props) => {
   const [checked, setChecked] = React.useState({
@@ -27,6 +28,16 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
   const options = {
     pageSize: 20,
     filtering: true,
+  };
+
+  const history = useHistory();
+  const handleRowClick = (
+    _event: React.MouseEvent<Element, MouseEvent> | undefined,
+    rowData: Book | undefined
+  ) => {
+    if (typeof rowData !== 'undefined') {
+      history.push(`/books/${rowData.id}`);
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,7 +81,12 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
           label="優先度"
         />
       </FormGroup>
-      <MaterialTable columns={columns} data={props.list} options={options} />
+      <MaterialTable
+        columns={columns}
+        data={props.list}
+        onRowClick={handleRowClick}
+        options={options}
+      />
     </React.Fragment>
   );
 };
