@@ -29,11 +29,8 @@ const BookDetail: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
-      <div>書名: {book.title}</div>
-      <div>著者：{book.authors.join(', ')}</div>
-      <div>優先度：{book.priority}</div>
       <Formik
-        initialValues={{ priority: book.priority }}
+        initialValues={book}
         /* validationSchema={bookSchema} */
         onSubmit={(values) => {
           let docRef = db.collection('books').doc(book.id);
@@ -43,12 +40,23 @@ const BookDetail: React.FC<{}> = () => {
         }}
       >
         <Form>
-          <Field
-            component={TextField}
-            name="priority"
-            type="number"
-            label="優先度"
-          />
+          <div>
+            <Field
+              component={TextField}
+              name="title"
+              type="string"
+              label="書名"
+            />
+          </div>
+          <div>著者：{book.authors.join(', ')}</div>
+          <div>
+            <Field
+              component={TextField}
+              name="priority"
+              type="number"
+              label="優先度"
+            />
+          </div>
           <Button variant="contained" color="primary" type="submit">
             更新
           </Button>
