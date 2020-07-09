@@ -157,6 +157,11 @@ const BookIndex: React.FC<{}> = () => {
   useEffect(() => {
     const unsubscribe = db.collection('books').onSnapshot((querySnapshot) => {
       const list = querySnapshot.docs.map(firebaseDocToBook);
+
+      const compare = (a: Book, b: Book) => {
+        return b.priority - a.priority;
+      };
+      list.sort(compare);
       // debug
       // castedList.forEach((book) => console.log(JSON.stringify(book)));
       setList(list);
