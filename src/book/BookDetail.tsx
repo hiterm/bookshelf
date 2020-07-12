@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useRouteMatch, Switch, Route, Link } from 'react-router-dom';
+import {
+  useParams,
+  useRouteMatch,
+  Switch,
+  Route,
+  Link,
+} from 'react-router-dom';
 import { Formik, Field, Form } from 'formik';
 import Button from '@material-ui/core/Button';
 import { db } from '../Firebase';
@@ -10,8 +16,13 @@ const BookDetailShow: React.FC<{}> = () => {
   const { url } = useRouteMatch();
 
   return (
-    <Button color="primary" component={Link} to={`${url}/edit`}>
-      With prop forwarding
+    <Button
+      variant="contained"
+      color="primary"
+      component={Link}
+      to={`${url}/edit`}
+    >
+      変更
     </Button>
   );
 };
