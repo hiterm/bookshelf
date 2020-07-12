@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useRouteMatch, Switch, Route, Link } from 'react-router-dom';
 import { Formik, Field, Form } from 'formik';
 import Button from '@material-ui/core/Button';
 import { db } from '../Firebase';
 import { Book, firebaseDocToBook } from './schema';
 import { TextField } from 'formik-material-ui';
 
-const BookDetail: React.FC<{}> = () => {
+const BookDetailShow: React.FC<{}> = () => {
+  const { url } = useRouteMatch();
+
+  return (
+    <Button color="primary" component={Link} to={`${url}/edit`}>
+      With prop forwarding
+    </Button>
+  );
+};
+
+const BookDetailEdit: React.FC<{}> = () => {
   const { id } = useParams();
   const [book, setBook] = useState(null as Book | null);
 
@@ -62,6 +72,23 @@ const BookDetail: React.FC<{}> = () => {
           </Button>
         </Form>
       </Formik>
+    </React.Fragment>
+  );
+};
+
+const BookDetail: React.FC<{}> = () => {
+  const { path } = useRouteMatch();
+
+  return (
+    <React.Fragment>
+      <Switch>
+        <Route exact path={path}>
+          <BookDetailShow />
+        </Route>
+        <Route path={`${path}/edit`}>
+          <BookDetailEdit />
+        </Route>
+      </Switch>
     </React.Fragment>
   );
 };
