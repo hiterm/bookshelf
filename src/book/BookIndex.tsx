@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Formik, Field, FieldArray, Form } from 'formik';
-import { TextField } from 'formik-material-ui';
+import { TextField as FormikTextField } from 'formik-material-ui';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -9,7 +9,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema, firebaseDocToBook } from './schema';
 import { useHistory } from 'react-router-dom';
-import { useTable, Column, useSortBy } from 'react-table';
+import { useTable, Column, useSortBy, useGlobalFilter } from 'react-table';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
@@ -18,6 +18,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import Paper from '@material-ui/core/Paper';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Search from '@material-ui/icons/Search';
 
 const BookList: React.FC<{ list: Book[] }> = (props) => {
   const [checked, setChecked] = React.useState({
@@ -55,45 +58,62 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     headerGroups,
     rows,
     prepareRow,
-  } = useTable({ columns, data }, useSortBy);
+    setGlobalFilter,
+    state: { globalFilter },
+  } = useTable({ columns, data }, useGlobalFilter, useSortBy);
 
   return (
     <React.Fragment>
-      <FormGroup row>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={checked.authors}
-              onChange={handleChange}
-              name="authors"
-              color="primary"
-            />
-          }
-          label="著者"
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={checked.format}
-              onChange={handleChange}
-              name="format"
-              color="primary"
-            />
-          }
-          label="形式"
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={checked.priority}
-              onChange={handleChange}
-              name="priority"
-              color="primary"
-            />
-          }
-          label="優先度"
-        />
-      </FormGroup>
+      <div>
+        <FormGroup row>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={checked.authors}
+                onChange={handleChange}
+                name="authors"
+                color="primary"
+              />
+            }
+            label="著者"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={checked.format}
+                onChange={handleChange}
+                name="format"
+                color="primary"
+              />
+            }
+            label="形式"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={checked.priority}
+                onChange={handleChange}
+                name="priority"
+                color="primary"
+              />
+            }
+            label="優先度"
+          />
+          <TextField
+            value={globalFilter || ''}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+            onChange={(e) => {
+              setGlobalFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
+            }}
+          />
+        </FormGroup>
+      </div>
       <TableContainer component={Paper}>
         <Table {...getTableProps()}>
           <TableHead>
@@ -120,7 +140,6 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
           <TableBody {...getTableBodyProps()}>
             {rows.map((row) => {
               prepareRow(row);
-
               return (
                 <TableRow
                   {...row.getRowProps()}
@@ -163,7 +182,7 @@ const BookAddForm: React.FC<{}> = () => {
       {({ values, errors }) => (
         <Form>
           <Field
-            component={TextField}
+            component={FormikTextField}
             name="title"
             label="タイトル"
             InputLabelProps={{ shrink: true }}
@@ -175,7 +194,10 @@ const BookAddForm: React.FC<{}> = () => {
               <div>
                 {values.authors.map((_author: string, index: number) => (
                   <div key={index}>
-                    <Field component={TextField} name={`authors.${index}`} />
+                    <Field
+                      component={FormikTextField}
+                      name={`authors.${index}`}
+                    />
                     <Button
                       variant="contained"
                       type="button"
