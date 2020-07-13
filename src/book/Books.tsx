@@ -31,17 +31,19 @@ export const Books: React.FC<{}> = () => {
   return (
     <React.Fragment>
       <div>user: {user?.displayName}</div>
-      <Switch>
-        <Route exact path={path}>
-          <BookIndex />
-        </Route>
-        <Route path={`${path}/import`}>
-          <ImportBooks />
-        </Route>
-        <Route path={`${path}/:id`}>
-          <BookDetail />
-        </Route>
-      </Switch>
+      <div>
+        <Switch>
+          <Route exact path={path}>
+            <BookIndex />
+          </Route>
+          <Route path={`${path}/import`}>
+            <ImportBooks />
+          </Route>
+          <Route path={`${path}/:id`}>
+            <BookDetail />
+          </Route>
+        </Switch>
+      </div>
       <Button variant="contained" onClick={handleSignOut}>
         Sign Out
       </Button>
