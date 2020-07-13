@@ -54,13 +54,10 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
   };
 
   const history = useHistory();
-  const handleRowClick = (
-    _event: React.MouseEvent<Element, MouseEvent> | undefined,
-    rowData: Book | undefined
+  const handleRowClick = (id: string) => (
+    _event: React.MouseEvent<Element, MouseEvent> | undefined
   ) => {
-    if (typeof rowData !== 'undefined') {
-      history.push(`/books/${rowData.id}`);
-    }
+    history.push(`/books/${id}`);
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -132,12 +129,15 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
               prepareRow(row);
 
               return (
-                <TableRow {...row.getRowProps()}>
+                <TableRow
+                  {...row.getRowProps()}
+                  onClick={handleRowClick(row.original.id)}
+                  style={{ cursor: 'pointer' }}
+                  hover
+                >
                   {row.cells.map((cell) => {
                     return (
-                      <TableCell
-                        {...cell.getCellProps()}
-                      >
+                      <TableCell {...cell.getCellProps()}>
                         {cell.render('Cell')}
                       </TableCell>
                     );
