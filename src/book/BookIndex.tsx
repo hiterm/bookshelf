@@ -23,13 +23,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Search from '@material-ui/icons/Search';
 
 const BookList: React.FC<{ list: Book[] }> = (props) => {
-  const [checked, setChecked] = React.useState({
-    title: true,
-    authors: true,
-    format: true,
-    priority: true,
-  });
-
   const data: Book[] = React.useMemo(() => props.list, [props.list]);
   const columns: Column<Book>[] = React.useMemo(
     () => [
@@ -48,15 +41,12 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     history.push(`/books/${id}`);
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setChecked({ ...checked, [event.target.name]: event.target.checked });
-  };
-
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     rows,
+    allColumns,
     prepareRow,
     setGlobalFilter,
     state: { globalFilter },
@@ -66,39 +56,15 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     <React.Fragment>
       <div>
         <FormGroup row>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={checked.authors}
-                onChange={handleChange}
-                name="authors"
-                color="primary"
-              />
-            }
-            label="著者"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={checked.format}
-                onChange={handleChange}
-                name="format"
-                color="primary"
-              />
-            }
-            label="形式"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={checked.priority}
-                onChange={handleChange}
-                name="priority"
-                color="primary"
-              />
-            }
-            label="優先度"
-          />
+          {allColumns.map((column) => (
+            <FormControlLabel
+              control={
+                <Checkbox {...column.getToggleHiddenProps()} color="primary" />
+              }
+              label={column.Header}
+              key={column.id}
+            />
+          ))}
           <TextField
             value={globalFilter || ''}
             InputProps={{
