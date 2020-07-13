@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -14,12 +15,12 @@
     "firebase": "^7.15.3",
     "formik": "^2.1.4",
     "formik-material-ui": "^2.0.1",
-    "material-table": "^1.64.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-firebaseui": "^4.1.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
+    "react-table": "^7.2.2",
     "styled-components": "^5.1.1",
     "typescript": "~3.7.2",
     "yup": "^0.29.1"
@@ -44,6 +45,7 @@
   },
   "devDependencies": {
     "@types/react-router-dom": "^5.1.5",
+    "@types/react-table": "^7.0.19",
     "@types/styled-components": "^5.1.1",
     "@types/yup": "^0.29.3",
     "eslint-config-prettier": "^6.11.0",
