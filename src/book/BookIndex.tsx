@@ -6,10 +6,10 @@ import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import MaterialTable from 'material-table';
 import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema, firebaseDocToBook } from './schema';
 import { useHistory } from 'react-router-dom';
+import { useTable, Column } from 'react-table';
 
 const BookList: React.FC<{ list: Book[] }> = (props) => {
   const [checked, setChecked] = React.useState({
@@ -19,12 +19,28 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     priority: true,
   });
 
-  const columns = [
-    { title: '書名', field: 'title' },
-    { title: '著者', field: 'authors', hidden: !checked.authors },
-    { title: '形式', field: 'format', hidden: !checked.format },
-    { title: '優先度', field: 'priority', hidden: !checked.priority },
-  ];
+  const data: Book[] = React.useMemo(() => props.list, [props.list]);
+  // const data = React.useMemo(
+  //   () =>
+  //     props.list.map((book) => ({
+  //       title: book.title,
+  //       authors: book.authors,
+  //       format: book.format,
+  //       priority: book.priority,
+  //     })),
+  //   [props.list]
+  // );
+
+  const columns: Column<Book>[] = React.useMemo(
+    () => [
+      { Header: '書名', accessor: 'title' },
+      { Header: '著者', accessor: 'authors' },
+      { Header: '形式', accessor: 'format' },
+      { Header: '優先度', accessor: 'priority' },
+    ],
+    []
+  );
+
   const options = {
     pageSize: 20,
     filtering: true,
@@ -43,6 +59,15 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked({ ...checked, [event.target.name]: event.target.checked });
   };
+
+  const tableInstance = useTable({ columns, data });
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+  } = tableInstance;
 
   return (
     <React.Fragment>
@@ -81,12 +106,57 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
           label="優先度"
         />
       </FormGroup>
-      <MaterialTable
-        columns={columns}
-        data={props.list}
-        onRowClick={handleRowClick}
-        options={options}
-      />
+      <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
+        <thead>
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <th
+                  {...column.getHeaderProps()}
+                  style={{
+                    borderBottom: 'solid 3px red',
+
+                    background: 'aliceblue',
+
+                    color: 'black',
+
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {column.render('Header')}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+
+        <tbody {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row);
+
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map((cell) => {
+                  return (
+                    <td
+                      {...cell.getCellProps()}
+                      style={{
+                        padding: '10px',
+
+                        border: 'solid 1px gray',
+
+                        background: 'papayawhip',
+                      }}
+                    >
+                      {cell.render('Cell')}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </React.Fragment>
   );
 };
