@@ -29,6 +29,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Search from '@material-ui/icons/Search';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
+import dayjs from 'dayjs';
 
 const BookList: React.FC<{ list: Book[] }> = (props) => {
   const data: Book[] = React.useMemo(() => props.list, [props.list]);
@@ -38,6 +39,18 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
       { Header: '著者', accessor: 'authors' },
       { Header: '形式', accessor: 'format' },
       { Header: '優先度', accessor: 'priority' },
+      {
+        Header: '追加日時',
+        accessor: (book: Book) =>
+          dayjs(book.createdAt).format('YYYY/MM/DD HH:mm:ss'),
+        id: 'createdAt',
+      },
+      {
+        Header: '更新日時',
+        accessor: (book: Book) =>
+          dayjs(book.updatedAt).format('YYYY/MM/DD HH:mm:ss'),
+        id: 'updatedAt',
+      },
     ],
     []
   );
@@ -47,6 +60,17 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     _event: React.MouseEvent<Element, MouseEvent> | undefined
   ) => {
     history.push(`/books/${id}`);
+  };
+
+  const getId = (column: Column<Book>): string => {
+    if (typeof column.id === 'string') {
+      return column.id;
+    } else if (typeof column.accessor === 'string') {
+      return column.accessor;
+    } else {
+      console.error(`${JSON.stringify(column)} has no id.`);
+      return '';
+    }
   };
 
   const {
@@ -64,7 +88,20 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     {
       columns,
       data,
-      initialState: { pageSize: 20, sortBy: [{ id: 'priority', desc: true }] },
+      initialState: {
+        pageSize: 20,
+        sortBy: [
+          {
+            id: 'priority',
+            desc: true,
+          },
+        ],
+        hiddenColumns: columns
+          .filter(
+            (column) => !['title', 'authors', 'priority'].includes(getId(column))
+          )
+          .map((column) => getId(column)),
+      },
     },
     useGlobalFilter,
     useSortBy,
