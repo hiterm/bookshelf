@@ -9,7 +9,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema, firebaseDocToBook } from './schema';
 import { useHistory } from 'react-router-dom';
-import { useTable, Column, useSortBy, useGlobalFilter } from 'react-table';
+import {
+  useTable,
+  Column,
+  useSortBy,
+  useGlobalFilter,
+  usePagination,
+} from 'react-table';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
@@ -21,6 +27,8 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Search from '@material-ui/icons/Search';
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
 
 const BookList: React.FC<{ list: Book[] }> = (props) => {
   const data: Book[] = React.useMemo(() => props.list, [props.list]);
@@ -45,12 +53,32 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
+    page,
+    gotoPage,
+    setPageSize,
     allColumns,
     prepareRow,
     setGlobalFilter,
-    state: { globalFilter },
-  } = useTable({ columns, data }, useGlobalFilter, useSortBy);
+    state: { pageIndex, pageSize, globalFilter },
+  } = useTable(
+    { columns, data, initialState: { pageSize: 20 } },
+    useGlobalFilter,
+    useSortBy,
+    usePagination
+  );
+
+  const handleChangePage = (
+    _event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    gotoPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setPageSize(Number(event.target.value));
+  };
 
   return (
     <React.Fragment>
@@ -104,7 +132,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
           </TableHead>
 
           <TableBody {...getTableBodyProps()}>
-            {rows.map((row) => {
+            {page.map((row) => {
               prepareRow(row);
               return (
                 <TableRow
@@ -124,6 +152,29 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
               );
             })}
           </TableBody>
+
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[
+                  10,
+                  20,
+                  50,
+                  { label: 'All', value: data.length },
+                ]}
+                colSpan={3}
+                count={data.length}
+                rowsPerPage={pageSize}
+                page={pageIndex}
+                SelectProps={{
+                  inputProps: { 'aria-label': 'rows per page' },
+                  native: true,
+                }}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+              />
+            </TableRow>
+          </TableFooter>
         </Table>
       </TableContainer>
     </React.Fragment>
