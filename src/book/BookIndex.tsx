@@ -9,7 +9,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema, firebaseDocToBook } from './schema';
 import { useHistory } from 'react-router-dom';
-import { useTable, Column } from 'react-table';
+import { useTable, Column, useSortBy } from 'react-table';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
@@ -17,6 +17,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import Paper from '@material-ui/core/Paper';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
 
 const BookList: React.FC<{ list: Book[] }> = (props) => {
   const [checked, setChecked] = React.useState({
@@ -27,17 +28,6 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
   });
 
   const data: Book[] = React.useMemo(() => props.list, [props.list]);
-  // const data = React.useMemo(
-  //   () =>
-  //     props.list.map((book) => ({
-  //       title: book.title,
-  //       authors: book.authors,
-  //       format: book.format,
-  //       priority: book.priority,
-  //     })),
-  //   [props.list]
-  // );
-
   const columns: Column<Book>[] = React.useMemo(
     () => [
       { Header: '書名', accessor: 'title' },
@@ -47,11 +37,6 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     ],
     []
   );
-
-  const options = {
-    pageSize: 20,
-    filtering: true,
-  };
 
   const history = useHistory();
   const handleRowClick = (id: string) => (
@@ -64,14 +49,13 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     setChecked({ ...checked, [event.target.name]: event.target.checked });
   };
 
-  const tableInstance = useTable({ columns, data });
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     rows,
     prepareRow,
-  } = tableInstance;
+  } = useTable({ columns, data }, useSortBy);
 
   return (
     <React.Fragment>
@@ -116,8 +100,17 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
             {headerGroups.map((headerGroup) => (
               <TableRow {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <TableCell {...column.getHeaderProps()}>
+                  <TableCell
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                  >
                     {column.render('Header')}
+                    {column.id !== 'selection' ? (
+                      <TableSortLabel
+                        active={column.isSorted}
+                        // react-table has a unsorted state which is not treated here
+                        direction={column.isSortedDesc ? 'desc' : 'asc'}
+                      />
+                    ) : null}
                   </TableCell>
                 ))}
               </TableRow>
