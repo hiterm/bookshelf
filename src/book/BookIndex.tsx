@@ -10,6 +10,13 @@ import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema, firebaseDocToBook } from './schema';
 import { useHistory } from 'react-router-dom';
 import { useTable, Column } from 'react-table';
+import TableContainer from '@material-ui/core/TableContainer';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import TableBody from '@material-ui/core/TableBody';
+import Paper from '@material-ui/core/Paper';
 
 const BookList: React.FC<{ list: Book[] }> = (props) => {
   const [checked, setChecked] = React.useState({
@@ -106,57 +113,41 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
           label="優先度"
         />
       </FormGroup>
-      <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th
-                  {...column.getHeaderProps()}
-                  style={{
-                    borderBottom: 'solid 3px red',
+      <TableContainer component={Paper}>
+        <Table {...getTableProps()}>
+          <TableHead>
+            {headerGroups.map((headerGroup) => (
+              <TableRow {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <TableCell {...column.getHeaderProps()}>
+                    {column.render('Header')}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableHead>
 
-                    background: 'aliceblue',
+          <TableBody {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row);
 
-                    color: 'black',
-
-                    fontWeight: 'bold',
-                  }}
-                >
-                  {column.render('Header')}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row);
-
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <td
-                      {...cell.getCellProps()}
-                      style={{
-                        padding: '10px',
-
-                        border: 'solid 1px gray',
-
-                        background: 'papayawhip',
-                      }}
-                    >
-                      {cell.render('Cell')}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+              return (
+                <TableRow {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <TableCell
+                        {...cell.getCellProps()}
+                      >
+                        {cell.render('Cell')}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </React.Fragment>
   );
 };
@@ -170,7 +161,6 @@ const BookAddForm: React.FC<{}> = () => {
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
   };
-
   return (
     <Formik
       initialValues={{ title: '', authors: [''] }}
@@ -223,11 +213,9 @@ const BookAddForm: React.FC<{}> = () => {
 
 const BookIndex: React.FC<{}> = () => {
   const [list, setList] = useState([] as Book[]);
-
   useEffect(() => {
     const unsubscribe = db.collection('books').onSnapshot((querySnapshot) => {
       const list = querySnapshot.docs.map(firebaseDocToBook);
-
       const compare = (a: Book, b: Book) => {
         return b.priority - a.priority;
       };
@@ -236,12 +224,10 @@ const BookIndex: React.FC<{}> = () => {
       // castedList.forEach((book) => console.log(JSON.stringify(book)));
       setList(list);
     });
-
     return () => {
       unsubscribe();
     };
   }, []);
-
   return (
     <React.Fragment>
       <h2>追加</h2>
