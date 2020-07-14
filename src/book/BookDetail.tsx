@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   useParams,
   useRouteMatch,
@@ -9,7 +9,7 @@ import {
 import { Formik, Field, Form } from 'formik';
 import Button from '@material-ui/core/Button';
 import { db } from '../Firebase';
-import { Book, firebaseDocToBook } from './schema';
+import { Book } from './schema';
 import { TextField } from 'formik-material-ui';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -40,25 +40,12 @@ const StyledPaper = styled(Paper)`
   display: inline-block;
 `;
 
-const BookDetailShow: React.FC<{}> = () => {
+const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
   const { url } = useRouteMatch();
-  const { id } = useParams();
-  const [book, setBook] = useState(null as Book | null);
 
-  useEffect(() => {
-    db.collection('books')
-      .doc(id)
-      .get()
-      .then((doc) => {
-        if (doc === undefined) {
-          setBook(null);
-        } else {
-          setBook(firebaseDocToBook(doc));
-        }
-      });
-  }, [id]);
+  const book = props.book;
 
-  if (book === null) {
+  if (book === undefined) {
     return <div>Loading or not found.</div>;
   }
 
@@ -99,24 +86,10 @@ const BookDetailShow: React.FC<{}> = () => {
   );
 };
 
-const BookDetailEdit: React.FC<{}> = () => {
-  const { id } = useParams();
-  const [book, setBook] = useState(null as Book | null);
+const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
+  const book = props.book;
 
-  useEffect(() => {
-    db.collection('books')
-      .doc(id)
-      .get()
-      .then((doc) => {
-        if (doc === undefined) {
-          setBook(null);
-        } else {
-          setBook(firebaseDocToBook(doc));
-        }
-      });
-  });
-
-  if (book === null) {
+  if (book === undefined) {
     return <div>Loading or not found.</div>;
   }
 
@@ -159,17 +132,20 @@ const BookDetailEdit: React.FC<{}> = () => {
   );
 };
 
-const BookDetail: React.FC<{}> = () => {
+const BookDetail: React.FC<{ books: Book[] }> = (props) => {
   const { path } = useRouteMatch();
+  const { id } = useParams();
+
+  const book: Book | undefined = props.books.find((book) => (book.id = id));
 
   return (
     <React.Fragment>
       <Switch>
         <Route exact path={path}>
-          <BookDetailShow />
+          <BookDetailShow book={book} />
         </Route>
         <Route path={`${path}/edit`}>
-          <BookDetailEdit />
+          <BookDetailEdit book={book} />
         </Route>
       </Switch>
     </React.Fragment>

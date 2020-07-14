@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Formik, Field, FieldArray, Form } from 'formik';
 import { TextField as FormikTextField } from 'formik-material-ui';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -7,7 +7,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { firebase, db } from '../Firebase';
-import { Book, bookFormSchema, firebaseDocToBook } from './schema';
+import { Book, bookFormSchema } from './schema';
 import { useHistory } from 'react-router-dom';
 import {
   useTable,
@@ -98,7 +98,8 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
         ],
         hiddenColumns: columns
           .filter(
-            (column) => !['title', 'authors', 'priority'].includes(getId(column))
+            (column) =>
+              !['title', 'authors', 'priority'].includes(getId(column))
           )
           .map((column) => getId(column)),
       },
@@ -284,23 +285,13 @@ const BookAddForm: React.FC<{}> = () => {
   );
 };
 
-const BookIndex: React.FC<{}> = () => {
-  const [list, setList] = useState([] as Book[]);
-  useEffect(() => {
-    const unsubscribe = db.collection('books').onSnapshot((querySnapshot) => {
-      const list = querySnapshot.docs.map(firebaseDocToBook);
-      setList(list);
-    });
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+const BookIndex: React.FC<{ books: Book[] }> = (props) => {
   return (
     <React.Fragment>
       <h2>追加</h2>
       <BookAddForm />
       <h2>一覧</h2>
-      <BookList list={list} />
+      <BookList list={props.books} />
     </React.Fragment>
   );
 };
