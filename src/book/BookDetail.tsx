@@ -49,6 +49,18 @@ const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
     return <div>Loading or not found.</div>;
   }
 
+  const handleDelete = () => {
+    db.collection('books')
+      .doc(book.id)
+      .delete()
+      .then(() => {
+        console.log('Book successfully deleted!');
+      })
+      .catch((error) => {
+        console.error('Error removing book: ', error);
+      });
+  };
+
   return (
     <React.Fragment>
       <div>
@@ -81,6 +93,9 @@ const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
         to={`${url}/edit`}
       >
         変更
+      </Button>
+      <Button variant="contained" color="secondary" onClick={handleDelete}>
+        削除
       </Button>
     </React.Fragment>
   );
