@@ -136,7 +136,7 @@ const BookDetail: React.FC<{ books: Book[] }> = (props) => {
   const { path } = useRouteMatch();
   const { id } = useParams();
 
-  const book: Book | undefined = props.books.find((book) => (book.id = id));
+  const book: Book | undefined = props.books.find((book) => book.id === id);
 
   return (
     <React.Fragment>
