@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, Route, Switch, useRouteMatch } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-import { firebase } from '../Firebase';
+import { firebase, db } from '../Firebase';
 import { BookIndex } from './BookIndex';
 import { BookDetail } from './BookDetail';
 import { ImportBooks } from './ImportBooks';
+import { Book, firebaseDocToBook } from './schema';
 
 export const Books: React.FC<{}> = () => {
   const [user, setUser] = useState(null as firebase.User | null);
@@ -16,6 +17,17 @@ export const Books: React.FC<{}> = () => {
     });
     return () => {
       unlisten();
+    };
+  }, []);
+
+  const [books, setBooks] = useState([] as Book[]);
+  useEffect(() => {
+    const unsubscribe = db.collection('books').onSnapshot((querySnapshot) => {
+      const list = querySnapshot.docs.map(firebaseDocToBook);
+      setBooks(list);
+    });
+    return () => {
+      unsubscribe();
     };
   }, []);
 
@@ -34,13 +46,13 @@ export const Books: React.FC<{}> = () => {
       <div>
         <Switch>
           <Route exact path={path}>
-            <BookIndex />
+            <BookIndex books={books} />
           </Route>
           <Route path={`${path}/import`}>
             <ImportBooks />
           </Route>
           <Route path={`${path}/:id`}>
-            <BookDetail />
+            <BookDetail books={books} />
           </Route>
         </Switch>
       </div>
