@@ -1,3 +1,4 @@
+/** @jsx jsx */
 import React from 'react';
 import {
   useParams,
@@ -19,14 +20,24 @@ import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import { createMuiTheme } from '@material-ui/core/styles';
 import Check from '@material-ui/icons/Check';
-import styled from 'styled-components';
+import { css, jsx } from '@emotion/core';
 
 const theme = createMuiTheme();
 
-const ShowBoolean = styled(Check)<{ flag: boolean }>`
-  color: ${(props) =>
-    props.flag ? theme.palette.success.main : theme.palette.action.disabled};
-`;
+// const ShowBoolean = styled(Check)<{ flag: boolean }>`
+//   color: ${(props) =>
+//     props.flag ? theme.palette.success.main : theme.palette.action.disabled};
+// `;
+
+const ShowBoolean: React.FC<{ flag: boolean }> = (props) => (
+  <Check
+    css={css`
+    color: ${
+      props.flag ? theme.palette.success.main : theme.palette.action.disabled
+    };}
+    `}
+  />
+);
 
 const BookDetailShowItem: React.FC<{
   field: string;
@@ -45,10 +56,6 @@ const BookDetailShowItem: React.FC<{
     />
   );
 };
-
-const StyledPaper = styled(Paper)`
-  display: inline-block;
-`;
 
 const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
   const { url } = useRouteMatch();
@@ -74,7 +81,7 @@ const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
   return (
     <React.Fragment>
       <div>
-        <StyledPaper>
+        <Paper css={{ display: 'inline-block' }}>
           <List>
             <ListItem>
               <BookDetailShowItem field="書名" value={book.title} />
@@ -112,7 +119,7 @@ const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
               />
             </ListItem>
           </List>
-        </StyledPaper>
+        </Paper>
       </div>
       <Button
         variant="contained"
