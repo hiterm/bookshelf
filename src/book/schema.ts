@@ -14,7 +14,7 @@ const bookSchema = bookFormSchema.shape({
   priority: yup.number().required().default(50),
   format: yup.string().oneOf(['-', 'eBook', 'Printed']).required().default('-'),
   store: yup.string().oneOf(['-', 'Kindle']).required().default('-'),
-  owned: yup.boolean().defined().nullable(),
+  owned: yup.boolean().defined().default(false),
   createdAt: yup
     .date()
     .required()

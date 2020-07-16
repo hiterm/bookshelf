@@ -17,11 +17,21 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
+import { createMuiTheme } from '@material-ui/core/styles';
+import Check from '@material-ui/icons/Check';
 import styled from 'styled-components';
 
-const BookDetailShowItem: React.FC<{ field: string; value: string }> = (
-  props
-) => {
+const theme = createMuiTheme();
+
+const ShowBoolean = styled(Check)<{ flag: boolean }>`
+  color: ${(props) =>
+    props.flag ? theme.palette.success.main : theme.palette.action.disabled};
+`;
+
+const BookDetailShowItem: React.FC<{
+  field: string;
+  value: React.ReactNode;
+}> = (props) => {
   return (
     <ListItemText
       primary={
@@ -81,6 +91,18 @@ const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
               <BookDetailShowItem
                 field="優先度"
                 value={book.priority.toString()}
+              />
+            </ListItem>
+            <ListItem>
+              <BookDetailShowItem
+                field="既読"
+                value={<ShowBoolean flag={book.read} />}
+              />
+            </ListItem>
+            <ListItem>
+              <BookDetailShowItem
+                field="所有"
+                value={<ShowBoolean flag={book.owned} />}
               />
             </ListItem>
           </List>
