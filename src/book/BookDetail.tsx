@@ -88,17 +88,23 @@ const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
             </ListItem>
             <Divider light variant="middle" />
             <ListItem>
+              <BookDetailShowItem field="形式" value={book.format} />
+            </ListItem>
+            <Divider light variant="middle" />
+            <ListItem>
               <BookDetailShowItem
                 field="優先度"
                 value={book.priority.toString()}
               />
             </ListItem>
+            <Divider light variant="middle" />
             <ListItem>
               <BookDetailShowItem
                 field="既読"
                 value={<ShowBoolean flag={book.read} />}
               />
             </ListItem>
+            <Divider light variant="middle" />
             <ListItem>
               <BookDetailShowItem
                 field="所有"
