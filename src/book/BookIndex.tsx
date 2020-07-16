@@ -27,9 +27,18 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Search from '@material-ui/icons/Search';
+import Check from '@material-ui/icons/Check';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import dayjs from 'dayjs';
+import { createMuiTheme } from '@material-ui/core/styles';
+import styled from 'styled-components';
+
+const theme = createMuiTheme();
+
+const GreenCheck = styled(Check)`
+  color: ${theme.palette.success.main};
+`;
 
 const BookList: React.FC<{ list: Book[] }> = (props) => {
   const data: Book[] = React.useMemo(() => props.list, [props.list]);
@@ -50,6 +59,16 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
         accessor: (book: Book) =>
           dayjs(book.updatedAt).format('YYYY/MM/DD HH:mm:ss'),
         id: 'updatedAt',
+      },
+      {
+        Header: '既読',
+        accessor: 'read',
+        Cell: ({ value }) => (value ? <GreenCheck /> : ''),
+      },
+      {
+        Header: '所有',
+        accessor: 'owned',
+        Cell: ({ value }) => (value ? <GreenCheck /> : ''),
       },
     ],
     []

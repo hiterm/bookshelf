@@ -10,7 +10,7 @@ import { Formik, Field, Form } from 'formik';
 import Button from '@material-ui/core/Button';
 import { db } from '../Firebase';
 import { Book } from './schema';
-import { TextField } from 'formik-material-ui';
+import { TextField, CheckboxWithLabel } from 'formik-material-ui';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -117,6 +117,8 @@ const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
           let docRef = db.collection('books').doc(book.id);
           docRef.update({
             priority: values.priority,
+            read: values.read,
+            owned: values.owned,
           });
         }}
       >
@@ -136,6 +138,20 @@ const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
               name="priority"
               type="number"
               label="優先度"
+            />
+          </div>
+          <div>
+            <Field
+              component={CheckboxWithLabel}
+              name="read"
+              Label={{ label: '既読' }}
+            />
+          </div>
+          <div>
+            <Field
+              component={CheckboxWithLabel}
+              name="owned"
+              Label={{ label: '所有' }}
             />
           </div>
           <Button variant="contained" color="primary" type="submit">
