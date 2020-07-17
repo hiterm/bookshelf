@@ -21,6 +21,7 @@ import Divider from '@material-ui/core/Divider';
 import { createMuiTheme } from '@material-ui/core/styles';
 import Check from '@material-ui/icons/Check';
 import { css, jsx } from '@emotion/core';
+import dayjs from 'dayjs';
 
 const theme = createMuiTheme();
 
@@ -99,6 +100,10 @@ const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
             </ListItem>
             <Divider light variant="middle" />
             <ListItem>
+              <BookDetailShowItem field="ストア" value={book.store} />
+            </ListItem>
+            <Divider light variant="middle" />
+            <ListItem>
               <BookDetailShowItem
                 field="優先度"
                 value={book.priority.toString()}
@@ -116,6 +121,23 @@ const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
               <BookDetailShowItem
                 field="所有"
                 value={<ShowBoolean flag={book.owned} />}
+              />
+            </ListItem>
+            <Divider light variant="middle" />
+            <ListItem>
+              <BookDetailShowItem field="ISBN" value={book.isbn} />
+            </ListItem>
+            <ListItem>
+              <BookDetailShowItem
+                field="作成日時"
+                value={dayjs(book.createdAt).format('YYYY/MM/DD HH:mm:ss')}
+              />
+            </ListItem>
+            <Divider light variant="middle" />
+            <ListItem>
+              <BookDetailShowItem
+                field="更新日時"
+                value={dayjs(book.updatedAt).format('YYYY/MM/DD HH:mm:ss')}
               />
             </ListItem>
           </List>
