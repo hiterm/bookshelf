@@ -1,3 +1,4 @@
+/** @jsx jsx */
 import React from 'react';
 import {
   useParams,
@@ -6,11 +7,11 @@ import {
   Route,
   Link,
 } from 'react-router-dom';
-import { Formik, Field, Form } from 'formik';
+import { Formik, Field, Form, FieldArray } from 'formik';
 import Button from '@material-ui/core/Button';
 import { db } from '../Firebase';
-import { Book } from './schema';
-import { TextField, CheckboxWithLabel } from 'formik-material-ui';
+import { Book, bookSchema } from './schema';
+import { TextField, CheckboxWithLabel, Select } from 'formik-material-ui';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -19,14 +20,29 @@ import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import { createMuiTheme } from '@material-ui/core/styles';
 import Check from '@material-ui/icons/Check';
-import styled from 'styled-components';
+import { css, jsx } from '@emotion/core';
+import dayjs from 'dayjs';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import firebase from 'firebase';
 
 const theme = createMuiTheme();
 
-const ShowBoolean = styled(Check)<{ flag: boolean }>`
-  color: ${(props) =>
-    props.flag ? theme.palette.success.main : theme.palette.action.disabled};
-`;
+// const ShowBoolean = styled(Check)<{ flag: boolean }>`
+//   color: ${(props) =>
+//     props.flag ? theme.palette.success.main : theme.palette.action.disabled};
+// `;
+
+const ShowBoolean: React.FC<{ flag: boolean }> = (props) => (
+  <Check
+    css={css`
+    color: ${
+      props.flag ? theme.palette.success.main : theme.palette.action.disabled
+    };}
+    `}
+  />
+);
 
 const BookDetailShowItem: React.FC<{
   field: string;
@@ -45,10 +61,6 @@ const BookDetailShowItem: React.FC<{
     />
   );
 };
-
-const StyledPaper = styled(Paper)`
-  display: inline-block;
-`;
 
 const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
   const { url } = useRouteMatch();
@@ -74,7 +86,7 @@ const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
   return (
     <React.Fragment>
       <div>
-        <StyledPaper>
+        <Paper css={{ display: 'inline-block' }}>
           <List>
             <ListItem>
               <BookDetailShowItem field="書名" value={book.title} />
@@ -88,25 +100,52 @@ const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
             </ListItem>
             <Divider light variant="middle" />
             <ListItem>
+              <BookDetailShowItem field="形式" value={book.format} />
+            </ListItem>
+            <Divider light variant="middle" />
+            <ListItem>
+              <BookDetailShowItem field="ストア" value={book.store} />
+            </ListItem>
+            <Divider light variant="middle" />
+            <ListItem>
               <BookDetailShowItem
                 field="優先度"
                 value={book.priority.toString()}
               />
             </ListItem>
+            <Divider light variant="middle" />
             <ListItem>
               <BookDetailShowItem
                 field="既読"
                 value={<ShowBoolean flag={book.read} />}
               />
             </ListItem>
+            <Divider light variant="middle" />
             <ListItem>
               <BookDetailShowItem
                 field="所有"
                 value={<ShowBoolean flag={book.owned} />}
               />
             </ListItem>
+            <Divider light variant="middle" />
+            <ListItem>
+              <BookDetailShowItem field="ISBN" value={book.isbn} />
+            </ListItem>
+            <ListItem>
+              <BookDetailShowItem
+                field="作成日時"
+                value={dayjs(book.createdAt).format('YYYY/MM/DD HH:mm:ss')}
+              />
+            </ListItem>
+            <Divider light variant="middle" />
+            <ListItem>
+              <BookDetailShowItem
+                field="更新日時"
+                value={dayjs(book.updatedAt).format('YYYY/MM/DD HH:mm:ss')}
+              />
+            </ListItem>
           </List>
-        </StyledPaper>
+        </Paper>
       </div>
       <Button
         variant="contained"
@@ -134,52 +173,110 @@ const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
     <React.Fragment>
       <Formik
         initialValues={book}
-        /* validationSchema={bookSchema} */
+        validationSchema={bookSchema}
         onSubmit={(values) => {
           let docRef = db.collection('books').doc(book.id);
-          docRef.update({
-            priority: values.priority,
-            read: values.read,
-            owned: values.owned,
+          return docRef.update({
+            ...values,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           });
         }}
       >
-        <Form>
-          <div>
-            <Field
-              component={TextField}
-              name="title"
-              type="string"
-              label="書名"
+        {({ values }) => (
+          <Form>
+            <div>
+              <Field
+                component={TextField}
+                name="title"
+                type="string"
+                label="書名"
+              />
+            </div>
+            <InputLabel shrink={true}>著者</InputLabel>
+            <FieldArray
+              name="authors"
+              render={(arrayHelpers) => (
+                <div>
+                  {values.authors.map((_author: string, index: number) => (
+                    <div key={index}>
+                      <Field component={TextField} name={`authors.${index}`} />
+                      <Button
+                        variant="contained"
+                        type="button"
+                        onClick={() => arrayHelpers.remove(index)}
+                      >
+                        -
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    variant="contained"
+                    type="button"
+                    onClick={() => arrayHelpers.push('')}
+                  >
+                    著者追加
+                  </Button>
+                </div>
+              )}
             />
-          </div>
-          <div>著者：{book.authors.join(', ')}</div>
-          <div>
-            <Field
-              component={TextField}
-              name="priority"
-              type="number"
-              label="優先度"
-            />
-          </div>
-          <div>
-            <Field
-              component={CheckboxWithLabel}
-              name="read"
-              Label={{ label: '既読' }}
-            />
-          </div>
-          <div>
-            <Field
-              component={CheckboxWithLabel}
-              name="owned"
-              Label={{ label: '所有' }}
-            />
-          </div>
-          <Button variant="contained" color="primary" type="submit">
-            更新
-          </Button>
-        </Form>
+            <div>
+              <FormControl>
+                <InputLabel>形式</InputLabel>
+                <Field component={Select} name="format">
+                  <MenuItem value={''}>-</MenuItem>
+                  <MenuItem value={'eBook'}>eBook</MenuItem>
+                  <MenuItem value={'Printed'}>Printed</MenuItem>
+                </Field>
+              </FormControl>
+            </div>
+            <div>
+              <FormControl>
+                <InputLabel>ストア</InputLabel>
+                <Field component={Select} name="store">
+                  <MenuItem value={''}>-</MenuItem>
+                  <MenuItem value={'Kindle'}>Kindle</MenuItem>
+                </Field>
+              </FormControl>
+            </div>
+            <div>
+              <Field
+                component={TextField}
+                name="priority"
+                type="number"
+                label="優先度"
+              />
+            </div>
+            <div>
+              <Field
+                component={TextField}
+                name="isbn"
+                type="string"
+                label="ISBN"
+              />
+            </div>
+            <div>
+              <Field
+                component={CheckboxWithLabel}
+                color="primary"
+                name="read"
+                type="checkbox"
+                Label={{ label: '既読' }}
+              />
+            </div>
+            <div>
+              <Field
+                component={CheckboxWithLabel}
+                color="primary"
+                name="owned"
+                type="checkbox"
+                Label={{ label: '所有' }}
+              />
+            </div>
+            <Button variant="contained" color="primary" type="submit">
+              更新
+            </Button>
+          </Form>
+        )}
       </Formik>
     </React.Fragment>
   );

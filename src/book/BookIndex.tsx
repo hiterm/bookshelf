@@ -1,3 +1,4 @@
+/** @jsx jsx */
 import React from 'react';
 import { Formik, Field, FieldArray, Form } from 'formik';
 import { TextField as FormikTextField } from 'formik-material-ui';
@@ -32,13 +33,17 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import dayjs from 'dayjs';
 import { createMuiTheme } from '@material-ui/core/styles';
-import styled from 'styled-components';
+// import styled from 'styled-components';
+import { jsx } from '@emotion/core';
 
 const theme = createMuiTheme();
 
-const GreenCheck = styled(Check)`
-  color: ${theme.palette.success.main};
-`;
+// const GreenCheck = styled(Check)`
+//   color: ${theme.palette.success.main};
+// `;
+const GreenCheck: React.FC<{}> = () => (
+  <Check css={{ color: theme.palette.success.main }} />
+);
 
 const BookList: React.FC<{ list: Book[] }> = (props) => {
   const data: Book[] = React.useMemo(() => props.list, [props.list]);

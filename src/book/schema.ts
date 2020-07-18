@@ -9,11 +9,11 @@ const bookFormSchema = yup
 
 const bookSchema = bookFormSchema.shape({
   id: yup.string().required(),
-  isbn: yup.string().required().default('-'),
+  isbn: yup.string().matches(/^(\d-?){12}\d$/, { excludeEmptyString: true }),
   read: yup.boolean().required().default(false),
-  priority: yup.number().required().default(50),
-  format: yup.string().oneOf(['-', 'eBook', 'Printed']).required().default('-'),
-  store: yup.string().oneOf(['-', 'Kindle']).required().default('-'),
+  priority: yup.number().integer().min(0).max(100).required().default(50),
+  format: yup.string().oneOf(['eBook', 'Printed']).nullable(),
+  store: yup.string().oneOf(['Kindle']).nullable(),
   owned: yup.boolean().defined().default(false),
   createdAt: yup
     .date()
