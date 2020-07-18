@@ -25,6 +25,7 @@ import dayjs from 'dayjs';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
+import firebase from 'firebase';
 
 const theme = createMuiTheme();
 
@@ -175,7 +176,10 @@ const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
         validationSchema={bookSchema}
         onSubmit={(values) => {
           let docRef = db.collection('books').doc(book.id);
-          return docRef.update(values);
+          return docRef.update({
+            ...values,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
         }}
       >
         {({ values }) => (
