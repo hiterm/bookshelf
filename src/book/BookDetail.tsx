@@ -11,7 +11,7 @@ import { Formik, Field, Form } from 'formik';
 import Button from '@material-ui/core/Button';
 import { db } from '../Firebase';
 import { Book } from './schema';
-import { TextField, CheckboxWithLabel } from 'formik-material-ui';
+import { TextField, CheckboxWithLabel, Select } from 'formik-material-ui';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -22,6 +22,9 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import Check from '@material-ui/icons/Check';
 import { css, jsx } from '@emotion/core';
 import dayjs from 'dayjs';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const theme = createMuiTheme();
 
@@ -170,7 +173,7 @@ const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
       <Formik
         initialValues={book}
         /* validationSchema={bookSchema} */
-        onSubmit={(values, { setSubmitting }) => {
+        onSubmit={(values) => {
           let docRef = db.collection('books').doc(book.id);
           return docRef.update({
             priority: values.priority,
@@ -190,11 +193,38 @@ const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
           </div>
           <div>著者：{book.authors.join(', ')}</div>
           <div>
+            <FormControl>
+              <InputLabel>形式</InputLabel>
+              <Field component={Select} name="format">
+                <MenuItem value={'-'}>-</MenuItem>
+                <MenuItem value={'eBook'}>Kindle</MenuItem>
+                <MenuItem value={'Printed'}>Printed</MenuItem>
+              </Field>
+            </FormControl>
+          </div>
+          <div>
+            <FormControl>
+              <InputLabel>ストア</InputLabel>
+              <Field component={Select} name="format">
+                <MenuItem value={'-'}>-</MenuItem>
+                <MenuItem value={'Kindle'}>Kindle</MenuItem>
+              </Field>
+            </FormControl>
+          </div>
+          <div>
             <Field
               component={TextField}
               name="priority"
               type="number"
               label="優先度"
+            />
+          </div>
+          <div>
+            <Field
+              component={TextField}
+              name="isbn"
+              type="string"
+              label="ISBN"
             />
           </div>
           <div>
