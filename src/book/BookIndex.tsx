@@ -33,14 +33,11 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import dayjs from 'dayjs';
 import { createMuiTheme } from '@material-ui/core/styles';
-// import styled from 'styled-components';
 import { jsx } from '@emotion/core';
+import { useSnackbar } from 'notistack';
 
 const theme = createMuiTheme();
 
-// const GreenCheck = styled(Check)`
-//   color: ${theme.palette.success.main};
-// `;
 const GreenCheck: React.FC<{}> = () => (
   <Check css={{ color: theme.palette.success.main }} />
 );
@@ -248,12 +245,18 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
 };
 
 const BookAddForm: React.FC<{}> = () => {
-  const handleSubmit = (values: any) => {
-    return db.collection('books').add({
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleSubmit = async (values: any) => {
+    await db.collection('books').add({
       title: values.title,
       authors: values.authors,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    const message = `${values.title}を追加しました`;
+    enqueueSnackbar(message, {
+      variant: 'success',
     });
   };
   return (
@@ -262,7 +265,7 @@ const BookAddForm: React.FC<{}> = () => {
       validationSchema={bookFormSchema}
       onSubmit={handleSubmit}
     >
-      {({ values, errors }) => (
+      {({ values }) => (
         <Form>
           <Field
             component={FormikTextField}
