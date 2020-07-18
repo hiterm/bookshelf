@@ -45,7 +45,7 @@ const ShowBoolean: React.FC<{ flag: boolean }> = (props) => (
     css={css`
     color: ${
       props.flag ? theme.palette.success.main : theme.palette.action.disabled
-      };}
+    };}
     `}
   />
 );
