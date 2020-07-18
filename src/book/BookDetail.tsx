@@ -7,7 +7,7 @@ import {
   Route,
   Link,
 } from 'react-router-dom';
-import { Formik, Field, Form } from 'formik';
+import { Formik, Field, Form, FieldArray } from 'formik';
 import Button from '@material-ui/core/Button';
 import { db } from '../Firebase';
 import { Book } from './schema';
@@ -175,80 +175,104 @@ const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
         /* validationSchema={bookSchema} */
         onSubmit={(values) => {
           let docRef = db.collection('books').doc(book.id);
-          return docRef.update({
-            priority: values.priority,
-            read: values.read,
-            owned: values.owned,
-          });
+          return docRef.update(values);
         }}
       >
-        <Form>
-          <div>
-            <Field
-              component={TextField}
-              name="title"
-              type="string"
-              label="書名"
+        {({ values }) => (
+          <Form>
+            <div>
+              <Field
+                component={TextField}
+                name="title"
+                type="string"
+                label="書名"
+              />
+            </div>
+            <InputLabel shrink={true}>著者</InputLabel>
+            <FieldArray
+              name="authors"
+              render={(arrayHelpers) => (
+                <div>
+                  {values.authors.map((_author: string, index: number) => (
+                    <div key={index}>
+                      <Field component={TextField} name={`authors.${index}`} />
+                      <Button
+                        variant="contained"
+                        type="button"
+                        onClick={() => arrayHelpers.remove(index)}
+                      >
+                        -
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    variant="contained"
+                    type="button"
+                    onClick={() => arrayHelpers.push('')}
+                  >
+                    著者追加
+                  </Button>
+                </div>
+              )}
             />
-          </div>
-          <div>著者：{book.authors.join(', ')}</div>
-          <div>
-            <FormControl>
-              <InputLabel>形式</InputLabel>
-              <Field component={Select} name="format">
-                <MenuItem value={'-'}>-</MenuItem>
-                <MenuItem value={'eBook'}>Kindle</MenuItem>
-                <MenuItem value={'Printed'}>Printed</MenuItem>
-              </Field>
-            </FormControl>
-          </div>
-          <div>
-            <FormControl>
-              <InputLabel>ストア</InputLabel>
-              <Field component={Select} name="format">
-                <MenuItem value={'-'}>-</MenuItem>
-                <MenuItem value={'Kindle'}>Kindle</MenuItem>
-              </Field>
-            </FormControl>
-          </div>
-          <div>
-            <Field
-              component={TextField}
-              name="priority"
-              type="number"
-              label="優先度"
-            />
-          </div>
-          <div>
-            <Field
-              component={TextField}
-              name="isbn"
-              type="string"
-              label="ISBN"
-            />
-          </div>
-          <div>
-            <Field
-              component={CheckboxWithLabel}
-              color="primary"
-              name="read"
-              type="checkbox"
-              Label={{ label: '既読' }}
-            />
-          </div>
-          <div>
-            <Field
-              component={CheckboxWithLabel}
-              color="primary"
-              name="owned"
-              type="checkbox"
-              Label={{ label: '所有' }}
-            />
-          </div>
-          <Button variant="contained" color="primary" type="submit">
-            更新
-          </Button>
-        </Form>
+            <div>
+              <FormControl>
+                <InputLabel>形式</InputLabel>
+                <Field component={Select} name="format">
+                  <MenuItem value={'-'}>-</MenuItem>
+                  <MenuItem value={'eBook'}>Kindle</MenuItem>
+                  <MenuItem value={'Printed'}>Printed</MenuItem>
+                </Field>
+              </FormControl>
+            </div>
+            <div>
+              <FormControl>
+                <InputLabel>ストア</InputLabel>
+                <Field component={Select} name="format">
+                  <MenuItem value={'-'}>-</MenuItem>
+                  <MenuItem value={'Kindle'}>Kindle</MenuItem>
+                </Field>
+              </FormControl>
+            </div>
+            <div>
+              <Field
+                component={TextField}
+                name="priority"
+                type="number"
+                label="優先度"
+              />
+            </div>
+            <div>
+              <Field
+                component={TextField}
+                name="isbn"
+                type="string"
+                label="ISBN"
+              />
+            </div>
+            <div>
+              <Field
+                component={CheckboxWithLabel}
+                color="primary"
+                name="read"
+                type="checkbox"
+                Label={{ label: '既読' }}
+              />
+            </div>
+            <div>
+              <Field
+                component={CheckboxWithLabel}
+                color="primary"
+                name="owned"
+                type="checkbox"
+                Label={{ label: '所有' }}
+              />
+            </div>
+            <Button variant="contained" color="primary" type="submit">
+              更新
+            </Button>
+          </Form>
+        )}
       </Formik>
     </React.Fragment>
   );
