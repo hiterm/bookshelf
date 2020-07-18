@@ -10,7 +10,7 @@ import {
 import { Formik, Field, Form, FieldArray } from 'formik';
 import Button from '@material-ui/core/Button';
 import { db } from '../Firebase';
-import { Book } from './schema';
+import { Book, bookSchema } from './schema';
 import { TextField, CheckboxWithLabel, Select } from 'formik-material-ui';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -172,7 +172,7 @@ const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
     <React.Fragment>
       <Formik
         initialValues={book}
-        /* validationSchema={bookSchema} */
+        validationSchema={bookSchema}
         onSubmit={(values) => {
           let docRef = db.collection('books').doc(book.id);
           return docRef.update(values);
@@ -219,8 +219,8 @@ const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
               <FormControl>
                 <InputLabel>形式</InputLabel>
                 <Field component={Select} name="format">
-                  <MenuItem value={'-'}>-</MenuItem>
-                  <MenuItem value={'eBook'}>Kindle</MenuItem>
+                  <MenuItem value={''}>-</MenuItem>
+                  <MenuItem value={'eBook'}>eBook</MenuItem>
                   <MenuItem value={'Printed'}>Printed</MenuItem>
                 </Field>
               </FormControl>
@@ -228,8 +228,8 @@ const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
             <div>
               <FormControl>
                 <InputLabel>ストア</InputLabel>
-                <Field component={Select} name="format">
-                  <MenuItem value={'-'}>-</MenuItem>
+                <Field component={Select} name="store">
+                  <MenuItem value={''}>-</MenuItem>
                   <MenuItem value={'Kindle'}>Kindle</MenuItem>
                 </Field>
               </FormControl>
