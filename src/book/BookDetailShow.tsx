@@ -14,6 +14,11 @@ import { css, jsx } from '@emotion/core';
 import { db } from '../Firebase';
 import { Book } from './schema';
 import dayjs from 'dayjs';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContentText from '@material-ui/core/DialogContentText';
 
 const theme = createMuiTheme();
 
@@ -40,19 +45,21 @@ const ShowBoolean: React.FC<{ flag: boolean }> = (props) => (
     css={css`
     color: ${
       props.flag ? theme.palette.success.main : theme.palette.action.disabled
-    };}
+      };}
     `}
   />
 );
 
-export const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
-  const { url } = useRouteMatch();
+const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
+  const [open, setOpen] = React.useState(false);
 
-  const book = props.book;
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
 
-  if (book === undefined) {
-    return <div>Loading or not found.</div>;
-  }
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleDelete = () => {
     db.collection('books')
@@ -65,6 +72,45 @@ export const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
         console.error('Error removing book: ', error);
       });
   };
+
+  return (
+    <div>
+      <Button variant="contained" color="secondary" onClick={handleClickOpen}>
+        削除
+      </Button>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">削除確認</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {book.title}を削除しますか？
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            キャンセル
+          </Button>
+          <Button onClick={handleDelete} color="primary" autoFocus>
+            削除する
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+};
+
+export const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
+  const { url } = useRouteMatch();
+
+  const book = props.book;
+
+  if (book === undefined) {
+    return <div>Loading or not found.</div>;
+  }
 
   return (
     <React.Fragment>
@@ -138,9 +184,7 @@ export const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
       >
         変更
       </Button>
-      <Button variant="contained" color="secondary" onClick={handleDelete}>
-        削除
-      </Button>
+      <DeleteButton book={book} />
     </React.Fragment>
   );
 };
