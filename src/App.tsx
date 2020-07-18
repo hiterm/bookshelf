@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { SnackbarProvider } from 'notistack';
 
 const App: React.FC<{}> = () => {
   return (
@@ -16,17 +17,19 @@ const App: React.FC<{}> = () => {
       <CssBaseline />
       <h1>Bookshelf</h1>
       <Router>
-        <Switch>
-          <Route exact path="/">
-            <Redirect to="/books" />
-          </Route>
-          <Route path="/books">
-            <Books />
-          </Route>
-          <Route path="/signin">
-            <SignInScreen />
-          </Route>
-        </Switch>
+        <SnackbarProvider>
+          <Switch>
+            <Route exact path="/">
+              <Redirect to="/books" />
+            </Route>
+            <Route path="/books">
+              <Books />
+            </Route>
+            <Route path="/signin">
+              <SignInScreen />
+            </Route>
+          </Switch>
+        </SnackbarProvider>
       </Router>
     </Container>
   );

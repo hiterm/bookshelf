@@ -9,7 +9,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema } from './schema';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import {
   useTable,
   Column,
@@ -29,18 +29,16 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Search from '@material-ui/icons/Search';
 import Check from '@material-ui/icons/Check';
+import Close from '@material-ui/icons/Close';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import dayjs from 'dayjs';
 import { createMuiTheme } from '@material-ui/core/styles';
-// import styled from 'styled-components';
 import { jsx } from '@emotion/core';
+import { useSnackbar } from 'notistack';
 
 const theme = createMuiTheme();
 
-// const GreenCheck = styled(Check)`
-//   color: ${theme.palette.success.main};
-// `;
 const GreenCheck: React.FC<{}> = () => (
   <Check css={{ color: theme.palette.success.main }} />
 );
@@ -248,12 +246,35 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
 };
 
 const BookAddForm: React.FC<{}> = () => {
-  const handleSubmit = (values: any) => {
-    return db.collection('books').add({
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+  const handleSubmit = async (values: any) => {
+    const doc = await db.collection('books').add({
       title: values.title,
       authors: values.authors,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    const action = (key: string) => (
+      <React.Fragment>
+        <Button component={Link} to={`/books/${doc.id}`}>
+          Move
+        </Button>
+        <Button
+          onClick={() => {
+            closeSnackbar(key);
+          }}
+        >
+          <Close />
+        </Button>
+      </React.Fragment>
+    );
+
+    const message = `${values.title}を追加しました`;
+    enqueueSnackbar(message, {
+      variant: 'success',
+      action,
     });
   };
   return (
@@ -262,7 +283,7 @@ const BookAddForm: React.FC<{}> = () => {
       validationSchema={bookFormSchema}
       onSubmit={handleSubmit}
     >
-      {({ values, errors }) => (
+      {({ values }) => (
         <Form>
           <Field
             component={FormikTextField}
