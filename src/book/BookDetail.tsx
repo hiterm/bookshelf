@@ -170,9 +170,9 @@ const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
       <Formik
         initialValues={book}
         /* validationSchema={bookSchema} */
-        onSubmit={(values) => {
+        onSubmit={(values, { setSubmitting }) => {
           let docRef = db.collection('books').doc(book.id);
-          docRef.update({
+          return docRef.update({
             priority: values.priority,
             read: values.read,
             owned: values.owned,
@@ -200,14 +200,18 @@ const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
           <div>
             <Field
               component={CheckboxWithLabel}
+              color="primary"
               name="read"
+              type="checkbox"
               Label={{ label: '既読' }}
             />
           </div>
           <div>
             <Field
               component={CheckboxWithLabel}
+              color="primary"
               name="owned"
+              type="checkbox"
               Label={{ label: '所有' }}
             />
           </div>
