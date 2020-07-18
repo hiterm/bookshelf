@@ -13,11 +13,11 @@ import { SnackbarProvider } from 'notistack';
 
 const App: React.FC<{}> = () => {
   return (
-    <SnackbarProvider>
-      <Container>
-        <CssBaseline />
-        <h1>Bookshelf</h1>
-        <Router>
+    <Container>
+      <CssBaseline />
+      <h1>Bookshelf</h1>
+      <Router>
+        <SnackbarProvider>
           <Switch>
             <Route exact path="/">
               <Redirect to="/books" />
@@ -29,9 +29,9 @@ const App: React.FC<{}> = () => {
               <SignInScreen />
             </Route>
           </Switch>
-        </Router>
-      </Container>
-    </SnackbarProvider>
+        </SnackbarProvider>
+      </Router>
+    </Container>
   );
 };
 
