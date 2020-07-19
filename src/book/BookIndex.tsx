@@ -4,7 +4,7 @@ import { Formik, Field, FieldArray, Form } from 'formik';
 import { TextField as FormikTextField } from 'formik-material-ui';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
-import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox';
+import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { firebase, db } from '../Firebase';
@@ -17,7 +17,6 @@ import {
   useGlobalFilter,
   usePagination,
   useRowSelect,
-  Row,
 } from 'react-table';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -97,19 +96,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     }
   };
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    page,
-    gotoPage,
-    setPageSize,
-    allColumns,
-    prepareRow,
-    setGlobalFilter,
-    selectedFlatRows,
-    state: { pageIndex, pageSize, globalFilter },
-  } = useTable(
+  const table = useTable(
     {
       columns,
       data,
@@ -147,7 +134,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
           ),
           // The cell can use the individual row's getToggleRowSelectedProps method
           // to the render a checkbox
-          Cell: ({ row }: { row: Row<Book> }) => (
+          Cell: ({ row }: any) => (
             <div>
               <Checkbox {...row.getToggleRowSelectedProps()} />
             </div>
@@ -157,6 +144,20 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
       ]);
     }
   );
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    page,
+    gotoPage,
+    setPageSize,
+    allColumns,
+    prepareRow,
+    setGlobalFilter,
+    selectedFlatRows,
+    state: { pageIndex, pageSize, globalFilter },
+  } = table;
 
   const handleChangePage = (
     _event: React.MouseEvent<HTMLButtonElement> | null,
@@ -173,20 +174,33 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
 
   return (
     <React.Fragment>
-      <Button onClick={() => console.log(JSON.stringify(selectedFlatRows.map((row) => row.original)))}>
+      <Button
+        onClick={() =>
+          console.log(
+            JSON.stringify(selectedFlatRows.map((row) => row.original))
+          )
+        }
+      >
         log
       </Button>
       <div>
         <FormGroup row>
-          {allColumns.map((column) => (
-            <FormControlLabel
-              control={
-                <Checkbox {...column.getToggleHiddenProps()} color="primary" />
-              }
-              label={column.Header}
-              key={column.id}
-            />
-          ))}
+          {allColumns.map((column) =>
+            column.id === 'selection' ? (
+              ''
+            ) : (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    {...column.getToggleHiddenProps()}
+                    color="primary"
+                  />
+                }
+                label={column.Header}
+                key={column.id}
+              />
+            )
+          )}
           <TextField
             value={globalFilter || ''}
             InputProps={{
