@@ -9,7 +9,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema } from './schema';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import {
   useTable,
   Column,
@@ -247,6 +247,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
 
 const BookAddForm: React.FC<{}> = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const history = useHistory();
 
   const handleSubmit = async (values: any) => {
     const doc = await db.collection('books').add({
@@ -258,7 +259,12 @@ const BookAddForm: React.FC<{}> = () => {
 
     const action = (key: string) => (
       <React.Fragment>
-        <Button component={Link} to={`/books/${doc.id}`}>
+        <Button
+          onClick={() => {
+            history.push(`/books/${doc.id}`);
+            closeSnackbar(key);
+          }}
+        >
           Move
         </Button>
         <Button
