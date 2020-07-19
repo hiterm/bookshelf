@@ -4,7 +4,7 @@ import { Formik, Field, FieldArray, Form } from 'formik';
 import { TextField as FormikTextField } from 'formik-material-ui';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
+import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { firebase, db } from '../Firebase';
@@ -16,6 +16,8 @@ import {
   useSortBy,
   useGlobalFilter,
   usePagination,
+  useRowSelect,
+  Row,
 } from 'react-table';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -105,6 +107,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     allColumns,
     prepareRow,
     setGlobalFilter,
+    selectedFlatRows,
     state: { pageIndex, pageSize, globalFilter },
   } = useTable(
     {
@@ -128,7 +131,31 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     },
     useGlobalFilter,
     useSortBy,
-    usePagination
+    usePagination,
+    useRowSelect,
+    (hooks) => {
+      hooks.visibleColumns.push((columns) => [
+        // Let's make a column for selection
+        {
+          id: 'selection',
+          // The header can use the table's getToggleAllRowsSelectedProps method
+          // to render a checkbox
+          Header: ({ getToggleAllRowsSelectedProps }) => (
+            <div>
+              <Checkbox {...getToggleAllRowsSelectedProps()} />
+            </div>
+          ),
+          // The cell can use the individual row's getToggleRowSelectedProps method
+          // to the render a checkbox
+          Cell: ({ row }: { row: Row<Book> }) => (
+            <div>
+              <Checkbox {...row.getToggleRowSelectedProps()} />
+            </div>
+          ),
+        },
+        ...columns,
+      ]);
+    }
   );
 
   const handleChangePage = (
@@ -146,6 +173,9 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
 
   return (
     <React.Fragment>
+      <Button onClick={() => console.log(JSON.stringify(selectedFlatRows.map((row) => row.original)))}>
+        log
+      </Button>
       <div>
         <FormGroup row>
           {allColumns.map((column) => (
@@ -201,7 +231,6 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
               return (
                 <TableRow
                   {...row.getRowProps()}
-                  onClick={handleRowClick(row.original.id)}
                   style={{ cursor: 'pointer' }}
                   hover
                 >
