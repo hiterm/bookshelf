@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import React from 'react';
-import { useRouteMatch, Link } from 'react-router-dom';
+import { useRouteMatch, Link, useHistory } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -19,6 +19,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import { useSnackbar } from 'notistack';
 
 const theme = createMuiTheme();
 
@@ -61,16 +62,16 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
     setOpen(false);
   };
 
-  const handleDelete = () => {
-    db.collection('books')
-      .doc(book.id)
-      .delete()
-      .then(() => {
-        console.log('Book successfully deleted!');
-      })
-      .catch((error) => {
-        console.error('Error removing book: ', error);
-      });
+  const { enqueueSnackbar } = useSnackbar();
+  const history = useHistory();
+  const handleDelete = async () => {
+    try {
+      await db.collection('books').doc(book.id).delete();
+      history.push('/books');
+      enqueueSnackbar(`${book.title}が削除されました`, { variant: 'success' });
+    } catch (error) {
+      enqueueSnackbar(`削除に失敗しました: ${error}`, { variant: 'error' });
+    }
   };
 
   return (

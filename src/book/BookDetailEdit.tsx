@@ -8,9 +8,14 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import firebase from 'firebase';
 import { bookSchema, Book } from './schema';
+import { useSnackbar } from 'notistack';
+import { useHistory } from 'react-router-dom';
 
 export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
   const book = props.book;
+
+  const { enqueueSnackbar } = useSnackbar();
+  const history = useHistory();
 
   if (book === undefined) {
     return <div>Loading or not found.</div>;
@@ -21,12 +26,14 @@ export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
       <Formik
         initialValues={book}
         validationSchema={bookSchema}
-        onSubmit={(values) => {
+        onSubmit={async (values) => {
           let docRef = db.collection('books').doc(book.id);
-          return docRef.update({
+          await docRef.update({
             ...values,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           });
+          history.push(`/books/${book.id}`);
+          enqueueSnackbar('更新しました', { variant: 'success' });
         }}
       >
         {({ values }) => (
