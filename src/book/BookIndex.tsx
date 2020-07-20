@@ -9,7 +9,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema } from './schema';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import {
   useTable,
   Column,
@@ -48,7 +48,11 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
   const data: Book[] = React.useMemo(() => props.list, [props.list]);
   const columns: Column<Book>[] = React.useMemo(
     () => [
-      { Header: '書名', accessor: 'title' },
+      {
+        Header: '書名',
+        accessor: 'title',
+        Cell: ({ value, row }) => <Link to={row.original.id}>{value}</Link>,
+      },
       { Header: '著者', accessor: 'authors' },
       { Header: '形式', accessor: 'format' },
       { Header: '優先度', accessor: 'priority' },
