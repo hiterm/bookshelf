@@ -1,7 +1,10 @@
 /** @jsx jsx */
-import React from 'react';
+import React, { useState } from 'react';
 import { Formik, Field, FieldArray, Form } from 'formik';
-import { TextField as FormikTextField } from 'formik-material-ui';
+import {
+  TextField as FormikTextField,
+  CheckboxWithLabel,
+} from 'formik-material-ui';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -9,13 +12,14 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema } from './schema';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link as RouterLink } from 'react-router-dom';
 import {
   useTable,
   Column,
   useSortBy,
   useGlobalFilter,
   usePagination,
+  useRowSelect,
 } from 'react-table';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -36,6 +40,12 @@ import dayjs from 'dayjs';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { jsx } from '@emotion/core';
 import { useSnackbar } from 'notistack';
+import MuiLink from '@material-ui/core/Link';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 
 const theme = createMuiTheme();
 
@@ -43,11 +53,95 @@ const GreenCheck: React.FC<{}> = () => (
   <Check css={{ color: theme.palette.success.main }} />
 );
 
+const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
+  selectedBooks,
+}) => {
+  // TODO
+  const [open, setOpen] = useState(false);
+
+  const handleDialogOpenClick = () => {
+    setOpen(true);
+  };
+
+  const handleDialogCloseClick = () => {
+    setOpen(false);
+  };
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  // TODO: 500件より多いとき
+  const handleUpdate = async (values: { read: boolean }) => {
+    const batch = db.batch();
+    for (let i = 0; i < selectedBooks.length; i++) {
+      const book = selectedBooks[i];
+
+      var bookRef = db.collection('books').doc(book.id);
+      batch.update(bookRef, { read: values.read });
+    }
+    try {
+      await batch.commit();
+      enqueueSnackbar('更新に成功しました', { variant: 'success' });
+    } catch (error) {
+      enqueueSnackbar(`更新に失敗しました: ${error}`, { variant: 'error' });
+    }
+    setOpen(false);
+  };
+
+  return (
+    <div>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleDialogOpenClick}
+      >
+        一括更新
+      </Button>
+      <Formik initialValues={{ read: false }} onSubmit={handleUpdate}>
+        {({ handleSubmit }) => (
+          <Dialog open={open}>
+            <DialogTitle>一括更新</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                選択した項目を一括更新します。
+              </DialogContentText>
+              <Form>
+                <Field
+                  component={CheckboxWithLabel}
+                  color="primary"
+                  name="read"
+                  type="checkbox"
+                  Label={{ label: '既読' }}
+                />
+              </Form>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleDialogCloseClick} color="primary">
+                キャンセル
+              </Button>
+              <Button onClick={() => handleSubmit()} color="primary">
+                反映
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
+      </Formik>
+    </div>
+  );
+};
+
 const BookList: React.FC<{ list: Book[] }> = (props) => {
   const data: Book[] = React.useMemo(() => props.list, [props.list]);
   const columns: Column<Book>[] = React.useMemo(
     () => [
-      { Header: '書名', accessor: 'title' },
+      {
+        Header: '書名',
+        accessor: 'title',
+        Cell: ({ value, row }) => (
+          <MuiLink component={RouterLink} to={`/books/${row.original.id}`}>
+            {value}
+          </MuiLink>
+        ),
+      },
       { Header: '著者', accessor: 'authors' },
       { Header: '形式', accessor: 'format' },
       { Header: '優先度', accessor: 'priority' },
@@ -77,13 +171,6 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     []
   );
 
-  const history = useHistory();
-  const handleRowClick = (id: string) => (
-    _event: React.MouseEvent<Element, MouseEvent> | undefined
-  ) => {
-    history.push(`/books/${id}`);
-  };
-
   const getId = (column: Column<Book>): string => {
     if (typeof column.id === 'string') {
       return column.id;
@@ -95,18 +182,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     }
   };
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    page,
-    gotoPage,
-    setPageSize,
-    allColumns,
-    prepareRow,
-    setGlobalFilter,
-    state: { pageIndex, pageSize, globalFilter },
-  } = useTable(
+  const table = useTable(
     {
       columns,
       data,
@@ -128,8 +204,46 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     },
     useGlobalFilter,
     useSortBy,
-    usePagination
+    usePagination,
+    useRowSelect,
+    (hooks) => {
+      hooks.visibleColumns.push((columns) => [
+        // Let's make a column for selection
+        {
+          id: 'selection',
+          // The header can use the table's getToggleAllRowsSelectedProps method
+          // to render a checkbox
+          Header: ({ getToggleAllRowsSelectedProps }) => (
+            <div>
+              <Checkbox color="primary" {...getToggleAllRowsSelectedProps()} />
+            </div>
+          ),
+          // The cell can use the individual row's getToggleRowSelectedProps method
+          // to the render a checkbox
+          Cell: ({ row }: any) => (
+            <div>
+              <Checkbox color="primary" {...row.getToggleRowSelectedProps()} />
+            </div>
+          ),
+        },
+        ...columns,
+      ]);
+    }
   );
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    page,
+    gotoPage,
+    setPageSize,
+    allColumns,
+    prepareRow,
+    setGlobalFilter,
+    selectedFlatRows,
+    state: { pageIndex, pageSize, globalFilter },
+  } = table;
 
   const handleChangePage = (
     _event: React.MouseEvent<HTMLButtonElement> | null,
@@ -146,17 +260,25 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
 
   return (
     <React.Fragment>
+      <BulkChangeDialog
+        selectedBooks={selectedFlatRows.map((row) => row.original)}
+      />
       <div>
         <FormGroup row>
-          {allColumns.map((column) => (
-            <FormControlLabel
-              control={
-                <Checkbox {...column.getToggleHiddenProps()} color="primary" />
-              }
-              label={column.Header}
-              key={column.id}
-            />
-          ))}
+          {allColumns
+            .filter((column) => column.id !== 'selection')
+            .map((column) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    {...column.getToggleHiddenProps()}
+                    color="primary"
+                  />
+                }
+                label={column.Header}
+                key={column.id}
+              />
+            ))}
           <TextField
             value={globalFilter || ''}
             InputProps={{
@@ -201,7 +323,6 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
               return (
                 <TableRow
                   {...row.getRowProps()}
-                  onClick={handleRowClick(row.original.id)}
                   style={{ cursor: 'pointer' }}
                   hover
                 >
