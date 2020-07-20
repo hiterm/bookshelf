@@ -15,4 +15,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// For development
+// Reduce request for firestore
+// db.enablePersistence({ synchronizeTabs: true });
+db.enablePersistence();
+// db.disableNetwork();
+
 export { firebase, db };

@@ -56,7 +56,6 @@ const GreenCheck: React.FC<{}> = () => (
 const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
   selectedBooks,
 }) => {
-  // TODO
   const [open, setOpen] = useState(false);
 
   const handleDialogOpenClick = () => {
