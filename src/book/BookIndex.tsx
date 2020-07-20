@@ -9,7 +9,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { firebase, db } from '../Firebase';
 import { Book, bookFormSchema } from './schema';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory, Link as RouterLink } from 'react-router-dom';
 import {
   useTable,
   Column,
@@ -37,6 +37,7 @@ import dayjs from 'dayjs';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { jsx } from '@emotion/core';
 import { useSnackbar } from 'notistack';
+import MuiLink from '@material-ui/core/Link';
 
 const theme = createMuiTheme();
 
@@ -51,7 +52,11 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
       {
         Header: '書名',
         accessor: 'title',
-        Cell: ({ value, row }) => <Link to={row.original.id}>{value}</Link>,
+        Cell: ({ value, row }) => (
+          <MuiLink component={RouterLink} to={`/books/${row.original.id}`}>
+            {value}
+          </MuiLink>
+        ),
       },
       { Header: '著者', accessor: 'authors' },
       { Header: '形式', accessor: 'format' },
@@ -81,13 +86,6 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     ],
     []
   );
-
-  const history = useHistory();
-  const handleRowClick = (id: string) => (
-    _event: React.MouseEvent<Element, MouseEvent> | undefined
-  ) => {
-    history.push(`/books/${id}`);
-  };
 
   const getId = (column: Column<Book>): string => {
     if (typeof column.id === 'string') {
