@@ -15,11 +15,15 @@ import { Book, bookFormSchema } from './schema';
 import { useHistory, Link as RouterLink } from 'react-router-dom';
 import {
   useTable,
-  Column,
   useSortBy,
   useGlobalFilter,
   usePagination,
   useRowSelect,
+  useFilters,
+  Column,
+  CellProps,
+  FilterProps,
+  HeaderProps,
 } from 'react-table';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -128,7 +132,31 @@ const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
   );
 };
 
+const DefaultColumnFilter = ({
+  column: { filterValue, preFilteredRows, setFilter },
+}: FilterProps<Book>) => {
+  const count = preFilteredRows.length;
+
+  return (
+    <TextField
+      value={filterValue || ''}
+      onChange={(e) => {
+        setFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
+      }}
+      placeholder={`Search ${count} records...`}
+    />
+  );
+};
+
 const BookList: React.FC<{ list: Book[] }> = (props) => {
+  const defaultColumn = React.useMemo(
+    () => ({
+      // Let's set up our default Filter UI
+      Filter: DefaultColumnFilter,
+    }),
+    []
+  );
+
   const data: Book[] = React.useMemo(() => props.list, [props.list]);
   const columns: Column<Book>[] = React.useMemo(
     () => [
@@ -185,6 +213,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     {
       columns,
       data,
+      defaultColumn,
       initialState: {
         pageSize: 20,
         sortBy: [
@@ -201,6 +230,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
           .map((column) => getId(column)),
       },
     },
+    useFilters,
     useGlobalFilter,
     useSortBy,
     usePagination,
@@ -212,14 +242,14 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
           id: 'selection',
           // The header can use the table's getToggleAllRowsSelectedProps method
           // to render a checkbox
-          Header: ({ getToggleAllRowsSelectedProps }) => (
+          Header: ({ getToggleAllRowsSelectedProps }: HeaderProps<Book>) => (
             <div>
               <Checkbox color="primary" {...getToggleAllRowsSelectedProps()} />
             </div>
           ),
           // The cell can use the individual row's getToggleRowSelectedProps method
           // to the render a checkbox
-          Cell: ({ row }: any) => (
+          Cell: ({ row }: CellProps<Book>) => (
             <div>
               <Checkbox color="primary" {...row.getToggleRowSelectedProps()} />
             </div>
@@ -310,6 +340,10 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
                         direction={column.isSortedDesc ? 'desc' : 'asc'}
                       />
                     ) : null}
+                    <div>
+                      {console.log(column.id, column.canFilter)}
+                      {column.canFilter ? column.render('Filter') : null}
+                    </div>
                   </TableCell>
                 ))}
               </TableRow>
