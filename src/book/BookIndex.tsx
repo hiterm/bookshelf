@@ -129,14 +129,14 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
           // to render a checkbox
           Header: ({ getToggleAllRowsSelectedProps }) => (
             <div>
-              <Checkbox {...getToggleAllRowsSelectedProps()} />
+              <Checkbox color="primary" {...getToggleAllRowsSelectedProps()} />
             </div>
           ),
           // The cell can use the individual row's getToggleRowSelectedProps method
           // to the render a checkbox
           Cell: ({ row }: any) => (
             <div>
-              <Checkbox {...row.getToggleRowSelectedProps()} />
+              <Checkbox color="primary" {...row.getToggleRowSelectedProps()} />
             </div>
           ),
         },
@@ -185,10 +185,9 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
       </Button>
       <div>
         <FormGroup row>
-          {allColumns.map((column) =>
-            column.id === 'selection' ? (
-              ''
-            ) : (
+          {allColumns
+            .filter((column) => column.id !== 'selection')
+            .map((column) => (
               <FormControlLabel
                 control={
                   <Checkbox
@@ -199,8 +198,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
                 label={column.Header}
                 key={column.id}
               />
-            )
-          )}
+            ))}
           <TextField
             value={globalFilter || ''}
             InputProps={{
