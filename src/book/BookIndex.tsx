@@ -24,6 +24,7 @@ import {
   CellProps,
   FilterProps,
   HeaderProps,
+  ColumnInstance,
 } from 'react-table';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -268,6 +269,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     gotoPage,
     setPageSize,
     allColumns,
+    visibleColumns,
     prepareRow,
     setGlobalFilter,
     selectedFlatRows,
@@ -340,14 +342,17 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
                         direction={column.isSortedDesc ? 'desc' : 'asc'}
                       />
                     ) : null}
-                    <div>
-                      {console.log(column.id, column.canFilter)}
-                      {column.canFilter ? column.render('Filter') : null}
-                    </div>
                   </TableCell>
                 ))}
               </TableRow>
             ))}
+            <TableRow>
+              {visibleColumns.map((column: ColumnInstance<Book>) => (
+                <TableCell>
+                  {column.canFilter ? column.render('Filter') : null}
+                </TableCell>
+              ))}
+            </TableRow>
           </TableHead>
 
           <TableBody {...getTableBodyProps()}>
