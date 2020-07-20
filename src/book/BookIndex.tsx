@@ -1,7 +1,10 @@
 /** @jsx jsx */
-import React from 'react';
+import React, { useState } from 'react';
 import { Formik, Field, FieldArray, Form } from 'formik';
-import { TextField as FormikTextField } from 'formik-material-ui';
+import {
+  TextField as FormikTextField,
+  CheckboxWithLabel,
+} from 'formik-material-ui';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -38,12 +41,93 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import { jsx } from '@emotion/core';
 import { useSnackbar } from 'notistack';
 import MuiLink from '@material-ui/core/Link';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 
 const theme = createMuiTheme();
 
 const GreenCheck: React.FC<{}> = () => (
   <Check css={{ color: theme.palette.success.main }} />
 );
+
+const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
+  selectedBooks,
+}) => {
+  // TODO
+  const [open, setOpen] = useState(false);
+
+  const handleDialogOpenClick = () => {
+    setOpen(true);
+  };
+
+  const handleDialogCloseClick = () => {
+    setOpen(false);
+  };
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  // TODO: 500件より多いとき
+  const handleUpdate = async (values: { read: boolean }) => {
+    const batch = db.batch();
+    for (let i = 0; i < selectedBooks.length; i++) {
+      const book = selectedBooks[i];
+
+      var bookRef = db.collection('books').doc(book.id);
+      batch.update(bookRef, { read: values.read });
+    }
+    try {
+      await batch.commit();
+      enqueueSnackbar('更新に成功しました', { variant: 'success' });
+    } catch (error) {
+      enqueueSnackbar(`更新に失敗しました: ${error}`, { variant: 'error' });
+    }
+    setOpen(false);
+  };
+
+  return (
+    <div>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleDialogOpenClick}
+      >
+        一括更新
+      </Button>
+      <Formik initialValues={{ read: false }} onSubmit={handleUpdate}>
+        {({ handleSubmit }) => (
+          <Dialog open={open}>
+            <DialogTitle>一括更新</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                選択した項目を一括更新します。
+              </DialogContentText>
+              <Form>
+                <Field
+                  component={CheckboxWithLabel}
+                  color="primary"
+                  name="read"
+                  type="checkbox"
+                  Label={{ label: '既読' }}
+                />
+              </Form>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleDialogCloseClick} color="primary">
+                キャンセル
+              </Button>
+              <Button onClick={() => handleSubmit()} color="primary">
+                反映
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
+      </Formik>
+    </div>
+  );
+};
 
 const BookList: React.FC<{ list: Book[] }> = (props) => {
   const data: Book[] = React.useMemo(() => props.list, [props.list]);
@@ -176,15 +260,9 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
 
   return (
     <React.Fragment>
-      <Button
-        onClick={() =>
-          console.log(
-            JSON.stringify(selectedFlatRows.map((row) => row.original))
-          )
-        }
-      >
-        log
-      </Button>
+      <BulkChangeDialog
+        selectedBooks={selectedFlatRows.map((row) => row.original)}
+      />
       <div>
         <FormGroup row>
           {allColumns
