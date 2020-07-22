@@ -165,12 +165,12 @@ const SelectColumnFilter = ({
     });
     return Array.from(options);
   }, [id, preFilteredRows]);
-  console.log(JSON.stringify(options));
 
   // Render a multi-select box
   return (
     <Select
       value={filterValue}
+      defaultValue=""
       onChange={(e) => {
         setFilter(e.target.value || undefined);
       }}
@@ -181,6 +181,37 @@ const SelectColumnFilter = ({
           {option}
         </MenuItem>
       ))}
+    </Select>
+  );
+};
+
+const ReadFilter = ({
+  column: { filterValue, setFilter },
+}: FilterProps<Book>) => {
+  const handleChange = (
+    e: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
+  ) => {
+    const valueString = e.target.value as '' | 'true' | 'false';
+    let value = undefined;
+    switch (valueString) {
+      case '':
+        value = undefined;
+        break;
+      case 'true':
+        value = true;
+        break;
+      case 'false':
+        value = false;
+        break;
+    }
+    setFilter(value);
+  };
+
+  return (
+    <Select value={filterValue} defaultValue="" onChange={handleChange}>
+      <MenuItem value="">All</MenuItem>
+      <MenuItem value="true">既読</MenuItem>
+      <MenuItem value="false">未読</MenuItem>
     </Select>
   );
 };
@@ -229,6 +260,8 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
         Header: '既読',
         accessor: 'read',
         Cell: ({ value }) => (value ? <GreenCheck /> : ''),
+        Filter: ReadFilter,
+        filter: 'equals',
       },
       {
         Header: '所有',
