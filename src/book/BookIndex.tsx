@@ -421,7 +421,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
             ))}
             <TableRow>
               {visibleColumns.map((column: ColumnInstance<Book>) => (
-                <TableCell>
+                <TableCell key={column.id}>
                   {column.canFilter ? column.render('Filter') : null}
                 </TableCell>
               ))}
