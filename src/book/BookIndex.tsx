@@ -51,6 +51,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 
 const theme = createMuiTheme();
 
@@ -149,6 +151,40 @@ const DefaultColumnFilter = ({
   );
 };
 
+const SelectColumnFilter = ({
+  column: { filterValue, setFilter, preFilteredRows, id },
+}: FilterProps<Book>) => {
+  // Calculate the options for filtering
+  // using the preFilteredRows
+  const options: string[] = React.useMemo(() => {
+    const options = new Set<string>();
+    preFilteredRows.forEach((row) => {
+      if (row !== null) {
+        options.add(row.values[id]);
+      }
+    });
+    return Array.from(options);
+  }, [id, preFilteredRows]);
+  console.log(JSON.stringify(options));
+
+  // Render a multi-select box
+  return (
+    <Select
+      value={filterValue}
+      onChange={(e) => {
+        setFilter(e.target.value || undefined);
+      }}
+    >
+      <MenuItem value="">All</MenuItem>
+      {options.map((option, i) => (
+        <MenuItem key={i} value={option}>
+          {option}
+        </MenuItem>
+      ))}
+    </Select>
+  );
+};
+
 const BookList: React.FC<{ list: Book[] }> = (props) => {
   const defaultColumn = React.useMemo(
     () => ({
@@ -171,7 +207,11 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
         ),
       },
       { Header: '著者', accessor: 'authors' },
-      { Header: '形式', accessor: 'format' },
+      {
+        Header: '形式',
+        accessor: 'format',
+        Filter: SelectColumnFilter,
+      },
       { Header: '優先度', accessor: 'priority' },
       {
         Header: '追加日時',
