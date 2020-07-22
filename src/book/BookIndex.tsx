@@ -276,20 +276,6 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
       },
       { Header: '優先度', accessor: 'priority' },
       {
-        Header: '追加日時',
-        accessor: (book: Book) =>
-          dayjs(book.createdAt).format('YYYY/MM/DD HH:mm:ss'),
-        id: 'createdAt',
-        disableFilters: true,
-      },
-      {
-        Header: '更新日時',
-        accessor: (book: Book) =>
-          dayjs(book.updatedAt).format('YYYY/MM/DD HH:mm:ss'),
-        id: 'updatedAt',
-        disableFilters: true,
-      },
-      {
         Header: '既読',
         accessor: 'read',
         Cell: ({ value }) => (value ? <GreenCheck /> : ''),
@@ -302,6 +288,20 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
         Cell: ({ value }) => (value ? <GreenCheck /> : ''),
         Filter: OwnedFilter,
         filter: 'equals',
+      },
+      {
+        Header: '追加日時',
+        accessor: (book: Book) =>
+          dayjs(book.createdAt).format('YYYY/MM/DD HH:mm:ss'),
+        id: 'createdAt',
+        disableFilters: true,
+      },
+      {
+        Header: '更新日時',
+        accessor: (book: Book) =>
+          dayjs(book.updatedAt).format('YYYY/MM/DD HH:mm:ss'),
+        id: 'updatedAt',
+        disableFilters: true,
       },
     ],
     []
