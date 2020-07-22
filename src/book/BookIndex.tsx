@@ -15,11 +15,16 @@ import { Book, bookFormSchema } from './schema';
 import { useHistory, Link as RouterLink } from 'react-router-dom';
 import {
   useTable,
-  Column,
   useSortBy,
   useGlobalFilter,
   usePagination,
   useRowSelect,
+  useFilters,
+  Column,
+  CellProps,
+  FilterProps,
+  HeaderProps,
+  ColumnInstance,
 } from 'react-table';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -34,6 +39,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Search from '@material-ui/icons/Search';
 import Check from '@material-ui/icons/Check';
 import Close from '@material-ui/icons/Close';
+import FilterListIcon from '@material-ui/icons/FilterList';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import dayjs from 'dayjs';
@@ -46,6 +52,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 
 const theme = createMuiTheme();
 
@@ -128,7 +136,157 @@ const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
   );
 };
 
+const DefaultColumnFilter = ({
+  column: { filterValue, preFilteredRows, setFilter },
+}: FilterProps<Book>) => {
+  const count = preFilteredRows.length;
+
+  return (
+    <TextField
+      value={filterValue || ''}
+      onChange={(e) => {
+        setFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
+      }}
+      placeholder={`Search ${count} records...`}
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <FilterListIcon />
+          </InputAdornment>
+        ),
+      }}
+    />
+  );
+};
+
+const SelectColumnFilter = ({
+  column: { filterValue, setFilter, preFilteredRows, id },
+}: FilterProps<Book>) => {
+  // Calculate the options for filtering
+  // using the preFilteredRows
+  const options: string[] = React.useMemo(() => {
+    const options = new Set<string>();
+    preFilteredRows.forEach((row) => {
+      if (row !== null) {
+        options.add(row.values[id]);
+      }
+    });
+    return Array.from(options);
+  }, [id, preFilteredRows]);
+
+  // Render a multi-select box
+  return (
+    <Select
+      value={filterValue}
+      defaultValue=""
+      onChange={(e) => {
+        setFilter(e.target.value || undefined);
+      }}
+      startAdornment={
+        <InputAdornment position="start">
+          <FilterListIcon />
+        </InputAdornment>
+      }
+    >
+      <MenuItem value="">All</MenuItem>
+      {options.map((option, i) => (
+        <MenuItem key={i} value={option}>
+          {option}
+        </MenuItem>
+      ))}
+    </Select>
+  );
+};
+
+const ReadFilter = ({
+  column: { filterValue, setFilter },
+}: FilterProps<Book>) => {
+  const handleChange = (
+    e: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
+  ) => {
+    const valueString = e.target.value as '' | 'true' | 'false';
+    let value = undefined;
+    switch (valueString) {
+      case '':
+        value = undefined;
+        break;
+      case 'true':
+        value = true;
+        break;
+      case 'false':
+        value = false;
+        break;
+    }
+    setFilter(value);
+  };
+
+  return (
+    <Select
+      value={filterValue}
+      defaultValue=""
+      onChange={handleChange}
+      startAdornment={
+        <InputAdornment position="start">
+          <FilterListIcon />
+        </InputAdornment>
+      }
+    >
+      <MenuItem value="">All</MenuItem>
+      <MenuItem value="true">既読</MenuItem>
+      <MenuItem value="false">未読</MenuItem>
+    </Select>
+  );
+};
+
+const OwnedFilter = ({
+  column: { filterValue, setFilter },
+}: FilterProps<Book>) => {
+  const handleChange = (
+    e: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
+  ) => {
+    const valueString = e.target.value as '' | 'true' | 'false';
+    let value = undefined;
+    switch (valueString) {
+      case '':
+        value = undefined;
+        break;
+      case 'true':
+        value = true;
+        break;
+      case 'false':
+        value = false;
+        break;
+    }
+    setFilter(value);
+  };
+
+  return (
+    <Select
+      value={filterValue}
+      defaultValue=""
+      onChange={handleChange}
+      startAdornment={
+        <InputAdornment position="start">
+          <FilterListIcon />
+        </InputAdornment>
+      }
+    >
+      <MenuItem value="">All</MenuItem>
+      <MenuItem value="true">所有</MenuItem>
+      <MenuItem value="false">未所有</MenuItem>
+    </Select>
+  );
+};
+
 const BookList: React.FC<{ list: Book[] }> = (props) => {
+  const defaultColumn = React.useMemo(
+    () => ({
+      // Let's set up our default Filter UI
+      Filter: DefaultColumnFilter,
+    }),
+    []
+  );
+
   const data: Book[] = React.useMemo(() => props.list, [props.list]);
   const columns: Column<Book>[] = React.useMemo(
     () => [
@@ -142,29 +300,39 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
         ),
       },
       { Header: '著者', accessor: 'authors' },
-      { Header: '形式', accessor: 'format' },
+      {
+        Header: '形式',
+        accessor: 'format',
+        Filter: SelectColumnFilter,
+      },
       { Header: '優先度', accessor: 'priority' },
+      {
+        Header: '既読',
+        accessor: 'read',
+        Cell: ({ value }) => (value ? <GreenCheck /> : ''),
+        Filter: ReadFilter,
+        filter: 'equals',
+      },
+      {
+        Header: '所有',
+        accessor: 'owned',
+        Cell: ({ value }) => (value ? <GreenCheck /> : ''),
+        Filter: OwnedFilter,
+        filter: 'equals',
+      },
       {
         Header: '追加日時',
         accessor: (book: Book) =>
           dayjs(book.createdAt).format('YYYY/MM/DD HH:mm:ss'),
         id: 'createdAt',
+        disableFilters: true,
       },
       {
         Header: '更新日時',
         accessor: (book: Book) =>
           dayjs(book.updatedAt).format('YYYY/MM/DD HH:mm:ss'),
         id: 'updatedAt',
-      },
-      {
-        Header: '既読',
-        accessor: 'read',
-        Cell: ({ value }) => (value ? <GreenCheck /> : ''),
-      },
-      {
-        Header: '所有',
-        accessor: 'owned',
-        Cell: ({ value }) => (value ? <GreenCheck /> : ''),
+        disableFilters: true,
       },
     ],
     []
@@ -185,6 +353,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     {
       columns,
       data,
+      defaultColumn,
       initialState: {
         pageSize: 20,
         sortBy: [
@@ -201,6 +370,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
           .map((column) => getId(column)),
       },
     },
+    useFilters,
     useGlobalFilter,
     useSortBy,
     usePagination,
@@ -212,14 +382,14 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
           id: 'selection',
           // The header can use the table's getToggleAllRowsSelectedProps method
           // to render a checkbox
-          Header: ({ getToggleAllRowsSelectedProps }) => (
+          Header: ({ getToggleAllRowsSelectedProps }: HeaderProps<Book>) => (
             <div>
               <Checkbox color="primary" {...getToggleAllRowsSelectedProps()} />
             </div>
           ),
           // The cell can use the individual row's getToggleRowSelectedProps method
           // to the render a checkbox
-          Cell: ({ row }: any) => (
+          Cell: ({ row }: CellProps<Book>) => (
             <div>
               <Checkbox color="primary" {...row.getToggleRowSelectedProps()} />
             </div>
@@ -238,6 +408,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     gotoPage,
     setPageSize,
     allColumns,
+    visibleColumns,
     prepareRow,
     setGlobalFilter,
     selectedFlatRows,
@@ -314,6 +485,13 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
                 ))}
               </TableRow>
             ))}
+            <TableRow>
+              {visibleColumns.map((column: ColumnInstance<Book>) => (
+                <TableCell key={column.id}>
+                  {column.canFilter ? column.render('Filter') : null}
+                </TableCell>
+              ))}
+            </TableRow>
           </TableHead>
 
           <TableBody {...getTableBodyProps()}>
