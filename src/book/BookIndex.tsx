@@ -216,6 +216,37 @@ const ReadFilter = ({
   );
 };
 
+const OwnedFilter = ({
+  column: { filterValue, setFilter },
+}: FilterProps<Book>) => {
+  const handleChange = (
+    e: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
+  ) => {
+    const valueString = e.target.value as '' | 'true' | 'false';
+    let value = undefined;
+    switch (valueString) {
+      case '':
+        value = undefined;
+        break;
+      case 'true':
+        value = true;
+        break;
+      case 'false':
+        value = false;
+        break;
+    }
+    setFilter(value);
+  };
+
+  return (
+    <Select value={filterValue} defaultValue="" onChange={handleChange}>
+      <MenuItem value="">All</MenuItem>
+      <MenuItem value="true">所有</MenuItem>
+      <MenuItem value="false">未所有</MenuItem>
+    </Select>
+  );
+};
+
 const BookList: React.FC<{ list: Book[] }> = (props) => {
   const defaultColumn = React.useMemo(
     () => ({
@@ -249,12 +280,14 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
         accessor: (book: Book) =>
           dayjs(book.createdAt).format('YYYY/MM/DD HH:mm:ss'),
         id: 'createdAt',
+        disableFilters: true,
       },
       {
         Header: '更新日時',
         accessor: (book: Book) =>
           dayjs(book.updatedAt).format('YYYY/MM/DD HH:mm:ss'),
         id: 'updatedAt',
+        disableFilters: true,
       },
       {
         Header: '既読',
@@ -267,6 +300,8 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
         Header: '所有',
         accessor: 'owned',
         Cell: ({ value }) => (value ? <GreenCheck /> : ''),
+        Filter: OwnedFilter,
+        filter: 'equals',
       },
     ],
     []
