@@ -39,6 +39,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Search from '@material-ui/icons/Search';
 import Check from '@material-ui/icons/Check';
 import Close from '@material-ui/icons/Close';
+import FilterListIcon from '@material-ui/icons/FilterList';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import dayjs from 'dayjs';
@@ -147,6 +148,13 @@ const DefaultColumnFilter = ({
         setFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
       }}
       placeholder={`Search ${count} records...`}
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <FilterListIcon />
+          </InputAdornment>
+        ),
+      }}
     />
   );
 };
@@ -174,6 +182,11 @@ const SelectColumnFilter = ({
       onChange={(e) => {
         setFilter(e.target.value || undefined);
       }}
+      startAdornment={
+        <InputAdornment position="start">
+          <FilterListIcon />
+        </InputAdornment>
+      }
     >
       <MenuItem value="">All</MenuItem>
       {options.map((option, i) => (
@@ -208,7 +221,16 @@ const ReadFilter = ({
   };
 
   return (
-    <Select value={filterValue} defaultValue="" onChange={handleChange}>
+    <Select
+      value={filterValue}
+      defaultValue=""
+      onChange={handleChange}
+      startAdornment={
+        <InputAdornment position="start">
+          <FilterListIcon />
+        </InputAdornment>
+      }
+    >
       <MenuItem value="">All</MenuItem>
       <MenuItem value="true">既読</MenuItem>
       <MenuItem value="false">未読</MenuItem>
@@ -239,7 +261,16 @@ const OwnedFilter = ({
   };
 
   return (
-    <Select value={filterValue} defaultValue="" onChange={handleChange}>
+    <Select
+      value={filterValue}
+      defaultValue=""
+      onChange={handleChange}
+      startAdornment={
+        <InputAdornment position="start">
+          <FilterListIcon />
+        </InputAdornment>
+      }
+    >
       <MenuItem value="">All</MenuItem>
       <MenuItem value="true">所有</MenuItem>
       <MenuItem value="false">未所有</MenuItem>
