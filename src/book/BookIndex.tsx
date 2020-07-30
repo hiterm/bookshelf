@@ -500,7 +500,6 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
               return (
                 <TableRow
                   {...row.getRowProps()}
-                  style={{ cursor: 'pointer' }}
                   hover
                 >
                   {row.cells.map((cell) => {
