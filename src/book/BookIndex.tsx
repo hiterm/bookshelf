@@ -25,6 +25,8 @@ import {
   FilterProps,
   HeaderProps,
   ColumnInstance,
+  Filters,
+  SortingRule,
 } from 'react-table';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -338,6 +340,25 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
     []
   );
 
+  const initialFilters: Filters<Book> = React.useMemo(
+    () => [
+      {
+        id: 'read',
+        value: false,
+      },
+    ],
+    []
+  );
+  const initialSortBy: SortingRule<Book>[] = React.useMemo(
+    () => [
+      {
+        id: 'priority',
+        desc: true,
+      },
+    ],
+    []
+  );
+
   const getId = (column: Column<Book>): string => {
     if (typeof column.id === 'string') {
       return column.id;
@@ -356,12 +377,8 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
       defaultColumn,
       initialState: {
         pageSize: 20,
-        sortBy: [
-          {
-            id: 'priority',
-            desc: true,
-          },
-        ],
+        filters: initialFilters,
+        sortBy: initialSortBy,
         hiddenColumns: columns
           .filter(
             (column) =>
@@ -498,10 +515,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
             {page.map((row) => {
               prepareRow(row);
               return (
-                <TableRow
-                  {...row.getRowProps()}
-                  hover
-                >
+                <TableRow {...row.getRowProps()} hover>
                   {row.cells.map((cell) => {
                     return (
                       <TableCell {...cell.getCellProps()}>
