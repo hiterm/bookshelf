@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Formik, Field, FieldArray, Form } from 'formik';
 import {
   TextField as FormikTextField,
+  Select as FormikSelect,
   CheckboxWithLabel,
 } from 'formik-material-ui';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -63,10 +64,39 @@ const GreenCheck: React.FC<{}> = () => (
   <Check css={{ color: theme.palette.success.main }} />
 );
 
+type BulkChangeFormProps = {
+  read: {
+    enable: boolean;
+    value: '' | 'true' | 'false';
+  };
+  owned: {
+    enable: boolean;
+    value: '' | 'true' | 'false';
+  };
+};
+
+const parseStrBoolean = (str: '' | 'true' | 'false') => {
+  let value = true;
+  switch (str) {
+    case 'true':
+      value = true;
+      break;
+    case 'false':
+      value = false;
+      break;
+    default:
+      throw new Error(`value cannot be parsed as boolean: ${str}`);
+  }
+  return value;
+};
+
 const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
   selectedBooks,
 }) => {
   const [open, setOpen] = useState(false);
+
+  // const bulkChangeFormSchema = yup.object.shape({
+  // })
 
   const handleDialogOpenClick = () => {
     setOpen(true);
@@ -79,13 +109,21 @@ const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
   const { enqueueSnackbar } = useSnackbar();
 
   // TODO: 500件より多いとき
-  const handleUpdate = async (values: { read: boolean }) => {
+  const handleUpdate = async (values: BulkChangeFormProps) => {
+    let bookProps: { read?: boolean; owned?: boolean } = {};
+    if (values.read.enable) {
+      bookProps.read = parseStrBoolean(values.read.value);
+    }
+    if (values.owned.enable) {
+      bookProps.owned = parseStrBoolean(values.owned.value);
+    }
+
     const batch = db.batch();
     for (let i = 0; i < selectedBooks.length; i++) {
       const book = selectedBooks[i];
 
       var bookRef = db.collection('books').doc(book.id);
-      batch.update(bookRef, { read: values.read });
+      batch.update(bookRef, bookProps);
     }
     try {
       await batch.commit();
@@ -105,7 +143,13 @@ const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
       >
         一括更新
       </Button>
-      <Formik initialValues={{ read: false }} onSubmit={handleUpdate}>
+      <Formik
+        initialValues={{
+          read: { enable: false, value: '' },
+          owned: { enable: false, value: '' },
+        }}
+        onSubmit={handleUpdate}
+      >
         {({ handleSubmit }) => (
           <Dialog open={open}>
             <DialogTitle>一括更新</DialogTitle>
@@ -114,13 +158,34 @@ const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
                 選択した項目を一括更新します。
               </DialogContentText>
               <Form>
-                <Field
-                  component={CheckboxWithLabel}
-                  color="primary"
-                  name="read"
-                  type="checkbox"
-                  Label={{ label: '既読' }}
-                />
+                <div>
+                  <Field
+                    component={CheckboxWithLabel}
+                    color="primary"
+                    name="read.enable"
+                    type="checkbox"
+                    Label={{ label: '既読' }}
+                  />
+                  <Field component={FormikSelect} name="read.value">
+                    <MenuItem value={''}></MenuItem>
+                    <MenuItem value={'true'}>既読</MenuItem>
+                    <MenuItem value={'false'}>未読</MenuItem>
+                  </Field>
+                </div>
+                <div>
+                  <Field
+                    component={CheckboxWithLabel}
+                    color="primary"
+                    name="owned.enable"
+                    type="checkbox"
+                    Label={{ label: '所有' }}
+                  />
+                  <Field component={FormikSelect} name="owned.value">
+                    <MenuItem value={''}></MenuItem>
+                    <MenuItem value={'true'}>所有</MenuItem>
+                    <MenuItem value={'false'}>未所有</MenuItem>
+                  </Field>
+                </div>
               </Form>
             </DialogContent>
             <DialogActions>
