@@ -51,7 +51,8 @@
     "@types/yup": "^0.29.3",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "ts-node": "^8.10.2"
   },
   "prettier": {
     "singleQuote": true

@@ -57,6 +57,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import * as yup from 'yup';
 
 const theme = createMuiTheme();
 
@@ -90,13 +91,34 @@ const parseStrBoolean = (str: '' | 'true' | 'false') => {
   return value;
 };
 
+const innerBooleanSchema = yup.object().shape({
+  enable: yup.boolean().required(),
+  value: yup.string().when('enable', {
+    is: true,
+    then: yup.string().required(),
+  }),
+});
+const bulkChangeFormSchema = yup
+  .object()
+  .shape({
+    read: innerBooleanSchema,
+    owned: innerBooleanSchema,
+  })
+  .test(
+    // TODO 機能してない
+    'at-least-one-enabled-required',
+    'please select at least one',
+    function (value) {
+      // console.log(JSON.stringify(value));
+      // console.log(value.read.enable || value.owned.enable);
+      return value.read.enable || value.owned.enable;
+    }
+  );
+// TODO: 著者
 const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
   selectedBooks,
 }) => {
   const [open, setOpen] = useState(false);
-
-  // const bulkChangeFormSchema = yup.object.shape({
-  // })
 
   const handleDialogOpenClick = () => {
     setOpen(true);
@@ -116,6 +138,12 @@ const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
     }
     if (values.owned.enable) {
       bookProps.owned = parseStrBoolean(values.owned.value);
+    }
+
+    // TODO 暫定的にここで判定 直ったら消す
+    if (Object.keys(bookProps).length === 0) {
+      enqueueSnackbar('最低一つは項目を選んでください', { variant: 'error' });
+      return;
     }
 
     const batch = db.batch();
@@ -148,9 +176,10 @@ const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
           read: { enable: false, value: '' },
           owned: { enable: false, value: '' },
         }}
+        validationSchema={bulkChangeFormSchema}
         onSubmit={handleUpdate}
       >
-        {({ handleSubmit }) => (
+        {({ handleSubmit, validateForm }) => (
           <Dialog open={open}>
             <DialogTitle>一括更新</DialogTitle>
             <DialogContent>
@@ -192,7 +221,13 @@ const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
               <Button onClick={handleDialogCloseClick} color="primary">
                 キャンセル
               </Button>
-              <Button onClick={() => handleSubmit()} color="primary">
+              <Button
+                onClick={() => {
+                  validateForm();
+                  handleSubmit();
+                }}
+                color="primary"
+              >
                 反映
               </Button>
             </DialogActions>
@@ -451,6 +486,9 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
           )
           .map((column) => getId(column)),
       },
+      autoResetFilters: false,
+      autoResetGlobalFilter: false,
+      autoResetSortBy: false,
     },
     useFilters,
     useGlobalFilter,
