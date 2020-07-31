@@ -74,6 +74,10 @@ type BulkChangeFormProps = {
     enable: boolean;
     value: '' | 'true' | 'false';
   };
+  authors: {
+    enable: boolean;
+    value: string[];
+  };
 };
 
 const parseStrBoolean = (str: '' | 'true' | 'false') => {
@@ -91,30 +95,6 @@ const parseStrBoolean = (str: '' | 'true' | 'false') => {
   return value;
 };
 
-const innerBooleanSchema = yup.object().shape({
-  enable: yup.boolean().required(),
-  value: yup.string().when('enable', {
-    is: true,
-    then: yup.string().required(),
-  }),
-});
-const bulkChangeFormSchema = yup
-  .object()
-  .shape({
-    read: innerBooleanSchema,
-    owned: innerBooleanSchema,
-  })
-  .test(
-    // TODO 機能してない
-    'at-least-one-enabled-required',
-    'please select at least one',
-    function (value) {
-      // console.log(JSON.stringify(value));
-      // console.log(value.read.enable || value.owned.enable);
-      return value.read.enable || value.owned.enable;
-    }
-  );
-// TODO: 著者
 const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
   selectedBooks,
 }) => {
@@ -130,14 +110,52 @@ const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
 
   const { enqueueSnackbar } = useSnackbar();
 
+  const innerBooleanSchema = yup.object().shape({
+    enable: yup.boolean().required(),
+    value: yup.string().when('enable', {
+      is: true,
+      then: yup.string().required(),
+    }),
+  });
+  const bulkChangeFormSchema = yup
+    .object()
+    .shape({
+      read: innerBooleanSchema,
+      owned: innerBooleanSchema,
+      authors: yup.object().shape({
+        enable: yup.boolean().required(),
+        value: yup
+          .array()
+          .of(yup.string().required())
+          .default([])
+          .when('enable', {
+            is: true,
+            then: yup.array().of(yup.string().required()).required(),
+          }),
+      }),
+    })
+    .test(
+      // TODO 機能してない
+      'at-least-one-enabled-required',
+      'please select at least one',
+      function (value) {
+        // console.log(JSON.stringify(value));
+        // console.log(value.read.enable || value.owned.enable);
+        return value.read.enable || value.owned.enable || value.authors.enable;
+      }
+    );
+
   // TODO: 500件より多いとき
   const handleUpdate = async (values: BulkChangeFormProps) => {
-    let bookProps: { read?: boolean; owned?: boolean } = {};
+    let bookProps: { read?: boolean; owned?: boolean; authors?: string[] } = {};
     if (values.read.enable) {
       bookProps.read = parseStrBoolean(values.read.value);
     }
     if (values.owned.enable) {
       bookProps.owned = parseStrBoolean(values.owned.value);
+    }
+    if (values.authors.enable) {
+      bookProps.authors = values.authors.value;
     }
 
     // TODO 暫定的にここで判定 直ったら消す
@@ -175,11 +193,12 @@ const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
         initialValues={{
           read: { enable: false, value: '' },
           owned: { enable: false, value: '' },
+          authors: { enable: false, value: [] },
         }}
         validationSchema={bulkChangeFormSchema}
         onSubmit={handleUpdate}
       >
-        {({ handleSubmit, validateForm }) => (
+        {({ values, handleSubmit }) => (
           <Dialog open={open}>
             <DialogTitle>一括更新</DialogTitle>
             <DialogContent>
@@ -215,6 +234,46 @@ const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
                     <MenuItem value={'false'}>未所有</MenuItem>
                   </Field>
                 </div>
+                <div>
+                  <Field
+                    component={CheckboxWithLabel}
+                    color="primary"
+                    name="authors.enable"
+                    type="checkbox"
+                    Label={{ label: '著者' }}
+                  />
+                  <FieldArray
+                    name="authors.value"
+                    render={(arrayHelpers) => (
+                      <div>
+                        {values.authors.value.map(
+                          (_author: string, index: number) => (
+                            <div key={index}>
+                              <Field
+                                component={FormikTextField}
+                                name={`authors.value.${index}`}
+                              />
+                              <Button
+                                variant="contained"
+                                type="button"
+                                onClick={() => arrayHelpers.remove(index)}
+                              >
+                                -
+                              </Button>
+                            </div>
+                          )
+                        )}
+                        <Button
+                          variant="contained"
+                          type="button"
+                          onClick={() => arrayHelpers.push('')}
+                        >
+                          著者追加
+                        </Button>
+                      </div>
+                    )}
+                  />
+                </div>
               </Form>
             </DialogContent>
             <DialogActions>
@@ -223,7 +282,6 @@ const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
               </Button>
               <Button
                 onClick={() => {
-                  validateForm();
                   handleSubmit();
                 }}
                 color="primary"
