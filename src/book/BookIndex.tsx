@@ -6,7 +6,6 @@ import {
   Select as FormikSelect,
   CheckboxWithLabel,
 } from 'formik-material-ui';
-import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -96,7 +95,7 @@ const parseStrBoolean = (str: '' | 'true' | 'false') => {
   return value;
 };
 
-const BulkChangeDialog: React.FC<{ selectedBooks: Book[] }> = ({
+const BulkChangeButton: React.FC<{ selectedBooks: Book[] }> = ({
   selectedBooks,
 }) => {
   const [open, setOpen] = useState(false);
@@ -609,7 +608,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
 
   return (
     <React.Fragment>
-      <BulkChangeDialog
+      <BulkChangeButton
         selectedBooks={selectedFlatRows.map((row) => row.original)}
       />
       <div>
@@ -718,7 +717,7 @@ const BookList: React.FC<{ list: Book[] }> = (props) => {
   );
 };
 
-const BookAddForm: React.FC<{}> = () => {
+const BookAddButton: React.FC<{}> = () => {
   const [open, setOpen] = useState(false);
 
   const handleDialogOpenClick = () => {
@@ -824,9 +823,8 @@ const BookAddForm: React.FC<{}> = () => {
 const BookIndex: React.FC<{ books: Book[] }> = (props) => {
   return (
     <React.Fragment>
-      <h2>追加</h2>
-      <BookAddForm />
       <h2>一覧</h2>
+      <BookAddButton />
       <BookList list={props.books} />
     </React.Fragment>
   );
