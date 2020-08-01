@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { firebase, db } from '../Firebase';
+import { db, firebase } from '../Firebase';
 
 export const ImportBooks: React.FC<{}> = () => {
   const fileInput = useRef() as React.MutableRefObject<HTMLInputElement>;
