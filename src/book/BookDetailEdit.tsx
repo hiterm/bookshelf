@@ -1,10 +1,12 @@
 import React from 'react';
 import { db } from '../Firebase';
 import firebase from 'firebase';
-import { Book } from './schema';
+import { Book, DbBook } from './schema';
 import { useSnackbar } from 'notistack';
 import { useHistory } from 'react-router-dom';
 import { BookForm } from './BookForm';
+import { Formik } from 'formik';
+import Button from '@material-ui/core/Button';
 
 export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
   const book = props.book;
@@ -16,7 +18,7 @@ export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
     return <div>Loading or not found.</div>;
   }
 
-  const handleSubmit = async (values: Book) => {
+  const handleSubmit = async (values: DbBook) => {
     let docRef = db.collection('books').doc(book.id);
     await docRef.update({
       ...values,
@@ -26,9 +28,27 @@ export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
     enqueueSnackbar('更新しました', { variant: 'success' });
   };
 
+  let dbBook: DbBook = book;
+
   return (
     <React.Fragment>
-      <BookForm book={book} submitLabel="更新" onSubmit={handleSubmit} />
+      <Formik initialValues={dbBook} onSubmit={handleSubmit}>
+        {(props) => (
+          <React.Fragment>
+            <BookForm {...props} />
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              onClick={() => {
+                props.handleSubmit();
+              }}
+            >
+              更新
+            </Button>
+          </React.Fragment>
+        )}
+      </Formik>
     </React.Fragment>
   );
 };

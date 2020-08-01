@@ -4,17 +4,21 @@ const bookFormSchema = yup
   .object({
     title: yup.string().required(),
     authors: yup.array().of(yup.string().required()).required().default([]),
+    isbn: yup
+      .string()
+      .matches(/^(\d-?){12}\d$/, { excludeEmptyString: true })
+      .required()
+      .default(''),
+    read: yup.boolean().required().default(false),
+    priority: yup.number().integer().min(0).max(100).required().default(50),
+    format: yup.string().oneOf(['', 'eBook', 'Printed']).required().default(''),
+    store: yup.string().oneOf(['', 'Kindle']).required().default(''),
+    owned: yup.boolean().defined().default(false),
   })
   .required();
 
 const bookSchema = bookFormSchema.shape({
   id: yup.string().required(),
-  isbn: yup.string().matches(/^(\d-?){12}\d$/, { excludeEmptyString: true }),
-  read: yup.boolean().required().default(false),
-  priority: yup.number().integer().min(0).max(100).required().default(50),
-  format: yup.string().oneOf(['eBook', 'Printed']).nullable(),
-  store: yup.string().oneOf(['Kindle']).nullable(),
-  owned: yup.boolean().defined().default(false),
   createdAt: yup
     .date()
     .required()
@@ -25,9 +29,24 @@ const bookSchema = bookFormSchema.shape({
     .default(() => Date.now()),
 });
 
-export type Book = yup.InferType<typeof bookSchema>;
+// export type BookPreAdd = yup.InferType<typeof bookFormSchema>;
+export interface DbBook {
+  title: string;
+  authors: string[];
+  isbn: string;
+  read: boolean;
+  owned: boolean;
+  priority: number;
+  format: '' | 'eBook' | 'Printed';
+  store: '' | 'Kindle';
+}
+export interface Book extends DbBook {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-const firebaseDocToBook = (doc: firebase.firestore.DocumentData) => {
+const firebaseDocToBook = (doc: firebase.firestore.DocumentData): Book => {
   return bookSchema.cast({
     id: doc.id,
     ...doc.data(),
