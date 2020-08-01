@@ -1,12 +1,12 @@
-import React from 'react';
-import { db } from '../Firebase';
-import firebase from 'firebase';
-import { Book, DbBook, bookFormSchema } from './schema';
-import { useSnackbar } from 'notistack';
-import { useHistory } from 'react-router-dom';
-import { BookForm } from './BookForm';
-import { Formik } from 'formik';
 import Button from '@material-ui/core/Button';
+import firebase from 'firebase';
+import { Formik } from 'formik';
+import { useSnackbar } from 'notistack';
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+import { db } from '../Firebase';
+import { BookForm } from './BookForm';
+import { Book, bookFormSchema, DbBook } from './schema';
 
 export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
   const book = props.book;
