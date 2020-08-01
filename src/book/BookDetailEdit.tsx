@@ -28,7 +28,8 @@ export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
     enqueueSnackbar('更新しました', { variant: 'success' });
   };
 
-  let dbBook: DbBook = book;
+  // id等は更新したくない
+  const { id, createdAt, updatedAt, ...dbBook } = book;
 
   return (
     <React.Fragment>
