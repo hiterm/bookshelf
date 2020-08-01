@@ -7,11 +7,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 import firebase from 'firebase';
 import { Field, FieldArray, Form, Formik } from 'formik';
-import {
-  CheckboxWithLabel,
-  Select as FormikSelect,
-  TextField as FormikTextField,
-} from 'formik-material-ui';
+import { CheckboxWithLabel, Select as FormikSelect, TextField as FormikTextField } from 'formik-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import * as yup from 'yup';
