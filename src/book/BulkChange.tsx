@@ -5,8 +5,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
+import firebase from 'firebase';
 import { Field, FieldArray, Form, Formik } from 'formik';
-import { CheckboxWithLabel, Select as FormikSelect, TextField as FormikTextField } from 'formik-material-ui';
+import {
+  CheckboxWithLabel,
+  Select as FormikSelect,
+  TextField as FormikTextField,
+} from 'formik-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import * as yup from 'yup';
@@ -112,12 +117,17 @@ export const BulkChangeButton: React.FC<{ selectedBooks: Book[] }> = ({
       return;
     }
 
+    const bookPropsWithTimestamp = {
+      ...bookProps,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    };
+
     const batch = db.batch();
     for (let i = 0; i < selectedBooks.length; i++) {
       const book = selectedBooks[i];
 
       var bookRef = db.collection('books').doc(book.id);
-      batch.update(bookRef, bookProps);
+      batch.update(bookRef, bookPropsWithTimestamp);
     }
     try {
       await batch.commit();
@@ -243,4 +253,3 @@ export const BulkChangeButton: React.FC<{ selectedBooks: Book[] }> = ({
     </div>
   );
 };
-

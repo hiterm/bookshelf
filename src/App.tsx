@@ -3,7 +3,12 @@ import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { SnackbarProvider, WithSnackbarProps } from 'notistack';
 import React from 'react';
-import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from 'react-router-dom';
 import { Books } from './book/Books';
 import { SignInScreen } from './SignInScreen';
 
