@@ -1,7 +1,7 @@
 import React from 'react';
 import { db } from '../Firebase';
 import firebase from 'firebase';
-import { Book, DbBook } from './schema';
+import { Book, DbBook, bookFormSchema } from './schema';
 import { useSnackbar } from 'notistack';
 import { useHistory } from 'react-router-dom';
 import { BookForm } from './BookForm';
@@ -32,7 +32,11 @@ export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
 
   return (
     <React.Fragment>
-      <Formik initialValues={dbBook} onSubmit={handleSubmit}>
+      <Formik
+        initialValues={dbBook}
+        onSubmit={handleSubmit}
+        validationSchema={bookFormSchema}
+      >
         {(props) => (
           <React.Fragment>
             <BookForm {...props} />
