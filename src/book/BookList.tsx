@@ -8,7 +8,7 @@ import MuiLink from '@material-ui/core/Link';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
-import { createMuiTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -29,11 +29,11 @@ import { CellProps, Column, ColumnInstance, FilterProps, Filters, HeaderProps, S
 import { BulkChangeButton } from './BulkChange';
 import { Book } from './schema';
 
-const theme = createMuiTheme();
+const GreenCheck: React.FC<{}> = () => {
+  const theme = useTheme();
 
-const GreenCheck: React.FC<{}> = () => (
-  <Check css={{ color: theme.palette.success.main }} />
-);
+  return <Check css={{ color: theme.palette.success.main }} />;
+};
 
 const DefaultColumnFilter = ({
   column: { filterValue, preFilteredRows, setFilter },
