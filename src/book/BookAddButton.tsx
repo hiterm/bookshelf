@@ -65,12 +65,9 @@ export const BookAddButton: React.FC<{}> = () => {
   const emptyBook: DbBook = {
     title: '',
     authors: [''],
-    isbn: '',
     read: false,
     owned: false,
     priority: 50,
-    format: '',
-    store: '',
   };
 
   return (
