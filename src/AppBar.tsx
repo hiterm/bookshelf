@@ -1,16 +1,17 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import MuiAppBar from '@material-ui/core/AppBar';
-import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
 import MuiLink from '@material-ui/core/Link';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import IconButton from '@material-ui/core/IconButton';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import React, { useEffect, useState } from 'react';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
+import { firebase } from './Firebase';
 
 export const AppBar: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -21,6 +22,24 @@ export const AppBar: React.FC = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const [user, setUser] = useState(null as firebase.User | null);
+  useEffect(() => {
+    const unlisten = firebase.auth().onAuthStateChanged((user) => {
+      if (user !== null) {
+        setUser(user);
+      }
+    });
+    return () => {
+      unlisten();
+    };
+  }, []);
+
+  const history = useHistory();
+  const handleSignOut = () => {
+    firebase.auth().signOut();
+    history.push('/signin');
   };
 
   return (
@@ -55,8 +74,9 @@ export const AppBar: React.FC = () => {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem>Profile</MenuItem>
-          <MenuItem onClick={handleClose}>Logout</MenuItem>
+          <MenuItem>{user?.displayName}</MenuItem>
+          <Divider />
+          <MenuItem onClick={handleSignOut}>Logout</MenuItem>
         </Menu>
       </Toolbar>
     </MuiAppBar>

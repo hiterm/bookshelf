@@ -1,25 +1,12 @@
-import Button from '@material-ui/core/Button';
 import React, { useEffect, useState } from 'react';
-import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
-import { db, firebase } from '../Firebase';
+import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { db } from '../Firebase';
 import { BookDetail } from './BookDetail';
 import { BookIndex } from './BookIndex';
 import { ImportBooks } from './ImportBooks';
 import { Book, firebaseDocToBook } from './schema';
 
 export const Books: React.FC<{}> = () => {
-  const [user, setUser] = useState(null as firebase.User | null);
-  useEffect(() => {
-    const unlisten = firebase.auth().onAuthStateChanged((user) => {
-      if (user !== null) {
-        setUser(user);
-      }
-    });
-    return () => {
-      unlisten();
-    };
-  }, []);
-
   const [books, setBooks] = useState([] as Book[]);
   useEffect(() => {
     const unsubscribe = db.collection('books').onSnapshot((querySnapshot) => {
@@ -30,13 +17,6 @@ export const Books: React.FC<{}> = () => {
       unsubscribe();
     };
   }, []);
-
-  const history = useHistory();
-  const handleSignOut = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    firebase.auth().signOut();
-    history.push('/signin');
-  };
 
   const { path } = useRouteMatch();
 
@@ -55,9 +35,6 @@ export const Books: React.FC<{}> = () => {
           </Route>
         </Switch>
       </div>
-      <Button variant="contained" onClick={handleSignOut}>
-        Sign Out
-      </Button>
     </React.Fragment>
   );
 };
