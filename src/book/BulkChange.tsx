@@ -98,7 +98,6 @@ export const BulkChangeButton: React.FC<{ selectedBooks: Book[] }> = ({
       }
     );
 
-  // TODO: 500件より多いとき
   const handleUpdate = async (values: BulkChangeFormProps) => {
     let bookProps: { read?: boolean; owned?: boolean; authors?: string[] } = {};
     if (values.read.enable) {
@@ -122,18 +121,42 @@ export const BulkChangeButton: React.FC<{ selectedBooks: Book[] }> = ({
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
 
-    const batch = db.batch();
-    for (let i = 0; i < selectedBooks.length; i++) {
-      const book = selectedBooks[i];
+    const transactionPerBook = 2;
+    const maxBook = 500 / transactionPerBook;
+    for (
+      let i = 0;
+      i < Math.floor((selectedBooks.length + maxBook - 1) / maxBook);
+      i++
+    ) {
+      const batch = db.batch();
+      for (
+        let j = i * maxBook;
+        j < Math.min((i + 1) * maxBook, selectedBooks.length);
+        j++
+      ) {
+        const book = selectedBooks[j];
 
-      var bookRef = db.collection('books').doc(book.id);
-      batch.update(bookRef, bookPropsWithTimestamp);
-    }
-    try {
-      await batch.commit();
-      enqueueSnackbar('更新に成功しました', { variant: 'success' });
-    } catch (error) {
-      enqueueSnackbar(`更新に失敗しました: ${error}`, { variant: 'error' });
+        var bookRef = db.collection('books').doc(book.id);
+        batch.update(bookRef, bookPropsWithTimestamp);
+      }
+      try {
+        await batch.commit();
+        enqueueSnackbar(
+          `${i * maxBook + 1}件目から${Math.min(
+            (i + 1) * maxBook,
+            selectedBooks.length
+          )}件目までの更新に成功しました`,
+          { variant: 'success' }
+        );
+      } catch (error) {
+        enqueueSnackbar(
+          `${i * maxBook + 1}件目から${Math.min(
+            (i + 1) * maxBook,
+            selectedBooks.length
+          )}件目までの更新に失敗しました: ${error}`,
+          { variant: 'error' }
+        );
+      }
     }
     setOpen(false);
   };
