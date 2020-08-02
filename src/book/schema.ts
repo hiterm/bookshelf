@@ -32,8 +32,8 @@ export interface DbBook {
   read: boolean;
   owned: boolean;
   priority: number;
-  format?: '' | 'eBook' | 'Printed';
-  store?: '' | 'Kindle';
+  format?: 'eBook' | 'Printed';
+  store?: 'Kindle';
 }
 export interface Book extends DbBook {
   id: string;
