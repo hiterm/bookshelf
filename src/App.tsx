@@ -4,7 +4,13 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { SnackbarProvider, WithSnackbarProps } from 'notistack';
 import React from 'react';
-import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from 'react-router-dom';
+import { AppBar } from './AppBar';
 import { Books } from './book/Books';
 import { SignInScreen } from './SignInScreen';
 
@@ -20,9 +26,9 @@ const App: React.FC<{}> = () => {
     <React.Fragment>
       <CssBaseline />
       <ThemeProvider theme={theme}>
-        <Container>
-          <h1>Bookshelf</h1>
-          <Router>
+        <Router>
+          <AppBar />
+          <Container>
             <SnackbarProvider
               ref={notistackRef}
               action={(key: string) => (
@@ -41,8 +47,8 @@ const App: React.FC<{}> = () => {
                 </Route>
               </Switch>
             </SnackbarProvider>
-          </Router>
-        </Container>
+          </Container>
+        </Router>
       </ThemeProvider>
     </React.Fragment>
   );

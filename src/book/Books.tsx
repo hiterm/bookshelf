@@ -42,7 +42,6 @@ export const Books: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
-      <div>user: {user?.displayName}</div>
       <div>
         <Switch>
           <Route exact path={path}>
