@@ -298,7 +298,7 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
         hiddenColumns: columns
           .filter(
             (column) =>
-              !['title', 'authors', 'priority'].includes(getId(column))
+              !['title', 'authors', 'priority', 'read'].includes(getId(column))
           )
           .map((column) => getId(column)),
       },
