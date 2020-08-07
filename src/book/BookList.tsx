@@ -218,6 +218,11 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
         accessor: 'format',
         Filter: SelectColumnFilter,
       },
+      {
+        Header: 'ストア',
+        accessor: 'store',
+        Filter: SelectColumnFilter,
+      },
       { Header: '優先度', accessor: 'priority' },
       {
         Header: '既読',
