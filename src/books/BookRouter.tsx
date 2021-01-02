@@ -6,7 +6,7 @@ import { BookIndex } from './BookIndex';
 import { ImportBooks } from './ImportBooks';
 import { Book, firebaseDocToBook } from './schema';
 
-export const Books: React.FC<{}> = () => {
+export const BookRouter: React.FC<{}> = () => {
   const [books, setBooks] = useState([] as Book[]);
   useEffect(() => {
     const unsubscribe = db.collection('books').onSnapshot((querySnapshot) => {
