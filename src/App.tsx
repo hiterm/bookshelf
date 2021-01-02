@@ -11,7 +11,7 @@ import {
   Switch,
 } from 'react-router-dom';
 import { AppBar } from './AppBar';
-import { Books } from './book/Books';
+import { BookRouter } from './books/BookRouter';
 import { SignInScreen } from './SignInScreen';
 
 const App: React.FC<{}> = () => {
@@ -40,7 +40,7 @@ const App: React.FC<{}> = () => {
                   <Redirect to="/books" />
                 </Route>
                 <Route path="/books">
-                  <Books />
+                  <BookRouter />
                 </Route>
                 <Route path="/signin">
                   <SignInScreen />

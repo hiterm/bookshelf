@@ -4,7 +4,7 @@ import { BookDetailEdit } from './BookDetailEdit';
 import { BookDetailShow } from './BookDetailShow';
 import { Book } from './schema';
 
-const BookDetail: React.FC<{ books: Book[] }> = (props) => {
+const BookDetailPage: React.FC<{ books: Book[] }> = (props) => {
   const { path } = useRouteMatch();
   const { id } = useParams();
 
@@ -24,4 +24,4 @@ const BookDetail: React.FC<{ books: Book[] }> = (props) => {
   );
 };
 
-export { BookDetail };
+export { BookDetailPage };
