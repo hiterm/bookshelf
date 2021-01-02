@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import { db } from '../Firebase';
-import { BookDetail } from './BookDetail';
-import { BookIndex } from './BookIndex';
-import { ImportBooks } from './ImportBooks';
+import { BookDetailPage } from './BookDetailPage';
+import { BookIndexPage } from './BookIndexPage';
+import { BookImportPage } from './BookImportPage';
 import { Book, firebaseDocToBook } from './schema';
 
 export const BookRouter: React.FC<{}> = () => {
@@ -25,13 +25,13 @@ export const BookRouter: React.FC<{}> = () => {
       <div>
         <Switch>
           <Route exact path={path}>
-            <BookIndex books={books} />
+            <BookIndexPage books={books} />
           </Route>
           <Route path={`${path}/import`}>
-            <ImportBooks />
+            <BookImportPage />
           </Route>
           <Route path={`${path}/:id`}>
-            <BookDetail books={books} />
+            <BookDetailPage books={books} />
           </Route>
         </Switch>
       </div>
