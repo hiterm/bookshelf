@@ -6,7 +6,7 @@ import { Book } from './schema';
 
 const BookDetailPage: React.FC<{ books: Book[] }> = (props) => {
   const { path } = useRouteMatch();
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
 
   const book: Book | undefined = props.books.find((book) => book.id === id);
 

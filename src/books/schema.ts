@@ -1,3 +1,4 @@
+import { firebase } from '../Firebase';
 import * as yup from 'yup';
 
 const bookFormSchema = yup
@@ -18,11 +19,11 @@ const bookSchema = bookFormSchema.shape({
   createdAt: yup
     .date()
     .required()
-    .default(() => Date.now()),
+    .default(() => new Date()),
   updatedAt: yup
     .date()
     .required()
-    .default(() => Date.now()),
+    .default(() => new Date()),
 });
 
 export interface DbBook {
@@ -49,7 +50,8 @@ const firebaseDocToBook = (doc: firebase.firestore.DocumentData): Book => {
     updatedAt: doc.data().updatedAt?.toDate(),
   });
 
-  return book;
+  // TODO: 無理やりキャストしている。直す
+  return book as Book;
 };
 
 export { bookFormSchema, bookSchema, firebaseDocToBook };
