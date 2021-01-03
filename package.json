@@ -46,7 +46,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react-router-dom": "^5.1.5",
+    "@types/react-router-dom": "^5.1.7",
     "@types/react-table": "^7.0.26",
     "@types/yup": "^0.29.11",
     "eslint-config-prettier": "^6.11.0",
