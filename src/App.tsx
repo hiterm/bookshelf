@@ -2,7 +2,7 @@ import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import { SnackbarProvider, WithSnackbarProps } from 'notistack';
+import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import {
   BrowserRouter as Router,
