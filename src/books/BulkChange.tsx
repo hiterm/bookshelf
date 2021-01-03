@@ -70,33 +70,31 @@ export const BulkChangeButton: React.FC<{ selectedBooks: Book[] }> = ({
       then: yup.string().required(),
     }),
   });
-  const bulkChangeFormSchema = yup
-    .object()
-    .shape({
-      read: innerBooleanSchema,
-      owned: innerBooleanSchema,
-      authors: yup.object().shape({
-        enable: yup.boolean().required(),
-        value: yup
-          .array()
-          .of(yup.string().required())
-          .default([])
-          .when('enable', {
-            is: true,
-            then: yup.array().of(yup.string().required()).required(),
-          }),
-      }),
-    })
-    .test(
-      // TODO 機能してない
-      'at-least-one-enabled-required',
-      'please select at least one',
-      function (value) {
-        // console.log(JSON.stringify(value));
-        // console.log(value.read.enable || value.owned.enable);
-        return value.read.enable || value.owned.enable || value.authors.enable;
-      }
-    );
+  const bulkChangeFormSchema = yup.object().shape({
+    read: innerBooleanSchema,
+    owned: innerBooleanSchema,
+    authors: yup.object().shape({
+      enable: yup.boolean().required(),
+      value: yup
+        .array()
+        .of(yup.string().required())
+        .default([])
+        .when('enable', {
+          is: true,
+          then: yup.array().of(yup.string().required()).required(),
+        }),
+    }),
+  });
+  // .test(
+  //   // TODO 機能してない
+  //   'at-least-one-enabled-required',
+  //   'please select at least one',
+  //   function (value) {
+  //     // console.log(JSON.stringify(value));
+  //     // console.log(value.read.enable || value.owned.enable);
+  //     return value.read.enable || value.owned.enable || value.authors.enable;
+  //   }
+  // );
 
   const handleUpdate = async (values: BulkChangeFormProps) => {
     let bookProps: { read?: boolean; owned?: boolean; authors?: string[] } = {};

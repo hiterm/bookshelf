@@ -15,7 +15,7 @@ import { BookRouter } from './books/BookRouter';
 import { SignInScreen } from './SignInScreen';
 
 const App: React.FC<{}> = () => {
-  const notistackRef = React.useRef<WithSnackbarProps>();
+  const notistackRef = React.useRef<SnackbarProvider>(null);
   const onClickDismiss = (key: string) => () => {
     notistackRef.current?.closeSnackbar(key);
   };
