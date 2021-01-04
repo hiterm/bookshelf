@@ -78,6 +78,7 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
       type: 'boolean',
       hidden: true,
       hiddenByColumnsButton: true,
+      defaultFilter: 'checked',
     },
     {
       title: '追加日時',
