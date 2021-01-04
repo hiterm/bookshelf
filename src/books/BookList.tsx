@@ -53,7 +53,12 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
       columns={columns}
       data={props.list}
       title=""
-      options={{ filtering: true, columnsButton: true }}
+      options={{
+        filtering: true,
+        columnsButton: true,
+        pageSize: 20,
+        pageSizeOptions: [20, 50, 100, 500, 1000],
+      }}
     />
   );
 };
