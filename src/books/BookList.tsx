@@ -12,10 +12,14 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
     {
       title: '形式',
       field: 'format',
+      hidden: true,
+      hiddenByColumnsButton: true,
     },
     {
       title: 'ストア',
       field: 'store',
+      hidden: true,
+      hiddenByColumnsButton: true,
     },
     { title: '優先度', field: 'priority' },
     {
@@ -25,16 +29,22 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
     {
       title: '所有',
       field: 'owned',
+      hidden: true,
+      hiddenByColumnsButton: true,
     },
     {
       title: '追加日時',
       field: 'createdAt',
       type: 'datetime',
+      hidden: true,
+      hiddenByColumnsButton: true,
     },
     {
       title: '更新日時',
       field: 'updatedAt',
       type: 'datetime',
+      hidden: true,
+      hiddenByColumnsButton: true,
     },
   ];
 
