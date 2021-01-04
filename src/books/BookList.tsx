@@ -21,14 +21,17 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
       hidden: true,
       hiddenByColumnsButton: true,
     },
-    { title: '優先度', field: 'priority' },
+    { title: '優先度', field: 'priority', defaultSort: 'desc' },
     {
       title: '既読',
       field: 'read',
+      type: 'boolean',
+      defaultFilter: 'unchecked',
     },
     {
       title: '所有',
       field: 'owned',
+      type: 'boolean',
       hidden: true,
       hiddenByColumnsButton: true,
     },
