@@ -5,7 +5,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
-import firebase from 'firebase';
+import { firebase } from '../Firebase';
 import { Field, FieldArray, Form, Formik } from 'formik';
 import {
   CheckboxWithLabel,
