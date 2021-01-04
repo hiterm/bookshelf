@@ -1,4 +1,4 @@
-import MaterialTable, { Column } from 'material-table';
+import MaterialTable, { Column } from '@material-table/core';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
