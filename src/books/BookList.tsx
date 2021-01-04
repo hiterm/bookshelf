@@ -51,8 +51,9 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
     {
       title: '書名',
       field: 'title',
+      cellStyle: { minWidth: '200px' },
     },
-    { title: '著者', field: 'authors' },
+    { title: '著者', field: 'authors', cellStyle: { minWidth: '150px' } },
     {
       title: '形式',
       field: 'format',
