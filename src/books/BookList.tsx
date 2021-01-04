@@ -1,5 +1,7 @@
 import MaterialTable, { Column } from 'material-table';
+import { useSnackbar } from 'notistack';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { Book } from './schema';
 
 export const BookList: React.FC<{ list: Book[] }> = (props) => {
@@ -51,11 +53,28 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
     },
   ];
 
+  const history = useHistory();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleRowClick = (
+    event?: React.MouseEvent<Element, MouseEvent>,
+    rowData?: Book
+  ) => {
+    if (rowData === undefined) {
+      enqueueSnackbar(`予期せぬエラー: rowDataがundefined`, {
+        variant: 'error',
+      });
+      return;
+    }
+    history.push(`/books/${rowData.id}`);
+  };
+
   return (
     <MaterialTable
       columns={columns}
       data={props.list}
       title=""
+      onRowClick={handleRowClick}
       options={{
         filtering: true,
         columnsButton: true,
