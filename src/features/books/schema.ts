@@ -1,5 +1,5 @@
-import { firebase } from '../../Firebase';
 import * as yup from 'yup';
+import { firebase } from '../../Firebase';
 
 const bookFormSchema = yup
   .object({

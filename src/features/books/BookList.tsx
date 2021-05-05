@@ -1,10 +1,7 @@
 import MaterialTable, { Column, Icons } from '@material-table/core';
-import React from 'react';
-import { Book } from './schema';
-
-import { forwardRef } from 'react';
-
+import MuiLink from '@material-ui/core/Link';
 import AddBox from '@material-ui/icons/AddBox';
+
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import Check from '@material-ui/icons/Check';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
@@ -19,8 +16,10 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import MuiLink from '@material-ui/core/Link';
+import { forwardRef } from 'react';
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { Book } from './schema';
 
 const tableIcons: Icons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
