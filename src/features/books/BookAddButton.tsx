@@ -8,7 +8,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { db, firebase } from '../Firebase';
+import { db, firebase } from '../../Firebase';
 import { BookForm } from './BookForm';
 import { bookFormSchema, DbBook } from './schema';
 

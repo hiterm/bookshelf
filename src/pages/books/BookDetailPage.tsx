@@ -1,8 +1,8 @@
 import React from 'react';
 import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
-import { BookDetailEdit } from '../../books/BookDetailEdit';
-import { BookDetailShow } from '../../books/BookDetailShow';
-import { Book } from '../../books/schema';
+import { BookDetailEdit } from '../../features/books/BookDetailEdit';
+import { BookDetailShow } from '../../features/books/BookDetailShow';
+import { Book } from '../../features/books/schema';
 
 const BookDetailPage: React.FC<{ books: Book[] }> = (props) => {
   const { path } = useRouteMatch();

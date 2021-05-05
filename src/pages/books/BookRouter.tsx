@@ -4,7 +4,7 @@ import { db } from '../../Firebase';
 import { BookDetailPage } from './BookDetailPage';
 import { BookIndexPage } from './BookIndexPage';
 import { BookImportPage } from './BookImportPage';
-import { Book, firebaseDocToBook } from '../../books/schema';
+import { Book, firebaseDocToBook } from '../../features/books/schema';
 
 export const BookRouter: React.FC<{}> = () => {
   const [books, setBooks] = useState([] as Book[]);

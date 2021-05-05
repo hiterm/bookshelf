@@ -5,7 +5,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
-import { firebase } from '../Firebase';
+import { firebase } from '../../Firebase';
 import { Field, FieldArray, Form, Formik } from 'formik';
 import {
   CheckboxWithLabel,
@@ -15,7 +15,7 @@ import {
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import * as yup from 'yup';
-import { db } from '../Firebase';
+import { db } from '../../Firebase';
 import { Book } from './schema';
 
 type BulkChangeFormProps = {
