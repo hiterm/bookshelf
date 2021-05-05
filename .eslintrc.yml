@@ -15,3 +15,5 @@ settings:
       extensions: [".js", ".jsx", ".ts", ".tsx"]
 rules:
   import/order: ["warn", { "alphabetize": { "order": "asc" } }]
+ignorePatterns:
+  - /build
