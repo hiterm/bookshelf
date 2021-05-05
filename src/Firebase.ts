@@ -14,6 +14,9 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+if (window.location.hostname === 'localhost') {
+  db.useEmulator('localhost', 8080);
+}
 
 // For development
 // Reduce request for firestore
