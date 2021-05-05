@@ -1,7 +1,5 @@
 import MaterialTable, { Column, Icons } from '@material-table/core';
-import { useSnackbar } from 'notistack';
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 import { Book } from './schema';
 
 import { forwardRef } from 'react';
@@ -21,6 +19,8 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
+import MuiLink from '@material-ui/core/Link';
+import { Link as RouterLink } from 'react-router-dom';
 
 const tableIcons: Icons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -52,6 +52,11 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
       title: '書名',
       field: 'title',
       cellStyle: { minWidth: '200px' },
+      render: (rowData) => (
+        <MuiLink component={RouterLink} to={`/books/${rowData.id}`}>
+          {rowData.title}
+        </MuiLink>
+      ),
     },
     { title: '著者', field: 'authors', cellStyle: { minWidth: '150px' } },
     {
@@ -97,28 +102,11 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
     },
   ];
 
-  const history = useHistory();
-  const { enqueueSnackbar } = useSnackbar();
-
-  const handleRowClick = (
-    event?: React.MouseEvent<Element, MouseEvent>,
-    rowData?: Book
-  ) => {
-    if (rowData === undefined) {
-      enqueueSnackbar(`予期せぬエラー: rowDataがundefined`, {
-        variant: 'error',
-      });
-      return;
-    }
-    history.push(`/books/${rowData.id}`);
-  };
-
   return (
     <MaterialTable
       columns={columns}
       data={props.list}
       title=""
-      onRowClick={handleRowClick}
       options={{
         filtering: true,
         columnsButton: true,
