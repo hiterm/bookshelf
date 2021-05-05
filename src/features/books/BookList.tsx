@@ -81,8 +81,6 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
       title: '所有',
       field: 'owned',
       type: 'boolean',
-      hidden: true,
-      hiddenByColumnsButton: true,
       defaultFilter: 'checked',
     },
     {
