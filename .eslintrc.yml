@@ -1,4 +1,15 @@
 extends:
+  - eslint:recommended
   - plugin:prettier/recommended
   - prettier/react
   - react-app
+  - plugin:@typescript-eslint/eslint-recommended
+  - plugin:import/errors
+plugins:
+  - "@typescript-eslint"
+  - import
+settings:
+  import/resolver:
+    node:
+      paths: ["src"]
+      extensions: [".js", ".jsx", ".ts", ".tsx"]

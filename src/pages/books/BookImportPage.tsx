@@ -23,7 +23,7 @@ export const BookImportPage: React.FC<{}> = () => {
         createdAt: new Date(year, month, date),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
-      var newBookRef = db.collection('books').doc();
+      const newBookRef = db.collection('books').doc();
       batch.set(newBookRef, formattedBook);
     }
     batch

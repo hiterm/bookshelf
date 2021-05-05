@@ -43,7 +43,7 @@ export interface Book extends DbBook {
 }
 
 const firebaseDocToBook = (doc: firebase.firestore.DocumentData): Book => {
-  let book = bookSchema.cast({
+  const book = bookSchema.cast({
     id: doc.id,
     ...doc.data(),
     createdAt: doc.data().createdAt?.toDate(),

@@ -97,7 +97,11 @@ export const BulkChangeButton: React.FC<{ selectedBooks: Book[] }> = ({
   // );
 
   const handleUpdate = async (values: BulkChangeFormProps) => {
-    let bookProps: { read?: boolean; owned?: boolean; authors?: string[] } = {};
+    const bookProps: {
+      read?: boolean;
+      owned?: boolean;
+      authors?: string[];
+    } = {};
     if (values.read.enable) {
       bookProps.read = parseStrBoolean(values.read.value);
     }
@@ -134,7 +138,7 @@ export const BulkChangeButton: React.FC<{ selectedBooks: Book[] }> = ({
       ) {
         const book = selectedBooks[j];
 
-        var bookRef = db.collection('books').doc(book.id);
+        const bookRef = db.collection('books').doc(book.id);
         batch.update(bookRef, bookPropsWithTimestamp);
       }
       try {
