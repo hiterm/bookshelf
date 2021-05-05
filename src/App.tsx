@@ -11,8 +11,8 @@ import {
   Switch,
 } from 'react-router-dom';
 import { AppBar } from './AppBar';
-import { BookRouter } from './pages/books/BookRouter';
 import { SignInScreen } from './SignInScreen';
+import { BookRouter } from './pages/books/BookRouter';
 
 const App: React.FC<{}> = () => {
   const notistackRef = React.useRef<SnackbarProvider>(null);

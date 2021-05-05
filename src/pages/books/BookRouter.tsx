@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import { db } from '../../Firebase';
-import { BookDetailPage } from './BookDetailPage';
-import { BookIndexPage } from './BookIndexPage';
-import { BookImportPage } from './BookImportPage';
 import { Book, firebaseDocToBook } from '../../features/books/schema';
+import { BookDetailPage } from './BookDetailPage';
+import { BookImportPage } from './BookImportPage';
+import { BookIndexPage } from './BookIndexPage';
 
 export const BookRouter: React.FC<{}> = () => {
   const [books, setBooks] = useState([] as Book[]);

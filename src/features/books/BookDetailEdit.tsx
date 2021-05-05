@@ -18,7 +18,7 @@ export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
   }
 
   const handleSubmit = async (values: DbBook) => {
-    let docRef = db.collection('books').doc(book.id);
+    const docRef = db.collection('books').doc(book.id);
     await docRef.update({
       ...values,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),

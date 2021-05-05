@@ -5,7 +5,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
-import { firebase } from '../../Firebase';
 import { Field, FieldArray, Form, Formik } from 'formik';
 import {
   CheckboxWithLabel,
@@ -15,6 +14,7 @@ import {
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import * as yup from 'yup';
+import { firebase } from '../../Firebase';
 import { db } from '../../Firebase';
 import { Book } from './schema';
 
@@ -97,7 +97,11 @@ export const BulkChangeButton: React.FC<{ selectedBooks: Book[] }> = ({
   // );
 
   const handleUpdate = async (values: BulkChangeFormProps) => {
-    let bookProps: { read?: boolean; owned?: boolean; authors?: string[] } = {};
+    const bookProps: {
+      read?: boolean;
+      owned?: boolean;
+      authors?: string[];
+    } = {};
     if (values.read.enable) {
       bookProps.read = parseStrBoolean(values.read.value);
     }
@@ -134,7 +138,7 @@ export const BulkChangeButton: React.FC<{ selectedBooks: Book[] }> = ({
       ) {
         const book = selectedBooks[j];
 
-        var bookRef = db.collection('books').doc(book.id);
+        const bookRef = db.collection('books').doc(book.id);
         batch.update(bookRef, bookPropsWithTimestamp);
       }
       try {
