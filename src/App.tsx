@@ -11,7 +11,7 @@ import {
   Switch,
 } from 'react-router-dom';
 import { AppBar } from './AppBar';
-import { BookRouter } from './books/BookRouter';
+import { BookRouter } from './pages/books/BookRouter';
 import { SignInScreen } from './SignInScreen';
 
 const App: React.FC<{}> = () => {

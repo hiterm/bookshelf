@@ -1,7 +1,7 @@
 import React from 'react';
-import { BookAddButton } from './BookAddButton';
-import { BookList } from './BookList';
-import { Book } from './schema';
+import { BookAddButton } from '../../features/books/BookAddButton';
+import { BookList } from '../../features/books/BookList';
+import { Book } from '../../features/books/schema';
 
 const BookIndexPage: React.FC<{ books: Book[] }> = (props) => {
   return (

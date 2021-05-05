@@ -17,7 +17,7 @@ import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
-import { db } from '../Firebase';
+import { db } from '../../Firebase';
 import { Book } from './schema';
 
 const theme = createMuiTheme();

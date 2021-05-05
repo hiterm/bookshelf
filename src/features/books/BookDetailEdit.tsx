@@ -3,7 +3,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { firebase, db } from '../Firebase';
+import { firebase, db } from '../../Firebase';
 import { BookForm } from './BookForm';
 import { Book, bookFormSchema, DbBook } from './schema';
 
