@@ -6,7 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AppBar } from './AppBar';
-import { MainRoutes } from './MainRoutes';
+import { MainRoutes } from './pages/MainRoutes';
 
 const App: React.FC<{}> = () => {
   const notistackRef = React.useRef<SnackbarProvider>(null);
