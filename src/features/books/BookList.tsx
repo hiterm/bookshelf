@@ -7,10 +7,20 @@ import { useAppSelector } from '../../hooks';
 import { tableIcons } from '../material-table/tableIcons';
 import { Book } from './schema';
 
+// https://github.com/Microsoft/TypeScript/issues/4922
+const notUndefined = <T extends {}>(x: T | undefined): x is T => {
+  return x !== undefined;
+};
+
 const BookListContainer: React.FC = (props) => {
-  const books = useAppSelector((state) => state.books.entities);
+  const bookIds = useAppSelector((state) => state.books.ids);
+  const bookEntities = useAppSelector((state) => state.books.entities);
+  const books = bookIds
+    .map((id) => bookEntities[id])
+    .filter(notUndefined)
+    .map((book) => ({ ...book }));
   // workaround: https://github.com/mbrn/material-table/issues/1979
-  return <BookListPresenter list={books.map((book) => ({ ...book }))} />;
+  return <BookListPresenter list={books} />;
 };
 
 const BookListPresenter: React.FC<{ list: Book[] }> = (props) => {
