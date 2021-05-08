@@ -1,12 +1,40 @@
+import { CircularProgress } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AppBar } from './AppBar';
+import { firebase } from './Firebase';
+import { SignInScreen } from './SignInScreen';
 import { MainRoutes } from './pages/MainRoutes';
+
+const SignInCheck: React.FC = ({ children }) => {
+  const auth = firebase.auth();
+  const [user, loading, error] = useAuthState(auth);
+
+  if (loading) {
+    return (
+      <div>
+        <CircularProgress />
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div>
+        <p>Error: {error}</p>
+      </div>
+    );
+  }
+  if (user) {
+    return <>{children}</>;
+  }
+  return <SignInScreen />;
+};
 
 const App: React.FC<{}> = () => {
   const notistackRef = React.useRef<SnackbarProvider>(null);
@@ -29,7 +57,9 @@ const App: React.FC<{}> = () => {
                 <Button onClick={onClickDismiss(key)}>Dismiss</Button>
               )}
             >
-              <MainRoutes />
+              <SignInCheck>
+                <MainRoutes />
+              </SignInCheck>
             </SnackbarProvider>
           </Container>
         </Router>

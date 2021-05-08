@@ -7,7 +7,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { firebase } from './Firebase';
 
@@ -22,17 +23,9 @@ export const AppBar: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const [user, setUser] = useState(null as firebase.User | null);
-  useEffect(() => {
-    const unlisten = firebase.auth().onAuthStateChanged((user) => {
-      if (user !== null) {
-        setUser(user);
-      }
-    });
-    return () => {
-      unlisten();
-    };
-  }, []);
+  const auth = firebase.auth();
+  // Not check errors, because we have already checked in "SignInCheck"
+  const [user, ,] = useAuthState(auth);
 
   const history = useHistory();
   const handleSignOut = () => {
@@ -53,9 +46,6 @@ export const AppBar: React.FC = () => {
             Bookshelf
           </MuiLink>
         </Typography>
-        {
-          // <Button color="inherit">Login</Button>
-        }
         <IconButton
           aria-label="account of current user"
           aria-controls="primary-search-account-menu"
@@ -72,7 +62,7 @@ export const AppBar: React.FC = () => {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem>{user?.displayName}</MenuItem>
+          <MenuItem>User: {user?.displayName}</MenuItem>
           <Divider />
           <MenuItem onClick={handleSignOut}>Logout</MenuItem>
         </Menu>
