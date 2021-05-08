@@ -6,11 +6,13 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AppBar } from './AppBar';
 import { firebase } from './Firebase';
 import { SignInScreen } from './SignInScreen';
 import { MainRoutes } from './pages/MainRoutes';
+import store from './store';
 
 const SignInCheck: React.FC = ({ children }) => {
   const auth = firebase.auth();
@@ -46,24 +48,26 @@ const App: React.FC<{}> = () => {
 
   return (
     <React.Fragment>
-      <CssBaseline />
-      <ThemeProvider theme={theme}>
-        <Router>
-          <AppBar />
-          <Container>
-            <SnackbarProvider
-              ref={notistackRef}
-              action={(key: string) => (
-                <Button onClick={onClickDismiss(key)}>Dismiss</Button>
-              )}
-            >
-              <SignInCheck>
-                <MainRoutes />
-              </SignInCheck>
-            </SnackbarProvider>
-          </Container>
-        </Router>
-      </ThemeProvider>
+      <Provider store={store}>
+        <CssBaseline />
+        <ThemeProvider theme={theme}>
+          <Router>
+            <AppBar />
+            <Container>
+              <SnackbarProvider
+                ref={notistackRef}
+                action={(key: string) => (
+                  <Button onClick={onClickDismiss(key)}>Dismiss</Button>
+                )}
+              >
+                <SignInCheck>
+                  <MainRoutes />
+                </SignInCheck>
+              </SnackbarProvider>
+            </Container>
+          </Router>
+        </ThemeProvider>
+      </Provider>
     </React.Fragment>
   );
 };
