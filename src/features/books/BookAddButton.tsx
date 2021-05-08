@@ -9,7 +9,9 @@ import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { db, firebase } from '../../Firebase';
+import { useAppDispatch } from '../../hooks';
 import { BookForm } from './BookForm';
+import { bookAdd } from './booksSlice';
 import { bookFormSchema, DbBook } from './schema';
 
 export const BookAddButton: React.FC<{}> = () => {
@@ -26,18 +28,17 @@ export const BookAddButton: React.FC<{}> = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const history = useHistory();
 
-  const handleSubmit = async (values: DbBook) => {
-    const doc = await db.collection('books').add({
-      ...values,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+  const dispatch = useAppDispatch();
+
+  const handleSubmit = (values: DbBook) => {
+    dispatch(bookAdd(values));
 
     const action = (key: string) => (
       <React.Fragment>
         <Button
           onClick={() => {
-            history.push(`/books/${doc.id}`);
+            // TODO: fix
+            // history.push(`/books/${doc.id}`);
             closeSnackbar(key);
           }}
         >

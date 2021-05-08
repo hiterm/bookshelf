@@ -1,15 +1,22 @@
-import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { Book } from './schema';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Book, DbBook } from './schema';
 
-const booksAdapter = createEntityAdapter<Book>({
-  selectId: (book) => book.id,
-});
+type BookState = { entities: Book[] };
+const initialState: BookState = { entities: [] };
 
 export const booksSlice = createSlice({
   name: 'books',
-  initialState: booksAdapter.getInitialState(),
+  initialState: initialState,
   reducers: {
-    bookAdd: booksAdapter.addOne,
+    bookAdd: (state, action: PayloadAction<DbBook>) => {
+      const book = {
+        ...action.payload,
+        id: 'dummyid',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      state.entities.push(book);
+    },
   },
 });
 

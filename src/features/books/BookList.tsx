@@ -3,10 +3,17 @@ import MuiLink from '@material-ui/core/Link';
 
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useAppSelector } from '../../hooks';
 import { tableIcons } from '../material-table/tableIcons';
 import { Book } from './schema';
 
-export const BookList: React.FC<{ list: Book[] }> = (props) => {
+const BookListContainer: React.FC = (props) => {
+  const books = useAppSelector((state) => state.books.entities);
+  // workaround: https://github.com/mbrn/material-table/issues/1979
+  return <BookListPresenter list={books.map((book) => ({ ...book }))} />;
+};
+
+const BookListPresenter: React.FC<{ list: Book[] }> = (props) => {
   const columns: Column<Book>[] = [
     {
       title: '書名',
@@ -75,3 +82,7 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
     />
   );
 };
+
+export const BookList: React.FC<{ list: Book[] }> = (props) => (
+  <BookListContainer />
+);
