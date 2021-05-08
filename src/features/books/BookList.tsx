@@ -18,8 +18,8 @@ const BookListContainer: React.FC = (props) => {
   const books = bookIds
     .map((id) => bookEntities[id])
     .filter(notUndefined)
+    // workaround: https://github.com/mbrn/material-table/issues/1979
     .map((book) => ({ ...book }));
-  // workaround: https://github.com/mbrn/material-table/issues/1979
   return <BookListPresenter list={books} />;
 };
 
