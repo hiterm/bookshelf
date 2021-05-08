@@ -12,9 +12,10 @@ const notUndefined = <T extends {}>(x: T | undefined): x is T => {
   return x !== undefined;
 };
 
-const BookListContainer: React.FC = (props) => {
+const BookListContainer: React.FC = () => {
   const bookIds = useAppSelector((state) => state.books.ids);
   const bookEntities = useAppSelector((state) => state.books.entities);
+  // TODO: reselectを使う
   const books = bookIds
     .map((id) => bookEntities[id])
     .filter(notUndefined)
