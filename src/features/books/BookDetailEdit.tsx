@@ -5,7 +5,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { firebase, db } from '../../Firebase';
 import { BookForm } from './BookForm';
-import { Book, bookFormSchema, DbBook } from './schema';
+import { Book, bookFormSchema, BookFormProps } from './schema';
 
 export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
   const book = props.book;
@@ -17,7 +17,7 @@ export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
     return <div>Loading or not found.</div>;
   }
 
-  const handleSubmit = async (values: DbBook) => {
+  const handleSubmit = async (values: BookFormProps) => {
     const docRef = db.collection('books').doc(book.id);
     await docRef.update({
       ...values,

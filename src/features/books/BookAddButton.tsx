@@ -12,7 +12,7 @@ import { db, firebase } from '../../Firebase';
 import { useAppDispatch } from '../../hooks';
 import { BookForm } from './BookForm';
 import { bookAdd } from './booksSlice';
-import { bookFormSchema, DbBook } from './schema';
+import { bookFormSchema, BookFormProps } from './schema';
 
 export const BookAddButton: React.FC<{}> = () => {
   const [open, setOpen] = useState(false);
@@ -30,7 +30,7 @@ export const BookAddButton: React.FC<{}> = () => {
 
   const dispatch = useAppDispatch();
 
-  const handleSubmit = (values: DbBook) => {
+  const handleSubmit = (values: BookFormProps) => {
     dispatch(bookAdd(values));
 
     const action = (key: string) => (
@@ -63,7 +63,7 @@ export const BookAddButton: React.FC<{}> = () => {
     });
   };
 
-  const emptyBook: DbBook = {
+  const emptyBook: BookFormProps = {
     title: '',
     authors: [''],
     read: false,

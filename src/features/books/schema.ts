@@ -26,7 +26,7 @@ const bookSchema = bookFormSchema.shape({
     .default(() => new Date()),
 });
 
-export interface DbBook {
+export interface BookFormProps {
   title: string;
   authors: string[];
   isbn?: string;
@@ -36,7 +36,7 @@ export interface DbBook {
   format?: 'eBook' | 'Printed';
   store?: 'Kindle';
 }
-export interface Book extends DbBook {
+export interface Book extends BookFormProps {
   id: string;
   createdAt: Date;
   updatedAt: Date;

@@ -3,7 +3,7 @@ import {
   createSlice,
   PayloadAction,
 } from '@reduxjs/toolkit';
-import { Book, DbBook } from './schema';
+import { Book, BookFormProps } from './schema';
 
 const booksAdapter = createEntityAdapter<Book>({
   selectId: (book) => book.id,
@@ -13,7 +13,7 @@ export const booksSlice = createSlice({
   name: 'books',
   initialState: booksAdapter.getInitialState(),
   reducers: {
-    bookAdd: (state, action: PayloadAction<DbBook>) => {
+    bookAdd: (state, action: PayloadAction<BookFormProps>) => {
       const book = {
         ...action.payload,
         id: action.payload.title,

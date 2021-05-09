@@ -5,9 +5,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { Field, FieldArray, Form, FormikProps } from 'formik';
 import { CheckboxWithLabel, Select, TextField } from 'formik-material-ui';
 import React from 'react';
-import { DbBook } from './schema';
+import { BookFormProps } from './schema';
 
-export const BookForm: React.FC<FormikProps<DbBook>> = (props) => {
+export const BookForm: React.FC<FormikProps<BookFormProps>> = (props) => {
   return (
     <Form>
       <div>
