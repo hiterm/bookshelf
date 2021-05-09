@@ -12,6 +12,11 @@ const notUndefined = <T extends {}>(x: T | undefined): x is T => {
   return x !== undefined;
 };
 
+interface BookListPresenterProps extends Book {
+  createdAtDate: Date;
+  updatedAtDate: Date;
+}
+
 const BookListContainer: React.FC = () => {
   const bookIds = useAppSelector((state) => state.books.ids);
   const bookEntities = useAppSelector((state) => state.books.entities);
@@ -20,11 +25,17 @@ const BookListContainer: React.FC = () => {
     .map((id) => bookEntities[id])
     .filter(notUndefined)
     // workaround: https://github.com/mbrn/material-table/issues/1979
-    .map((book) => ({ ...book }));
+    .map((book) => ({
+      ...book,
+      createdAtDate: new Date(book.createdAt),
+      updatedAtDate: new Date(book.updatedAt),
+    }));
   return <BookListPresenter list={books} />;
 };
 
-const BookListPresenter: React.FC<{ list: Book[] }> = (props) => {
+const BookListPresenter: React.FC<{ list: BookListPresenterProps[] }> = (
+  props
+) => {
   const columns: Column<Book>[] = [
     {
       title: '書名',
@@ -64,14 +75,14 @@ const BookListPresenter: React.FC<{ list: Book[] }> = (props) => {
     },
     {
       title: '追加日時',
-      field: 'createdAt',
+      field: 'createdAtDate',
       type: 'datetime',
       hidden: true,
       hiddenByColumnsButton: true,
     },
     {
       title: '更新日時',
-      field: 'updatedAt',
+      field: 'updatedAtDate',
       type: 'datetime',
       hidden: true,
       hiddenByColumnsButton: true,

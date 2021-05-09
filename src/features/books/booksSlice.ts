@@ -17,8 +17,8 @@ export const booksSlice = createSlice({
       const book = {
         ...action.payload,
         id: action.payload.title,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
       };
       booksAdapter.addOne(state, book);
     },

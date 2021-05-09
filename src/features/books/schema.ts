@@ -17,13 +17,13 @@ const bookFormSchema = yup
 const bookSchema = bookFormSchema.shape({
   id: yup.string().required(),
   createdAt: yup
-    .date()
+    .number()
     .required()
-    .default(() => new Date()),
+    .default(() => Date.now()),
   updatedAt: yup
-    .date()
+    .number()
     .required()
-    .default(() => new Date()),
+    .default(() => Date.now()),
 });
 
 export interface BookFormProps {
@@ -38,16 +38,16 @@ export interface BookFormProps {
 }
 export interface Book extends BookFormProps {
   id: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: number;
+  updatedAt: number;
 }
 
 const firebaseDocToBook = (doc: firebase.firestore.DocumentData): Book => {
   const book = bookSchema.cast({
     id: doc.id,
     ...doc.data(),
-    createdAt: doc.data().createdAt?.toDate(),
-    updatedAt: doc.data().updatedAt?.toDate(),
+    createdAt: doc.data().createdAt?.toMillis(),
+    updatedAt: doc.data().updatedAt?.toMillis(),
   });
 
   // TODO: 無理やりキャストしている。直す
