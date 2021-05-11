@@ -1,4 +1,5 @@
 import {
+  createAsyncThunk,
   createEntityAdapter,
   createSlice,
   PayloadAction,
@@ -9,9 +10,13 @@ const booksAdapter = createEntityAdapter<Book>({
   selectId: (book) => book.id,
 });
 
+type Loading = 'not loaded' | 'loading' | 'loaded';
+
 export const booksSlice = createSlice({
   name: 'books',
-  initialState: booksAdapter.getInitialState(),
+  initialState: booksAdapter.getInitialState({
+    loading: 'not loaded' as Loading,
+  }),
   reducers: {
     bookAdd: (state, action: PayloadAction<BookFormProps>) => {
       const book = {
@@ -22,8 +27,12 @@ export const booksSlice = createSlice({
       };
       booksAdapter.addOne(state, book);
     },
+    booksReplaceAll: (state, action: PayloadAction<Book[]>) => {
+      booksAdapter.removeAll(state);
+      booksAdapter.addMany(state, action.payload);
+    },
   },
 });
 
-export const { bookAdd } = booksSlice.actions;
+export const { bookAdd, booksReplaceAll } = booksSlice.actions;
 export default booksSlice.reducer;

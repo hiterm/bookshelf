@@ -1,11 +1,15 @@
 import MaterialTable, { Column } from '@material-table/core';
 import MuiLink from '@material-ui/core/Link';
+import { createSelector } from '@reduxjs/toolkit';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { useAppSelector } from '../../hooks';
+import { db } from '../../Firebase';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { RootState } from '../../store';
 import { tableIcons } from '../material-table/tableIcons';
-import { Book } from './schema';
+import { booksReplaceAll } from './booksSlice';
+import { Book, firebaseDocToBook } from './schema';
 
 // https://github.com/Microsoft/TypeScript/issues/4922
 const notUndefined = <T extends {}>(x: T | undefined): x is T => {
@@ -18,18 +22,26 @@ interface BookListPresenterProps extends Book {
 }
 
 const BookListContainer: React.FC = () => {
-  const bookIds = useAppSelector((state) => state.books.ids);
-  const bookEntities = useAppSelector((state) => state.books.entities);
-  // TODO: reselectを使う
-  const books = bookIds
-    .map((id) => bookEntities[id])
-    .filter(notUndefined)
-    // workaround: https://github.com/mbrn/material-table/issues/1979
-    .map((book) => ({
-      ...book,
-      createdAtDate: new Date(book.createdAt),
-      updatedAtDate: new Date(book.updatedAt),
-    }));
+  const bookLoading = useAppSelector((state) => state.books.loading);
+
+  const booksSelector = createSelector(
+    [
+      (state: RootState) => state.books.ids,
+      (state: RootState) => state.books.entities,
+    ],
+    (bookIds, bookEntities) =>
+      bookIds
+        .map((id) => bookEntities[id])
+        .filter(notUndefined)
+        // workaround: https://github.com/mbrn/material-table/issues/1979
+        .map((book) => ({
+          ...book,
+          createdAtDate: new Date(book.createdAt),
+          updatedAtDate: new Date(book.updatedAt),
+        }))
+  );
+  const books = useAppSelector(booksSelector);
+
   return <BookListPresenter list={books} />;
 };
 
@@ -105,6 +117,4 @@ const BookListPresenter: React.FC<{ list: BookListPresenterProps[] }> = (
   );
 };
 
-export const BookList: React.FC<{ list: Book[] }> = (props) => (
-  <BookListContainer />
-);
+export const BookList: React.FC = () => <BookListContainer />;

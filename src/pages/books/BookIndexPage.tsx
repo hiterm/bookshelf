@@ -8,7 +8,7 @@ const BookIndexPage: React.FC<{ books: Book[] }> = (props) => {
     <React.Fragment>
       <h2>一覧</h2>
       <BookAddButton />
-      <BookList list={props.books} />
+      <BookList />
     </React.Fragment>
   );
 };
