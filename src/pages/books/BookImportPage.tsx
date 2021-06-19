@@ -15,6 +15,7 @@ export const BookImportPage: React.FC<{}> = () => {
       const month = Number.parseInt(tmp2[0]);
       const date = Number.parseInt(tmp2[1].split('日')[0]);
 
+      // TODO 所有
       const formattedBook = {
         title: book.title,
         authors: [book.author],
