@@ -11,6 +11,17 @@ const firebaseConfig = {
   messagingSenderId: '997957418696',
   appId: '1:997957418696:web:9d28340f14b87eb7b2effd',
 };
+// config for dev environment
+//
+// const firebaseConfig = {
+//   apiKey: 'AIzaSyAkxlqVasWYvOOwHbwXF0zZL-mSsjUrC2M',
+//   authDomain: 'bookshelf-dev-437f7.firebaseapp.com',
+//   projectId: 'bookshelf-dev-437f7',
+//   storageBucket: 'bookshelf-dev-437f7.appspot.com',
+//   messagingSenderId: '803118428326',
+//   appId: '1:803118428326:web:350c0a159983badaec4467',
+// };
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
