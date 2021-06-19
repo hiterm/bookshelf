@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import React, { useRef } from 'react';
 import { db, firebase } from '../../Firebase';
 
@@ -9,11 +11,8 @@ export const BookImportPage: React.FC<{}> = () => {
     for (let i = 0; i < list.length; i++) {
       const book = list[i];
 
-      const tmp = book.date.split('年');
-      const year = Number.parseInt(tmp[0]);
-      const tmp2 = tmp[1].split('月');
-      const month = Number.parseInt(tmp2[0]);
-      const date = Number.parseInt(tmp2[1].split('日')[0]);
+      dayjs.extend(customParseFormat);
+      const date = dayjs(book.date, 'YYYY年M月D日');
 
       const formattedBook = {
         title: book.title,
@@ -21,7 +20,7 @@ export const BookImportPage: React.FC<{}> = () => {
         format: 'eBook',
         store: 'Kindle',
         owned: true,
-        createdAt: new Date(year, month - 1, date),
+        createdAt: date.toDate(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
       const newBookRef = db.collection('books').doc();
