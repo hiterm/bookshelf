@@ -9,11 +9,11 @@ export const BookImportPage: React.FC<{}> = () => {
     for (let i = 0; i < list.length; i++) {
       const book = list[i];
 
-      // const tmp = book.date.split('年');
-      // const year = Number.parseInt(tmp[0]);
-      // const tmp2 = tmp[1].split('月');
-      // const month = Number.parseInt(tmp2[0]);
-      // const date = Number.parseInt(tmp2[1].split('日')[0]);
+      const tmp = book.date.split('年');
+      const year = Number.parseInt(tmp[0]);
+      const tmp2 = tmp[1].split('月');
+      const month = Number.parseInt(tmp2[0]);
+      const date = Number.parseInt(tmp2[1].split('日')[0]);
 
       const formattedBook = {
         title: book.title,
@@ -21,7 +21,7 @@ export const BookImportPage: React.FC<{}> = () => {
         format: 'eBook',
         store: 'Kindle',
         owned: true,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: new Date(year, month - 1, date),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
       const newBookRef = db.collection('books').doc();
