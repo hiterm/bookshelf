@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { db, firebase } from '../../Firebase';
 import { BookForm } from './BookForm';
-import { bookFormSchema, DbBook } from './schema';
+import { bookFormSchema, BookFormType } from './schema';
 
 export const BookAddButton: React.FC<{}> = () => {
   const [open, setOpen] = useState(false);
@@ -26,7 +26,7 @@ export const BookAddButton: React.FC<{}> = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const history = useHistory();
 
-  const handleSubmit = async (values: DbBook) => {
+  const handleSubmit = async (values: BookFormType) => {
     const doc = await db.collection('books').add({
       ...values,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -62,7 +62,7 @@ export const BookAddButton: React.FC<{}> = () => {
     });
   };
 
-  const emptyBook: DbBook = {
+  const emptyBook: BookFormType = {
     title: '',
     authors: [''],
     read: false,
