@@ -46,12 +46,11 @@ export const BookImportFormPage: React.FC<BookImportFormPageProps> = ({
   books,
   setResult,
 }) => {
-  // TODO: useRefの型指定
-  const fileInput = useRef() as React.MutableRefObject<HTMLInputElement>;
+  const fileInput = useRef<HTMLInputElement>(null);
 
   const handleChange = () => {
     const files = fileInput.current?.files;
-    if (files === null) {
+    if (files === null || files === undefined) {
       // console.log('failed to get file.');
       return;
     }
