@@ -2,8 +2,16 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import React, { useRef } from 'react';
 import { db, firebase } from '../../Firebase';
+import { BookImportType } from './BookImportConfirmPage';
 
-export const BookImportPage: React.FC<{}> = () => {
+type BookImportFormPageProps = {
+  setResult: React.Dispatch<React.SetStateAction<BookImportType[]>>;
+};
+
+export const BookImportFormPage: React.FC<BookImportFormPageProps> = ({
+  setResult,
+}) => {
+  // TODO: useRefの型指定
   const fileInput = useRef() as React.MutableRefObject<HTMLInputElement>;
 
   const batchDb = (list: { title: string; author: string; date: string }[]) => {
@@ -30,6 +38,33 @@ export const BookImportPage: React.FC<{}> = () => {
       .commit()
       .then(() => console.log('successed to save'))
       .catch((error) => console.log(error));
+  };
+
+  const handleChange = () => {
+    const files = fileInput.current?.files;
+    if (files === null) {
+      // console.log('failed to get file.');
+      return;
+    }
+    const file = files[0];
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result !== 'string') {
+        console.log(`type of result is ${typeof reader.result}`);
+        return;
+      }
+      // TODO: 型チェック
+      const json = JSON.parse(reader.result);
+      setResult(json);
+    };
+    reader.onabort = () => {
+      console.log('file reading was aborted');
+    };
+    reader.onerror = () => {
+      console.log('failed to read file.');
+    };
+    reader.readAsText(file);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -63,7 +98,7 @@ export const BookImportPage: React.FC<{}> = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input type="file" ref={fileInput} />
+      <input type="file" ref={fileInput} onChange={handleChange} />
       <button type="submit">Submit</button>
     </form>
   );

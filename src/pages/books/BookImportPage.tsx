@@ -1,8 +1,9 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { db, firebase } from '../../Firebase';
 import { BookImportConfirmPage, BookImportType } from './BookImportConfirmPage';
+import { BookImportFormPage } from './BookImportFormPage';
 
 const dummyProps: BookImportType[] = [
   { title: '本1', author: '著者1', date: '2021' },
@@ -10,7 +11,14 @@ const dummyProps: BookImportType[] = [
 ];
 
 export const BookImportPage: React.FC = () => {
-  return <BookImportConfirmPage books={dummyProps} />;
+  const [books, setBooks] = useState<BookImportType[]>([]);
+
+  return (
+    <>
+      <BookImportFormPage setResult={setBooks} />
+      <BookImportConfirmPage books={books} />
+    </>
+  );
   // const fileInput = useRef() as React.MutableRefObject<HTMLInputElement>;
 
   // const batchDb = (list: { title: string; author: string; date: string }[]) => {
