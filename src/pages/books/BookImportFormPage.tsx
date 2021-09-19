@@ -51,7 +51,7 @@ export const BookImportFormPage: React.FC<BookImportFormPageProps> = ({
   const handleChange = () => {
     const files = fileInput.current?.files;
     if (files === null || files === undefined) {
-      // console.log('failed to get file.');
+      console.log('failed to get file.');
       return;
     }
     const file = files[0];
