@@ -7,7 +7,7 @@ export const BookImportPage: React.FC = () => {
 
   return (
     <>
-      <BookImportFormPage setResult={setBooks} />
+      <BookImportFormPage books={books} setResult={setBooks} />
       <BookImportConfirmPage books={books} />
     </>
   );
