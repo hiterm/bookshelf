@@ -10,33 +10,12 @@ import React from 'react';
 
 export type BookImportType = { title: string; author: string; date: string };
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-});
-
-function createData(
-  title: string,
-  author: string,
-  date: string
-): BookImportType {
-  return { title, author, date };
-}
-
-const rows = [
-  createData('Frozen yoghurt', 'a', 'a'),
-  createData('Ice cream sandwich', 'a', 'a'),
-];
-
 type BookImportProps = { books: BookImportType[] };
 
 export const BookImportConfirmPage: React.FC<BookImportProps> = ({ books }) => {
-  const classes = useStyles();
-
   return (
     <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="simple table">
+      <Table aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell>タイトル</TableCell>
