@@ -2,10 +2,15 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import React, { useRef } from 'react';
 import { db, firebase } from '../../Firebase';
-import { BookImportConfirmPage } from './BookImportConfirmPage';
+import { BookImportConfirmPage, BookImportType } from './BookImportConfirmPage';
 
-export const BookImportPage: React.FC<{}> = () => {
-  return <BookImportConfirmPage />;
+const dummyProps: BookImportType[] = [
+  { title: '本1', author: '著者1', date: '2021' },
+  { title: '本2', author: '著者2', date: '2021' },
+];
+
+export const BookImportPage: React.FC = () => {
+  return <BookImportConfirmPage books={dummyProps} />;
   // const fileInput = useRef() as React.MutableRefObject<HTMLInputElement>;
 
   // const batchDb = (list: { title: string; author: string; date: string }[]) => {
