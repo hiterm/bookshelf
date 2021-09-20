@@ -23,13 +23,11 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
       title: '形式',
       field: 'format',
       hidden: true,
-      hiddenByColumnsButton: true,
     },
     {
       title: 'ストア',
       field: 'store',
       hidden: true,
-      hiddenByColumnsButton: true,
     },
     { title: '優先度', field: 'priority', defaultSort: 'desc' },
     {
@@ -49,14 +47,12 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
       field: 'createdAt',
       type: 'datetime',
       hidden: true,
-      hiddenByColumnsButton: true,
     },
     {
       title: '更新日時',
       field: 'updatedAt',
       type: 'datetime',
       hidden: true,
-      hiddenByColumnsButton: true,
     },
   ];
 
