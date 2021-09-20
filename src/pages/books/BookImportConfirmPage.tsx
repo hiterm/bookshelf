@@ -23,8 +23,8 @@ export const BookImportConfirmPage: React.FC<BookImportProps> = ({ books }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {books.map((row) => (
-            <TableRow key={row.title}>
+          {books.map((row, index) => (
+            <TableRow key={index}>
               <TableCell component="th" scope="row">
                 {row.title}
               </TableCell>
