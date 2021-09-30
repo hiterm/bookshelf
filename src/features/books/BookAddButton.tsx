@@ -80,33 +80,25 @@ export const BookAddButton: React.FC<{}> = () => {
         追加
       </Button>
 
-      <Formik
-        initialValues={emptyBook}
-        onSubmit={handleSubmit}
-        validationSchema={bookFormSchema}
-      >
-        {(props) => (
-          <Dialog open={open}>
-            <DialogTitle>追加</DialogTitle>
-            <DialogContent>
-              <BookForm {...props} />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleDialogCloseClick} color="primary">
-                キャンセル
-              </Button>
-              <Button
-                onClick={() => {
-                  props.handleSubmit();
-                }}
-                color="primary"
-              >
-                追加
-              </Button>
-            </DialogActions>
-          </Dialog>
-        )}
-      </Formik>
+      <Dialog open={open}>
+        <DialogTitle>追加</DialogTitle>
+        <DialogContent>
+          <BookForm onSubmit={handleSubmit} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogCloseClick} color="primary">
+            キャンセル
+          </Button>
+          {/* <Button
+            onClick={() => {
+              props.handleSubmit();
+            }}
+            color="primary"
+          >
+            追加
+          </Button> */}
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

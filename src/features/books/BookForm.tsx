@@ -2,18 +2,23 @@ import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import { Field, FieldArray, Form, FormikProps } from 'formik';
-import { CheckboxWithLabel, Select, TextField } from 'formik-material-ui';
 import React from 'react';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { Select, TextField } from '../react-hook-form/mui';
 import { BookFormType } from './schema';
 
-export const BookForm: React.FC<FormikProps<BookFormType>> = (props) => {
+type BookFormProps = { onSubmit: SubmitHandler<BookFormType> };
+
+export const BookForm: React.FC<BookFormProps> = (props) => {
+  const { control, handleSubmit } = useForm<BookFormType>();
+
   return (
-    <Form>
+    <form onSubmit={handleSubmit(props.onSubmit)}>
       <div>
-        <Field component={TextField} name="title" type="string" label="書名" />
+        <TextField name="title" label="書名" control={control} />
       </div>
-      <InputLabel shrink={true}>著者</InputLabel>
+      <input type="submit" />
+      {/* <InputLabel shrink={true}>著者</InputLabel>
       <FieldArray
         name="authors"
         render={(arrayHelpers) => (
@@ -40,16 +45,6 @@ export const BookForm: React.FC<FormikProps<BookFormType>> = (props) => {
           </div>
         )}
       />
-      <div>
-        <FormControl>
-          <InputLabel>形式</InputLabel>
-          <Field component={Select} name="format">
-            <MenuItem value={''}>-</MenuItem>
-            <MenuItem value={'eBook'}>eBook</MenuItem>
-            <MenuItem value={'Printed'}>Printed</MenuItem>
-          </Field>
-        </FormControl>
-      </div>
       <div>
         <FormControl>
           <InputLabel>ストア</InputLabel>
@@ -87,7 +82,7 @@ export const BookForm: React.FC<FormikProps<BookFormType>> = (props) => {
           type="checkbox"
           Label={{ label: '所有' }}
         />
-      </div>
-    </Form>
+      </div> */}
+    </form>
   );
 };

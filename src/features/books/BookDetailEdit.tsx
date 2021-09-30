@@ -30,29 +30,30 @@ export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
   // id等は更新したくない
   const { id, createdAt, updatedAt, ...dbBook } = book;
 
-  return (
-    <React.Fragment>
-      <Formik
-        initialValues={dbBook}
-        onSubmit={handleSubmit}
-        validationSchema={bookFormSchema}
-      >
-        {(props) => (
-          <React.Fragment>
-            <BookForm {...props} />
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              onClick={() => {
-                props.handleSubmit();
-              }}
-            >
-              更新
-            </Button>
-          </React.Fragment>
-        )}
-      </Formik>
-    </React.Fragment>
-  );
+  return <div>tmp</div>;
+  // return (
+  //   <React.Fragment>
+  //     <Formik
+  //       initialValues={dbBook}
+  //       onSubmit={handleSubmit}
+  //       validationSchema={bookFormSchema}
+  //     >
+  //       {(props) => (
+  //         <React.Fragment>
+  //           <BookForm {...props} />
+  //           <Button
+  //             variant="contained"
+  //             color="primary"
+  //             type="submit"
+  //             onClick={() => {
+  //               props.handleSubmit();
+  //             }}
+  //           >
+  //             更新
+  //           </Button>
+  //         </React.Fragment>
+  //       )}
+  //     </Formik>
+  //   </React.Fragment>
+  // );
 };
