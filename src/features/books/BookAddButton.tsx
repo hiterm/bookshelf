@@ -26,8 +26,11 @@ export const BookAddButton: React.FC<{}> = () => {
   const history = useHistory();
 
   const handleSubmit = async (values: BookFormType) => {
+    const { authors, ...rest } = values;
+    const authorNames: string[] = authors.map(({ name }) => name);
     const doc = await db.collection('books').add({
-      ...values,
+      authors: authorNames,
+      ...rest,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
