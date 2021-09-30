@@ -1,8 +1,10 @@
 import { Select, TextField } from '@material-ui/core';
+import { HTMLInputTypeAttribute } from 'react';
 import { Control, Controller, Path, UseControllerProps } from 'react-hook-form';
 
 type TextFieldProps<T> = {
   label: string;
+  type?: HTMLInputTypeAttribute;
 } & UseControllerProps<T>;
 
 const RhfTextField = <T,>(props: TextFieldProps<T>) => (
@@ -10,7 +12,12 @@ const RhfTextField = <T,>(props: TextFieldProps<T>) => (
     name={props.name}
     control={props.control}
     render={({ field: { ref, ...field } }) => (
-      <TextField label={props.label} inputRef={ref} {...field} />
+      <TextField
+        label={props.label}
+        type={props.type}
+        inputRef={ref}
+        {...field}
+      />
     )}
   />
 );
