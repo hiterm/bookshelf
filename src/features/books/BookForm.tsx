@@ -1,11 +1,10 @@
-import { Select } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import React from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { TextField } from '../react-hook-form/mui';
+import { Select, TextField } from '../react-hook-form/mui';
 import { BookFormType } from './schema';
 
 type BookFormProps = { onSubmit: SubmitHandler<BookFormType> };
@@ -21,17 +20,11 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
       <div>
         <FormControl>
           <InputLabel>形式</InputLabel>
-          <Controller
-            name="format"
-            control={control}
-            render={({ field: { ref, ...field } }) => (
-              <Select inputRef={ref} {...field}>
-                <MenuItem value={''}>-</MenuItem>
-                <MenuItem value={'eBook'}>eBook</MenuItem>
-                <MenuItem value={'Printed'}>Printed</MenuItem>
-              </Select>
-            )}
-          />
+          <Select name="format" label="形式" control={control}>
+            <MenuItem value={''}>-</MenuItem>
+            <MenuItem value={'eBook'}>eBook</MenuItem>
+            <MenuItem value={'Printed'}>Printed</MenuItem>
+          </Select>
         </FormControl>
       </div>
       <input type="submit" />

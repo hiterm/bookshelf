@@ -1,7 +1,9 @@
 import { Select, TextField } from '@material-ui/core';
-import { Control, Controller, Path } from 'react-hook-form';
+import { Control, Controller, Path, UseControllerProps } from 'react-hook-form';
 
-type TextFieldProps<T> = { control: Control<T>; name: Path<T>; label: string };
+type TextFieldProps<T> = {
+  label: string;
+} & UseControllerProps<T>;
 
 const RhfTextField = <T,>(props: TextFieldProps<T>) => (
   <Controller
@@ -13,14 +15,19 @@ const RhfTextField = <T,>(props: TextFieldProps<T>) => (
   />
 );
 
-type SelectProps<T> = { control: Control<T>; name: Path<T>; label: string };
+type SelectProps<T> = {
+  label: string;
+  children: React.ReactNode;
+} & UseControllerProps<T>;
 
 const RhfSelect = <T,>(props: SelectProps<T>) => (
   <Controller
     name={props.name}
     control={props.control}
     render={({ field: { ref, ...field } }) => (
-      <Select label={props.label} inputRef={ref} {...field} />
+      <Select label={props.label} inputRef={ref} {...field}>
+        {props.children}
+      </Select>
     )}
   />
 );
