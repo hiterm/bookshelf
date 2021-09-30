@@ -44,6 +44,9 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
           control={control}
         />
       </div>
+      <div>
+        <TextField name="isbn" type="string" label="ISBN" control={control} />
+      </div>
       <input type="submit" />
       {/* <InputLabel shrink={true}>著者</InputLabel>
       <FieldArray
@@ -72,9 +75,6 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
           </div>
         )}
       />
-      <div>
-        <Field component={TextField} name="isbn" type="string" label="ISBN" />
-      </div>
       <div>
         <Field
           component={CheckboxWithLabel}
