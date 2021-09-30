@@ -50,6 +50,9 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
       <div>
         <Checkbox name="read" type="checkbox" label="既読" control={control} />
       </div>
+      <div>
+        <Checkbox name="owned" type="checkbox" label="所有" control={control} />
+      </div>
       <input type="submit" />
       {/* <InputLabel shrink={true}>著者</InputLabel>
       <FieldArray
@@ -78,15 +81,7 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
           </div>
         )}
       />
-      <div>
-        <Field
-          component={CheckboxWithLabel}
-          color="primary"
-          name="owned"
-          type="checkbox"
-          Label={{ label: '所有' }}
-        />
-      </div> */}
+       */}
     </form>
   );
 };
