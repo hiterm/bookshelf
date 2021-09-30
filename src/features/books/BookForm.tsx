@@ -3,7 +3,12 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import React from 'react';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import {
+  Controller,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form';
 import { Checkbox, Select, TextField } from '../react-hook-form/mui';
 import { BookFormType } from './schema';
 
@@ -11,11 +16,41 @@ type BookFormProps = { onSubmit: SubmitHandler<BookFormType> };
 
 export const BookForm: React.FC<BookFormProps> = (props) => {
   const { control, handleSubmit } = useForm<BookFormType>();
+  const { fields, append, remove } = useFieldArray({
+    name: 'authors',
+    control,
+  });
 
   return (
     <form onSubmit={handleSubmit(props.onSubmit)}>
       <div>
         <TextField name="title" label="書名" control={control} />
+      </div>
+      <div>
+        {fields.map((field, index) => {
+          return (
+            <div key={field.id}>
+              <InputLabel shrink={true}>著者</InputLabel>
+              <div>
+                <TextField
+                  name={`authors.${index}.name`}
+                  label="" /* TODO */
+                  control={control}
+                />
+                <Button
+                  variant="contained"
+                  type="button"
+                  onClick={() => remove(index)}
+                >
+                  -
+                </Button>
+              </div>
+            </div>
+          );
+        })}
+        <Button variant="contained" type="button" onClick={() => append({})}>
+          著者追加
+        </Button>
       </div>
       <div>
         <FormControl>
@@ -54,34 +89,6 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
         <Checkbox name="owned" type="checkbox" label="所有" control={control} />
       </div>
       <input type="submit" />
-      {/* <InputLabel shrink={true}>著者</InputLabel>
-      <FieldArray
-        name="authors"
-        render={(arrayHelpers) => (
-          <div>
-            {props.values.authors.map((_author: string, index: number) => (
-              <div key={index}>
-                <Field component={TextField} name={`authors.${index}`} />
-                <Button
-                  variant="contained"
-                  type="button"
-                  onClick={() => arrayHelpers.remove(index)}
-                >
-                  -
-                </Button>
-              </div>
-            ))}
-            <Button
-              variant="contained"
-              type="button"
-              onClick={() => arrayHelpers.push('')}
-            >
-              著者追加
-            </Button>
-          </div>
-        )}
-      />
-       */}
     </form>
   );
 };

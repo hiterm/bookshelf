@@ -28,6 +28,17 @@ const bookSchema = bookFormSchema.shape({
 
 export interface BookFormType {
   title: string;
+  authors: { name: string }[];
+  isbn?: string;
+  read: boolean;
+  owned: boolean;
+  priority: number;
+  format?: 'eBook' | 'Printed';
+  store?: 'Kindle';
+}
+
+export interface BookBaseType {
+  title: string;
   authors: string[];
   isbn?: string;
   read: boolean;
@@ -36,7 +47,16 @@ export interface BookFormType {
   format?: 'eBook' | 'Printed';
   store?: 'Kindle';
 }
-export interface Book extends BookFormType {
+
+export interface Book {
+  title: string;
+  authors: string[];
+  isbn?: string;
+  read: boolean;
+  owned: boolean;
+  priority: number;
+  format?: 'eBook' | 'Printed';
+  store?: 'Kindle';
   id: string;
   createdAt: Date;
   updatedAt: Date;

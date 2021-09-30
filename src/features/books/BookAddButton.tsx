@@ -4,13 +4,12 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Close from '@material-ui/icons/Close';
-import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { db, firebase } from '../../Firebase';
 import { BookForm } from './BookForm';
-import { bookFormSchema, BookFormType } from './schema';
+import { BookFormType } from './schema';
 
 export const BookAddButton: React.FC<{}> = () => {
   const [open, setOpen] = useState(false);
@@ -64,7 +63,7 @@ export const BookAddButton: React.FC<{}> = () => {
 
   const emptyBook: BookFormType = {
     title: '',
-    authors: [''],
+    authors: [{ name: '' }],
     read: false,
     owned: false,
     priority: 50,
