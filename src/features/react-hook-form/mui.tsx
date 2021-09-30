@@ -16,7 +16,6 @@ const RhfTextField = <T,>(props: TextFieldProps<T>) => (
 );
 
 type SelectProps<T> = {
-  label: string;
   children: React.ReactNode;
 } & UseControllerProps<T>;
 
@@ -25,7 +24,7 @@ const RhfSelect = <T,>(props: SelectProps<T>) => (
     name={props.name}
     control={props.control}
     render={({ field: { ref, ...field } }) => (
-      <Select label={props.label} inputRef={ref} {...field}>
+      <Select inputRef={ref} {...field}>
         {props.children}
       </Select>
     )}

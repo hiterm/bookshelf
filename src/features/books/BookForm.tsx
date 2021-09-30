@@ -20,10 +20,19 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
       <div>
         <FormControl>
           <InputLabel>形式</InputLabel>
-          <Select name="format" label="形式" control={control}>
+          <Select name="format" control={control}>
             <MenuItem value={''}>-</MenuItem>
             <MenuItem value={'eBook'}>eBook</MenuItem>
             <MenuItem value={'Printed'}>Printed</MenuItem>
+          </Select>
+        </FormControl>
+      </div>
+      <div>
+        <FormControl>
+          <InputLabel>ストア</InputLabel>
+          <Select name="store" control={control}>
+            <MenuItem value={''}>-</MenuItem>
+            <MenuItem value={'Kindle'}>Kindle</MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -55,15 +64,6 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
           </div>
         )}
       />
-      <div>
-        <FormControl>
-          <InputLabel>ストア</InputLabel>
-          <Field component={Select} name="store">
-            <MenuItem value={''}>-</MenuItem>
-            <MenuItem value={'Kindle'}>Kindle</MenuItem>
-          </Field>
-        </FormControl>
-      </div>
       <div>
         <Field
           component={TextField}
