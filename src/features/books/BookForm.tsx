@@ -4,7 +4,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import React from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { Select, TextField } from '../react-hook-form/mui';
+import { Checkbox, Select, TextField } from '../react-hook-form/mui';
 import { BookFormType } from './schema';
 
 type BookFormProps = { onSubmit: SubmitHandler<BookFormType> };
@@ -47,6 +47,9 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
       <div>
         <TextField name="isbn" type="string" label="ISBN" control={control} />
       </div>
+      <div>
+        <Checkbox name="read" type="checkbox" label="既読" control={control} />
+      </div>
       <input type="submit" />
       {/* <InputLabel shrink={true}>著者</InputLabel>
       <FieldArray
@@ -75,15 +78,6 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
           </div>
         )}
       />
-      <div>
-        <Field
-          component={CheckboxWithLabel}
-          color="primary"
-          name="read"
-          type="checkbox"
-          Label={{ label: '既読' }}
-        />
-      </div>
       <div>
         <Field
           component={CheckboxWithLabel}

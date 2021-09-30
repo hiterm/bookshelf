@@ -1,6 +1,11 @@
-import { Select, TextField } from '@material-ui/core';
+import {
+  Checkbox,
+  FormControlLabel,
+  Select,
+  TextField,
+} from '@material-ui/core';
 import { HTMLInputTypeAttribute } from 'react';
-import { Control, Controller, Path, UseControllerProps } from 'react-hook-form';
+import { Controller, UseControllerProps } from 'react-hook-form';
 
 type TextFieldProps<T> = {
   label: string;
@@ -38,4 +43,26 @@ const RhfSelect = <T,>(props: SelectProps<T>) => (
   />
 );
 
-export { RhfTextField as TextField, RhfSelect as Select };
+type CheckboxProps<T> = {
+  label: string;
+  type?: HTMLInputTypeAttribute;
+} & UseControllerProps<T>;
+
+const RhfCheckbox = <T,>(props: CheckboxProps<T>) => (
+  <Controller
+    name={props.name}
+    control={props.control}
+    render={({ field: { ref, value, ...field } }) => (
+      <FormControlLabel
+        control={<Checkbox checked={value} {...field} />}
+        label={props.label}
+      />
+    )}
+  />
+);
+
+export {
+  RhfTextField as TextField,
+  RhfSelect as Select,
+  RhfCheckbox as Checkbox,
+};
