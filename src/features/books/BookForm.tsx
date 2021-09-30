@@ -32,11 +32,7 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
             <div key={field.id}>
               <InputLabel shrink={true}>著者</InputLabel>
               <div>
-                <TextField
-                  name={`authors.${index}.name`}
-                  label="" /* TODO */
-                  control={control}
-                />
+                <TextField name={`authors.${index}.name`} control={control} />
                 <Button
                   variant="contained"
                   type="button"

@@ -8,7 +8,7 @@ import { HTMLInputTypeAttribute } from 'react';
 import { Controller, UseControllerProps } from 'react-hook-form';
 
 type TextFieldProps<T> = {
-  label: string;
+  label?: string;
   type?: HTMLInputTypeAttribute;
 } & UseControllerProps<T>;
 
