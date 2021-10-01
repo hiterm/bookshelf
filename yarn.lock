@@ -2389,6 +2389,11 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
+"@hookform/resolvers@^2.8.1":
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/@hookform/resolvers/-/resolvers-2.8.1.tgz#0d4fdd25bdeb4b98bf4e177c63fc4efa173454dd"
+  integrity sha512-U5lgaCkvD+0e5X8iQmCHiF+jOqjTX6OHUA7zPdeIHI6xdAOoi3rH9MKNuwMwv5Hly2LL6XtDgDkS/k+YG9hOew==
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@istanbuljs/load-nyc-config/-/load-nyc-config-1.1.0.tgz#fd3db1d59ecf7cf121e80650bb86712f9b55eced"
