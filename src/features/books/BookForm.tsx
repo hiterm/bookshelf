@@ -1,16 +1,36 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import React from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { Checkbox, Select, TextField } from '../react-hook-form/mui';
 import { BookFormType } from './schema';
 
 type BookFormProps = { onSubmit: SubmitHandler<BookFormType> };
 
+const zBookFormSchema = z.object({
+  title: z.string(),
+  authors: z.array(z.object({ name: z.string() })).default([]),
+  isbn: z
+    .string()
+    .regex(/^(\d-?){12}\d$/)
+    .optional(),
+  read: z.boolean().default(false),
+  priority: z.number().int().min(0).max(100).default(50),
+  format: z.enum(['eBook', 'Printed']).optional(),
+  store: z.enum(['Kindle']).optional(),
+  owned: z.boolean().default(false),
+});
+
+type IBookForm = z.infer<typeof zBookFormSchema>;
+
 export const BookForm: React.FC<BookFormProps> = (props) => {
-  const { control, handleSubmit } = useForm<BookFormType>();
+  const { control, handleSubmit } = useForm({
+    resolver: zodResolver(zBookFormSchema),
+  });
   const { fields, append, remove } = useFieldArray({
     name: 'authors',
     control,
