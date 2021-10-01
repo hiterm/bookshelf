@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { db, firebase } from '../../Firebase';
 import { BookForm } from './BookForm';
-import { BookFormType } from './schema';
+import { BookBaseType, BookFormType } from './schema';
 
 export const BookAddButton: React.FC<{}> = () => {
   const [open, setOpen] = useState(false);
@@ -28,9 +28,12 @@ export const BookAddButton: React.FC<{}> = () => {
   const handleSubmit = async (values: BookFormType) => {
     const { authors, ...rest } = values;
     const authorNames: string[] = authors.map(({ name }) => name);
-    const doc = await db.collection('books').add({
+    const bookBase: BookBaseType = {
       authors: authorNames,
       ...rest,
+    };
+    const doc = await db.collection('books').add({
+      ...bookBase,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
