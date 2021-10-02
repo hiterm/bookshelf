@@ -3,12 +3,7 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { firebase, db } from '../../Firebase';
-import {
-  BookFormType,
-  fromBookBaseToBookForm,
-  fromBookFormToBookBase,
-  useBookForm,
-} from './BookForm';
+import { useBookForm } from './BookForm';
 import { Book, BookBaseType } from './schema';
 
 export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
@@ -28,12 +23,11 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   };
 
   // id等は更新したくない
-  const { id, createdAt, updatedAt, ...dbBook } = book;
-  const bookFormObj = fromBookBaseToBookForm(dbBook);
+  const { id, createdAt, updatedAt, ...bookBase } = book;
 
   const { renderForm, submitForm } = useBookForm({
     onSubmit: handleSubmit,
-    initialValues: bookFormObj,
+    initialValues: bookBase,
   });
 
   return (

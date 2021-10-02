@@ -8,20 +8,6 @@ import { z } from 'zod';
 import { Checkbox, Select, TextField } from '../react-hook-form/mui';
 import { BookBaseType } from './schema';
 
-const removeUndefinedFromBookForm = (bookForm: BookFormType): BookFormType => {
-  if (bookForm.isbn === undefined) {
-    delete bookForm.isbn;
-  }
-  if (bookForm.format === undefined) {
-    delete bookForm.format;
-  }
-  if (bookForm.store === undefined) {
-    delete bookForm.store;
-  }
-
-  return bookForm;
-};
-
 const bookFormSchema = z.object({
   title: z.string().min(1),
   authors: z
@@ -39,7 +25,7 @@ const bookFormSchema = z.object({
   owned: z.boolean().default(false),
 });
 
-export type BookFormType = {
+type BookFormType = {
   isbn?: string | undefined;
   format?: 'eBook' | 'Printed' | undefined;
   store?: 'Kindle' | undefined;
@@ -52,9 +38,7 @@ export type BookFormType = {
   owned: boolean;
 };
 
-export const fromBookFormToBookBase = (
-  bookForm: BookFormType
-): BookBaseType => {
+const fromBookFormToBookBase = (bookForm: BookFormType): BookBaseType => {
   const { authors, ...rest } = bookForm;
   const authorNames: string[] = authors.map(({ name }) => name);
   return {
@@ -63,9 +47,7 @@ export const fromBookFormToBookBase = (
   };
 };
 
-export const fromBookBaseToBookForm = (
-  bookBase: BookBaseType
-): BookFormType => {
+const fromBookBaseToBookForm = (bookBase: BookBaseType): BookFormType => {
   const { authors, ...rest } = bookBase;
   const authorObjects = authors.map((name) => ({
     name: name,
@@ -76,9 +58,23 @@ export const fromBookBaseToBookForm = (
   };
 };
 
+const removeUndefinedFromBookForm = (bookForm: BookFormType): BookFormType => {
+  if (bookForm.isbn === undefined) {
+    delete bookForm.isbn;
+  }
+  if (bookForm.format === undefined) {
+    delete bookForm.format;
+  }
+  if (bookForm.store === undefined) {
+    delete bookForm.store;
+  }
+
+  return bookForm;
+};
+
 type BookFormProps = {
   onSubmit: SubmitHandler<BookBaseType>;
-  initialValues: BookFormType;
+  initialValues: BookBaseType;
 };
 
 export const useBookForm = (props: BookFormProps) => {
@@ -89,7 +85,7 @@ export const useBookForm = (props: BookFormProps) => {
   } = useForm({
     mode: 'all',
     resolver: zodResolver(bookFormSchema),
-    defaultValues: props.initialValues,
+    defaultValues: fromBookBaseToBookForm(props.initialValues),
   });
   const { fields, append, remove } = useFieldArray({
     name: 'authors',

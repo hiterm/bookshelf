@@ -8,7 +8,7 @@ import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { db, firebase } from '../../Firebase';
-import { BookFormType, useBookForm } from './BookForm';
+import { useBookForm } from './BookForm';
 import { BookBaseType } from './schema';
 
 export const BookAddButton: React.FC<{}> = () => {
@@ -61,9 +61,9 @@ export const BookAddButton: React.FC<{}> = () => {
     });
   };
 
-  const emptyBook: BookFormType = {
+  const emptyBook: BookBaseType = {
     title: '',
-    authors: [{ name: '' }],
+    authors: [''],
     read: false,
     owned: false,
     priority: 50,
