@@ -65,7 +65,6 @@ const RhfSelect = <T,>(props: SelectProps<T>) => {
 
 type CheckboxProps<T> = {
   label: string;
-  type?: HTMLInputTypeAttribute;
 } & UseControllerProps<T>;
 
 const RhfCheckbox = <T,>(props: CheckboxProps<T>) => {

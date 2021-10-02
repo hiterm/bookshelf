@@ -137,10 +137,10 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
         />
       </div>
       <div>
-        <Checkbox name="read" type="checkbox" label="既読" control={control} />
+        <Checkbox name="read" label="既読" control={control} />
       </div>
       <div>
-        <Checkbox name="owned" type="checkbox" label="所有" control={control} />
+        <Checkbox name="owned" label="所有" control={control} />
       </div>
       <input type="submit" />
     </form>
