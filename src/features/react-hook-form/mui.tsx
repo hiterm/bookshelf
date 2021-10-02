@@ -10,6 +10,8 @@ import { Controller, UseControllerProps } from 'react-hook-form';
 type TextFieldProps<T> = {
   label?: string;
   type?: HTMLInputTypeAttribute;
+  error?: boolean;
+  helperText?: string;
 } & UseControllerProps<T>;
 
 const RhfTextField = <T,>(props: TextFieldProps<T>) => (
@@ -20,6 +22,8 @@ const RhfTextField = <T,>(props: TextFieldProps<T>) => (
       <TextField
         label={props.label}
         type={props.type}
+        error={props.error}
+        helperText={props.helperText}
         inputRef={ref}
         {...field}
       />

@@ -54,17 +54,28 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
 
   return (
     <form onSubmit={handleSubmit(props.onSubmit)}>
+      {JSON.stringify(errors)}
       <div>
-        <TextField name="title" label="書名" control={control} />
-        {errors.title?.type}
+        <TextField
+          name="title"
+          label="書名"
+          error={Boolean(errors.title)}
+          helperText={errors.title?.message}
+          control={control}
+        />
       </div>
       <div>
         {fields.map((field, index) => {
           return (
             <div key={field.id}>
-              <InputLabel shrink={true}>著者</InputLabel>
+              <InputLabel shrink={true}>著者{index + 1}</InputLabel>
               <div>
-                <TextField name={`authors.${index}.name`} control={control} />
+                <TextField
+                  name={`authors.${index}.name`}
+                  error={Boolean(errors.authors?.[index]?.name)}
+                  helperText={errors.authors?.[index]?.name?.message}
+                  control={control}
+                />
                 <Button
                   variant="contained"
                   type="button"
