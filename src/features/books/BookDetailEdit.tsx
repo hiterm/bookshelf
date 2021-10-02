@@ -4,8 +4,8 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { firebase, db } from '../../Firebase';
-import { BookForm } from './BookForm';
-import { Book, bookFormSchema, BookFormType } from './schema';
+import { BookForm, BookFormType } from './BookForm';
+import { Book, bookFormSchema } from './schema';
 
 export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
   const book = props.book;

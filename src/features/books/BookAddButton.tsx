@@ -8,8 +8,8 @@ import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { db, firebase } from '../../Firebase';
-import { BookForm } from './BookForm';
-import { BookBaseType, BookFormType } from './schema';
+import { BookForm, BookFormType } from './BookForm';
+import { BookBaseType } from './schema';
 
 export const BookAddButton: React.FC<{}> = () => {
   const [open, setOpen] = useState(false);

@@ -26,17 +26,6 @@ const bookSchema = bookFormSchema.shape({
     .default(() => new Date()),
 });
 
-export interface BookFormType {
-  title: string;
-  authors: { name: string }[];
-  isbn?: string;
-  read: boolean;
-  owned: boolean;
-  priority: number;
-  format?: 'eBook' | 'Printed';
-  store?: 'Kindle';
-}
-
 export interface BookBaseType {
   title: string;
   authors: string[];

@@ -7,9 +7,6 @@ import React from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Checkbox, Select, TextField } from '../react-hook-form/mui';
-import { BookFormType } from './schema';
-
-type BookFormProps = { onSubmit: SubmitHandler<BookFormType> };
 
 const zBookFormSchema = z.object({
   title: z.string(),
@@ -25,7 +22,9 @@ const zBookFormSchema = z.object({
   owned: z.boolean().default(false),
 });
 
-type IBookForm = z.infer<typeof zBookFormSchema>;
+export type BookFormType = z.infer<typeof zBookFormSchema>;
+
+type BookFormProps = { onSubmit: SubmitHandler<BookFormType> };
 
 export const BookForm: React.FC<BookFormProps> = (props) => {
   const { control, handleSubmit } = useForm({
