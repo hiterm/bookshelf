@@ -1,3 +1,4 @@
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import MuiAppBar from '@mui/material/AppBar';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -6,7 +7,6 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import AccountCircle from '@mui/icons-material/AccountCircle';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
@@ -52,7 +52,8 @@ export const AppBar: React.FC = () => {
           aria-haspopup="true"
           color="inherit"
           onClick={handleClick}
-          size="large">
+          size="large"
+        >
           <AccountCircle />
         </IconButton>
         <Menu

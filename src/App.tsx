@@ -2,7 +2,11 @@ import { CircularProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
-import { createTheme, ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/styles';
+import {
+  createTheme,
+  ThemeProvider,
+  StyledEngineProvider,
+} from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -11,13 +15,6 @@ import { AppBar } from './AppBar';
 import { firebase } from './Firebase';
 import { SignInScreen } from './SignInScreen';
 import { MainRoutes } from './pages/MainRoutes';
-
-
-declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
-
 
 const SignInCheck: React.FC = ({ children }) => {
   const auth = firebase.auth();

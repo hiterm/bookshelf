@@ -14,8 +14,7 @@ import {
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import * as yup from 'yup';
-import { firebase } from '../../Firebase';
-import { db } from '../../Firebase';
+import { firebase, db } from '../../Firebase';
 import { Book } from './schema';
 
 type BulkChangeFormProps = {
