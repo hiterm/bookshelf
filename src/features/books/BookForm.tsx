@@ -16,7 +16,7 @@ const zBookFormSchema = z.object({
     .default([{ name: '' }]),
   isbn: z
     .string()
-    .regex(/^(\d-?){12}\d$/)
+    .regex(/(^$|^(\d-?){12}\d$)/)
     .optional(),
   read: z.boolean().default(false),
   priority: z.number().int().min(0).max(100).default(50),
