@@ -115,11 +115,20 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
           name="priority"
           type="number"
           label="優先度"
+          error={Boolean(errors.priority)}
+          helperText={errors.priority?.message}
           control={control}
         />
       </div>
       <div>
-        <TextField name="isbn" type="string" label="ISBN" control={control} />
+        <TextField
+          name="isbn"
+          type="string"
+          label="ISBN"
+          error={Boolean(errors.isbn)}
+          helperText={errors.isbn?.message}
+          control={control}
+        />
       </div>
       <div>
         <Checkbox name="read" type="checkbox" label="既読" control={control} />
