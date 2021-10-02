@@ -8,13 +8,8 @@ import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { db, firebase } from '../../Firebase';
-import { BookFormType, fromBookFormToBookBase, useBookForm } from './BookForm';
-
-const removeUndefinedFromObject = (object: Object) => {
-  return Object.fromEntries(
-    Object.entries(object).filter(([_k, v]) => v !== undefined)
-  );
-};
+import { BookFormType, useBookForm } from './BookForm';
+import { BookBaseType } from './schema';
 
 export const BookAddButton: React.FC<{}> = () => {
   const [open, setOpen] = useState(false);
@@ -30,10 +25,9 @@ export const BookAddButton: React.FC<{}> = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const history = useHistory();
 
-  const submitBook = async (bookForm: BookFormType) => {
-    const bookBase = fromBookFormToBookBase(bookForm);
+  const submitBook = async (values: BookBaseType) => {
     const doc = await db.collection('books').add({
-      ...removeUndefinedFromObject(bookBase),
+      ...values,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
@@ -60,7 +54,7 @@ export const BookAddButton: React.FC<{}> = () => {
 
     setOpen(false);
 
-    const message = `${bookForm.title}を追加しました`;
+    const message = `${values.title}を追加しました`;
     enqueueSnackbar(message, {
       variant: 'success',
       action,

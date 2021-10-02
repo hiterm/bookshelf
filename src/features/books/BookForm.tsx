@@ -8,6 +8,20 @@ import { z } from 'zod';
 import { Checkbox, Select, TextField } from '../react-hook-form/mui';
 import { BookBaseType } from './schema';
 
+const removeUndefinedFromBookForm = (bookForm: BookFormType): BookFormType => {
+  if (bookForm.isbn === undefined) {
+    delete bookForm.isbn;
+  }
+  if (bookForm.format === undefined) {
+    delete bookForm.format;
+  }
+  if (bookForm.store === undefined) {
+    delete bookForm.store;
+  }
+
+  return bookForm;
+};
+
 const bookFormSchema = z.object({
   title: z.string().min(1),
   authors: z
@@ -63,7 +77,7 @@ export const fromBookBaseToBookForm = (
 };
 
 type BookFormProps = {
-  onSubmit: SubmitHandler<BookFormType>;
+  onSubmit: SubmitHandler<BookBaseType>;
   initialValues: BookFormType;
 };
 
@@ -175,5 +189,14 @@ export const useBookForm = (props: BookFormProps) => {
     </form>
   );
 
-  return { renderForm, submitForm: handleSubmit(props.onSubmit) };
+  const convertAndHandleSubmit: SubmitHandler<BookFormType> = (
+    bookFormValues
+  ) => {
+    const bookBase = fromBookFormToBookBase(
+      removeUndefinedFromBookForm(bookFormValues)
+    );
+    props.onSubmit(bookBase);
+  };
+
+  return { renderForm, submitForm: handleSubmit(convertAndHandleSubmit) };
 };

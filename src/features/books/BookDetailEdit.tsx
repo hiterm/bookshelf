@@ -9,13 +9,7 @@ import {
   fromBookFormToBookBase,
   useBookForm,
 } from './BookForm';
-import { Book } from './schema';
-
-const removeUndefinedFromObject = (object: Object) => {
-  return Object.fromEntries(
-    Object.entries(object).filter(([_k, v]) => v !== undefined)
-  );
-};
+import { Book, BookBaseType } from './schema';
 
 export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   const book = props.book;
@@ -23,12 +17,10 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
 
-  const handleSubmit = async (bookForm: BookFormType) => {
-    const bookBase = fromBookFormToBookBase(bookForm);
-
+  const handleSubmit = async (values: BookBaseType) => {
     const docRef = db.collection('books').doc(book.id);
     await docRef.update({
-      ...removeUndefinedFromObject(bookBase),
+      ...values,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
     history.push(`/books/${book.id}`);
