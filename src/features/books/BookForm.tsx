@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { Checkbox, Select, TextField } from '../react-hook-form/mui';
 import { BookBaseType } from './schema';
 
-const zBookFormSchema = z.object({
+const bookFormSchema = z.object({
   title: z.string().min(1),
   authors: z
     .array(z.object({ name: z.string().min(1) }))
@@ -75,7 +75,7 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
     formState: { errors },
   } = useForm({
     mode: 'all',
-    resolver: zodResolver(zBookFormSchema),
+    resolver: zodResolver(bookFormSchema),
     defaultValues: props.initialValues,
   });
   const { fields, append, remove } = useFieldArray({
