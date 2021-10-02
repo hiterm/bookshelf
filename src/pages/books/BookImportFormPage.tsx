@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import React, { useRef } from 'react';
 import { db, firebase } from '../../Firebase';
-import { BookFormType } from '../../features/books/schema';
+import { BookBaseType } from '../../features/books/schema';
 import { BookImportType } from './BookImportConfirmPage';
 
 const batchDb = (list: { title: string; author: string; date: string }[]) => {
@@ -13,7 +13,7 @@ const batchDb = (list: { title: string; author: string; date: string }[]) => {
     dayjs.extend(customParseFormat);
     const date = dayjs(book.date, 'YYYY年M月D日');
 
-    const formattedBookPart: BookFormType = {
+    const formattedBookPart: BookBaseType = {
       title: book.title,
       authors: [book.author],
       format: 'eBook',

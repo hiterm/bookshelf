@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 import { firebase } from '../../Firebase';
 
-const bookFormSchema = yup
+const bookBaseSchema = yup
   .object({
     title: yup.string().required(),
     authors: yup.array().of(yup.string().required()).required().default([]),
@@ -14,7 +14,7 @@ const bookFormSchema = yup
   })
   .required();
 
-const bookSchema = bookFormSchema.shape({
+const bookSchema = bookBaseSchema.shape({
   id: yup.string().required(),
   createdAt: yup
     .date()
@@ -26,7 +26,7 @@ const bookSchema = bookFormSchema.shape({
     .default(() => new Date()),
 });
 
-export interface BookFormType {
+export interface BookBaseType {
   title: string;
   authors: string[];
   isbn?: string;
@@ -36,7 +36,16 @@ export interface BookFormType {
   format?: 'eBook' | 'Printed';
   store?: 'Kindle';
 }
-export interface Book extends BookFormType {
+
+export interface Book {
+  title: string;
+  authors: string[];
+  isbn?: string;
+  read: boolean;
+  owned: boolean;
+  priority: number;
+  format?: 'eBook' | 'Printed';
+  store?: 'Kindle';
   id: string;
   createdAt: Date;
   updatedAt: Date;
@@ -54,4 +63,4 @@ const firebaseDocToBook = (doc: firebase.firestore.DocumentData): Book => {
   return book as Book;
 };
 
-export { bookFormSchema, bookSchema, firebaseDocToBook };
+export { bookBaseSchema as bookFormSchema, bookSchema, firebaseDocToBook };

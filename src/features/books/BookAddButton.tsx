@@ -4,13 +4,12 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Close from '@material-ui/icons/Close';
-import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { db, firebase } from '../../Firebase';
-import { BookForm } from './BookForm';
-import { bookFormSchema, BookFormType } from './schema';
+import { useBookForm } from './BookForm';
+import { BookBaseType } from './schema';
 
 export const BookAddButton: React.FC<{}> = () => {
   const [open, setOpen] = useState(false);
@@ -26,7 +25,7 @@ export const BookAddButton: React.FC<{}> = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const history = useHistory();
 
-  const handleSubmit = async (values: BookFormType) => {
+  const submitBook = async (values: BookBaseType) => {
     const doc = await db.collection('books').add({
       ...values,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -62,13 +61,18 @@ export const BookAddButton: React.FC<{}> = () => {
     });
   };
 
-  const emptyBook: BookFormType = {
+  const emptyBook: BookBaseType = {
     title: '',
     authors: [''],
     read: false,
     owned: false,
     priority: 50,
   };
+
+  const { renderForm, submitForm } = useBookForm({
+    onSubmit: submitBook,
+    initialValues: emptyBook,
+  });
 
   return (
     <div>
@@ -80,33 +84,18 @@ export const BookAddButton: React.FC<{}> = () => {
         追加
       </Button>
 
-      <Formik
-        initialValues={emptyBook}
-        onSubmit={handleSubmit}
-        validationSchema={bookFormSchema}
-      >
-        {(props) => (
-          <Dialog open={open}>
-            <DialogTitle>追加</DialogTitle>
-            <DialogContent>
-              <BookForm {...props} />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleDialogCloseClick} color="primary">
-                キャンセル
-              </Button>
-              <Button
-                onClick={() => {
-                  props.handleSubmit();
-                }}
-                color="primary"
-              >
-                追加
-              </Button>
-            </DialogActions>
-          </Dialog>
-        )}
-      </Formik>
+      <Dialog open={open}>
+        <DialogTitle>追加</DialogTitle>
+        <DialogContent>{renderForm()}</DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogCloseClick} color="primary">
+            キャンセル
+          </Button>
+          <Button onClick={submitForm} color="primary">
+            追加
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

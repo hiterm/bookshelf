@@ -1,23 +1,18 @@
 import Button from '@material-ui/core/Button';
-import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { firebase, db } from '../../Firebase';
-import { BookForm } from './BookForm';
-import { Book, bookFormSchema, BookFormType } from './schema';
+import { useBookForm } from './BookForm';
+import { Book, BookBaseType } from './schema';
 
-export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
+export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   const book = props.book;
 
   const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
 
-  if (book === undefined) {
-    return <div>Loading or not found.</div>;
-  }
-
-  const handleSubmit = async (values: BookFormType) => {
+  const handleSubmit = async (values: BookBaseType) => {
     const docRef = db.collection('books').doc(book.id);
     await docRef.update({
       ...values,
@@ -28,31 +23,19 @@ export const BookDetailEdit: React.FC<{ book: Book | undefined }> = (props) => {
   };
 
   // id等は更新したくない
-  const { id, createdAt, updatedAt, ...dbBook } = book;
+  const { id, createdAt, updatedAt, ...bookBase } = book;
+
+  const { renderForm, submitForm } = useBookForm({
+    onSubmit: handleSubmit,
+    initialValues: bookBase,
+  });
 
   return (
     <React.Fragment>
-      <Formik
-        initialValues={dbBook}
-        onSubmit={handleSubmit}
-        validationSchema={bookFormSchema}
-      >
-        {(props) => (
-          <React.Fragment>
-            <BookForm {...props} />
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              onClick={() => {
-                props.handleSubmit();
-              }}
-            >
-              更新
-            </Button>
-          </React.Fragment>
-        )}
-      </Formik>
+      {renderForm()}
+      <Button variant="contained" color="primary" onClick={submitForm}>
+        更新
+      </Button>
     </React.Fragment>
   );
 };
