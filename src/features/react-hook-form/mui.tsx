@@ -36,7 +36,7 @@ const RhfSelect = <T,>(props: SelectProps<T>) => (
     name={props.name}
     control={props.control}
     render={({ field: { ref, ...field } }) => (
-      <Select inputRef={ref} {...field}>
+      <Select inputRef={ref} {...field} defaultValue="">
         {props.children}
       </Select>
     )}

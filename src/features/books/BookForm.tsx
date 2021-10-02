@@ -9,8 +9,11 @@ import { z } from 'zod';
 import { Checkbox, Select, TextField } from '../react-hook-form/mui';
 
 const zBookFormSchema = z.object({
-  title: z.string(),
-  authors: z.array(z.object({ name: z.string() })).default([]),
+  title: z.string().min(1),
+  authors: z
+    .array(z.object({ name: z.string().min(1) }))
+    .nonempty()
+    .default([{ name: '' }]),
   isbn: z
     .string()
     .regex(/^(\d-?){12}\d$/)
@@ -24,11 +27,25 @@ const zBookFormSchema = z.object({
 
 export type BookFormType = z.infer<typeof zBookFormSchema>;
 
+const emptyBook: BookFormType = {
+  title: '',
+  authors: [{ name: '' }],
+  read: false,
+  owned: false,
+  priority: 50,
+};
+
 type BookFormProps = { onSubmit: SubmitHandler<BookFormType> };
 
 export const BookForm: React.FC<BookFormProps> = (props) => {
-  const { control, handleSubmit } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    mode: 'all',
     resolver: zodResolver(zBookFormSchema),
+    defaultValues: emptyBook,
   });
   const { fields, append, remove } = useFieldArray({
     name: 'authors',
@@ -39,6 +56,7 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
     <form onSubmit={handleSubmit(props.onSubmit)}>
       <div>
         <TextField name="title" label="書名" control={control} />
+        {errors.title?.type}
       </div>
       <div>
         {fields.map((field, index) => {
