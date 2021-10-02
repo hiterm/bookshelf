@@ -94,7 +94,6 @@ export const useBookForm = (props: BookFormProps) => {
 
   const renderForm = () => (
     <form>
-      {JSON.stringify(errors)}
       <div>
         <TextField
           name="title"
