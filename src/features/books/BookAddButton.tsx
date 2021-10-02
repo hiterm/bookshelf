@@ -11,6 +11,12 @@ import { db, firebase } from '../../Firebase';
 import { BookForm, BookFormType } from './BookForm';
 import { BookBaseType } from './schema';
 
+const removeUndefinedFromObject = (object: Object) => {
+  return Object.fromEntries(
+    Object.entries(object).filter(([_k, v]) => v !== undefined)
+  );
+};
+
 export const BookAddButton: React.FC<{}> = () => {
   const [open, setOpen] = useState(false);
 
@@ -32,8 +38,9 @@ export const BookAddButton: React.FC<{}> = () => {
       authors: authorNames,
       ...rest,
     };
+    console.log(JSON.stringify(bookBase));
     const doc = await db.collection('books').add({
-      ...bookBase,
+      ...removeUndefinedFromObject(bookBase),
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
