@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 import { firebase } from '../../Firebase';
 
-const bookFormSchema = yup
+const bookBaseSchema = yup
   .object({
     title: yup.string().required(),
     authors: yup.array().of(yup.string().required()).required().default([]),
@@ -14,7 +14,7 @@ const bookFormSchema = yup
   })
   .required();
 
-const bookSchema = bookFormSchema.shape({
+const bookSchema = bookBaseSchema.shape({
   id: yup.string().required(),
   createdAt: yup
     .date()
@@ -63,4 +63,4 @@ const firebaseDocToBook = (doc: firebase.firestore.DocumentData): Book => {
   return book as Book;
 };
 
-export { bookFormSchema, bookSchema, firebaseDocToBook };
+export { bookBaseSchema as bookFormSchema, bookSchema, firebaseDocToBook };
