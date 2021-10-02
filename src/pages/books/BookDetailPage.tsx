@@ -10,6 +10,10 @@ const BookDetailPage: React.FC<{ books: Book[] }> = (props) => {
 
   const book: Book | undefined = props.books.find((book) => book.id === id);
 
+  if (book === undefined) {
+    return <div>Loading or not found.</div>;
+  }
+
   return (
     <React.Fragment>
       <Switch>

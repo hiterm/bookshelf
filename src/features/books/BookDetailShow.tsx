@@ -103,14 +103,10 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
   );
 };
 
-export const BookDetailShow: React.FC<{ book: Book | undefined }> = (props) => {
+export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
   const { url } = useRouteMatch();
 
   const book = props.book;
-
-  if (book === undefined) {
-    return <div>Loading or not found.</div>;
-  }
 
   return (
     <React.Fragment>
