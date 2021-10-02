@@ -88,20 +88,19 @@ export const BookAddButton: React.FC<{}> = () => {
       <Dialog open={open}>
         <DialogTitle>追加</DialogTitle>
         <DialogContent>
-          <BookForm onSubmit={handleSubmit} initialValues={emptyBook} />
+          <BookForm
+            id="book-add-form"
+            onSubmit={handleSubmit}
+            initialValues={emptyBook}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDialogCloseClick} color="primary">
             キャンセル
           </Button>
-          {/* <Button
-            onClick={() => {
-              props.handleSubmit();
-            }}
-            color="primary"
-          >
+          <Button form="book-add-form" type="submit" color="primary">
             追加
-          </Button> */}
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

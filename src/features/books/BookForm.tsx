@@ -65,6 +65,7 @@ export const fromBookBaseToBookForm = (
 type BookFormProps = {
   onSubmit: SubmitHandler<BookFormType>;
   initialValues: BookFormType;
+  id: string;
 };
 
 export const BookForm: React.FC<BookFormProps> = (props) => {
@@ -83,7 +84,7 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
   });
 
   return (
-    <form onSubmit={handleSubmit(props.onSubmit)}>
+    <form id={props.id} onSubmit={handleSubmit(props.onSubmit)}>
       {JSON.stringify(errors)}
       <div>
         <TextField
@@ -172,7 +173,6 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
       <div>
         <Checkbox name="owned" label="所有" control={control} />
       </div>
-      <input type="submit" />
     </form>
   );
 };
