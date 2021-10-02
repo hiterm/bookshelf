@@ -8,8 +8,7 @@ import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { db, firebase } from '../../Firebase';
-import { BookForm, BookFormType } from './BookForm';
-import { BookBaseType } from './schema';
+import { BookForm, BookFormType, fromBookFormToBookBase } from './BookForm';
 
 const removeUndefinedFromObject = (object: Object) => {
   return Object.fromEntries(
@@ -31,14 +30,8 @@ export const BookAddButton: React.FC<{}> = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const history = useHistory();
 
-  const handleSubmit = async (values: BookFormType) => {
-    const { authors, ...rest } = values;
-    const authorNames: string[] = authors.map(({ name }) => name);
-    const bookBase: BookBaseType = {
-      authors: authorNames,
-      ...rest,
-    };
-    console.log(JSON.stringify(bookBase));
+  const handleSubmit = async (bookForm: BookFormType) => {
+    const bookBase = fromBookFormToBookBase(bookForm);
     const doc = await db.collection('books').add({
       ...removeUndefinedFromObject(bookBase),
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -67,7 +60,7 @@ export const BookAddButton: React.FC<{}> = () => {
 
     setOpen(false);
 
-    const message = `${values.title}を追加しました`;
+    const message = `${bookForm.title}を追加しました`;
     enqueueSnackbar(message, {
       variant: 'success',
       action,
@@ -95,7 +88,7 @@ export const BookAddButton: React.FC<{}> = () => {
       <Dialog open={open}>
         <DialogTitle>追加</DialogTitle>
         <DialogContent>
-          <BookForm onSubmit={handleSubmit} />
+          <BookForm onSubmit={handleSubmit} initialValues={emptyBook} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDialogCloseClick} color="primary">

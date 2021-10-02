@@ -6,6 +6,7 @@ import React from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Checkbox, Select, TextField } from '../react-hook-form/mui';
+import { BookBaseType } from './schema';
 
 const zBookFormSchema = z.object({
   title: z.string().min(1),
@@ -24,17 +25,47 @@ const zBookFormSchema = z.object({
   owned: z.boolean().default(false),
 });
 
-export type BookFormType = z.infer<typeof zBookFormSchema>;
-
-const emptyBook: BookFormType = {
-  title: '',
-  authors: [{ name: '' }],
-  read: false,
-  owned: false,
-  priority: 50,
+export type BookFormType = {
+  isbn?: string | undefined;
+  format?: 'eBook' | 'Printed' | undefined;
+  store?: 'Kindle' | undefined;
+  title: string;
+  authors: {
+    name: string;
+  }[];
+  read: boolean;
+  priority: number;
+  owned: boolean;
 };
 
-type BookFormProps = { onSubmit: SubmitHandler<BookFormType> };
+export const fromBookFormToBookBase = (
+  bookForm: BookFormType
+): BookBaseType => {
+  const { authors, ...rest } = bookForm;
+  const authorNames: string[] = authors.map(({ name }) => name);
+  return {
+    authors: authorNames,
+    ...rest,
+  };
+};
+
+export const fromBookBaseToBookForm = (
+  bookBase: BookBaseType
+): BookFormType => {
+  const { authors, ...rest } = bookBase;
+  const authorObjects = authors.map((name) => ({
+    name: name,
+  }));
+  return {
+    authors: authorObjects,
+    ...rest,
+  };
+};
+
+type BookFormProps = {
+  onSubmit: SubmitHandler<BookFormType>;
+  initialValues: BookFormType;
+};
 
 export const BookForm: React.FC<BookFormProps> = (props) => {
   const {
@@ -44,7 +75,7 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
   } = useForm({
     mode: 'all',
     resolver: zodResolver(zBookFormSchema),
-    defaultValues: emptyBook,
+    defaultValues: props.initialValues,
   });
   const { fields, append, remove } = useFieldArray({
     name: 'authors',
