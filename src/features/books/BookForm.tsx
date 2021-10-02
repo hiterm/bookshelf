@@ -92,23 +92,29 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
         </Button>
       </div>
       <div>
-        <FormControl>
-          <InputLabel>形式</InputLabel>
-          <Select name="format" control={control}>
-            <MenuItem value={''}>-</MenuItem>
-            <MenuItem value={'eBook'}>eBook</MenuItem>
-            <MenuItem value={'Printed'}>Printed</MenuItem>
-          </Select>
-        </FormControl>
+        <Select
+          name="format"
+          label="形式"
+          error={Boolean(errors.format)}
+          helperText={errors.format?.message}
+          control={control}
+        >
+          <MenuItem value={''}>-</MenuItem>
+          <MenuItem value={'eBook'}>eBook</MenuItem>
+          <MenuItem value={'Printed'}>Printed</MenuItem>
+        </Select>
       </div>
       <div>
-        <FormControl>
-          <InputLabel>ストア</InputLabel>
-          <Select name="store" control={control}>
-            <MenuItem value={''}>-</MenuItem>
-            <MenuItem value={'Kindle'}>Kindle</MenuItem>
-          </Select>
-        </FormControl>
+        <Select
+          name="store"
+          label="ストア"
+          error={Boolean(errors.store)}
+          helperText={errors.store?.message}
+          control={control}
+        >
+          <MenuItem value={''}>-</MenuItem>
+          <MenuItem value={'Kindle'}>Kindle</MenuItem>
+        </Select>
       </div>
       <div>
         <TextField

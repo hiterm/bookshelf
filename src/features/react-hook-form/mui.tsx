@@ -1,6 +1,9 @@
 import {
   Checkbox,
+  FormControl,
   FormControlLabel,
+  FormHelperText,
+  InputLabel,
   Select,
   TextField,
 } from '@material-ui/core';
@@ -35,7 +38,10 @@ const RhfTextField = <T,>(props: TextFieldProps<T>) => {
 };
 
 type SelectProps<T> = {
+  label: string;
   children: React.ReactNode;
+  error?: boolean;
+  helperText?: string;
 } & UseControllerProps<T>;
 
 const RhfSelect = <T,>(props: SelectProps<T>) => {
@@ -47,9 +53,13 @@ const RhfSelect = <T,>(props: SelectProps<T>) => {
   });
 
   return (
-    <Select inputRef={ref} {...field} defaultValue="">
-      {props.children}
-    </Select>
+    <FormControl error={props.error}>
+      <InputLabel>{props.label}</InputLabel>
+      <Select inputRef={ref} {...field} defaultValue="">
+        {props.children}
+      </Select>
+      <FormHelperText>{props.helperText}</FormHelperText>
+    </FormControl>
   );
 };
 
