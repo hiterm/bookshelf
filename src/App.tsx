@@ -1,8 +1,8 @@
-import { CircularProgress } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { CircularProgress } from '@mui/material';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
+import { createTheme, ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -11,6 +11,13 @@ import { AppBar } from './AppBar';
 import { firebase } from './Firebase';
 import { SignInScreen } from './SignInScreen';
 import { MainRoutes } from './pages/MainRoutes';
+
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
 
 const SignInCheck: React.FC = ({ children }) => {
   const auth = firebase.auth();
@@ -42,28 +49,30 @@ const App: React.FC<{}> = () => {
     notistackRef.current?.closeSnackbar(key);
   };
 
-  const theme = createMuiTheme();
+  const theme = createTheme();
 
   return (
     <React.Fragment>
       <CssBaseline />
-      <ThemeProvider theme={theme}>
-        <Router>
-          <AppBar />
-          <Container>
-            <SnackbarProvider
-              ref={notistackRef}
-              action={(key: string) => (
-                <Button onClick={onClickDismiss(key)}>Dismiss</Button>
-              )}
-            >
-              <SignInCheck>
-                <MainRoutes />
-              </SignInCheck>
-            </SnackbarProvider>
-          </Container>
-        </Router>
-      </ThemeProvider>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <Router>
+            <AppBar />
+            <Container>
+              <SnackbarProvider
+                ref={notistackRef}
+                action={(key: string) => (
+                  <Button onClick={onClickDismiss(key)}>Dismiss</Button>
+                )}
+              >
+                <SignInCheck>
+                  <MainRoutes />
+                </SignInCheck>
+              </SnackbarProvider>
+            </Container>
+          </Router>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </React.Fragment>
   );
 };

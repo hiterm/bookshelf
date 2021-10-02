@@ -6,7 +6,7 @@ import {
   InputLabel,
   Select,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import { HTMLInputTypeAttribute } from 'react';
 import { useController, UseControllerProps } from 'react-hook-form';
 
