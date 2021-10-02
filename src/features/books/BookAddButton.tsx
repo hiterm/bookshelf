@@ -8,7 +8,7 @@ import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { db, firebase } from '../../Firebase';
-import { BookForm, BookFormType, fromBookFormToBookBase } from './BookForm';
+import { BookFormType, fromBookFormToBookBase, useBookForm } from './BookForm';
 
 const removeUndefinedFromObject = (object: Object) => {
   return Object.fromEntries(
@@ -30,7 +30,7 @@ export const BookAddButton: React.FC<{}> = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const history = useHistory();
 
-  const handleSubmit = async (bookForm: BookFormType) => {
+  const submitBook = async (bookForm: BookFormType) => {
     const bookBase = fromBookFormToBookBase(bookForm);
     const doc = await db.collection('books').add({
       ...removeUndefinedFromObject(bookBase),
@@ -75,6 +75,11 @@ export const BookAddButton: React.FC<{}> = () => {
     priority: 50,
   };
 
+  const { renderForm, submitForm } = useBookForm({
+    onSubmit: submitBook,
+    initialValues: emptyBook,
+  });
+
   return (
     <div>
       <Button
@@ -87,18 +92,12 @@ export const BookAddButton: React.FC<{}> = () => {
 
       <Dialog open={open}>
         <DialogTitle>追加</DialogTitle>
-        <DialogContent>
-          <BookForm
-            id="book-add-form"
-            onSubmit={handleSubmit}
-            initialValues={emptyBook}
-          />
-        </DialogContent>
+        <DialogContent>{renderForm()}</DialogContent>
         <DialogActions>
           <Button onClick={handleDialogCloseClick} color="primary">
             キャンセル
           </Button>
-          <Button form="book-add-form" type="submit" color="primary">
+          <Button onClick={submitForm} color="primary">
             追加
           </Button>
         </DialogActions>

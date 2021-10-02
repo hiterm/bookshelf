@@ -65,10 +65,9 @@ export const fromBookBaseToBookForm = (
 type BookFormProps = {
   onSubmit: SubmitHandler<BookFormType>;
   initialValues: BookFormType;
-  id: string;
 };
 
-export const BookForm: React.FC<BookFormProps> = (props) => {
+export const useBookForm = (props: BookFormProps) => {
   const {
     control,
     handleSubmit,
@@ -83,8 +82,8 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
     control,
   });
 
-  return (
-    <form id={props.id} onSubmit={handleSubmit(props.onSubmit)}>
+  const renderForm = () => (
+    <form>
       {JSON.stringify(errors)}
       <div>
         <TextField
@@ -175,4 +174,6 @@ export const BookForm: React.FC<BookFormProps> = (props) => {
       </div>
     </form>
   );
+
+  return { renderForm, submitForm: handleSubmit(props.onSubmit) };
 };
