@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Box } from '@mui/material';
 import Button from '@mui/material/Button';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -94,93 +95,95 @@ export const useBookForm = (props: BookFormProps) => {
 
   const renderForm = () => (
     <form>
-      <div>
-        <TextField
-          name="title"
-          label="書名"
-          error={Boolean(errors.title)}
-          helperText={errors.title?.message}
-          control={control}
-        />
-      </div>
-      <div>
-        {fields.map((field, index) => {
-          return (
-            <div key={field.id}>
-              <InputLabel shrink={true}>著者{index + 1}</InputLabel>
-              <div>
-                <TextField
-                  name={`authors.${index}.name`}
-                  error={Boolean(errors.authors?.[index]?.name)}
-                  helperText={errors.authors?.[index]?.name?.message}
-                  control={control}
-                />
-                <Button
-                  variant="contained"
-                  type="button"
-                  onClick={() => remove(index)}
-                >
-                  -
-                </Button>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <div>
+          <TextField
+            name="title"
+            label="書名"
+            error={Boolean(errors.title)}
+            helperText={errors.title?.message}
+            control={control}
+          />
+        </div>
+        <div>
+          {fields.map((field, index) => {
+            return (
+              <div key={field.id}>
+                <InputLabel shrink={true}>著者{index + 1}</InputLabel>
+                <div>
+                  <TextField
+                    name={`authors.${index}.name`}
+                    error={Boolean(errors.authors?.[index]?.name)}
+                    helperText={errors.authors?.[index]?.name?.message}
+                    control={control}
+                  />
+                  <Button
+                    variant="contained"
+                    type="button"
+                    onClick={() => remove(index)}
+                  >
+                    -
+                  </Button>
+                </div>
               </div>
-            </div>
-          );
-        })}
-        <Button variant="contained" type="button" onClick={() => append({})}>
-          著者追加
-        </Button>
-      </div>
-      <div>
-        <Select
-          name="format"
-          label="形式"
-          error={Boolean(errors.format)}
-          helperText={errors.format?.message}
-          control={control}
-        >
-          <MenuItem value={''}>-</MenuItem>
-          <MenuItem value={'eBook'}>eBook</MenuItem>
-          <MenuItem value={'Printed'}>Printed</MenuItem>
-        </Select>
-      </div>
-      <div>
-        <Select
-          name="store"
-          label="ストア"
-          error={Boolean(errors.store)}
-          helperText={errors.store?.message}
-          control={control}
-        >
-          <MenuItem value={''}>-</MenuItem>
-          <MenuItem value={'Kindle'}>Kindle</MenuItem>
-        </Select>
-      </div>
-      <div>
-        <TextField
-          name="priority"
-          type="number"
-          label="優先度"
-          error={Boolean(errors.priority)}
-          helperText={errors.priority?.message}
-          control={control}
-        />
-      </div>
-      <div>
-        <TextField
-          name="isbn"
-          type="string"
-          label="ISBN"
-          error={Boolean(errors.isbn)}
-          helperText={errors.isbn?.message}
-          control={control}
-        />
-      </div>
-      <div>
-        <Checkbox name="read" label="既読" control={control} />
-      </div>
-      <div>
-        <Checkbox name="owned" label="所有" control={control} />
-      </div>
+            );
+          })}
+          <Button variant="contained" type="button" onClick={() => append({})}>
+            著者追加
+          </Button>
+        </div>
+        <div>
+          <Select
+            name="format"
+            label="形式"
+            error={Boolean(errors.format)}
+            helperText={errors.format?.message}
+            control={control}
+          >
+            <MenuItem value={''}>-</MenuItem>
+            <MenuItem value={'eBook'}>eBook</MenuItem>
+            <MenuItem value={'Printed'}>Printed</MenuItem>
+          </Select>
+        </div>
+        <div>
+          <Select
+            name="store"
+            label="ストア"
+            error={Boolean(errors.store)}
+            helperText={errors.store?.message}
+            control={control}
+          >
+            <MenuItem value={''}>-</MenuItem>
+            <MenuItem value={'Kindle'}>Kindle</MenuItem>
+          </Select>
+        </div>
+        <div>
+          <TextField
+            name="priority"
+            type="number"
+            label="優先度"
+            error={Boolean(errors.priority)}
+            helperText={errors.priority?.message}
+            control={control}
+          />
+        </div>
+        <div>
+          <TextField
+            name="isbn"
+            type="string"
+            label="ISBN"
+            error={Boolean(errors.isbn)}
+            helperText={errors.isbn?.message}
+            control={control}
+          />
+        </div>
+        <div>
+          <Checkbox name="read" label="既読" control={control} />
+        </div>
+        <div>
+          <Checkbox name="owned" label="所有" control={control} />
+        </div>
+      </Box>
     </form>
   );
 
