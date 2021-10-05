@@ -41,7 +41,7 @@ const RhfSelect = <T,>(props: SelectProps<T>) => {
   return (
     <FormControl error={props.error}>
       <InputLabel>{props.label}</InputLabel>
-      <Select inputRef={ref} {...field} defaultValue="">
+      <Select label={props.label} inputRef={ref} {...field} defaultValue="">
         {props.children}
       </Select>
       <FormHelperText>{props.helperText}</FormHelperText>
