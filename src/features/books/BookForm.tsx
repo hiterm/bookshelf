@@ -103,11 +103,10 @@ export const useBookForm = (props: BookFormProps) => {
         }}
       >
         <TextField
-          name="title"
           label="書名"
           error={Boolean(errors.title)}
           helperText={errors.title?.message}
-          control={control}
+          control={{ control, name: 'title' }}
         />
         <Box
           sx={{
@@ -121,11 +120,11 @@ export const useBookForm = (props: BookFormProps) => {
               <div key={field.id}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <TextField
-                    name={`authors.${index}.name`}
+                    control={{ control, name: `authors.${index}.name` }}
                     label={`著者${index + 1}`}
                     error={Boolean(errors.authors?.[index]?.name)}
                     helperText={errors.authors?.[index]?.name?.message}
-                    control={control}
+                    sx={{ flex: '1 0 auto' }}
                   />
                   <IconButton onClick={() => remove(index)}>
                     <RemoveCircle />
@@ -134,7 +133,12 @@ export const useBookForm = (props: BookFormProps) => {
               </div>
             );
           })}
-          <Button variant="contained" type="button" onClick={() => append({})}>
+          <Button
+            variant="contained"
+            type="button"
+            onClick={() => append({})}
+            sx={{ alignSelf: 'start' }}
+          >
             著者追加
           </Button>
         </Box>
@@ -160,20 +164,18 @@ export const useBookForm = (props: BookFormProps) => {
           <MenuItem value={'Kindle'}>Kindle</MenuItem>
         </Select>
         <TextField
-          name="priority"
           type="number"
           label="優先度"
           error={Boolean(errors.priority)}
           helperText={errors.priority?.message}
-          control={control}
+          control={{ control, name: 'priority' }}
         />
         <TextField
-          name="isbn"
           type="string"
           label="ISBN"
           error={Boolean(errors.isbn)}
           helperText={errors.isbn?.message}
-          control={control}
+          control={{ control, name: 'isbn' }}
         />
         <Checkbox name="read" label="既読" control={control} />
         <Checkbox name="owned" label="所有" control={control} />
