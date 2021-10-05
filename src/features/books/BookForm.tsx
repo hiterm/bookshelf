@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box } from '@mui/material';
+import { RemoveCircle } from '@mui/icons-material';
+import { Box, IconButton } from '@mui/material';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
@@ -120,13 +121,9 @@ export const useBookForm = (props: BookFormProps) => {
                     helperText={errors.authors?.[index]?.name?.message}
                     control={control}
                   />
-                  <Button
-                    variant="contained"
-                    type="button"
-                    onClick={() => remove(index)}
-                  >
-                    -
-                  </Button>
+                  <IconButton onClick={() => remove(index)}>
+                    <RemoveCircle />
+                  </IconButton>
                 </Box>
               </div>
             );
