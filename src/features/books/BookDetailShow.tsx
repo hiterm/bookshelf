@@ -75,7 +75,7 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
 
   return (
     <div>
-      <Button variant="contained" color="secondary" onClick={handleClickOpen}>
+      <Button variant="contained" color="error" onClick={handleClickOpen}>
         削除
       </Button>
       <Dialog
