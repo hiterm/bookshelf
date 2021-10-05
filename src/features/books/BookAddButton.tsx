@@ -84,7 +84,7 @@ export const BookAddButton: React.FC<{}> = () => {
         追加
       </Button>
 
-      <Dialog open={open}>
+      <Dialog open={open} fullWidth maxWidth="sm">
         <DialogTitle>追加</DialogTitle>
         <DialogContent>{renderForm()}</DialogContent>
         <DialogActions>

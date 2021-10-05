@@ -95,7 +95,13 @@ export const useBookForm = (props: BookFormProps) => {
 
   const renderForm = () => (
     <form>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
         <TextField
           name="title"
           label="書名"
