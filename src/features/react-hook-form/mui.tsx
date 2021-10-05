@@ -6,35 +6,21 @@ import {
   InputLabel,
   Select,
   TextField,
-} from '@material-ui/core';
-import { HTMLInputTypeAttribute } from 'react';
+  TextFieldProps as MuiTextFieldProps,
+} from '@mui/material';
 import { useController, UseControllerProps } from 'react-hook-form';
 
-type TextFieldProps<T> = {
-  label?: string;
-  type?: HTMLInputTypeAttribute;
-  error?: boolean;
-  helperText?: string;
-} & UseControllerProps<T>;
+type TextFieldProps<T> = MuiTextFieldProps & { control: UseControllerProps<T> };
 
-const RhfTextField = <T,>(props: TextFieldProps<T>) => {
+const RhfTextField = <T,>({ control, ...muiProps }: TextFieldProps<T>) => {
   const {
     field: { ref, ...field },
   } = useController({
-    name: props.name,
-    control: props.control,
+    name: control.name,
+    control: control.control,
   });
 
-  return (
-    <TextField
-      label={props.label}
-      type={props.type}
-      error={props.error}
-      helperText={props.helperText}
-      inputRef={ref}
-      {...field}
-    />
-  );
+  return <TextField {...muiProps} inputRef={ref} {...field} />;
 };
 
 type SelectProps<T> = {

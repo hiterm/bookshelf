@@ -1,4 +1,5 @@
-import Button from '@material-ui/core/Button';
+import { Box, Paper } from '@mui/material';
+import Button from '@mui/material/Button';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -31,11 +32,21 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   });
 
   return (
-    <React.Fragment>
-      {renderForm()}
-      <Button variant="contained" color="primary" onClick={submitForm}>
-        更新
-      </Button>
-    </React.Fragment>
+    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Paper
+        sx={{
+          padding: 5,
+          width: {
+            xs: 1,
+            sm: 600,
+          },
+        }}
+      >
+        {renderForm()}
+        <Button variant="contained" color="primary" onClick={submitForm}>
+          更新
+        </Button>
+      </Paper>
+    </Box>
   );
 };

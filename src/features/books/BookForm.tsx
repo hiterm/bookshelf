@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import Button from '@material-ui/core/Button';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
+import { RemoveCircle } from '@mui/icons-material';
+import { Box, IconButton } from '@mui/material';
+import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -94,43 +95,53 @@ export const useBookForm = (props: BookFormProps) => {
 
   const renderForm = () => (
     <form>
-      <div>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
         <TextField
-          name="title"
           label="書名"
           error={Boolean(errors.title)}
           helperText={errors.title?.message}
-          control={control}
+          control={{ control, name: 'title' }}
         />
-      </div>
-      <div>
-        {fields.map((field, index) => {
-          return (
-            <div key={field.id}>
-              <InputLabel shrink={true}>著者{index + 1}</InputLabel>
-              <div>
-                <TextField
-                  name={`authors.${index}.name`}
-                  error={Boolean(errors.authors?.[index]?.name)}
-                  helperText={errors.authors?.[index]?.name?.message}
-                  control={control}
-                />
-                <Button
-                  variant="contained"
-                  type="button"
-                  onClick={() => remove(index)}
-                >
-                  -
-                </Button>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+          }}
+        >
+          {fields.map((field, index) => {
+            return (
+              <div key={field.id}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <TextField
+                    control={{ control, name: `authors.${index}.name` }}
+                    label={`著者${index + 1}`}
+                    error={Boolean(errors.authors?.[index]?.name)}
+                    helperText={errors.authors?.[index]?.name?.message}
+                    sx={{ flex: '1 0 auto' }}
+                  />
+                  <IconButton onClick={() => remove(index)}>
+                    <RemoveCircle />
+                  </IconButton>
+                </Box>
               </div>
-            </div>
-          );
-        })}
-        <Button variant="contained" type="button" onClick={() => append({})}>
-          著者追加
-        </Button>
-      </div>
-      <div>
+            );
+          })}
+          <Button
+            variant="contained"
+            type="button"
+            onClick={() => append({})}
+            sx={{ alignSelf: 'start' }}
+          >
+            著者追加
+          </Button>
+        </Box>
         <Select
           name="format"
           label="形式"
@@ -142,8 +153,6 @@ export const useBookForm = (props: BookFormProps) => {
           <MenuItem value={'eBook'}>eBook</MenuItem>
           <MenuItem value={'Printed'}>Printed</MenuItem>
         </Select>
-      </div>
-      <div>
         <Select
           name="store"
           label="ストア"
@@ -154,33 +163,23 @@ export const useBookForm = (props: BookFormProps) => {
           <MenuItem value={''}>-</MenuItem>
           <MenuItem value={'Kindle'}>Kindle</MenuItem>
         </Select>
-      </div>
-      <div>
         <TextField
-          name="priority"
           type="number"
           label="優先度"
           error={Boolean(errors.priority)}
           helperText={errors.priority?.message}
-          control={control}
+          control={{ control, name: 'priority' }}
         />
-      </div>
-      <div>
         <TextField
-          name="isbn"
           type="string"
           label="ISBN"
           error={Boolean(errors.isbn)}
           helperText={errors.isbn?.message}
-          control={control}
+          control={{ control, name: 'isbn' }}
         />
-      </div>
-      <div>
         <Checkbox name="read" label="既読" control={control} />
-      </div>
-      <div>
         <Checkbox name="owned" label="所有" control={control} />
-      </div>
+      </Box>
     </form>
   );
 
