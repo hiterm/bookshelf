@@ -2657,9 +2657,9 @@
     chalk "^4.0.0"
 
 "@material-table/core@^0.2.3":
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/@material-table/core/-/core-0.2.3.tgz#36e0186233d49be824a70b56712679b73bbd53cd"
-  integrity sha512-oF9JZLesJFrD+4qj9mEU0r5aINwHmeFWT/k1I0OqqbRzmXk+eoTL8QPAQjzRKWF45h+v3NMffG9LblqpfpVWMw==
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@material-table/core/-/core-0.2.4.tgz#ecec98b221659188662c22b32f0f562a26613307"
+  integrity sha512-K4O1EFqjLlEvYDf0BpZ75AcKIQHQW9xPuFN2ZGQu5WBZSzIZsiUU2B1bBcOrSME4mo0TkMRxSzavEehEj4C4Xg==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@date-io/core" "^1.3.13"
@@ -3348,7 +3348,16 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^17.0.0":
+"@types/react@*":
+  version "17.0.27"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.27.tgz#6498ed9b3ad117e818deb5525fa1946c09f2e0e6"
+  integrity sha512-zgiJwtsggVGtr53MndV7jfiUESTqrbxOcBvwfe6KS/9bzaVPCTDieTWnFNecVNx6EAaapg5xsLLWFfHHR437AA==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/scheduler" "*"
+    csstype "^3.0.2"
+
+"@types/react@^17.0.0":
   version "17.0.21"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.21.tgz#069c43177cd419afaab5ce26bb4e9056549f7ea6"
   integrity sha512-GzzXCpOthOjXvrAUFQwU/svyxu658cwu00Q9ugujS4qc1zXgLFaO0kS2SLOaMWLt2Jik781yuHCWB7UcYdGAeQ==
@@ -5635,9 +5644,9 @@ data-urls@^2.0.0:
     whatwg-url "^8.0.0"
 
 date-fns@^2.16.1:
-  version "2.24.0"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.24.0.tgz#7d86dc0d93c87b76b63d213b4413337cfd1c105d"
-  integrity sha512-6ujwvwgPID6zbI0o7UbURi2vlLDR9uP26+tW6Lg+Ji3w7dd0i3DOcjcClLjLPranT60SSEFBwdSyYwn/ZkPIuw==
+  version "2.25.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.25.0.tgz#8c5c8f1d958be3809a9a03f4b742eba894fc5680"
+  integrity sha512-ovYRFnTrbGPD4nqaEqescPEv1mNwvt+UTqI3Ay9SzNtey9NZnYu6E2qCcBBgJ6/2VF1zGGygpyTDITqpQQ5e+w==
 
 dayjs@^1.9.8:
   version "1.10.7"
