@@ -173,10 +173,7 @@ export const useBookForm = (props: BookFormProps) => {
             name: 'priority',
             transform: {
               input: (value: number) => (isNaN(value) ? '' : value.toString()),
-              output: (e) => {
-                const output = parseInt(e.target.value, 10);
-                return isNaN(output) ? 50 : output;
-              },
+              output: (e) => parseInt(e.target.value, 10),
             },
           }}
         />
