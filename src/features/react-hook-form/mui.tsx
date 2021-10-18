@@ -10,17 +10,50 @@ import {
 } from '@mui/material';
 import { useController, UseControllerProps } from 'react-hook-form';
 
-type TextFieldProps<T> = MuiTextFieldProps & { control: UseControllerProps<T> };
+type UseControllerPropsWithTransform<IFieldValues, OutputValue> =
+  UseControllerProps<IFieldValues> & {
+    transform?: {
+      input: { (value: OutputValue): string };
+      output: {
+        (
+          event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        ): OutputValue;
+      };
+    };
+  };
 
-const RhfTextField = <T,>({ control, ...muiProps }: TextFieldProps<T>) => {
+type TextFieldProps<T, U> = MuiTextFieldProps & {
+  control: UseControllerPropsWithTransform<T, U>;
+};
+
+const RhfTextField = <T, U>({
+  control: { name, control, transform },
+  ...muiProps
+}: TextFieldProps<T, U>) => {
   const {
-    field: { ref, ...field },
+    field: { ref, onChange, value, ...field },
   } = useController({
-    name: control.name,
-    control: control.control,
+    name: name,
+    control: control,
   });
 
-  return <TextField {...muiProps} inputRef={ref} {...field} />;
+  const handleChange =
+    transform === undefined
+      ? onChange
+      : (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+          onChange(transform.output(e));
+  const transformedValue =
+    transform === undefined ? value : transform.input(value);
+
+  return (
+    <TextField
+      {...muiProps}
+      {...field}
+      inputRef={ref}
+      onChange={handleChange}
+      value={transformedValue}
+    />
+  );
 };
 
 type SelectProps<T> = {
