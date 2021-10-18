@@ -168,7 +168,17 @@ export const useBookForm = (props: BookFormProps) => {
           label="優先度"
           error={Boolean(errors.priority)}
           helperText={errors.priority?.message}
-          control={{ control, name: 'priority' }}
+          control={{
+            control,
+            name: 'priority',
+            transform: {
+              input: (value: number) => (isNaN(value) ? '' : value.toString()),
+              output: (e) => {
+                const output = parseInt(e.target.value, 10);
+                return isNaN(output) ? 50 : output;
+              },
+            },
+          }}
         />
         <TextField
           type="string"
