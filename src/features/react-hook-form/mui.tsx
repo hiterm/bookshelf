@@ -37,17 +37,21 @@ const RhfTextField = <T, U>({
     control: control,
   });
 
+  const handleChange =
+    transform === undefined
+      ? onChange
+      : (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+          onChange(transform.output(e));
+  const transformedValue =
+    transform === undefined ? value : transform.input(value);
+
   return (
     <TextField
       {...muiProps}
       {...field}
       inputRef={ref}
-      onChange={
-        transform === undefined
-          ? onChange
-          : (e) => onChange(transform.output(e))
-      }
-      value={transform === undefined ? value : transform.input(value)}
+      onChange={handleChange}
+      value={transformedValue}
     />
   );
 };
