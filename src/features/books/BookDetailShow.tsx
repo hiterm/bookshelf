@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import Check from '@mui/icons-material/Check';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -42,11 +41,11 @@ const BookDetailShowItem: React.FC<{
 
 const ShowBoolean: React.FC<{ flag: boolean }> = (props) => (
   <Check
-    css={css`
-    color: ${
-      props.flag ? theme.palette.success.main : theme.palette.action.disabled
-    };}
-    `}
+    sx={{
+      color: props.flag
+        ? theme.palette.success.main
+        : theme.palette.action.disabled,
+    }}
   />
 );
 
