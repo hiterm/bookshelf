@@ -20,10 +20,12 @@ const theme = createTheme();
 const BookDetailShowItem: React.FC<{
   field: string;
   value: React.ReactNode;
-  doubleWidth?: boolean;
+  halfWidth?: boolean;
 }> = (props) => {
-  const showValue =
+  const valueForShow =
     props.value == null || props.value === '' ? '-' : props.value;
+  const gridColumnEnd = props.halfWidth ? 'span 1' : undefined;
+
   return (
     <>
       <Typography
@@ -32,8 +34,8 @@ const BookDetailShowItem: React.FC<{
       >
         {props.field}
       </Typography>
-      <Box sx={{ gridColumnEnd: props.doubleWidth ? 'span 3' : undefined }}>
-        {showValue}
+      <Box sx={{ gridColumnEnd: { xs: 'span 3', md: gridColumnEnd } }}>
+        {valueForShow}
       </Box>
     </>
   );
@@ -118,35 +120,31 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
           padding: 2,
         }}
       >
-        <BookDetailShowItem field="書名" value={book.title} doubleWidth />
-        <BookDetailShowItem
-          field="著者"
-          value={book.authors.join(', ')}
-          doubleWidth
-        />
-        <BookDetailShowItem field="形式" value={book.format} />
-        <BookDetailShowItem field="ストア" value={book.store} />
-        <BookDetailShowItem
-          field="優先度"
-          value={book.priority.toString()}
-          doubleWidth
-        />
+        <BookDetailShowItem field="書名" value={book.title} />
+        <BookDetailShowItem field="著者" value={book.authors.join(', ')} />
+        <BookDetailShowItem field="形式" value={book.format} halfWidth />
+        <BookDetailShowItem field="ストア" value={book.store} halfWidth />
+        <BookDetailShowItem field="優先度" value={book.priority.toString()} />
         <BookDetailShowItem
           field="既読"
           value={<ShowBoolean flag={book.read} />}
+          halfWidth
         />
         <BookDetailShowItem
           field="所有"
           value={<ShowBoolean flag={book.owned} />}
+          halfWidth
         />
         <BookDetailShowItem field="ISBN" value={book.isbn} />
         <BookDetailShowItem
           field="作成日時"
           value={dayjs(book.createdAt).format('YYYY/MM/DD HH:mm:ss')}
+          halfWidth
         />
         <BookDetailShowItem
           field="更新日時"
           value={dayjs(book.updatedAt).format('YYYY/MM/DD HH:mm:ss')}
+          halfWidth
         />
       </Paper>
       <Box sx={{ display: 'flex', gap: 1, marginTop: 1, marginBottom: 1 }}>
