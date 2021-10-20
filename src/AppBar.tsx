@@ -34,9 +34,9 @@ export const AppBar: React.FC = () => {
   };
 
   return (
-    <MuiAppBar position="static" css={{ marginBottom: 50 }}>
+    <MuiAppBar position="static" sx={{ marginBottom: 5 }}>
       <Toolbar>
-        <Typography variant="h5" color="inherit" css={{ flexGrow: 1 }}>
+        <Typography variant="h5" color="inherit" sx={{ flexGrow: 1 }}>
           <MuiLink
             component={RouterLink}
             to="/books"
