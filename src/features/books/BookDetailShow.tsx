@@ -1,5 +1,5 @@
-import { css } from '@emotion/react';
 import Check from '@mui/icons-material/Check';
+import { Paper, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -7,11 +7,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Divider from '@mui/material/Divider';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import Paper from '@mui/material/Paper';
 import { createTheme } from '@mui/material/styles';
 import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
@@ -25,28 +20,34 @@ const theme = createTheme();
 const BookDetailShowItem: React.FC<{
   field: string;
   value: React.ReactNode;
+  halfWidth?: boolean;
 }> = (props) => {
+  const valueForShow =
+    props.value == null || props.value === '' ? '-' : props.value;
+  const gridColumnEnd = props.halfWidth ? 'span 1' : undefined;
+
   return (
-    <ListItemText
-      primary={
-        <React.Fragment>
-          <Box display="inline-block" width={100} fontWeight="fontWeightBold">
-            {props.field}
-          </Box>
-          <span>{props.value}</span>
-        </React.Fragment>
-      }
-    />
+    <>
+      <Typography
+        variant="body1"
+        sx={{ fontWeight: 'bold', justifySelf: 'end' }}
+      >
+        {props.field}
+      </Typography>
+      <Box sx={{ gridColumnEnd: { xs: 'span 3', md: gridColumnEnd } }}>
+        {valueForShow}
+      </Box>
+    </>
   );
 };
 
 const ShowBoolean: React.FC<{ flag: boolean }> = (props) => (
   <Check
-    css={css`
-    color: ${
-      props.flag ? theme.palette.success.main : theme.palette.action.disabled
-    };}
-    `}
+    sx={{
+      color: props.flag
+        ? theme.palette.success.main
+        : theme.palette.action.disabled,
+    }}
   />
 );
 
@@ -110,77 +111,53 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
 
   return (
     <React.Fragment>
-      <div>
-        <Paper css={{ display: 'inline-block' }}>
-          <List>
-            <ListItem>
-              <BookDetailShowItem field="書名" value={book.title} />
-            </ListItem>
-            <Divider light variant="middle" />
-            <ListItem>
-              <BookDetailShowItem
-                field="著者"
-                value={book.authors.join(', ')}
-              />
-            </ListItem>
-            <Divider light variant="middle" />
-            <ListItem>
-              <BookDetailShowItem field="形式" value={book.format} />
-            </ListItem>
-            <Divider light variant="middle" />
-            <ListItem>
-              <BookDetailShowItem field="ストア" value={book.store} />
-            </ListItem>
-            <Divider light variant="middle" />
-            <ListItem>
-              <BookDetailShowItem
-                field="優先度"
-                value={book.priority.toString()}
-              />
-            </ListItem>
-            <Divider light variant="middle" />
-            <ListItem>
-              <BookDetailShowItem
-                field="既読"
-                value={<ShowBoolean flag={book.read} />}
-              />
-            </ListItem>
-            <Divider light variant="middle" />
-            <ListItem>
-              <BookDetailShowItem
-                field="所有"
-                value={<ShowBoolean flag={book.owned} />}
-              />
-            </ListItem>
-            <Divider light variant="middle" />
-            <ListItem>
-              <BookDetailShowItem field="ISBN" value={book.isbn} />
-            </ListItem>
-            <ListItem>
-              <BookDetailShowItem
-                field="作成日時"
-                value={dayjs(book.createdAt).format('YYYY/MM/DD HH:mm:ss')}
-              />
-            </ListItem>
-            <Divider light variant="middle" />
-            <ListItem>
-              <BookDetailShowItem
-                field="更新日時"
-                value={dayjs(book.updatedAt).format('YYYY/MM/DD HH:mm:ss')}
-              />
-            </ListItem>
-          </List>
-        </Paper>
-      </div>
-      <Button
-        variant="contained"
-        color="primary"
-        component={Link}
-        to={`${url}/edit`}
+      <Paper
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: 'max-content 1fr max-content 1fr',
+          rowGap: 2,
+          columnGap: 2,
+          padding: 2,
+        }}
       >
-        変更
-      </Button>
-      <DeleteButton book={book} />
+        <BookDetailShowItem field="書名" value={book.title} />
+        <BookDetailShowItem field="著者" value={book.authors.join(', ')} />
+        <BookDetailShowItem field="形式" value={book.format} halfWidth />
+        <BookDetailShowItem field="ストア" value={book.store} halfWidth />
+        <BookDetailShowItem field="優先度" value={book.priority.toString()} />
+        <BookDetailShowItem
+          field="既読"
+          value={<ShowBoolean flag={book.read} />}
+          halfWidth
+        />
+        <BookDetailShowItem
+          field="所有"
+          value={<ShowBoolean flag={book.owned} />}
+          halfWidth
+        />
+        <BookDetailShowItem field="ISBN" value={book.isbn} />
+        <BookDetailShowItem
+          field="作成日時"
+          value={dayjs(book.createdAt).format('YYYY/MM/DD HH:mm:ss')}
+          halfWidth
+        />
+        <BookDetailShowItem
+          field="更新日時"
+          value={dayjs(book.updatedAt).format('YYYY/MM/DD HH:mm:ss')}
+          halfWidth
+        />
+      </Paper>
+      <Box sx={{ display: 'flex', gap: 1, marginTop: 1, marginBottom: 1 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          component={Link}
+          to={`${url}/edit`}
+        >
+          変更
+        </Button>
+        <DeleteButton book={book} />
+      </Box>
     </React.Fragment>
   );
 };
