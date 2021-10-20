@@ -172,15 +172,17 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
           </List>
         </Paper>
       </div>
-      <Button
-        variant="contained"
-        color="primary"
-        component={Link}
-        to={`${url}/edit`}
-      >
-        変更
-      </Button>
-      <DeleteButton book={book} />
+      <Box sx={{ display: 'flex', gap: 1, marginTop: 1, marginBottom: 1 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          component={Link}
+          to={`${url}/edit`}
+        >
+          変更
+        </Button>
+        <DeleteButton book={book} />
+      </Box>
     </React.Fragment>
   );
 };
