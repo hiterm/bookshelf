@@ -1,29 +1,21 @@
-import * as yup from 'yup';
+import { z } from 'zod';
 import { firebase } from '../../Firebase';
 
-const bookBaseSchema = yup
-  .object({
-    title: yup.string().required(),
-    authors: yup.array().of(yup.string().required()).required().default([]),
-    isbn: yup.string().matches(/^(\d-?){12}\d$/, { excludeEmptyString: true }),
-    read: yup.boolean().required().default(false),
-    priority: yup.number().integer().min(0).max(100).required().default(50),
-    format: yup.string().oneOf(['eBook', 'Printed']),
-    store: yup.string().oneOf(['Kindle']),
-    owned: yup.boolean().defined().default(false),
-  })
-  .required();
-
-const bookSchema = bookBaseSchema.shape({
-  id: yup.string().required(),
-  createdAt: yup
-    .date()
-    .required()
-    .default(() => new Date()),
-  updatedAt: yup
-    .date()
-    .required()
-    .default(() => new Date()),
+const bookSchema = z.object({
+  title: z.string().min(1),
+  authors: z.array(z.string().min(1)).nonempty(),
+  isbn: z
+    .string()
+    .regex(/(^$|^(\d-?){12}\d$)/)
+    .optional(),
+  read: z.boolean().default(false),
+  priority: z.number().int().min(0).max(100).default(50),
+  format: z.enum(['eBook', 'Printed']).optional(),
+  store: z.enum(['Kindle']).optional(),
+  owned: z.boolean().default(false),
+  id: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
 export interface BookBaseType {
@@ -52,15 +44,15 @@ export interface Book {
 }
 
 const firebaseDocToBook = (doc: firebase.firestore.DocumentData): Book => {
-  const book = bookSchema.cast({
+  // TODO: throwされたとき
+  const book = bookSchema.parse({
     id: doc.id,
     ...doc.data(),
     createdAt: doc.data().createdAt?.toDate(),
     updatedAt: doc.data().updatedAt?.toDate(),
   });
 
-  // TODO: 無理やりキャストしている。直す
-  return book as Book;
+  return book;
 };
 
-export { bookBaseSchema as bookFormSchema, bookSchema, firebaseDocToBook };
+export { firebaseDocToBook };
