@@ -1,3 +1,4 @@
+/* eslint react/display-name: "off" */
 import { Icons } from '@material-table/core';
 import AddBox from '@mui/icons-material/AddBox';
 import ArrowDownward from '@mui/icons-material/ArrowDownward';
