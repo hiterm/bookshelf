@@ -21,6 +21,7 @@ settings:
     version: detect
 rules:
   import/order: ["warn", { "alphabetize": { "order": "asc" } }]
+  react/react-in-jsx-scope: off
 ignorePatterns:
   - /build
   - /dist
