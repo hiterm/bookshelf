@@ -1,8 +1,10 @@
+root: true
+parser: '@typescript-eslint/parser'
 extends:
   - eslint:recommended
+  - plugin:react/recommended
   - plugin:prettier/recommended
   - prettier/react
-  - react-app
   - plugin:@typescript-eslint/eslint-recommended
   - plugin:import/recommended
   - plugin:import/typescript
