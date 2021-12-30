@@ -63,7 +63,7 @@ type SelectProps<T> = {
   helperText?: string;
 } & UseControllerProps<T>;
 
-const RhfSelect = <T,>(props: SelectProps<T>) => {
+const RhfSelect = <T extends unknown>(props: SelectProps<T>) => {
   const {
     field: { ref, ...field },
   } = useController({
@@ -86,7 +86,7 @@ type CheckboxProps<T> = {
   label: string;
 } & UseControllerProps<T>;
 
-const RhfCheckbox = <T,>(props: CheckboxProps<T>) => {
+const RhfCheckbox = <T extends unknown>(props: CheckboxProps<T>) => {
   const {
     field: { ref, value, ...field },
   } = useController({
