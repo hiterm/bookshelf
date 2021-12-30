@@ -8,7 +8,11 @@ import {
   TextField,
   TextFieldProps as MuiTextFieldProps,
 } from '@mui/material';
-import { useController, UseControllerProps } from 'react-hook-form';
+import {
+  FieldValues,
+  useController,
+  UseControllerProps,
+} from 'react-hook-form';
 
 type UseControllerPropsWithTransform<IFieldValues, OutputValue> =
   UseControllerProps<IFieldValues> & {
@@ -63,7 +67,7 @@ type SelectProps<T> = {
   helperText?: string;
 } & UseControllerProps<T>;
 
-const RhfSelect = <T extends unknown>(props: SelectProps<T>) => {
+const RhfSelect = <T extends FieldValues>(props: SelectProps<T>) => {
   const {
     field: { ref, ...field },
   } = useController({
@@ -86,7 +90,7 @@ type CheckboxProps<T> = {
   label: string;
 } & UseControllerProps<T>;
 
-const RhfCheckbox = <T extends unknown>(props: CheckboxProps<T>) => {
+const RhfCheckbox = <T extends FieldValues>(props: CheckboxProps<T>) => {
   const {
     field: { ref, value, ...field },
   } = useController({
