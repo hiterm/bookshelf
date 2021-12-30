@@ -17,6 +17,8 @@ settings:
     node:
       paths: ["src"]
       extensions: [".js", ".jsx", ".ts", ".tsx"]
+  react:
+    version: detect
 rules:
   import/order: ["warn", { "alphabetize": { "order": "asc" } }]
 ignorePatterns:
