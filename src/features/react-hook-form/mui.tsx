@@ -46,8 +46,9 @@ const RhfTextField = <T, U>({
       ? onChange
       : (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
           onChange(transform.output(e));
+  // TODO: asを使わない形にする
   const transformedValue =
-    transform === undefined ? value : transform.input(value);
+    transform === undefined ? value : transform.input(value as U);
 
   return (
     <TextField
