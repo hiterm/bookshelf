@@ -1,6 +1,12 @@
 import React from 'react';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+import StyledFirebaseAuthOrigin from 'react-firebaseui/StyledFirebaseAuth';
 import { firebase } from './Firebase';
+
+function interopDefault<T>(value: T): T {
+  return (value as any).default;
+}
+
+const StyledFirebaseAuth = interopDefault(StyledFirebaseAuthOrigin);
 
 const uiConfig = {
   // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
