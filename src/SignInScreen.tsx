@@ -6,6 +6,7 @@ function interopDefault<T>(value: T): T {
   return (value as any).default;
 }
 
+// https://github.com/vitejs/vite/issues/2139#issuecomment-854960323
 const StyledFirebaseAuth = interopDefault(StyledFirebaseAuthOrigin);
 
 const uiConfig = {
