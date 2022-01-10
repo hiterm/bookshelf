@@ -51,6 +51,7 @@
     "@emotion/babel-plugin": "^11.3.0",
     "@swc/core": "^1.2.127",
     "@swc/jest": "^0.2.15",
+    "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@types/react-router-dom": "^5.1.7",
     "@types/yup": "^0.29.11",
