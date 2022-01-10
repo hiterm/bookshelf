@@ -1,13 +1,6 @@
 import React from 'react';
-import StyledFirebaseAuthOrigin from 'react-firebaseui/StyledFirebaseAuth';
+import { StyledFirebaseAuth } from 'react-firebaseui';
 import { firebase } from './Firebase';
-
-function interopDefault<T>(value: T): T {
-  return (value as any).default;
-}
-
-// https://github.com/vitejs/vite/issues/2139#issuecomment-854960323
-const StyledFirebaseAuth = interopDefault(StyledFirebaseAuthOrigin);
 
 const uiConfig = {
   // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
