@@ -53,6 +53,7 @@
     "@swc/jest": "^0.2.15",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
+    "@testing-library/react-hooks": "^7.0.2",
     "@types/react-router-dom": "^5.1.7",
     "@types/yup": "^0.29.11",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
