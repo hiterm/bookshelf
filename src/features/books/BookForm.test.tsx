@@ -24,9 +24,10 @@ describe('useBookForm', () => {
       priority: 50,
     };
 
+    const mockSubmit = jest.fn((_book: BookBaseType) => {});
     const { result } = renderHook(() =>
       useBookForm({
-        onSubmit: () => {},
+        onSubmit: mockSubmit,
         initialValues: emptyBook,
       })
     );
@@ -34,12 +35,21 @@ describe('useBookForm', () => {
       result.current.renderForm()
     );
     expect(getAllByText('書名')[0]).toBeInTheDocument();
-    const nameInput = getByLabelText('書名');
+    const titleInput = getByLabelText('書名');
     const authorInput = getByLabelText('著者1');
     await waitFor(() => {
-      userEvent.type(nameInput, 'valid name');
+      userEvent.type(titleInput, 'valid title');
       userEvent.type(authorInput, 'valid author');
       result.current.submitForm();
+    });
+
+    expect(mockSubmit.mock.calls.length).toBe(1);
+    expect(mockSubmit.mock.calls[0][0]).toEqual({
+      authors: ['valid author'],
+      owned: false,
+      priority: 50,
+      read: false,
+      title: 'valid title',
     });
   });
 });
