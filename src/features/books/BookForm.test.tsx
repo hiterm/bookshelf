@@ -35,13 +35,14 @@ describe('useBookForm', () => {
       result.current.renderForm()
     );
     expect(getAllByText('書名')[0]).toBeInTheDocument();
-    const titleInput = getByLabelText('書名');
+    const titleInput = getByLabelText('書名') as HTMLInputElement;
     const authorInput = getByLabelText('著者1');
-    await waitFor(() => {
-      userEvent.type(titleInput, 'valid title');
-      userEvent.type(authorInput, 'valid author');
+    await waitFor(async () => {
+      await userEvent.type(titleInput, 'valid title', { delay: 1 });
+      await userEvent.type(authorInput, 'valid author', { delay: 1 });
       result.current.submitForm();
     });
+    // expect(titleInput.value).toBe('');
 
     expect(mockSubmit.mock.calls.length).toBe(1);
     expect(mockSubmit.mock.calls[0][0]).toEqual({
