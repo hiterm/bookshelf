@@ -8,7 +8,7 @@ import {
   StyledEngineProvider,
 } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AppBar } from './AppBar';
 import { SignInScreen } from './SignInScreen';
@@ -38,6 +38,19 @@ const AppInAuth0Provider: React.FC = () => {
   };
 
   const theme = createTheme();
+
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getToken = async () => {
+      if (isAuthenticated) {
+        const accessToken = await getAccessTokenSilently();
+        setToken(accessToken);
+      }
+    };
+    getToken();
+  }, [isAuthenticated]);
 
   return (
     <>
