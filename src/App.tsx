@@ -14,6 +14,7 @@ import { AppBar } from './AppBar';
 import { SignInScreen } from './SignInScreen';
 import { MainRoutes } from './pages/MainRoutes';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
+import { createClient, Provider as UrqlProvider } from 'urql';
 
 const SignInCheck: React.FC = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -31,14 +32,7 @@ const SignInCheck: React.FC = ({ children }) => {
   return <SignInScreen />;
 };
 
-const AppInAuth0Provider: React.FC = () => {
-  const notistackRef = React.useRef<SnackbarProvider>(null);
-  const onClickDismiss = (key: string) => () => {
-    notistackRef.current?.closeSnackbar(key);
-  };
-
-  const theme = createTheme();
-
+const AppWithSuccessedLogin: React.FC = () => {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [token, setToken] = useState<string | null>(null);
 
@@ -51,6 +45,34 @@ const AppInAuth0Provider: React.FC = () => {
     };
     getToken();
   }, [isAuthenticated]);
+
+  if (token == null) {
+    return <>loading</>;
+  }
+
+  const client = createClient({
+    url: import.meta.env.VITE_BOOKSHELF_API,
+    fetchOptions: () => {
+      return {
+        headers: { authorization: `Bearer ${token}` },
+      };
+    },
+  });
+
+  return (
+    <UrqlProvider value={client}>
+      <MainRoutes />
+    </UrqlProvider>
+  );
+};
+
+const AppInAuth0Provider: React.FC = () => {
+  const notistackRef = React.useRef<SnackbarProvider>(null);
+  const onClickDismiss = (key: string) => () => {
+    notistackRef.current?.closeSnackbar(key);
+  };
+
+  const theme = createTheme();
 
   return (
     <>
@@ -67,7 +89,7 @@ const AppInAuth0Provider: React.FC = () => {
                 )}
               >
                 <SignInCheck>
-                  <MainRoutes />
+                  <AppWithSuccessedLogin />
                 </SignInCheck>
               </SnackbarProvider>
             </Container>
