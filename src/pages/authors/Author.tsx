@@ -1,28 +1,28 @@
 import {
   useAuthorsQuery,
   useCreateAuthorMutation,
-  useRegisterUserMutation,
 } from '../../generated/graphql';
 
 export const AuthorIndexPage: React.FC = () => {
-  const [authors] = useAuthorsQuery();
+  const [result] = useAuthorsQuery();
+  const { data, fetching, error } = result;
 
-  const [registerUserResult, registerUser] = useRegisterUserMutation();
-  const handleRegisterUser = () => {
-    registerUser();
-  };
-
-  const [createAuthorResult, createAuthor] = useCreateAuthorMutation();
+  const [_createAuthorResult, createAuthor] = useCreateAuthorMutation();
   const handleCreateAuthor = () => {
     createAuthor({
       authorData: { name: Math.random().toString(32).substring(2) },
     });
   };
 
+  if (fetching || data == null) {
+    return <>loading</>;
+  }
+
   return (
     <>
+      <button onClick={handleCreateAuthor}>create</button>
       <ul>
-        {authors.data!.authors.map((author) => (
+        {data.authors.map((author) => (
           <li key={author.id}>name: {author.name}</li>
         ))}
       </ul>
