@@ -37,7 +37,8 @@
     "test": "jest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "emulator": "firebase emulators:start"
+    "emulator": "firebase emulators:start",
+    "generate": "graphql-codegen --config codegen.yml"
   },
   "browserslist": {
     "production": [
@@ -53,6 +54,10 @@
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.3.0",
+    "@graphql-codegen/cli": "2.6.2",
+    "@graphql-codegen/typescript": "2.4.8",
+    "@graphql-codegen/typescript-operations": "2.3.5",
+    "@graphql-codegen/typescript-urql": "^3.5.7",
     "@swc/core": "^1.2.127",
     "@swc/jest": "^0.2.15",
     "@testing-library/jest-dom": "^5.16.1",
