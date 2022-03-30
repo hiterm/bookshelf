@@ -1,3 +1,4 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import React from 'react';
 import { StyledFirebaseAuth } from 'react-firebaseui';
 import { firebase } from './Firebase';
@@ -10,9 +11,18 @@ const uiConfig = {
 };
 
 export const SignInScreen: React.FC<{}> = () => {
+  const { loginWithRedirect } = useAuth0();
+
   return (
     <div>
       <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+      <button
+        onClick={() => {
+          loginWithRedirect();
+        }}
+      >
+        Login
+      </button>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MuiAppBar from '@mui/material/AppBar';
 import Divider from '@mui/material/Divider';
@@ -25,7 +26,8 @@ export const AppBar: React.FC = () => {
 
   const auth = firebase.auth();
   // Not check errors, because we have already checked in "SignInCheck"
-  const [user, ,] = useAuthState(auth);
+  const [firebaseUser, ,] = useAuthState(auth);
+  const { isAuthenticated, user } = useAuth0();
 
   const history = useHistory();
   const handleSignOut = () => {
@@ -63,7 +65,8 @@ export const AppBar: React.FC = () => {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem>User: {user?.displayName}</MenuItem>
+          <MenuItem>Firebase User: {firebaseUser?.displayName}</MenuItem>
+          <MenuItem>Auth0 User: {isAuthenticated && user != null &&  user.name}</MenuItem>
           <Divider />
           <MenuItem onClick={handleSignOut}>Logout</MenuItem>
         </Menu>

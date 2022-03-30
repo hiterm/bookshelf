@@ -15,13 +15,14 @@ import { AppBar } from './AppBar';
 import { firebase } from './Firebase';
 import { SignInScreen } from './SignInScreen';
 import { MainRoutes } from './pages/MainRoutes';
-import { Auth0Provider } from '@auth0/auth0-react';
+import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 
 const SignInCheck: React.FC = ({ children }) => {
   const auth = firebase.auth();
-  const [user, loading, error] = useAuthState(auth);
+  const [firebaseUser, loading, error] = useAuthState(auth);
+  const { isAuthenticated, isLoading } = useAuth0();
 
-  if (loading) {
+  if (loading || isLoading) {
     return (
       <div>
         <CircularProgress />
@@ -35,7 +36,7 @@ const SignInCheck: React.FC = ({ children }) => {
       </div>
     );
   }
-  if (user) {
+  if (firebaseUser != null && isAuthenticated) {
     return <>{children}</>;
   }
   return <SignInScreen />;
