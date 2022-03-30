@@ -1,22 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
-import { db } from '../../Firebase';
-import { Book, firebaseDocToBook } from '../../features/books/schema';
+import { Book } from '../../features/books/schema';
 import { BookDetailPage } from './BookDetailPage';
 import { BookImportPage } from './BookImportPage';
 import { BookIndexPage } from './BookIndexPage';
 
 export const BookRouter: React.FC<{}> = () => {
-  const [books, setBooks] = useState([] as Book[]);
-  useEffect(() => {
-    const unsubscribe = db.collection('books').onSnapshot((querySnapshot) => {
-      const list = querySnapshot.docs.map(firebaseDocToBook);
-      setBooks(list);
-    });
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  const [books, _setBooks] = useState([] as Book[]);
+  // TODO fetch from api
 
   const { path } = useRouteMatch();
 

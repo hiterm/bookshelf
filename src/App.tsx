@@ -9,34 +9,23 @@ import {
 } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AppBar } from './AppBar';
-import { firebase } from './Firebase';
 import { SignInScreen } from './SignInScreen';
 import { MainRoutes } from './pages/MainRoutes';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 
 const SignInCheck: React.FC = ({ children }) => {
-  const auth = firebase.auth();
-  const [firebaseUser, loading, error] = useAuthState(auth);
   const { isAuthenticated, isLoading } = useAuth0();
 
-  if (loading || isLoading) {
+  if (isLoading) {
     return (
       <div>
         <CircularProgress />
       </div>
     );
   }
-  if (error) {
-    return (
-      <div>
-        <p>Error: {error}</p>
-      </div>
-    );
-  }
-  if (firebaseUser != null && isAuthenticated) {
+  if (isAuthenticated) {
     return <>{children}</>;
   }
   return <SignInScreen />;
