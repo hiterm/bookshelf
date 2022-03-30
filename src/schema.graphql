@@ -1,0 +1,23 @@
+type Author {
+	id: ID!
+	name: String!
+}
+input CreateAuthorData {
+	name: String!
+}
+type Mutation {
+	registerUser: User!
+	createAuthor(authorData: CreateAuthorData!): Author!
+}
+type Query {
+	loggedInUser: User!
+	author(id: ID!): Author!
+	authors: [Author!]!
+}
+type User {
+	id: ID!
+}
+schema {
+	query: Query
+	mutation: Mutation
+}
