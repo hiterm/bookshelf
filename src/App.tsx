@@ -66,7 +66,7 @@ const AppWithSuccessedLogin: React.FC = () => {
   );
 };
 
-const AppInAuth0Provider: React.FC = () => {
+const App: React.FC = () => {
   const notistackRef = React.useRef<SnackbarProvider>(null);
   const onClickDismiss = (key: string) => () => {
     notistackRef.current?.closeSnackbar(key);
@@ -75,33 +75,6 @@ const AppInAuth0Provider: React.FC = () => {
   const theme = createTheme();
 
   return (
-    <>
-      <CssBaseline />
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-          <Router>
-            <AppBar />
-            <Container>
-              <SnackbarProvider
-                ref={notistackRef}
-                action={(key: string) => (
-                  <Button onClick={onClickDismiss(key)}>Dismiss</Button>
-                )}
-              >
-                <SignInCheck>
-                  <AppWithSuccessedLogin />
-                </SignInCheck>
-              </SnackbarProvider>
-            </Container>
-          </Router>
-        </ThemeProvider>
-      </StyledEngineProvider>
-    </>
-  );
-};
-
-const App: React.FC<{}> = () => {
-  return (
     <React.Fragment>
       <Auth0Provider
         domain={import.meta.env.VITE_AUTH0_DOMAIN}
@@ -109,7 +82,26 @@ const App: React.FC<{}> = () => {
         audience={import.meta.env.VITE_AUTH0_AUDIENCE}
         redirectUri={window.location.origin}
       >
-        <AppInAuth0Provider />
+        <CssBaseline />
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <Router>
+              <AppBar />
+              <Container>
+                <SnackbarProvider
+                  ref={notistackRef}
+                  action={(key: string) => (
+                    <Button onClick={onClickDismiss(key)}>Dismiss</Button>
+                  )}
+                >
+                  <SignInCheck>
+                    <AppWithSuccessedLogin />
+                  </SignInCheck>
+                </SnackbarProvider>
+              </Container>
+            </Router>
+          </ThemeProvider>
+        </StyledEngineProvider>
       </Auth0Provider>
     </React.Fragment>
   );
