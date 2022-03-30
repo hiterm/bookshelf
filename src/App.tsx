@@ -15,6 +15,7 @@ import { AppBar } from './AppBar';
 import { firebase } from './Firebase';
 import { SignInScreen } from './SignInScreen';
 import { MainRoutes } from './pages/MainRoutes';
+import { Auth0Provider } from '@auth0/auth0-react';
 
 const SignInCheck: React.FC = ({ children }) => {
   const auth = firebase.auth();
@@ -53,21 +54,27 @@ const App: React.FC<{}> = () => {
       <CssBaseline />
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
-          <Router>
-            <AppBar />
-            <Container>
-              <SnackbarProvider
-                ref={notistackRef}
-                action={(key: string) => (
-                  <Button onClick={onClickDismiss(key)}>Dismiss</Button>
-                )}
-              >
-                <SignInCheck>
-                  <MainRoutes />
-                </SignInCheck>
-              </SnackbarProvider>
-            </Container>
-          </Router>
+          <Auth0Provider
+            domain={import.meta.env.VITE_AUTH0_DOMAIN}
+            clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+            redirectUri={window.location.origin}
+          >
+            <Router>
+              <AppBar />
+              <Container>
+                <SnackbarProvider
+                  ref={notistackRef}
+                  action={(key: string) => (
+                    <Button onClick={onClickDismiss(key)}>Dismiss</Button>
+                  )}
+                >
+                  <SignInCheck>
+                    <MainRoutes />
+                  </SignInCheck>
+                </SnackbarProvider>
+              </Container>
+            </Router>
+          </Auth0Provider>
         </ThemeProvider>
       </StyledEngineProvider>
     </React.Fragment>
