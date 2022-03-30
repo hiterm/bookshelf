@@ -31,7 +31,7 @@ const SignInCheck: React.FC = ({ children }) => {
   return <SignInScreen />;
 };
 
-const App: React.FC<{}> = () => {
+const AppInAuth0Provider: React.FC = () => {
   const notistackRef = React.useRef<SnackbarProvider>(null);
   const onClickDismiss = (key: string) => () => {
     notistackRef.current?.closeSnackbar(key);
@@ -40,34 +40,42 @@ const App: React.FC<{}> = () => {
   const theme = createTheme();
 
   return (
-    <React.Fragment>
+    <>
       <CssBaseline />
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
-          <Auth0Provider
-            domain={import.meta.env.VITE_AUTH0_DOMAIN}
-            clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-            audience={import.meta.env.VITE_AUTH0_AUDIENCE}
-            redirectUri={window.location.origin}
-          >
-            <Router>
-              <AppBar />
-              <Container>
-                <SnackbarProvider
-                  ref={notistackRef}
-                  action={(key: string) => (
-                    <Button onClick={onClickDismiss(key)}>Dismiss</Button>
-                  )}
-                >
-                  <SignInCheck>
-                    <MainRoutes />
-                  </SignInCheck>
-                </SnackbarProvider>
-              </Container>
-            </Router>
-          </Auth0Provider>
+          <Router>
+            <AppBar />
+            <Container>
+              <SnackbarProvider
+                ref={notistackRef}
+                action={(key: string) => (
+                  <Button onClick={onClickDismiss(key)}>Dismiss</Button>
+                )}
+              >
+                <SignInCheck>
+                  <MainRoutes />
+                </SignInCheck>
+              </SnackbarProvider>
+            </Container>
+          </Router>
         </ThemeProvider>
       </StyledEngineProvider>
+    </>
+  );
+};
+
+const App: React.FC<{}> = () => {
+  return (
+    <React.Fragment>
+      <Auth0Provider
+        domain={import.meta.env.VITE_AUTH0_DOMAIN}
+        clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+        audience={import.meta.env.VITE_AUTH0_AUDIENCE}
+        redirectUri={window.location.origin}
+      >
+        <AppInAuth0Provider />
+      </Auth0Provider>
     </React.Fragment>
   );
 };
