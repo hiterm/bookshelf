@@ -15,6 +15,10 @@ import { SignInScreen } from './SignInScreen';
 import { MainRoutes } from './pages/MainRoutes';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { createClient, Provider as UrqlProvider } from 'urql';
+import {
+  useLoggedInUserQuery,
+  useRegisterUserMutation,
+} from './generated/graphql';
 
 const SignInCheck: React.FC = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -30,6 +34,37 @@ const SignInCheck: React.FC = ({ children }) => {
     return <>{children}</>;
   }
   return <SignInScreen />;
+};
+
+const RegisterCheck: React.FC = ({ children }) => {
+  const [result, _reexecuteQuery] = useLoggedInUserQuery();
+  const { data, fetching, error } = result;
+
+  const [registerUserResult, registerUser] = useRegisterUserMutation();
+
+  if (error != null) {
+    return (
+      <>
+        <div>query error: {JSON.stringify(error)}</div>
+        <div>register: {JSON.stringify(registerUserResult)}</div>
+        <div>
+          <button
+            onClick={() => {
+              registerUser();
+            }}
+          >
+            register user
+          </button>
+        </div>
+      </>
+    );
+  }
+
+  if (fetching || data == null) {
+    return <>loading</>;
+  }
+
+  return <>{children}</>;
 };
 
 const AppWithSuccessedLogin: React.FC = () => {
@@ -61,7 +96,9 @@ const AppWithSuccessedLogin: React.FC = () => {
 
   return (
     <UrqlProvider value={client}>
-      <MainRoutes />
+      <RegisterCheck>
+        <MainRoutes />
+      </RegisterCheck>
     </UrqlProvider>
   );
 };

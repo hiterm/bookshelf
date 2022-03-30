@@ -70,12 +70,10 @@ export type LoggedInUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type LoggedInUserQuery = { __typename?: 'Query', loggedInUser: { __typename?: 'User', id: string } };
 
-export type RegisterUserMutationVariables = Exact<{
-  authorData: CreateAuthorData;
-}>;
+export type RegisterUserMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type RegisterUserMutation = { __typename?: 'Mutation', createAuthor: { __typename?: 'Author', id: string } };
+export type RegisterUserMutation = { __typename?: 'Mutation', registerUser: { __typename?: 'User', id: string } };
 
 
 export const AuthorsDocument = gql`
@@ -113,8 +111,8 @@ export function useLoggedInUserQuery(options?: Omit<Urql.UseQueryArgs<LoggedInUs
   return Urql.useQuery<LoggedInUserQuery>({ query: LoggedInUserDocument, ...options });
 };
 export const RegisterUserDocument = gql`
-    mutation registerUser($authorData: CreateAuthorData!) {
-  createAuthor(authorData: $authorData) {
+    mutation registerUser {
+  registerUser {
     id
   }
 }
