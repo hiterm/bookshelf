@@ -58,6 +58,20 @@ export type AuthorsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type AuthorsQuery = { __typename?: 'Query', authors: Array<{ __typename?: 'Author', id: string, name: string }> };
 
+export type CreateAuthorMutationVariables = Exact<{
+  authorData: CreateAuthorData;
+}>;
+
+
+export type CreateAuthorMutation = { __typename?: 'Mutation', createAuthor: { __typename?: 'Author', id: string } };
+
+export type RegisterUserMutationVariables = Exact<{
+  authorData: CreateAuthorData;
+}>;
+
+
+export type RegisterUserMutation = { __typename?: 'Mutation', createAuthor: { __typename?: 'Author', id: string } };
+
 
 export const AuthorsDocument = gql`
     query authors {
@@ -70,4 +84,26 @@ export const AuthorsDocument = gql`
 
 export function useAuthorsQuery(options?: Omit<Urql.UseQueryArgs<AuthorsQueryVariables>, 'query'>) {
   return Urql.useQuery<AuthorsQuery>({ query: AuthorsDocument, ...options });
+};
+export const CreateAuthorDocument = gql`
+    mutation createAuthor($authorData: CreateAuthorData!) {
+  createAuthor(authorData: $authorData) {
+    id
+  }
+}
+    `;
+
+export function useCreateAuthorMutation() {
+  return Urql.useMutation<CreateAuthorMutation, CreateAuthorMutationVariables>(CreateAuthorDocument);
+};
+export const RegisterUserDocument = gql`
+    mutation registerUser($authorData: CreateAuthorData!) {
+  createAuthor(authorData: $authorData) {
+    id
+  }
+}
+    `;
+
+export function useRegisterUserMutation() {
+  return Urql.useMutation<RegisterUserMutation, RegisterUserMutationVariables>(RegisterUserDocument);
 };

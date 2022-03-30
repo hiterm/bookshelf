@@ -1,0 +1,3 @@
+mutation registerUser($authorData: CreateAuthorData!) {
+   createAuthor(authorData: $authorData){id}
+}
