@@ -4,7 +4,7 @@ import {
 } from '../../generated/graphql';
 
 export const AuthorIndexPage: React.FC = () => {
-  const [result] = useAuthorsQuery();
+  const [result, reexecuteQuery] = useAuthorsQuery();
   const { data, fetching, error } = result;
 
   const [_createAuthorResult, createAuthor] = useCreateAuthorMutation();
@@ -21,6 +21,7 @@ export const AuthorIndexPage: React.FC = () => {
   return (
     <>
       <button onClick={handleCreateAuthor}>create</button>
+      <button onClick={() => reexecuteQuery()}>update</button>
       <ul>
         {data.authors.map((author) => (
           <li key={author.id}>name: {author.name}</li>
