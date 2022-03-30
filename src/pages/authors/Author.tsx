@@ -14,6 +14,10 @@ export const AuthorIndexPage: React.FC = () => {
     });
   };
 
+  if (error != null) {
+    return <>{JSON.stringify(error)}</>;
+  }
+
   if (fetching || data == null) {
     return <>loading</>;
   }
