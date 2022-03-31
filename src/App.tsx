@@ -38,7 +38,7 @@ const SignInCheck: React.FC = ({ children }) => {
 };
 
 const RegisterCheck: React.FC = ({ children }) => {
-  const [result, _reexecuteQuery] = useLoggedInUserQuery();
+  const [result, reexecuteQuery] = useLoggedInUserQuery();
   const { data, fetching, error } = result;
 
   const [registerUserResult, registerUser] = useRegisterUserMutation();
@@ -50,8 +50,9 @@ const RegisterCheck: React.FC = ({ children }) => {
         <div>register: {JSON.stringify(registerUserResult)}</div>
         <div>
           <button
-            onClick={() => {
-              registerUser();
+            onClick={async () => {
+              await registerUser();
+              reexecuteQuery();
             }}
           >
             register user
