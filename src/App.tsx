@@ -14,11 +14,12 @@ import { AppBar } from './AppBar';
 import { SignInScreen } from './SignInScreen';
 import { MainRoutes } from './pages/MainRoutes';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
-import { createClient, Provider as UrqlProvider } from 'urql';
+import { createClient, defaultExchanges, Provider as UrqlProvider } from 'urql';
 import {
   useLoggedInUserQuery,
   useRegisterUserMutation,
 } from './generated/graphql';
+import { devtoolsExchange } from '@urql/devtools';
 
 const SignInCheck: React.FC = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -92,6 +93,7 @@ const AppWithSuccessedLogin: React.FC = () => {
         headers: { authorization: `Bearer ${token}` },
       };
     },
+    exchanges: [devtoolsExchange, ...defaultExchanges],
   });
 
   return (
