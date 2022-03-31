@@ -1,10 +1,12 @@
+import { useMemo } from 'react';
 import {
   useAuthorsQuery,
   useCreateAuthorMutation,
 } from '../../generated/graphql';
 
 export const AuthorIndexPage: React.FC = () => {
-  const [result, reexecuteQuery] = useAuthorsQuery();
+  const context = useMemo(() => ({ additionalTypenames: ['Author'] }), []);
+  const [result, reexecuteQuery] = useAuthorsQuery({ context });
   const { data, fetching, error } = result;
 
   const [_createAuthorResult, createAuthor] = useCreateAuthorMutation();
