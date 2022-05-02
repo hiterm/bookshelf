@@ -2,16 +2,16 @@ type Author {
 	id: ID!
 	name: String!
 }
-input CreateAuthorData {
+input CreateAuthorInput {
 	name: String!
 }
 type Mutation {
 	registerUser: User!
-	createAuthor(authorData: CreateAuthorData!): Author!
+	createAuthor(authorData: CreateAuthorInput!): Author!
 }
 type Query {
-	loggedInUser: User!
-	author(id: ID!): Author!
+	loggedInUser: User
+	author(id: ID!): Author
 	authors: [Author!]!
 }
 type User {
@@ -21,3 +21,4 @@ schema {
 	query: Query
 	mutation: Mutation
 }
+
