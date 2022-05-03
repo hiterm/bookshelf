@@ -8,7 +8,7 @@ import {
   StyledEngineProvider,
 } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AppBar } from './AppBar';
 import { SignInScreen } from './SignInScreen';
@@ -38,32 +38,39 @@ const SignInCheck: React.FC = ({ children }) => {
 };
 
 const RegisterCheck: React.FC = ({ children }) => {
-  const [result, reexecuteQuery] = useLoggedInUserQuery();
+  const context = useMemo(() => ({ additionalTypenames: ['User'] }), []);
+  const [result, reexecuteQuery] = useLoggedInUserQuery({ context });
   const { data, fetching, error } = result;
 
-  const [registerUserResult, registerUser] = useRegisterUserMutation();
+  const [_registerUserResult, registerUser] = useRegisterUserMutation();
 
   if (error != null) {
     return (
       <>
         <div>query error: {JSON.stringify(error)}</div>
-        <div>register: {JSON.stringify(registerUserResult)}</div>
-        <div>
-          <button
-            onClick={async () => {
-              await registerUser();
-              reexecuteQuery();
-            }}
-          >
-            register user
-          </button>
-        </div>
       </>
     );
   }
 
   if (fetching || data == null) {
     return <>loading</>;
+  }
+
+  if (data == null) {
+    return <>something is wrong.</>;
+  }
+
+  if (data.loggedInUser == null) {
+    return (
+      <button
+        onClick={async () => {
+          await registerUser();
+          reexecuteQuery();
+        }}
+      >
+        register user
+      </button>
+    );
   }
 
   return <>{children}</>;
