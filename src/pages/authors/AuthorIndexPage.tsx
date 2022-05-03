@@ -1,11 +1,17 @@
+import MaterialTable, { Column } from '@material-table/core';
 import { Button } from '@mui/material';
 import { useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { tableIcons } from '../../features/material-table/tableIcons';
 import { TextField } from '../../features/react-hook-form/mui';
 import {
   useAuthorsQuery,
   useCreateAuthorMutation,
 } from '../../generated/graphql';
+
+type Author = {
+  name: string
+};
 
 type RegisterAuthorFormInput = {
   name: string;
@@ -52,14 +58,28 @@ export const AuthorIndexPage: React.FC = () => {
     return <>loading</>;
   }
 
+  const columns: Column<Author>[] = [
+    {
+      title: '名前',
+      field: 'name',
+    },
+  ];
+
   return (
     <>
       <RegisterAuthorForm />
-      <ul>
-        {data.authors.map((author) => (
-          <li key={author.id}>name: {author.name}</li>
-        ))}
-      </ul>
+      <MaterialTable
+        columns={columns}
+        data={data.authors}
+        title=""
+        options={{
+          filtering: true,
+          columnsButton: true,
+          pageSize: 20,
+          pageSizeOptions: [20, 50, 100, 500, 1000],
+        }}
+        icons={tableIcons}
+      />
     </>
   );
 };
