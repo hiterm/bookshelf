@@ -41,15 +41,8 @@ const RegisterAuthorForm: React.FC = () => {
 
 export const AuthorIndexPage: React.FC = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Author'] }), []);
-  const [result, reexecuteQuery] = useAuthorsQuery({ context });
+  const [result, _reexecuteQuery] = useAuthorsQuery({ context });
   const { data, fetching, error } = result;
-
-  const [_createAuthorResult, createAuthor] = useCreateAuthorMutation();
-  const handleCreateAuthor = () => {
-    createAuthor({
-      authorData: { name: Math.random().toString(32).substring(2) },
-    });
-  };
 
   if (error != null) {
     return <>{JSON.stringify(error)}</>;
@@ -62,8 +55,6 @@ export const AuthorIndexPage: React.FC = () => {
   return (
     <>
       <RegisterAuthorForm />
-      <button onClick={handleCreateAuthor}>create</button>
-      <button onClick={() => reexecuteQuery()}>update</button>
       <ul>
         {data.authors.map((author) => (
           <li key={author.id}>name: {author.name}</li>
