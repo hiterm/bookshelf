@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import { useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { TextField } from '../../features/react-hook-form/mui';
@@ -31,7 +32,9 @@ const RegisterAuthorForm: React.FC = () => {
         helperText={errors.name?.message}
         control={{ control, name: 'name' }}
       />
-      <input type="submit" />
+      <Button variant="contained" onClick={handleSubmit(onSubmit)}>
+        登録
+      </Button>
     </form>
   );
 };
