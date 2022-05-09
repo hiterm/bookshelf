@@ -9,7 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import React from 'react';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 
 export const AppBar: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -22,11 +22,10 @@ export const AppBar: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const { isAuthenticated, user } = useAuth0();
+  const { isAuthenticated, user, logout } = useAuth0();
 
-  const history = useHistory();
   const handleSignOut = () => {
-    history.push('/signin');
+    logout({ returnTo: window.location.origin });
   };
 
   return (
@@ -59,7 +58,9 @@ export const AppBar: React.FC = () => {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem>User: {isAuthenticated && user != null &&  user.name}</MenuItem>
+          <MenuItem>
+            User: {isAuthenticated && user != null && user.name}
+          </MenuItem>
           <Divider />
           <MenuItem onClick={handleSignOut}>Logout</MenuItem>
         </Menu>
