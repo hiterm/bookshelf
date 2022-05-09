@@ -2,16 +2,52 @@ type Author {
 	id: ID!
 	name: String!
 }
+type Book {
+	id: String!
+	title: String!
+	authorIds: [String!]!
+	isbn: String!
+	read: Boolean!
+	owned: Boolean!
+	priority: Int!
+	format: BookFormat!
+	store: BookStore!
+	createdAt: Int!
+	updatedAt: Int!
+}
+enum BookFormat {
+	E_BOOK
+	PRINTED
+	UNKNOWN
+}
+enum BookStore {
+	KINDLE
+	UNKNOWN
+}
 input CreateAuthorInput {
 	name: String!
 }
+input CreateBookInput {
+	title: String!
+	authorIds: [String!]!
+	isbn: String!
+	read: Boolean!
+	owned: Boolean!
+	priority: Int!
+	format: BookFormat!
+	store: BookStore!
+	createdAt: Int!
+	updatedAt: Int!
+}
 type Mutation {
 	registerUser: User!
+	createBook(bookData: CreateBookInput!): Book!
 	createAuthor(authorData: CreateAuthorInput!): Author!
 }
 type Query {
 	loggedInUser: User
 	author(id: ID!): Author
+	books: [Book!]!
 	authors: [Author!]!
 }
 type User {
