@@ -23,6 +23,7 @@ rules:
   no-unused-vars:
     - error
     - ignoreRestSiblings: true
+    - argsIgnorePattern: '^_'
   import/order: ['warn', { 'alphabetize': { 'order': 'asc' } }]
   react/react-in-jsx-scope: off
 ignorePatterns:
