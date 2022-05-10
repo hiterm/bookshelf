@@ -1,0 +1,15 @@
+query books {
+  books {
+    id
+      title
+      authorIds
+      isbn
+      read
+      owned
+      priority
+      format
+      store
+      createdAt
+      updatedAt
+  }
+}
