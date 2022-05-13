@@ -51,6 +51,25 @@ export interface Book {
   updatedAt: Date;
 }
 
+export type Author = {
+  id: string;
+  name: string;
+}
+
+export type GraphQLBook = {
+  id: string;
+  title: string;
+  authors: Author[];
+  isbn?: string;
+  read: boolean;
+  owned: boolean;
+  priority: number;
+  format?: 'eBook' | 'Printed';
+  store?: 'Kindle';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const firebaseDocToBook = (doc: firebase.firestore.DocumentData): Book => {
   const book = bookSchema.cast({
     id: doc.id,

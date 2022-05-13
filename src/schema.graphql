@@ -14,6 +14,7 @@ type Book {
 	store: BookStore!
 	createdAt: Int!
 	updatedAt: Int!
+	authors: [Author!]!
 }
 enum BookFormat {
 	E_BOOK
