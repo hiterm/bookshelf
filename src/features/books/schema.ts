@@ -54,21 +54,21 @@ export interface Book {
 export type Author = {
   id: string;
   name: string;
-}
+};
 
 export type GraphQLBook = {
   id: string;
   title: string;
   authors: Author[];
-  isbn?: string;
+  isbn: string;
   read: boolean;
   owned: boolean;
   priority: number;
-  format?: 'eBook' | 'Printed';
-  store?: 'Kindle';
+  format: 'E_BOOK' | 'PRINTED' | 'UNKNOWN';
+  store: 'KINDLE' | 'UNKNOWN';
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
 const firebaseDocToBook = (doc: firebase.firestore.DocumentData): Book => {
   const book = bookSchema.cast({
