@@ -25,6 +25,26 @@ const BookIndexPage: React.FC = (props) => {
         </>
       ))}
       {/* <BookList list={data.books} /> */}
+      <BookList
+        list={[
+          {
+            id: 'a',
+            title: 'title',
+            authors: [
+              { id: 'id1', name: 'author1' },
+              { id: 'id2', name: 'author2' },
+            ],
+            isbn: 'aa',
+            read: false,
+            owned: false,
+            priority: 50,
+            format: 'eBook',
+            store: 'Kindle',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ]}
+      />
     </React.Fragment>
   );
 };

@@ -4,10 +4,10 @@ import MuiLink from '@mui/material/Link';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { tableIcons } from '../material-table/tableIcons';
-import { Book } from './schema';
+import { GraphQLBook } from './schema';
 
-export const BookList: React.FC<{ list: Book[] }> = (props) => {
-  const columns: Column<Book>[] = [
+export const BookList: React.FC<{ list: GraphQLBook[] }> = (props) => {
+  const columns: Column<GraphQLBook>[] = [
     {
       title: '書名',
       field: 'title',
@@ -18,7 +18,13 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
         </MuiLink>
       ),
     },
-    { title: '著者', field: 'authors', cellStyle: { minWidth: '150px' } },
+    {
+      title: '著者',
+      field: 'authors',
+      cellStyle: { minWidth: '150px' },
+      render: (rowData) =>
+        rowData.authors.map((author) => author.name).join(','),
+    },
     {
       title: '形式',
       field: 'format',
