@@ -6,12 +6,13 @@ import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useAuthorsQuery } from '../../generated/graphql';
 import {
   Checkbox,
   Select,
   TextField as RhfTextField,
 } from '../react-hook-form/mui';
-import { BookBaseType } from './schema';
+import { Author, BookBaseType } from './schema';
 
 const bookFormSchema = z.object({
   title: z.string().min(1),
@@ -97,10 +98,19 @@ export const useBookForm = (props: BookFormProps) => {
     control,
   });
 
-  const options = [
-    { title: 'The Shawshank Redemption', year: 1994 },
-    { title: 'The Godfather', year: 1972 },
-  ];
+  const [open, setOpen] = React.useState(false);
+  const [queryResult, reexecuteQuery] = useAuthorsQuery({ pause: true });
+  const loadingAuthorOptions = open && queryResult.data == null;
+
+  React.useEffect(() => {
+    if (!loadingAuthorOptions) {
+      return;
+    }
+
+    (async () => {
+      reexecuteQuery();
+    })();
+  }, [loadingAuthorOptions]);
 
   const renderForm = () => (
     <form>
@@ -155,10 +165,18 @@ export const useBookForm = (props: BookFormProps) => {
           multiple
           freeSolo
           id="tags-outlined"
-          options={options}
-          getOptionLabel={(option) => option.title}
+          options={queryResult.data == null ? [] : queryResult.data.authors}
+          getOptionLabel={(option) => option.name}
           defaultValue={[]}
           filterSelectedOptions
+          open={open}
+          onOpen={() => {
+            setOpen(true);
+          }}
+          onClose={() => {
+            setOpen(false);
+          }}
+          loading={loadingAuthorOptions}
           renderInput={(params) => (
             <TextField
               {...params}
