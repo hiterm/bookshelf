@@ -7,9 +7,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { db, firebase } from '../../Firebase';
+import { useCreateBookMutation } from '../../generated/graphql';
 import { useBookForm } from './BookForm';
-import { BookBaseType, GraphQLBookBase } from './schema';
+import { GraphQLBookBase } from './schema';
 
 export const BookAddButton: React.FC<{}> = () => {
   const [open, setOpen] = useState(false);
@@ -22,44 +22,57 @@ export const BookAddButton: React.FC<{}> = () => {
     setOpen(false);
   };
 
+  const [_createBookResult, createBook] = useCreateBookMutation();
+
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const history = useHistory();
 
-  const submitBook = async (values: GraphQLBookBase) => {
-    console.log(JSON.stringify(values));
-    // const doc = await db.collection('books').add({
-    //   ...values,
-    //   createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    //   updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    // });
+  const submitBook = async (value: GraphQLBookBase) => {
+    const { authors, ...rest } = value;
+    const bookData = {
+      ...rest,
+      authorIds: authors.map((author) => author.id),
+    };
+    const result = await createBook({ bookData });
 
-    // const action = (key: string) => (
-    //   <React.Fragment>
-    //     <Button
-    //       onClick={() => {
-    //         history.push(`/books/${doc.id}`);
-    //         closeSnackbar(key);
-    //       }}
-    //     >
-    //       Move
-    //     </Button>
-    //     <Button
-    //       onClick={() => {
-    //         closeSnackbar(key);
-    //       }}
-    //     >
-    //       <Close />
-    //     </Button>
-    //   </React.Fragment>
-    // );
+    if (result.data == null) {
+      enqueueSnackbar(
+        `Some thing is wrong. error: ${JSON.stringify(result.error)}`,
+        {
+          variant: 'error',
+        }
+      );
+      return;
+    }
+    const data = result.data;
 
-    // setOpen(false);
+    const action = (key: string) => (
+      <React.Fragment>
+        <Button
+          onClick={() => {
+            history.push(`/books/${data.createBook.id}`);
+            closeSnackbar(key);
+          }}
+        >
+          Move
+        </Button>
+        <Button
+          onClick={() => {
+            closeSnackbar(key);
+          }}
+        >
+          <Close />
+        </Button>
+      </React.Fragment>
+    );
 
-    // const message = `${values.title}を追加しました`;
-    // enqueueSnackbar(message, {
-    //   variant: 'success',
-    //   action,
-    // });
+    setOpen(false);
+
+    const message = `${value.title}を追加しました`;
+    enqueueSnackbar(message, {
+      variant: 'success',
+      action,
+    });
   };
 
   const emptyBook: GraphQLBookBase = {

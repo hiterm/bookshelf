@@ -37,8 +37,6 @@ input CreateBookInput {
 	priority: Int!
 	format: BookFormat!
 	store: BookStore!
-	createdAt: Int!
-	updatedAt: Int!
 }
 type Mutation {
 	registerUser: User!
