@@ -35,7 +35,7 @@ describe('useBookForm', () => {
       })
     );
     const { container, getByText, getAllByText, getByLabelText } = render(
-      result.current.renderForm()
+      result.current.form
     );
     expect(getAllByText('書名')[0]).toBeInTheDocument();
     const titleInput = getByLabelText('書名') as HTMLInputElement;
