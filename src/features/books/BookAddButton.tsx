@@ -86,7 +86,7 @@ export const BookAddButton: React.FC<{}> = () => {
     store: 'UNKNOWN',
   };
 
-  const { renderForm, submitForm } = useBookForm({
+  const { form, submitForm } = useBookForm({
     onSubmit: submitBook,
     initialValues: emptyBook,
   });
@@ -103,7 +103,7 @@ export const BookAddButton: React.FC<{}> = () => {
 
       <Dialog open={open} fullWidth maxWidth="sm">
         <DialogTitle>追加</DialogTitle>
-        <DialogContent>{renderForm()}</DialogContent>
+        <DialogContent>{form}</DialogContent>
         <DialogActions>
           <Button onClick={handleDialogCloseClick} color="primary">
             キャンセル

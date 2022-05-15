@@ -54,7 +54,7 @@ export const useBookForm = (props: BookFormProps) => {
     })();
   }, [loadingAuthorOptions]);
 
-  const renderForm = () => (
+  const form = (
     <form>
       <div>{JSON.stringify(errors)}</div>
       <Box
@@ -140,5 +140,5 @@ export const useBookForm = (props: BookFormProps) => {
     </form>
   );
 
-  return { renderForm, submitForm: handleSubmit(props.onSubmit) };
+  return { form, submitForm: handleSubmit(props.onSubmit) };
 };
