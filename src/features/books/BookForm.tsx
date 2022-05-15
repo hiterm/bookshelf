@@ -1,12 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RemoveCircle } from '@mui/icons-material';
-import { Box, IconButton } from '@mui/material';
+import { Autocomplete, Box, Chip, IconButton, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Checkbox, Select, TextField } from '../react-hook-form/mui';
+import {
+  Checkbox,
+  Select,
+  TextField as RhfTextField,
+} from '../react-hook-form/mui';
 import { BookBaseType } from './schema';
 
 const bookFormSchema = z.object({
@@ -93,6 +97,11 @@ export const useBookForm = (props: BookFormProps) => {
     control,
   });
 
+  const options = [
+    { title: 'The Shawshank Redemption', year: 1994 },
+    { title: 'The Godfather', year: 1972 },
+  ];
+
   const renderForm = () => (
     <form>
       <Box
@@ -102,7 +111,7 @@ export const useBookForm = (props: BookFormProps) => {
           gap: 2,
         }}
       >
-        <TextField
+        <RhfTextField
           label="書名"
           error={Boolean(errors.title)}
           helperText={errors.title?.message}
@@ -119,7 +128,7 @@ export const useBookForm = (props: BookFormProps) => {
             return (
               <div key={field.id}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <TextField
+                  <RhfTextField
                     control={{ control, name: `authors.${index}.name` }}
                     label={`著者${index + 1}`}
                     error={Boolean(errors.authors?.[index]?.name)}
@@ -142,6 +151,22 @@ export const useBookForm = (props: BookFormProps) => {
             著者追加
           </Button>
         </Box>
+        <Autocomplete
+          multiple
+          freeSolo
+          id="tags-outlined"
+          options={options}
+          getOptionLabel={(option) => option.title}
+          defaultValue={[]}
+          filterSelectedOptions
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="filterSelectedOptions"
+              placeholder="Favorites"
+            />
+          )}
+        />
         <Select
           name="format"
           label="形式"
@@ -163,7 +188,7 @@ export const useBookForm = (props: BookFormProps) => {
           <MenuItem value={''}>-</MenuItem>
           <MenuItem value={'Kindle'}>Kindle</MenuItem>
         </Select>
-        <TextField
+        <RhfTextField
           type="number"
           label="優先度"
           error={Boolean(errors.priority)}
@@ -177,7 +202,7 @@ export const useBookForm = (props: BookFormProps) => {
             },
           }}
         />
-        <TextField
+        <RhfTextField
           type="string"
           label="ISBN"
           error={Boolean(errors.isbn)}
