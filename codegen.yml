@@ -3,6 +3,8 @@ schema: "src/schema.graphql"
 documents: "src/**/*.graphql"
 generates:
   src/generated/graphql.ts:
+    config:
+      enumsAsTypes: true
     plugins:
       - "typescript"
       - "typescript-operations"
