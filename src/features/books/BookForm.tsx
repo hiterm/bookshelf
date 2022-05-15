@@ -89,7 +89,6 @@ export const useBookForm = (props: BookFormProps) => {
                 setOpen(false);
               }}
               onChange={(_event, value) => {
-                console.log(JSON.stringify(value));
                 onChange(value);
               }}
               loading={loadingAuthorOptions}
