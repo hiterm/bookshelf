@@ -1,16 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Autocomplete, Box, TextField } from '@mui/material';
+import { Box, TextField } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useAuthorsQuery } from '../../generated/graphql';
 import {
+  Autocomplete,
   Checkbox,
   Select,
   TextField as RhfTextField,
 } from '../react-hook-form/mui';
-import { GraphQLBookBase } from './schema';
+import { Author, GraphQLBookBase } from './schema';
 
 const bookFormSchema = z.object({
   title: z.string().min(1),
@@ -69,38 +70,23 @@ export const useBookForm = (props: BookFormProps) => {
           helperText={errors.title?.message}
           control={{ control, name: 'title' }}
         />
-        <Controller
-          name="authors"
-          control={control}
-          render={({ field: { onChange, ...field } }) => (
-            <Autocomplete
-              {...field}
-              multiple
-              freeSolo
-              id="tags-outlined"
-              options={queryResult.data == null ? [] : queryResult.data.authors}
-              getOptionLabel={(option) => option.name}
-              filterSelectedOptions
-              open={open}
-              onOpen={() => {
-                setOpen(true);
-              }}
-              onClose={() => {
-                setOpen(false);
-              }}
-              onChange={(_event, value) => {
-                onChange(value);
-              }}
-              loading={loadingAuthorOptions}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="filterSelectedOptions"
-                  placeholder="Favorites"
-                />
-              )}
-            />
-          )}
+        <Autocomplete
+          label="著者"
+          control={{ control, name: 'authors' }}
+          multiple
+          freeSolo
+          id="tags-outlined"
+          options={queryResult.data == null ? [] : queryResult.data.authors}
+          getOptionLabel={(option) => option.name}
+          filterSelectedOptions
+          open={open}
+          onOpen={() => {
+            setOpen(true);
+          }}
+          onClose={() => {
+            setOpen(false);
+          }}
+          loading={loadingAuthorOptions}
         />
         <Select
           name="format"

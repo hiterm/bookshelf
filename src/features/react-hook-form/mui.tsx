@@ -7,6 +7,8 @@ import {
   Select,
   TextField,
   TextFieldProps as MuiTextFieldProps,
+  Autocomplete,
+  AutocompleteProps as MuiAutocompleteProps,
 } from '@mui/material';
 import {
   FieldValues,
@@ -107,8 +109,54 @@ const RhfCheckbox = <T extends FieldValues>(props: CheckboxProps<T>) => {
   );
 };
 
+type AutocompleteProps<IFieldValues, T> = Omit<
+  MuiAutocompleteProps<T, boolean, boolean, boolean>,
+  'renderInput'
+> & {
+  label: string;
+  placeholder?: string;
+  control: UseControllerProps<IFieldValues>;
+};
+
+const RhfAutocomplete = <IFieldValues extends FieldValues, T>(
+  props: AutocompleteProps<IFieldValues, T>
+) => {
+  const {
+    label,
+    placeholder,
+    control: { name, control },
+    ...autocompleteProps
+  } = props;
+
+  const {
+    field: { ref, onChange, ...field },
+  } = useController({
+    name: name,
+    control: control,
+  });
+
+  return (
+    <Autocomplete
+      {...field}
+      {...autocompleteProps}
+      onChange={(_event, value) => {
+        onChange(value);
+      }}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={label}
+          placeholder={placeholder}
+          inputRef={ref}
+        />
+      )}
+    />
+  );
+};
+
 export {
   RhfTextField as TextField,
   RhfSelect as Select,
   RhfCheckbox as Checkbox,
+  RhfAutocomplete as Autocomplete,
 };
