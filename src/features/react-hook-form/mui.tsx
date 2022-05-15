@@ -114,6 +114,8 @@ type AutocompleteProps<IFieldValues, T> = Omit<
   'renderInput'
 > & {
   label: string;
+  error?: boolean;
+  helperText?: string;
   placeholder?: string;
   control: UseControllerProps<IFieldValues>;
 };
@@ -124,6 +126,8 @@ const RhfAutocomplete = <IFieldValues extends FieldValues, T>(
   const {
     label,
     placeholder,
+    error,
+    helperText,
     control: { name, control },
     ...autocompleteProps
   } = props;
@@ -148,6 +152,8 @@ const RhfAutocomplete = <IFieldValues extends FieldValues, T>(
           label={label}
           placeholder={placeholder}
           inputRef={ref}
+          error={error}
+          helperText={helperText}
         />
       )}
     />

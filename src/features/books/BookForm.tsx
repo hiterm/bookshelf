@@ -72,6 +72,10 @@ export const useBookForm = (props: BookFormProps) => {
         />
         <Autocomplete
           label="著者"
+          error={Boolean(errors.authors)}
+          helperText={
+            (errors.authors as { message: string } | undefined)?.message // TODO: 型がおかしいので無理やり直している
+          }
           control={{ control, name: 'authors' }}
           multiple
           freeSolo
