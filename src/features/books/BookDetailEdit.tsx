@@ -26,10 +26,10 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   // id等は更新したくない
   const { id, createdAt, updatedAt, ...bookBase } = book;
 
-  const { renderForm, submitForm } = useBookForm({
-    onSubmit: handleSubmit,
-    initialValues: bookBase,
-  });
+  // const { renderForm, submitForm } = useBookForm({
+  //   onSubmit: handleSubmit,
+  //   initialValues: bookBase,
+  // });
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -42,10 +42,12 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
           },
         }}
       >
-        {renderForm()}
-        <Button variant="contained" color="primary" onClick={submitForm}>
-          更新
-        </Button>
+        {/* TODO */}
+        TODO
+        {/* {renderForm()} */}
+        {/* <Button variant="contained" color="primary" onClick={submitForm}> */}
+        {/*   更新 */}
+        {/* </Button> */}
       </Paper>
     </Box>
   );

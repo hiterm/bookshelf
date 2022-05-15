@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { useBookForm } from './BookForm';
 import { renderHook } from '@testing-library/react-hooks';
-import { BookBaseType } from './schema';
+import { BookBaseType, GraphQLBookBase } from './schema';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -16,15 +16,18 @@ test('renders a message', () => {
 
 describe('useBookForm', () => {
   test('works', async () => {
-    const emptyBook: BookBaseType = {
+    const emptyBook: GraphQLBookBase = {
       title: '',
-      authors: [''],
+      authors: [],
+      isbn: '',
       read: false,
       owned: false,
       priority: 50,
+      format: 'UNKNOWN',
+      store: 'UNKNOWN',
     };
 
-    const mockSubmit = jest.fn((_book: BookBaseType) => {});
+    const mockSubmit = jest.fn((_book: GraphQLBookBase) => {});
     const { result } = renderHook(() =>
       useBookForm({
         onSubmit: mockSubmit,

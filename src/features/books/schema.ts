@@ -70,6 +70,17 @@ export type GraphQLBook = {
   updatedAt: Date;
 };
 
+export type GraphQLBookBase = {
+  title: string;
+  authors: Author[];
+  isbn: string;
+  read: boolean;
+  owned: boolean;
+  priority: number;
+  format: 'E_BOOK' | 'PRINTED' | 'UNKNOWN';
+  store: 'KINDLE' | 'UNKNOWN';
+};
+
 const firebaseDocToBook = (doc: firebase.firestore.DocumentData): Book => {
   const book = bookSchema.cast({
     id: doc.id,

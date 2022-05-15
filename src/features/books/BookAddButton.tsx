@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { db, firebase } from '../../Firebase';
 import { useBookForm } from './BookForm';
-import { BookBaseType } from './schema';
+import { BookBaseType, GraphQLBookBase } from './schema';
 
 export const BookAddButton: React.FC<{}> = () => {
   const [open, setOpen] = useState(false);
@@ -25,48 +25,52 @@ export const BookAddButton: React.FC<{}> = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const history = useHistory();
 
-  const submitBook = async (values: BookBaseType) => {
-    const doc = await db.collection('books').add({
-      ...values,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+  const submitBook = async (values: GraphQLBookBase) => {
+    console.log(JSON.stringify(values));
+    // const doc = await db.collection('books').add({
+    //   ...values,
+    //   createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    //   updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    // });
 
-    const action = (key: string) => (
-      <React.Fragment>
-        <Button
-          onClick={() => {
-            history.push(`/books/${doc.id}`);
-            closeSnackbar(key);
-          }}
-        >
-          Move
-        </Button>
-        <Button
-          onClick={() => {
-            closeSnackbar(key);
-          }}
-        >
-          <Close />
-        </Button>
-      </React.Fragment>
-    );
+    // const action = (key: string) => (
+    //   <React.Fragment>
+    //     <Button
+    //       onClick={() => {
+    //         history.push(`/books/${doc.id}`);
+    //         closeSnackbar(key);
+    //       }}
+    //     >
+    //       Move
+    //     </Button>
+    //     <Button
+    //       onClick={() => {
+    //         closeSnackbar(key);
+    //       }}
+    //     >
+    //       <Close />
+    //     </Button>
+    //   </React.Fragment>
+    // );
 
-    setOpen(false);
+    // setOpen(false);
 
-    const message = `${values.title}を追加しました`;
-    enqueueSnackbar(message, {
-      variant: 'success',
-      action,
-    });
+    // const message = `${values.title}を追加しました`;
+    // enqueueSnackbar(message, {
+    //   variant: 'success',
+    //   action,
+    // });
   };
 
-  const emptyBook: BookBaseType = {
+  const emptyBook: GraphQLBookBase = {
     title: '',
-    authors: [''],
+    authors: [],
+    isbn: '',
     read: false,
     owned: false,
     priority: 50,
+    format: 'UNKNOWN',
+    store: 'UNKNOWN',
   };
 
   const { renderForm, submitForm } = useBookForm({
