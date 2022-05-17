@@ -78,7 +78,6 @@ export const useBookForm = (props: BookFormProps) => {
           }
           control={{ control, name: 'authors' }}
           multiple
-          freeSolo
           id="tags-outlined"
           options={queryResult.data == null ? [] : queryResult.data.authors}
           getOptionLabel={(option) => option.name}
