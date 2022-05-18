@@ -88,7 +88,7 @@ const AppWithSuccessedLogin: React.FC = () => {
       }
     };
     getToken();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, getAccessTokenSilently]);
 
   if (token == null) {
     return <>loading</>;

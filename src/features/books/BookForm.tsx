@@ -58,7 +58,7 @@ export const useBookForm = (props: BookFormProps) => {
     (async () => {
       reexecuteQuery();
     })();
-  }, [loadingAuthorOptions]);
+  }, [loadingAuthorOptions, reexecuteQuery]);
 
   const form = (
     <form>
@@ -105,7 +105,9 @@ export const useBookForm = (props: BookFormProps) => {
           control={control}
         >
           {BOOK_FORMAT_VALUE.map((format) => (
-            <MenuItem value={format}>{displayBookFormat(format)}</MenuItem>
+            <MenuItem key={format} value={format}>
+              {displayBookFormat(format)}
+            </MenuItem>
           ))}
         </Select>
         <Select
@@ -116,7 +118,9 @@ export const useBookForm = (props: BookFormProps) => {
           control={control}
         >
           {BOOK_STORE_VALUE.map((store) => (
-            <MenuItem value={store}>{displayBookStore(store)}</MenuItem>
+            <MenuItem key={store} value={store}>
+              {displayBookStore(store)}
+            </MenuItem>
           ))}
         </Select>
         <RhfTextField
