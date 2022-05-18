@@ -24,6 +24,7 @@ rules:
     - error
     - ignoreRestSiblings: true
       argsIgnorePattern: '^_'
+      varsIgnorePattern: '^_'
   import/order: ['warn', { 'alphabetize': { 'order': 'asc' } }]
   react/react-in-jsx-scope: off
 ignorePatterns:
