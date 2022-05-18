@@ -62,7 +62,6 @@ export const useBookForm = (props: BookFormProps) => {
 
   const form = (
     <form>
-      <div>{JSON.stringify(errors)}</div>
       <Box
         sx={{
           display: 'flex',
