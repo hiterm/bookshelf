@@ -24,6 +24,9 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
       cellStyle: { minWidth: '150px' },
       render: (rowData) =>
         rowData.authors.map((author) => author.name).join(','),
+      customFilterAndSearch: (term, rowData) =>
+        rowData.authors
+          .some((author) => author.name.includes(term)),
     },
     {
       title: '形式',
