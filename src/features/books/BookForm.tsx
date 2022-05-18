@@ -11,7 +11,7 @@ import {
   Select,
   TextField as RhfTextField,
 } from '../react-hook-form/mui';
-import { Author, GraphQLBookBase } from './schema';
+import { Author, IBookForm } from './schema';
 
 const bookFormSchema = z.object({
   title: z.string().min(1),
@@ -25,8 +25,8 @@ const bookFormSchema = z.object({
 });
 
 type BookFormProps = {
-  onSubmit: SubmitHandler<GraphQLBookBase>;
-  initialValues: GraphQLBookBase;
+  onSubmit: SubmitHandler<IBookForm>;
+  initialValues: IBookForm;
 };
 
 export const useBookForm = (props: BookFormProps) => {

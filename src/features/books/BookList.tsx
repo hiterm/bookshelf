@@ -4,10 +4,10 @@ import MuiLink from '@mui/material/Link';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { tableIcons } from '../material-table/tableIcons';
-import { GraphQLBook } from './schema';
+import { Book } from './schema';
 
-export const BookList: React.FC<{ list: GraphQLBook[] }> = (props) => {
-  const columns: Column<GraphQLBook>[] = [
+export const BookList: React.FC<{ list: Book[] }> = (props) => {
+  const columns: Column<Book>[] = [
     {
       title: '書名',
       field: 'title',

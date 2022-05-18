@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { useBookForm } from './BookForm';
 import { renderHook } from '@testing-library/react-hooks';
-import { GraphQLBookBase } from './schema';
+import { IBookForm } from './schema';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Client, Provider } from 'urql';
@@ -9,7 +9,7 @@ import { never } from 'wonka';
 
 describe('useBookForm', () => {
   test('works', async () => {
-    const emptyBook: GraphQLBookBase = {
+    const emptyBook: IBookForm = {
       title: '',
       authors: [
         { id: 'c156c887-e162-4777-85c9-ec474a666a87', name: 'author1' },
@@ -29,7 +29,7 @@ describe('useBookForm', () => {
     const wrapper: React.FC = ({ children }) => (
       <Provider value={mockClient as unknown as Client}>{children}</Provider>
     );
-    const mockSubmit = jest.fn((_book: GraphQLBookBase) => {});
+    const mockSubmit = jest.fn((_book: IBookForm) => {});
 
     const { result } = renderHook(
       () =>

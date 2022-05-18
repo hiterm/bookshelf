@@ -56,7 +56,7 @@ export type Author = {
   name: string;
 };
 
-export type GraphQLBook = {
+export type Book = {
   id: string;
   title: string;
   authors: Author[];
@@ -70,7 +70,7 @@ export type GraphQLBook = {
   updatedAt: Date;
 };
 
-export type GraphQLBookBase = {
+export type IBookForm = {
   title: string;
   authors: Author[];
   isbn: string;

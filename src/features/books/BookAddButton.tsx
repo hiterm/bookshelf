@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useCreateBookMutation } from '../../generated/graphql';
 import { useBookForm } from './BookForm';
-import { GraphQLBookBase } from './schema';
+import { IBookForm } from './schema';
 
 export const BookAddButton: React.FC<{}> = () => {
   const [open, setOpen] = useState(false);
@@ -27,7 +27,7 @@ export const BookAddButton: React.FC<{}> = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const history = useHistory();
 
-  const submitBook = async (value: GraphQLBookBase) => {
+  const submitBook = async (value: IBookForm) => {
     const { authors, ...rest } = value;
     const bookData = {
       ...rest,
@@ -75,7 +75,7 @@ export const BookAddButton: React.FC<{}> = () => {
     });
   };
 
-  const emptyBook: GraphQLBookBase = {
+  const emptyBook: IBookForm = {
     title: '',
     authors: [],
     isbn: '',

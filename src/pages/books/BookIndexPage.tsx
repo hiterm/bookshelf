@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { BookAddButton } from '../../features/books/BookAddButton';
 import { BookList } from '../../features/books/BookList';
-import { GraphQLBook } from '../../features/books/schema';
+import { Book } from '../../features/books/schema';
 import { useBooksQuery } from '../../generated/graphql';
 
 const BookIndexPage: React.FC = () => {
@@ -17,7 +17,7 @@ const BookIndexPage: React.FC = () => {
     return <>loading</>;
   }
 
-  const books: GraphQLBook[] = data.books.map((book) => ({
+  const books: Book[] = data.books.map((book) => ({
     ...book,
     createdAt: new Date(1000 * book.createdAt),
     updatedAt: new Date(1000 * book.updatedAt),
