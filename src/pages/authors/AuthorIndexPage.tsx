@@ -10,7 +10,7 @@ import {
 } from '../../generated/graphql';
 
 type Author = {
-  name: string
+  name: string;
 };
 
 type RegisterAuthorFormInput = {
