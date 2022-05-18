@@ -1,5 +1,6 @@
 import * as yup from 'yup';
 import { firebase } from '../../Firebase';
+import { Book as GraphQLBook } from '../../generated/graphql';
 
 const bookBaseSchema = yup
   .object({
@@ -79,6 +80,14 @@ export type IBookForm = {
   priority: number;
   format: 'E_BOOK' | 'PRINTED' | 'UNKNOWN';
   store: 'KINDLE' | 'UNKNOWN';
+};
+
+export const graphQlBookToBook = (book: GraphQLBook): Book => {
+  return {
+    ...book,
+    createdAt: new Date(1000 * book.createdAt),
+    updatedAt: new Date(1000 * book.updatedAt),
+  };
 };
 
 const firebaseDocToBook = (doc: firebase.firestore.DocumentData): OldBook => {
