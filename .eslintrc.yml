@@ -29,3 +29,4 @@ rules:
 ignorePatterns:
   - /build
   - /dist
+  - /src/generated
