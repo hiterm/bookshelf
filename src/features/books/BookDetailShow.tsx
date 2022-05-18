@@ -13,7 +13,7 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import { db } from '../../Firebase';
-import { Book } from './schema';
+import { OldBook } from './schema';
 
 const theme = createTheme();
 
@@ -51,7 +51,7 @@ const ShowBoolean: React.FC<{ flag: boolean }> = (props) => (
   />
 );
 
-const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
+const DeleteButton: React.FC<{ book: OldBook }> = ({ book }) => {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -104,7 +104,7 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
   );
 };
 
-export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
+export const BookDetailShow: React.FC<{ book: OldBook }> = (props) => {
   const { url } = useRouteMatch();
 
   const book = props.book;

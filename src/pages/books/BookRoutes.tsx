@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
-import { Book } from '../../features/books/schema';
+import { OldBook } from '../../features/books/schema';
 import { BookDetailPage } from './BookDetailPage';
 import { BookImportPage } from './BookImportPage';
 import { BookIndexPage } from './BookIndexPage';

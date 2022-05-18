@@ -26,7 +26,7 @@ const bookSchema = bookBaseSchema.shape({
     .default(() => new Date()),
 });
 
-export interface BookBaseType {
+export interface OldBookBaseType {
   title: string;
   authors: string[];
   isbn?: string;
@@ -37,7 +37,7 @@ export interface BookBaseType {
   store?: 'Kindle';
 }
 
-export interface Book {
+export interface OldBook {
   title: string;
   authors: string[];
   isbn?: string;
@@ -81,7 +81,7 @@ export type GraphQLBookBase = {
   store: 'KINDLE' | 'UNKNOWN';
 };
 
-const firebaseDocToBook = (doc: firebase.firestore.DocumentData): Book => {
+const firebaseDocToBook = (doc: firebase.firestore.DocumentData): OldBook => {
   const book = bookSchema.cast({
     id: doc.id,
     ...doc.data(),
@@ -90,7 +90,7 @@ const firebaseDocToBook = (doc: firebase.firestore.DocumentData): Book => {
   });
 
   // TODO: 無理やりキャストしている。直す
-  return book as Book;
+  return book as OldBook;
 };
 
 export { bookBaseSchema as bookFormSchema, bookSchema, firebaseDocToBook };
