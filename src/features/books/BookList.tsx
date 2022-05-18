@@ -4,7 +4,13 @@ import MuiLink from '@mui/material/Link';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { tableIcons } from '../material-table/tableIcons';
-import { Book } from './schema';
+import {
+  Book,
+  BOOK_FORMAT_VALUE,
+  BOOK_STORE_VALUE,
+  displayBookFormat,
+  displayBookStore,
+} from './schema';
 
 export const BookList: React.FC<{ list: Book[] }> = (props) => {
   const columns: Column<Book>[] = [
@@ -25,20 +31,23 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
       render: (rowData) =>
         rowData.authors.map((author) => author.name).join(','),
       customFilterAndSearch: (term, rowData) =>
-        rowData.authors
-          .some((author) => author.name.includes(term)),
+        rowData.authors.some((author) => author.name.includes(term)),
     },
     {
       title: '形式',
       field: 'format',
       hidden: true,
-      lookup: { E_BOOK: 'eBook', PRINTED: 'Printed', UNKNOWN: 'Unknown' },
+      lookup: Object.fromEntries(
+        BOOK_FORMAT_VALUE.map((format) => [format, displayBookFormat(format)])
+      ),
     },
     {
       title: 'ストア',
       field: 'store',
       hidden: true,
-      lookup: { KINDLE: 'Kindle', UNKNOWN: 'Unknown' },
+      lookup: Object.fromEntries(
+        BOOK_STORE_VALUE.map((store) => [store, displayBookStore(store)])
+      ),
     },
     { title: '優先度', field: 'priority', defaultSort: 'desc' },
     {

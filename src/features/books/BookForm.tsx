@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, TextField } from '@mui/material';
+import { Box } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useAuthorsQuery } from '../../generated/graphql';
 import {
@@ -11,7 +11,13 @@ import {
   Select,
   TextField as RhfTextField,
 } from '../react-hook-form/mui';
-import { Author, IBookForm } from './schema';
+import {
+  BOOK_FORMAT_VALUE,
+  BOOK_STORE_VALUE,
+  displayBookFormat,
+  displayBookStore,
+  IBookForm,
+} from './schema';
 
 const bookFormSchema = z.object({
   title: z.string().min(1),
@@ -98,9 +104,9 @@ export const useBookForm = (props: BookFormProps) => {
           helperText={errors.format?.message}
           control={control}
         >
-          <MenuItem value={'UNKNOWN'}>-</MenuItem>
-          <MenuItem value={'E_BOOK'}>eBook</MenuItem>
-          <MenuItem value={'PRINTED'}>Printed</MenuItem>
+          {BOOK_FORMAT_VALUE.map((format) => (
+            <MenuItem value={format}>{displayBookFormat(format)}</MenuItem>
+          ))}
         </Select>
         <Select
           name="store"
@@ -109,8 +115,9 @@ export const useBookForm = (props: BookFormProps) => {
           helperText={errors.store?.message}
           control={control}
         >
-          <MenuItem value={'UNKNOWN'}>-</MenuItem>
-          <MenuItem value={'KINDLE'}>Kindle</MenuItem>
+          {BOOK_STORE_VALUE.map((store) => (
+            <MenuItem value={store}>{displayBookStore(store)}</MenuItem>
+          ))}
         </Select>
         <RhfTextField
           type="number"
