@@ -1,10 +1,6 @@
 import * as yup from 'yup';
 import { firebase } from '../../Firebase';
-import {
-  BookFormat as GraphQLBookFormat,
-  BookStore as GraphQLBookStore,
-  BooksQuery,
-} from '../../generated/graphql';
+import { BookFormat, BookStore, BooksQuery } from '../../generated/graphql';
 
 const bookBaseSchema = yup
   .object({
@@ -63,9 +59,6 @@ export type Author = {
 
 type GraphQLBook = BooksQuery['books'][0];
 
-type BookFormat = 'eBook' | 'Printed' | 'Unknown';
-type BookStore = 'Kindle' | 'Unknown';
-
 export type Book = {
   id: string;
   title: string;
@@ -91,10 +84,16 @@ export type IBookForm = {
   store: BookStore;
 };
 
-export const graphQLBookFormatToBookFormat = (
-  bookFormat: GraphQLBookFormat
-): BookFormat => {
-  switch (bookFormat) {
+export const graphQlBookToBook = (book: GraphQLBook): Book => {
+  return {
+    ...book,
+    createdAt: new Date(1000 * book.createdAt),
+    updatedAt: new Date(1000 * book.updatedAt),
+  };
+};
+
+export const displayBookFormat = (format: BookFormat): string => {
+  switch (format) {
     case 'E_BOOK':
       return 'eBook';
     case 'PRINTED':
@@ -104,48 +103,12 @@ export const graphQLBookFormatToBookFormat = (
   }
 };
 
-export const graphQLBookStoreToBookStore = (
-  bookStore: GraphQLBookStore
-): BookStore => {
-  switch (bookStore) {
+export const displayBookStore = (store: BookStore): string => {
+  switch (store) {
     case 'KINDLE':
       return 'Kindle';
     case 'UNKNOWN':
       return 'Unknown';
-  }
-};
-
-export const graphQlBookToBook = (book: GraphQLBook): Book => {
-  return {
-    ...book,
-    format: graphQLBookFormatToBookFormat(book.format),
-    store: graphQLBookStoreToBookStore(book.store),
-    createdAt: new Date(1000 * book.createdAt),
-    updatedAt: new Date(1000 * book.updatedAt),
-  };
-};
-
-export const bookFormatToGraphQLBookFormat = (
-  bookFormat: BookFormat
-): GraphQLBookFormat => {
-  switch (bookFormat) {
-    case 'eBook':
-      return 'E_BOOK';
-    case 'Printed':
-      return 'PRINTED';
-    case 'Unknown':
-      return 'UNKNOWN';
-  }
-};
-
-export const bookStoreToGraphQLBookStore = (
-  bookStore: BookStore
-): GraphQLBookStore => {
-  switch (bookStore) {
-    case 'Kindle':
-      return 'KINDLE';
-    case 'Unknown':
-      return 'UNKNOWN';
   }
 };
 
