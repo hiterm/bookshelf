@@ -1,54 +1,58 @@
 import '@testing-library/jest-dom';
-import { useBookForm } from './BookForm';
+import { render, waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
-import { BookBaseType } from './schema';
-import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
-const App: React.VFC = () => {
-  return <h1>Hello, World!</h1>;
-};
-
-test('renders a message', () => {
-  const { container, getByText } = render(<App />);
-  expect(getByText('Hello, World!')).toBeInTheDocument();
-});
+import { Client, Provider } from 'urql';
+import { never } from 'wonka';
+import { useBookForm } from './BookForm';
+import { IBookForm } from './schema';
 
 describe('useBookForm', () => {
   test('works', async () => {
-    const emptyBook: BookBaseType = {
+    const emptyBook: IBookForm = {
       title: '',
-      authors: [''],
+      authors: [
+        { id: 'c156c887-e162-4777-85c9-ec474a666a87', name: 'author1' },
+      ],
+      isbn: '',
       read: false,
       owned: false,
       priority: 50,
+      format: 'UNKNOWN',
+      store: 'UNKNOWN',
     };
 
-    const mockSubmit = jest.fn((_book: BookBaseType) => {});
-    const { result } = renderHook(() =>
-      useBookForm({
-        onSubmit: mockSubmit,
-        initialValues: emptyBook,
-      })
+    const mockClient = {
+      executeQuery: jest.fn(() => never),
+    };
+
+    const wrapper: React.FC = ({ children }) => (
+      <Provider value={mockClient as unknown as Client}>{children}</Provider>
     );
-    const { container, getByText, getAllByText, getByLabelText } = render(
-      result.current.renderForm()
+    const mockSubmit = jest.fn((_book: IBookForm) => {});
+
+    const { result } = renderHook(
+      () =>
+        useBookForm({
+          onSubmit: mockSubmit,
+          initialValues: emptyBook,
+        }),
+      { wrapper }
     );
+    const { getAllByText, getByLabelText } = render(result.current.form);
+
     expect(getAllByText('書名')[0]).toBeInTheDocument();
+    // TODO: 著者など他のフィールドもテストする
     const titleInput = getByLabelText('書名') as HTMLInputElement;
-    const authorInput = getByLabelText('著者1');
     userEvent.type(titleInput, 'valid title');
-    userEvent.type(authorInput, 'valid author');
+
     await waitFor(async () => {
       result.current.submitForm();
     });
 
     expect(mockSubmit.mock.calls.length).toBe(1);
     expect(mockSubmit.mock.calls[0][0]).toEqual({
-      authors: ['valid author'],
-      owned: false,
-      priority: 50,
-      read: false,
+      ...emptyBook,
       title: 'valid title',
     });
   });

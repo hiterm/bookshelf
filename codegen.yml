@@ -1,8 +1,10 @@
 overwrite: true
-schema: "src/schema.graphql"
+schema: "src/graphql/schema.graphql"
 documents: "src/**/*.graphql"
 generates:
   src/generated/graphql.ts:
+    config:
+      enumsAsTypes: true
     plugins:
       - "typescript"
       - "typescript-operations"

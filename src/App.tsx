@@ -1,3 +1,4 @@
+import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { CircularProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -7,19 +8,18 @@ import {
   ThemeProvider,
   StyledEngineProvider,
 } from '@mui/material/styles';
+import { devtoolsExchange } from '@urql/devtools';
 import { SnackbarProvider } from 'notistack';
 import React, { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { createClient, defaultExchanges, Provider as UrqlProvider } from 'urql';
 import { AppBar } from './AppBar';
 import { SignInScreen } from './SignInScreen';
-import { MainRoutes } from './pages/MainRoutes';
-import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
-import { createClient, defaultExchanges, Provider as UrqlProvider } from 'urql';
 import {
   useLoggedInUserQuery,
   useRegisterUserMutation,
 } from './generated/graphql';
-import { devtoolsExchange } from '@urql/devtools';
+import { MainRoutes } from './pages/MainRoutes';
 
 const SignInCheck: React.FC = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -88,7 +88,7 @@ const AppWithSuccessedLogin: React.FC = () => {
       }
     };
     getToken();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, getAccessTokenSilently]);
 
   if (token == null) {
     return <>loading</>;

@@ -5,15 +5,15 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { firebase, db } from '../../Firebase';
 import { useBookForm } from './BookForm';
-import { Book, BookBaseType } from './schema';
+import { OldBook, OldBookBaseType } from './schema';
 
-export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
+export const BookDetailEdit: React.FC<{ book: OldBook }> = (props) => {
   const book = props.book;
 
   const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
 
-  const handleSubmit = async (values: BookBaseType) => {
+  const handleSubmit = async (values: OldBookBaseType) => {
     const docRef = db.collection('books').doc(book.id);
     await docRef.update({
       ...values,
@@ -26,10 +26,10 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   // id等は更新したくない
   const { id, createdAt, updatedAt, ...bookBase } = book;
 
-  const { renderForm, submitForm } = useBookForm({
-    onSubmit: handleSubmit,
-    initialValues: bookBase,
-  });
+  // const { renderForm, submitForm } = useBookForm({
+  //   onSubmit: handleSubmit,
+  //   initialValues: bookBase,
+  // });
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -42,10 +42,12 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
           },
         }}
       >
-        {renderForm()}
-        <Button variant="contained" color="primary" onClick={submitForm}>
-          更新
-        </Button>
+        {/* TODO */}
+        TODO
+        {/* {renderForm()} */}
+        {/* <Button variant="contained" color="primary" onClick={submitForm}> */}
+        {/*   更新 */}
+        {/* </Button> */}
       </Paper>
     </Box>
   );

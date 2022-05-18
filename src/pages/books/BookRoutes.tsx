@@ -1,14 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
-import { Book } from '../../features/books/schema';
 import { BookDetailPage } from './BookDetailPage';
 import { BookImportPage } from './BookImportPage';
 import { BookIndexPage } from './BookIndexPage';
 
 export const BookRouter: React.FC<{}> = () => {
-  const [books, _setBooks] = useState([] as Book[]);
-  // TODO fetch from api
-
   const { path } = useRouteMatch();
 
   return (
@@ -16,13 +12,13 @@ export const BookRouter: React.FC<{}> = () => {
       <div>
         <Switch>
           <Route exact path={path}>
-            <BookIndexPage books={books} />
+            <BookIndexPage />
           </Route>
           <Route path={`${path}/import`}>
             <BookImportPage />
           </Route>
           <Route path={`${path}/:id`}>
-            <BookDetailPage books={books} />
+            {/* <BookDetailPage books={books} /> */}
           </Route>
         </Switch>
       </div>

@@ -7,11 +7,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { db, firebase } from '../../Firebase';
+import { useCreateBookMutation } from '../../generated/graphql';
 import { useBookForm } from './BookForm';
-import { BookBaseType } from './schema';
+import { IBookForm } from './schema';
 
-export const BookAddButton: React.FC<{}> = () => {
+export const BookAddButton: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   const handleDialogOpenClick = () => {
@@ -22,21 +22,35 @@ export const BookAddButton: React.FC<{}> = () => {
     setOpen(false);
   };
 
+  const [_createBookResult, createBook] = useCreateBookMutation();
+
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const history = useHistory();
 
-  const submitBook = async (values: BookBaseType) => {
-    const doc = await db.collection('books').add({
-      ...values,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+  const submitBook = async (value: IBookForm) => {
+    const { authors, ...rest } = value;
+    const bookData = {
+      ...rest,
+      authorIds: authors.map((author) => author.id),
+    };
+    const result = await createBook({ bookData });
+
+    if (result.data == null) {
+      enqueueSnackbar(
+        `Some thing is wrong. error: ${JSON.stringify(result.error)}`,
+        {
+          variant: 'error',
+        }
+      );
+      return;
+    }
+    const data = result.data;
 
     const action = (key: string) => (
       <React.Fragment>
         <Button
           onClick={() => {
-            history.push(`/books/${doc.id}`);
+            history.push(`/books/${data.createBook.id}`);
             closeSnackbar(key);
           }}
         >
@@ -54,22 +68,25 @@ export const BookAddButton: React.FC<{}> = () => {
 
     setOpen(false);
 
-    const message = `${values.title}を追加しました`;
+    const message = `${value.title}を追加しました`;
     enqueueSnackbar(message, {
       variant: 'success',
       action,
     });
   };
 
-  const emptyBook: BookBaseType = {
+  const emptyBook: IBookForm = {
     title: '',
-    authors: [''],
+    authors: [],
+    isbn: '',
     read: false,
     owned: false,
     priority: 50,
+    format: 'UNKNOWN',
+    store: 'UNKNOWN',
   };
 
-  const { renderForm, submitForm } = useBookForm({
+  const { form, submitForm } = useBookForm({
     onSubmit: submitBook,
     initialValues: emptyBook,
   });
@@ -86,7 +103,7 @@ export const BookAddButton: React.FC<{}> = () => {
 
       <Dialog open={open} fullWidth maxWidth="sm">
         <DialogTitle>追加</DialogTitle>
-        <DialogContent>{renderForm()}</DialogContent>
+        <DialogContent>{form}</DialogContent>
         <DialogActions>
           <Button onClick={handleDialogCloseClick} color="primary">
             キャンセル
