@@ -11,7 +11,7 @@ import { useCreateBookMutation } from '../../generated/graphql';
 import { useBookForm } from './BookForm';
 import { IBookForm } from './schema';
 
-export const BookAddButton: React.FC<{}> = () => {
+export const BookAddButton: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   const handleDialogOpenClick = () => {
