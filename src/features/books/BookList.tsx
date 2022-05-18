@@ -29,11 +29,13 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
       title: '形式',
       field: 'format',
       hidden: true,
+      lookup: { E_BOOK: 'eBook', PRINTED: 'Printed', UNKNOWN: 'Unknown' },
     },
     {
       title: 'ストア',
       field: 'store',
       hidden: true,
+      lookup: { KINDLE: 'Kindle', UNKNOWN: 'Unknown' },
     },
     { title: '優先度', field: 'priority', defaultSort: 'desc' },
     {
