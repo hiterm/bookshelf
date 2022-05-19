@@ -18,7 +18,7 @@ export const BookRouter: React.FC<{}> = () => {
             <BookImportPage />
           </Route>
           <Route path={`${path}/:id`}>
-            {/* <BookDetailPage books={books} /> */}
+            <BookDetailPage />
           </Route>
         </Switch>
       </div>

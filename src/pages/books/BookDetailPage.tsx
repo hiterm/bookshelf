@@ -2,17 +2,31 @@ import React from 'react';
 import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
 import { BookDetailEdit } from '../../features/books/BookDetailEdit';
 import { BookDetailShow } from '../../features/books/BookDetailShow';
-import { OldBook } from '../../features/books/schema';
+import { graphQlBookToBook } from '../../features/books/schema';
+import { useBookQuery } from '../../generated/graphql';
 
-const BookDetailPage: React.FC<{ books: OldBook[] }> = (props) => {
+const BookDetailPage: React.FC = () => {
   const { path } = useRouteMatch();
   const { id } = useParams<{ id: string }>();
 
-  const book: OldBook | undefined = props.books.find((book) => book.id === id);
+  const [result, _reexecuteQuery] = useBookQuery({ variables: { bookId: id } });
+  const { data, fetching, error } = result;
 
-  if (book === undefined) {
-    return <div>Loading or not found.</div>;
+  if (error != null) {
+    return <>{JSON.stringify(error)}</>;
   }
+
+  if (fetching || data == null) {
+    return <>loading</>;
+  }
+
+  const graphqlBook = data.book;
+
+  if (graphqlBook == null) {
+    return <div>Not found.</div>;
+  }
+
+  const book = graphQlBookToBook(graphqlBook);
 
   return (
     <React.Fragment>
@@ -21,7 +35,7 @@ const BookDetailPage: React.FC<{ books: OldBook[] }> = (props) => {
           <BookDetailShow book={book} />
         </Route>
         <Route path={`${path}/edit`}>
-          <BookDetailEdit book={book} />
+          {/* <BookDetailEdit book={book} /> */}
         </Route>
       </Switch>
     </React.Fragment>
