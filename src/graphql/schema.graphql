@@ -45,8 +45,9 @@ type Mutation {
 }
 type Query {
 	loggedInUser: User
-	author(id: ID!): Author
+	book(id: ID!): Book
 	books: [Book!]!
+	author(id: ID!): Author
 	authors: [Author!]!
 }
 type User {
