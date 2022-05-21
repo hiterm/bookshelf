@@ -35,7 +35,7 @@ const BookDetailPage: React.FC = () => {
           <BookDetailShow book={book} />
         </Route>
         <Route path={`${path}/edit`}>
-          {/* <BookDetailEdit book={book} /> */}
+          <BookDetailEdit book={book} />
         </Route>
       </Switch>
     </React.Fragment>

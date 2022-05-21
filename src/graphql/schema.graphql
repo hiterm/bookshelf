@@ -41,6 +41,7 @@ input CreateBookInput {
 type Mutation {
 	registerUser: User!
 	createBook(bookData: CreateBookInput!): Book!
+	updateBook(bookData: UpdateBookInput!): Book!
 	createAuthor(authorData: CreateAuthorInput!): Author!
 }
 type Query {
@@ -49,6 +50,17 @@ type Query {
 	books: [Book!]!
 	author(id: ID!): Author
 	authors: [Author!]!
+}
+input UpdateBookInput {
+	id: String!
+	title: String!
+	authorIds: [String!]!
+	isbn: String!
+	read: Boolean!
+	owned: Boolean!
+	priority: Int!
+	format: BookFormat!
+	store: BookStore!
 }
 type User {
 	id: ID!

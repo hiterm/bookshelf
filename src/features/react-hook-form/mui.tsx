@@ -133,7 +133,7 @@ const RhfAutocomplete = <IFieldValues extends FieldValues, T>(
   } = props;
 
   const {
-    field: { ref, onChange, ...field },
+    field: { ref, onChange, value, ...field },
   } = useController({
     name: name,
     control: control,
@@ -143,6 +143,7 @@ const RhfAutocomplete = <IFieldValues extends FieldValues, T>(
     <Autocomplete
       {...field}
       {...autocompleteProps}
+      defaultValue={value}
       onChange={(_event, value) => {
         onChange(value);
       }}
