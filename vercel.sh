@@ -5,5 +5,5 @@ if [[ $VERCEL_GIT_COMMIT_REF == "master" ]] ; then
   yarn test && vite build
 else
   echo "This is not our main branch"
-  yarn test && yarn generate && yarn build
+  yarn generate && yarn test && yarn build
 fi
