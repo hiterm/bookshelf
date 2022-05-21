@@ -12,6 +12,7 @@ import {
   TextField as RhfTextField,
 } from '../react-hook-form/mui';
 import {
+  Author,
   BOOK_FORMAT_VALUE,
   BOOK_STORE_VALUE,
   displayBookFormat,
@@ -94,6 +95,9 @@ export const useBookForm = (props: BookFormProps) => {
           onClose={() => {
             setOpen(false);
           }}
+          isOptionEqualToValue={(option: Author, value: Author) =>
+            option.id === value.id
+          }
           loading={loadingAuthorOptions}
         />
         <Select

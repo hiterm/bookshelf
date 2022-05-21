@@ -3,33 +3,33 @@ import Button from '@mui/material/Button';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { firebase, db } from '../../Firebase';
+import { useUpdateBookMutation } from '../../generated/graphql';
 import { useBookForm } from './BookForm';
-import { OldBook, OldBookBaseType } from './schema';
+import { Book, IBookForm } from './schema';
 
-export const BookDetailEdit: React.FC<{ book: OldBook }> = (props) => {
+export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   const book = props.book;
 
   const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
 
-  const handleSubmit = async (values: OldBookBaseType) => {
-    const docRef = db.collection('books').doc(book.id);
-    await docRef.update({
-      ...values,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+  const [_createBookResult, updateBook] = useUpdateBookMutation();
+
+  const handleSubmit = async (values: IBookForm) => {
+    const { authors, ...rest } = values;
+    const bookData = {
+      ...rest,
+      authorIds: authors.map((author) => author.id),
+    };
+    await updateBook({ bookData: { id: book.id, ...bookData } });
     history.push(`/books/${book.id}`);
     enqueueSnackbar('更新しました', { variant: 'success' });
   };
 
-  // id等は更新したくない
-  const { id, createdAt, updatedAt, ...bookBase } = book;
-
-  // const { renderForm, submitForm } = useBookForm({
-  //   onSubmit: handleSubmit,
-  //   initialValues: bookBase,
-  // });
+  const { form, submitForm } = useBookForm({
+    onSubmit: handleSubmit,
+    initialValues: book,
+  });
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -42,12 +42,10 @@ export const BookDetailEdit: React.FC<{ book: OldBook }> = (props) => {
           },
         }}
       >
-        {/* TODO */}
-        TODO
-        {/* {renderForm()} */}
-        {/* <Button variant="contained" color="primary" onClick={submitForm}> */}
-        {/*   更新 */}
-        {/* </Button> */}
+        {form}
+        <Button variant="contained" color="primary" onClick={submitForm}>
+          更新
+        </Button>
       </Paper>
     </Box>
   );
