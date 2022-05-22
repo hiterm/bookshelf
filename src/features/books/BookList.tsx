@@ -33,6 +33,7 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
       customFilterAndSearch: (term, rowData) =>
         rowData.authors.some((author) => author.name.includes(term)),
     },
+    { title: 'ISBN', field: 'isbn', hidden: true },
     {
       title: '形式',
       field: 'format',
