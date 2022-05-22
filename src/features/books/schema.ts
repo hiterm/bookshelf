@@ -1,5 +1,6 @@
 import * as yup from 'yup';
 import { firebase } from '../../Firebase';
+import { BookFormat, BookStore, BooksQuery } from '../../generated/graphql';
 
 const bookBaseSchema = yup
   .object({
@@ -26,7 +27,7 @@ const bookSchema = bookBaseSchema.shape({
     .default(() => new Date()),
 });
 
-export interface BookBaseType {
+export interface OldBookBaseType {
   title: string;
   authors: string[];
   isbn?: string;
@@ -37,7 +38,7 @@ export interface BookBaseType {
   store?: 'Kindle';
 }
 
-export interface Book {
+export interface OldBook {
   title: string;
   authors: string[];
   isbn?: string;
@@ -51,7 +52,70 @@ export interface Book {
   updatedAt: Date;
 }
 
-const firebaseDocToBook = (doc: firebase.firestore.DocumentData): Book => {
+export type Author = {
+  id: string;
+  name: string;
+};
+
+type GraphQLBook = BooksQuery['books'][0];
+
+export type Book = {
+  id: string;
+  title: string;
+  authors: Author[];
+  isbn: string;
+  read: boolean;
+  owned: boolean;
+  priority: number;
+  format: BookFormat;
+  store: BookStore;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type IBookForm = {
+  title: string;
+  authors: Author[];
+  isbn: string;
+  read: boolean;
+  owned: boolean;
+  priority: number;
+  format: BookFormat;
+  store: BookStore;
+};
+
+export const graphQlBookToBook = (book: GraphQLBook): Book => {
+  return {
+    ...book,
+    createdAt: new Date(1000 * book.createdAt),
+    updatedAt: new Date(1000 * book.updatedAt),
+  };
+};
+
+export const BOOK_FORMAT_VALUE: BookFormat[] = ['UNKNOWN', 'E_BOOK', 'PRINTED'];
+export const BOOK_STORE_VALUE: BookStore[] = ['UNKNOWN', 'KINDLE'];
+
+export const displayBookFormat = (format: BookFormat): string => {
+  switch (format) {
+    case 'E_BOOK':
+      return 'eBook';
+    case 'PRINTED':
+      return 'Printed';
+    case 'UNKNOWN':
+      return 'Unknown';
+  }
+};
+
+export const displayBookStore = (store: BookStore): string => {
+  switch (store) {
+    case 'KINDLE':
+      return 'Kindle';
+    case 'UNKNOWN':
+      return 'Unknown';
+  }
+};
+
+const firebaseDocToBook = (doc: firebase.firestore.DocumentData): OldBook => {
   const book = bookSchema.cast({
     id: doc.id,
     ...doc.data(),
@@ -60,7 +124,7 @@ const firebaseDocToBook = (doc: firebase.firestore.DocumentData): Book => {
   });
 
   // TODO: 無理やりキャストしている。直す
-  return book as Book;
+  return book as OldBook;
 };
 
 export { bookBaseSchema as bookFormSchema, bookSchema, firebaseDocToBook };

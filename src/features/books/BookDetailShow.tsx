@@ -13,7 +13,7 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import { db } from '../../Firebase';
-import { Book } from './schema';
+import { Book, displayBookFormat, displayBookStore } from './schema';
 
 const theme = createTheme();
 
@@ -121,9 +121,20 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
         }}
       >
         <BookDetailShowItem field="書名" value={book.title} />
-        <BookDetailShowItem field="著者" value={book.authors.join(', ')} />
-        <BookDetailShowItem field="形式" value={book.format} halfWidth />
-        <BookDetailShowItem field="ストア" value={book.store} halfWidth />
+        <BookDetailShowItem
+          field="著者"
+          value={book.authors.map((author) => author.name).join(', ')}
+        />
+        <BookDetailShowItem
+          field="形式"
+          value={displayBookFormat(book.format)}
+          halfWidth
+        />
+        <BookDetailShowItem
+          field="ストア"
+          value={displayBookStore(book.store)}
+          halfWidth
+        />
         <BookDetailShowItem field="優先度" value={book.priority.toString()} />
         <BookDetailShowItem
           field="既読"

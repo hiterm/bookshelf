@@ -1,3 +1,4 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MuiAppBar from '@mui/material/AppBar';
 import Divider from '@mui/material/Divider';
@@ -8,9 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import React from 'react';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { firebase } from './Firebase';
+import { Link as RouterLink } from 'react-router-dom';
 
 export const AppBar: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -23,14 +22,10 @@ export const AppBar: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const auth = firebase.auth();
-  // Not check errors, because we have already checked in "SignInCheck"
-  const [user, ,] = useAuthState(auth);
+  const { isAuthenticated, user, logout } = useAuth0();
 
-  const history = useHistory();
   const handleSignOut = () => {
-    firebase.auth().signOut();
-    history.push('/signin');
+    logout({ returnTo: window.location.origin });
   };
 
   return (
@@ -63,7 +58,9 @@ export const AppBar: React.FC = () => {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem>User: {user?.displayName}</MenuItem>
+          <MenuItem>
+            User: {isAuthenticated && user != null && user.name}
+          </MenuItem>
           <Divider />
           <MenuItem onClick={handleSignOut}>Logout</MenuItem>
         </Menu>

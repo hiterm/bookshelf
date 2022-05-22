@@ -28,3 +28,8 @@ yarn-error.log*
 # firebase
 /.firebaserc
 /.firebase
+
+# graphql-codegen
+/src/generated
+
+.env*
