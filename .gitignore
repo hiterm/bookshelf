@@ -31,3 +31,5 @@ yarn-error.log*
 
 # graphql-codegen
 /src/generated
+
+.env*
