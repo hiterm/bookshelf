@@ -1,3 +1,5 @@
 mutation createAuthor($authorData: CreateAuthorInput!) {
-   createAuthor(authorData: $authorData){id}
+  createAuthor(authorData: $authorData) {
+    id
+  }
 }

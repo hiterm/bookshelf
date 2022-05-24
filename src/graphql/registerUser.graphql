@@ -1,3 +1,5 @@
 mutation registerUser {
-   registerUser {id}
+  registerUser {
+    id
+  }
 }
