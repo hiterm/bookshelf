@@ -1,3 +1,6 @@
 query authors {
-  authors {id, name}
+  authors {
+    id
+    name
+  }
 }
