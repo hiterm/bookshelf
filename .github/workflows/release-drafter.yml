@@ -10,7 +10,17 @@ jobs:
   update_release_draft:
     runs-on: ubuntu-latest
     steps:
-      # Drafts your next Release notes as Pull Requests are merged into "master"
+      - uses: actions/checkout@v2
       - uses: release-drafter/release-drafter@v5
+        id: release_drafter
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update package.json
+        run: |
+          tag=${{ steps.release_drafter.outputs.tag_name }}
+          npm --no-git-tag-version version ${tag#v}
+        continue-on-error: true
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Bump version
+
