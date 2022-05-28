@@ -7,7 +7,7 @@ Web App for books management (currently only accesible to me)
 
 ## Backend
 
-- [Bookshelf API](https://github.com/hiterm/bookshelf-api) v1.0.0
+- [Bookshelf API](https://github.com/hiterm/bookshelf-api) v1.1.0
 
 ## Dependent platforms
 
