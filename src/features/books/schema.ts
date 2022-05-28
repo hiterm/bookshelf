@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import { firebase } from '../../Firebase';
 import { BookFormat, BookStore, BooksQuery } from '../../generated/graphql';
 
 const bookBaseSchema = yup
@@ -115,16 +114,4 @@ export const displayBookStore = (store: BookStore): string => {
   }
 };
 
-const firebaseDocToBook = (doc: firebase.firestore.DocumentData): OldBook => {
-  const book = bookSchema.cast({
-    id: doc.id,
-    ...doc.data(),
-    createdAt: doc.data().createdAt?.toDate(),
-    updatedAt: doc.data().updatedAt?.toDate(),
-  });
-
-  // TODO: 無理やりキャストしている。直す
-  return book as OldBook;
-};
-
-export { bookBaseSchema as bookFormSchema, bookSchema, firebaseDocToBook };
+export { bookBaseSchema as bookFormSchema, bookSchema };
