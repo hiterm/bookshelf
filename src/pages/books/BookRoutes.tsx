@@ -1,7 +1,6 @@
 import React from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import { BookDetailPage } from './BookDetailPage';
-import { BookImportPage } from './BookImportPage';
 import { BookIndexPage } from './BookIndexPage';
 
 export const BookRouter: React.FC<{}> = () => {
@@ -13,9 +12,6 @@ export const BookRouter: React.FC<{}> = () => {
         <Switch>
           <Route exact path={path}>
             <BookIndexPage />
-          </Route>
-          <Route path={`${path}/import`}>
-            <BookImportPage />
           </Route>
           <Route path={`${path}/:id`}>
             <BookDetailPage />
