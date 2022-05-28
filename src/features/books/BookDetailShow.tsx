@@ -10,7 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { createTheme } from '@mui/material/styles';
 import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import { useDeleteBookMutation } from '../../generated/graphql';
 import { Book, displayBookFormat, displayBookStore } from './schema';
