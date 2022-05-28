@@ -12,7 +12,7 @@ import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
-import { db } from '../../Firebase';
+import { useDeleteBookMutation } from '../../generated/graphql';
 import { Book, displayBookFormat, displayBookStore } from './schema';
 
 const theme = createTheme();
@@ -54,6 +54,8 @@ const ShowBoolean: React.FC<{ flag: boolean }> = (props) => (
 const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
   const [open, setOpen] = React.useState(false);
 
+  const [_deleteBookResult, deleteBook] = useDeleteBookMutation();
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -66,7 +68,7 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
   const history = useHistory();
   const handleDelete = async () => {
     try {
-      await db.collection('books').doc(book.id).delete();
+      await deleteBook({ bookId: book.id }, { additionalTypenames: ['Book'] });
       history.push('/books');
       enqueueSnackbar(`${book.title}が削除されました`, { variant: 'success' });
     } catch (error) {
