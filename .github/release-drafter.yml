@@ -16,6 +16,7 @@ autolabeler:
   - label: 'chore'
     files:
       - '*.md'
+      - '*.yml'
     branch:
       - '/docs{0,1}\/.+/'
   - label: 'bug'
