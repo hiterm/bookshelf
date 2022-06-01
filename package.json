@@ -77,6 +77,10 @@
     "vite": "^2.7.10",
     "vite-plugin-checker": "^0.3.4"
   },
+  "resolutions": {
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0"
+  },
   "prettier": {
     "singleQuote": true
   }
