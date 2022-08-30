@@ -73,7 +73,7 @@
     "jest": "^27.4.7",
     "prettier": "^2.0.5",
     "ts-node": "^8.10.2",
-    "vite": "^2.7.10",
+    "vite": "^2.9.13",
     "vite-plugin-checker": "^0.3.4"
   },
   "resolutions": {
