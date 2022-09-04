@@ -78,7 +78,8 @@
   },
   "resolutions": {
     "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0"
+    "@types/react-dom": "^17.0.0",
+    "undici": "^5.10.0"
   },
   "prettier": {
     "singleQuote": true
