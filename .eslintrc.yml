@@ -21,6 +21,7 @@ settings:
   react:
     version: detect
 rules:
+  eqeqeq: ['error', 'smart']
   no-unused-vars: off
   '@typescript-eslint/no-unused-vars':
     - error
@@ -28,6 +29,7 @@ rules:
       argsIgnorePattern: '^_'
       varsIgnorePattern: '^_'
   import/order: ['warn', { 'alphabetize': { 'order': 'asc' } }]
+  sort-imports: ['warn', { ignoreDeclarationSort: true }]
   react/react-in-jsx-scope: off
 ignorePatterns:
   - /build
