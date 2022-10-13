@@ -13,6 +13,7 @@ extends:
 plugins:
   - '@typescript-eslint'
   - import
+  - unused-imports
 settings:
   import/resolver:
     node:
@@ -23,11 +24,13 @@ settings:
 rules:
   eqeqeq: ['error', 'smart']
   no-unused-vars: off
-  '@typescript-eslint/no-unused-vars':
-    - error
-    - ignoreRestSiblings: true
-      argsIgnorePattern: '^_'
-      varsIgnorePattern: '^_'
+  "unused-imports/no-unused-imports": "error"
+  "unused-imports/no-unused-vars": 
+  - "warn"
+  - "vars": "all"
+    "varsIgnorePattern": "^_"
+    "args": "after-used"
+    "argsIgnorePattern": "^_"
   import/order: ['warn', { 'alphabetize': { 'order': 'asc' } }]
   sort-imports: ['warn', { ignoreDeclarationSort: true }]
   react/react-in-jsx-scope: off
