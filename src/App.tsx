@@ -64,7 +64,7 @@ const RegisterCheck: React.FC = ({ children }) => {
     return (
       <button
         onClick={async () => {
-          await registerUser();
+          await registerUser({});
           reexecuteQuery();
         }}
       >
