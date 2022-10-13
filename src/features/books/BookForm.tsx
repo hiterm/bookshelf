@@ -8,16 +8,16 @@ import { useAuthorsQuery } from '../../generated/graphql';
 import {
   Autocomplete,
   Checkbox,
-  Select,
   TextField as RhfTextField,
+  Select,
 } from '../react-hook-form/mui';
 import {
   Author,
   BOOK_FORMAT_VALUE,
   BOOK_STORE_VALUE,
+  IBookForm,
   displayBookFormat,
   displayBookStore,
-  IBookForm,
 } from './schema';
 
 const bookFormSchema = z.object({

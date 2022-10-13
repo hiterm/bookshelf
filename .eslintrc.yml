@@ -24,13 +24,13 @@ settings:
 rules:
   eqeqeq: ['error', 'smart']
   no-unused-vars: off
-  "unused-imports/no-unused-imports": "error"
-  "unused-imports/no-unused-vars": 
-  - "warn"
-  - "vars": "all"
-    "varsIgnorePattern": "^_"
-    "args": "after-used"
-    "argsIgnorePattern": "^_"
+  unused-imports/no-unused-imports: 'error'
+  unused-imports/no-unused-vars:
+    - warn
+    - vars: 'all'
+      varsIgnorePattern: '^_'
+      args: 'after-used'
+      argsIgnorePattern: '^_'
   import/order: ['warn', { 'alphabetize': { 'order': 'asc' } }]
   sort-imports: ['warn', { ignoreDeclarationSort: true }]
   react/react-in-jsx-scope: off

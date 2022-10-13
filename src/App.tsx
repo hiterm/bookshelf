@@ -4,15 +4,15 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import {
-  createTheme,
-  ThemeProvider,
   StyledEngineProvider,
+  ThemeProvider,
+  createTheme,
 } from '@mui/material/styles';
 import { devtoolsExchange } from '@urql/devtools';
 import { SnackbarProvider } from 'notistack';
 import React, { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { createClient, defaultExchanges, Provider as UrqlProvider } from 'urql';
+import { Provider as UrqlProvider, createClient, defaultExchanges } from 'urql';
 import { AppBar } from './AppBar';
 import { SignInScreen } from './SignInScreen';
 import {
