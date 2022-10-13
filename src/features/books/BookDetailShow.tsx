@@ -10,7 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { createTheme } from '@mui/material/styles';
 import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import { useDeleteBookMutation } from '../../generated/graphql';
 import { Book, displayBookFormat, displayBookStore } from './schema';
@@ -52,7 +52,7 @@ const ShowBoolean: React.FC<{ flag: boolean }> = (props) => (
 );
 
 const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const [_deleteBookResult, deleteBook] = useDeleteBookMutation();
 
