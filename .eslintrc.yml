@@ -6,31 +6,37 @@ extends:
   - eslint:recommended
   - plugin:react/recommended
   - plugin:react-hooks/recommended
-  - plugin:prettier/recommended
-  - prettier/react
   - plugin:@typescript-eslint/eslint-recommended
   - plugin:import/recommended
   - plugin:import/typescript
+  - prettier
 plugins:
   - '@typescript-eslint'
   - import
+  - unused-imports
 settings:
-  import/resolver:
-    node:
-      paths: ['src']
-      extensions: ['.js', '.jsx', '.ts', '.tsx']
   react:
     version: detect
+  import/parsers:
+    '@typescript-eslint/parser': ['.ts', '.tsx']
+  import/resolver:
+    typescript:
+      alwaysTryTypes: true
 rules:
+  eqeqeq: ['error', 'smart']
   no-unused-vars: off
-  '@typescript-eslint/no-unused-vars':
-    - error
-    - ignoreRestSiblings: true
-      argsIgnorePattern: '^_'
+  unused-imports/no-unused-imports: 'error'
+  unused-imports/no-unused-vars:
+    - warn
+    - vars: 'all'
       varsIgnorePattern: '^_'
+      args: 'after-used'
+      argsIgnorePattern: '^_'
   import/order: ['warn', { 'alphabetize': { 'order': 'asc' } }]
+  sort-imports: ['warn', { ignoreDeclarationSort: true }]
   react/react-in-jsx-scope: off
 ignorePatterns:
   - /build
   - /dist
   - /src/generated
+  - /.yarn

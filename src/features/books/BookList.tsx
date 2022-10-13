@@ -5,9 +5,9 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { tableIcons } from '../material-table/tableIcons';
 import {
-  Book,
   BOOK_FORMAT_VALUE,
   BOOK_STORE_VALUE,
+  Book,
   displayBookFormat,
   displayBookStore,
 } from './schema';

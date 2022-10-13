@@ -1,19 +1,19 @@
 import {
+  Autocomplete,
   Checkbox,
   FormControl,
   FormControlLabel,
   FormHelperText,
   InputLabel,
+  AutocompleteProps as MuiAutocompleteProps,
+  TextFieldProps as MuiTextFieldProps,
   Select,
   TextField,
-  TextFieldProps as MuiTextFieldProps,
-  Autocomplete,
-  AutocompleteProps as MuiAutocompleteProps,
 } from '@mui/material';
 import {
   FieldValues,
-  useController,
   UseControllerProps,
+  useController,
 } from 'react-hook-form';
 
 type UseControllerPropsWithTransform<IFieldValues, OutputValue> =
@@ -95,7 +95,7 @@ type CheckboxProps<T> = {
 
 const RhfCheckbox = <T extends FieldValues>(props: CheckboxProps<T>) => {
   const {
-    field: { ref, value, ...field },
+    field: { ref: _ref, value, ...field },
   } = useController({
     name: props.name,
     control: props.control,
