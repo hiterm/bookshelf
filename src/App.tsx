@@ -10,7 +10,7 @@ import {
 } from '@mui/material/styles';
 import { devtoolsExchange } from '@urql/devtools';
 import { SnackbarProvider } from 'notistack';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider as UrqlProvider, createClient, defaultExchanges } from 'urql';
 import { AppBar } from './AppBar';
@@ -114,7 +114,7 @@ const AppWithSuccessedLogin: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  const notistackRef = React.useRef<SnackbarProvider>(null);
+  const notistackRef = useRef<SnackbarProvider>(null);
   const onClickDismiss = (key: string) => () => {
     notistackRef.current?.closeSnackbar(key);
   };
