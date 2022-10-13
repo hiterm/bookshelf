@@ -33,3 +33,4 @@ ignorePatterns:
   - /build
   - /dist
   - /src/generated
+  - /.yarn
