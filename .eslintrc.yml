@@ -7,10 +7,10 @@ extends:
   - plugin:react/recommended
   - plugin:react-hooks/recommended
   - plugin:prettier/recommended
-  - prettier/react
   - plugin:@typescript-eslint/eslint-recommended
   - plugin:import/recommended
   - plugin:import/typescript
+  - prettier
 plugins:
   - '@typescript-eslint'
   - import
