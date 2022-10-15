@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, renderHook, waitFor } from '@testing-library/react';
+import { act, render, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Client, Provider } from 'urql';
 import { vi } from 'vitest';
@@ -46,7 +46,7 @@ describe('useBookForm', () => {
     const titleInput = getByLabelText('書名') as HTMLInputElement;
     await userEvent.type(titleInput, 'valid title');
 
-    await waitFor(async () => {
+    await act(async () => {
       await result.current.submitForm();
     });
 
