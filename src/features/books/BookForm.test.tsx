@@ -44,7 +44,7 @@ describe('useBookForm', () => {
     expect(getAllByText('書名')[0]).toBeInTheDocument();
     // TODO: 著者など他のフィールドもテストする
     const titleInput = getByLabelText('書名') as HTMLInputElement;
-    userEvent.type(titleInput, 'valid title');
+    await userEvent.type(titleInput, 'valid title');
 
     await waitFor(async () => {
       await result.current.submitForm();
