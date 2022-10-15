@@ -16,7 +16,7 @@
     "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react",
     "noFallthroughCasesInSwitch": true,
-    "types": ["vite/client"]
+    "types": ["vitest/globals"]
   },
   "include": ["src"]
 }

@@ -2,7 +2,6 @@ import MaterialTable, { Column } from '@material-table/core';
 import { Button } from '@mui/material';
 import { useMemo } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { tableIcons } from '../../features/material-table/tableIcons';
 import { TextField } from '../../features/react-hook-form/mui';
 import {
   useAuthorsQuery,
@@ -78,7 +77,6 @@ export const AuthorIndexPage: React.FC = () => {
           pageSize: 20,
           pageSizeOptions: [20, 50, 100, 500, 1000],
         }}
-        icons={tableIcons}
       />
     </>
   );

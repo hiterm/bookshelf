@@ -86,7 +86,9 @@ export const useBookForm = (props: BookFormProps) => {
           multiple
           id="tags-outlined"
           options={queryResult.data == null ? [] : queryResult.data.authors}
-          getOptionLabel={(option) => option.name}
+          getOptionLabel={(option) =>
+            typeof option === 'string' ? option : option.name
+          }
           filterSelectedOptions
           open={open}
           onOpen={() => {
