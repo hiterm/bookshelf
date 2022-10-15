@@ -9,7 +9,7 @@ import {
   createTheme,
 } from '@mui/material/styles';
 import { devtoolsExchange } from '@urql/devtools';
-import { SnackbarProvider } from 'notistack';
+import { SnackbarKey, SnackbarProvider } from 'notistack';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider as UrqlProvider, createClient, defaultExchanges } from 'urql';
@@ -21,7 +21,7 @@ import {
 } from './generated/graphql';
 import { MainRoutes } from './pages/MainRoutes';
 
-const SignInCheck: React.FC = ({ children }) => {
+const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
 
   if (isLoading) {
@@ -37,7 +37,9 @@ const SignInCheck: React.FC = ({ children }) => {
   return <SignInScreen />;
 };
 
-const RegisterCheck: React.FC = ({ children }) => {
+const RegisterCheck: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const context = useMemo(() => ({ additionalTypenames: ['User'] }), []);
   const [result, reexecuteQuery] = useLoggedInUserQuery({ context });
   const { data, fetching, error } = result;
@@ -115,7 +117,7 @@ const AppWithSuccessedLogin: React.FC = () => {
 
 const App: React.FC = () => {
   const notistackRef = useRef<SnackbarProvider>(null);
-  const onClickDismiss = (key: string) => () => {
+  const onClickDismiss = (key: SnackbarKey) => () => {
     notistackRef.current?.closeSnackbar(key);
   };
 
@@ -137,7 +139,7 @@ const App: React.FC = () => {
               <Container>
                 <SnackbarProvider
                   ref={notistackRef}
-                  action={(key: string) => (
+                  action={(key: SnackbarKey) => (
                     <Button onClick={onClickDismiss(key)}>Dismiss</Button>
                   )}
                 >

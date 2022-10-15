@@ -26,7 +26,7 @@ describe('useBookForm', () => {
       executeQuery: jest.fn(() => never),
     };
 
-    const wrapper: React.FC = ({ children }) => (
+    const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
       <Provider value={mockClient as unknown as Client}>{children}</Provider>
     );
     const mockSubmit = jest.fn((_book: IBookForm) => {});

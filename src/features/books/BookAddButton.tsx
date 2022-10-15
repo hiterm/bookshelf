@@ -4,7 +4,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useSnackbar } from 'notistack';
+import { SnackbarKey, useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useCreateBookMutation } from '../../generated/graphql';
@@ -46,7 +46,7 @@ export const BookAddButton: React.FC = () => {
     }
     const data = result.data;
 
-    const action = (key: string) => (
+    const action = (key: SnackbarKey) => (
       <React.Fragment>
         <Button
           onClick={() => {
