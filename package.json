@@ -6,7 +6,7 @@
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "jest",
+    "test": "vitest run",
     "lint": "eslint --max-warnings=0 . && prettier --check .",
     "lint:fix": "eslint --fix . && prettier --write .",
     "generate": "graphql-codegen --config codegen.yml"
