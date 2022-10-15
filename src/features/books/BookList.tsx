@@ -3,7 +3,6 @@ import MuiLink from '@mui/material/Link';
 
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { tableIcons } from '../material-table/tableIcons';
 import {
   BOOK_FORMAT_VALUE,
   BOOK_STORE_VALUE,
@@ -88,7 +87,6 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
         pageSize: 20,
         pageSizeOptions: [20, 50, 100, 500, 1000],
       }}
-      icons={tableIcons}
     />
   );
 };
