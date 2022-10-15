@@ -3,6 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 import { Client, Provider } from 'urql';
+import { vi } from 'vitest';
 import { never } from 'wonka';
 import { useBookForm } from './BookForm';
 import { IBookForm } from './schema';
@@ -23,13 +24,13 @@ describe('useBookForm', () => {
     };
 
     const mockClient = {
-      executeQuery: jest.fn(() => never),
+      executeQuery: vi.fn(() => never),
     };
 
     const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
       <Provider value={mockClient as unknown as Client}>{children}</Provider>
     );
-    const mockSubmit = jest.fn((_book: IBookForm) => {});
+    const mockSubmit = vi.fn((_book: IBookForm) => {});
 
     const { result } = renderHook(
       () =>
@@ -47,7 +48,7 @@ describe('useBookForm', () => {
     userEvent.type(titleInput, 'valid title');
 
     await waitFor(async () => {
-      result.current.submitForm();
+      await result.current.submitForm();
     });
 
     expect(mockSubmit.mock.calls.length).toBe(1);
