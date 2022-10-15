@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, waitFor } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { render, renderHook, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Client, Provider } from 'urql';
 import { vi } from 'vitest';
