@@ -1,8 +1,8 @@
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
+import { MantineProvider } from '@mantine/core';
 import { CircularProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import CssBaseline from '@mui/material/CssBaseline';
 import {
   StyledEngineProvider,
   ThemeProvider,
@@ -125,33 +125,34 @@ const App: React.FC = () => {
 
   return (
     <React.Fragment>
-      <Auth0Provider
-        domain={import.meta.env.VITE_AUTH0_DOMAIN}
-        clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-        audience={import.meta.env.VITE_AUTH0_AUDIENCE}
-        redirectUri={window.location.origin}
-      >
-        <CssBaseline />
-        <StyledEngineProvider injectFirst>
-          <ThemeProvider theme={theme}>
-            <Router>
-              <AppBar />
-              <Container>
-                <SnackbarProvider
-                  ref={notistackRef}
-                  action={(key: SnackbarKey) => (
-                    <Button onClick={onClickDismiss(key)}>Dismiss</Button>
-                  )}
-                >
-                  <SignInCheck>
-                    <AppWithSuccessedLogin />
-                  </SignInCheck>
-                </SnackbarProvider>
-              </Container>
-            </Router>
-          </ThemeProvider>
-        </StyledEngineProvider>
-      </Auth0Provider>
+      <MantineProvider withGlobalStyles withNormalizeCSS>
+        <Auth0Provider
+          domain={import.meta.env.VITE_AUTH0_DOMAIN}
+          clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+          audience={import.meta.env.VITE_AUTH0_AUDIENCE}
+          redirectUri={window.location.origin}
+        >
+          <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={theme}>
+              <Router>
+                <AppBar />
+                <Container>
+                  <SnackbarProvider
+                    ref={notistackRef}
+                    action={(key: SnackbarKey) => (
+                      <Button onClick={onClickDismiss(key)}>Dismiss</Button>
+                    )}
+                  >
+                    <SignInCheck>
+                      <AppWithSuccessedLogin />
+                    </SignInCheck>
+                  </SnackbarProvider>
+                </Container>
+              </Router>
+            </ThemeProvider>
+          </StyledEngineProvider>
+        </Auth0Provider>
+      </MantineProvider>
     </React.Fragment>
   );
 };
