@@ -28,6 +28,8 @@
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@hookform/resolvers": "^2.8.0",
+    "@mantine/core": "^5.5.5",
+    "@mantine/hooks": "^5.5.5",
     "@material-table/core": "^0.2.48",
     "@mui/icons-material": "^5.10.9",
     "@mui/lab": "^5.0.0-alpha.103",
