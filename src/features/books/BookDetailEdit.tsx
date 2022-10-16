@@ -33,20 +33,22 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-      <Paper
-        sx={{
-          padding: 5,
-          width: {
-            xs: 1,
-            sm: 600,
-          },
-        }}
-      >
-        {form}
-        <Button variant="contained" color="primary" onClick={submitForm}>
-          更新
-        </Button>
-      </Paper>
+      <form onSubmit={submitForm}>
+        <Paper
+          sx={{
+            padding: 5,
+            width: {
+              xs: 1,
+              sm: 600,
+            },
+          }}
+        >
+          {form}
+          <Button variant="contained" color="primary">
+            更新
+          </Button>
+        </Paper>
+      </form>
     </Box>
   );
 };

@@ -102,16 +102,16 @@ export const BookAddButton: React.FC = () => {
       </Button>
 
       <Dialog open={open} fullWidth maxWidth="sm">
-        <DialogTitle>追加</DialogTitle>
-        <DialogContent>{form}</DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogCloseClick} color="primary">
-            キャンセル
-          </Button>
-          <Button onClick={submitForm} color="primary">
-            追加
-          </Button>
-        </DialogActions>
+        <form onSubmit={submitForm}>
+          <DialogTitle>追加</DialogTitle>
+          <DialogContent>{form}</DialogContent>
+          <DialogActions>
+            <Button onClick={handleDialogCloseClick} color="primary">
+              キャンセル
+            </Button>
+            <Button type="submit">追加</Button>
+          </DialogActions>
+        </form>
       </Dialog>
     </div>
   );
