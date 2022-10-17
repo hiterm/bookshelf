@@ -1,29 +1,42 @@
-import { OnSubmit } from '@mantine/form/lib/types';
 import '@testing-library/jest-dom';
-import { act, render, renderHook } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React, { FormEvent } from 'react';
+import React from 'react';
 import { Client, Provider } from 'urql';
 import { vi } from 'vitest';
 import { never } from 'wonka';
 import { useBookForm } from './BookForm';
 import { IBookForm } from './schema';
 
+const emptyBook: IBookForm = {
+  title: '',
+  authors: [{ id: 'c156c887-e162-4777-85c9-ec474a666a87', name: 'author1' }],
+  isbn: '',
+  read: false,
+  owned: false,
+  priority: 50,
+  format: 'UNKNOWN',
+  store: 'UNKNOWN',
+};
+
+type TestFormProps = { onSubmit: (values: IBookForm) => void };
+
+const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
+  const { form, submitForm } = useBookForm({
+    initialValues: emptyBook,
+    onSubmit: onSubmit,
+  });
+
+  return (
+    <form onSubmit={submitForm}>
+      {form}
+      <button type="submit">送信</button>
+    </form>
+  );
+};
+
 describe('useBookForm', () => {
   test('works', async () => {
-    const emptyBook: IBookForm = {
-      title: '',
-      authors: [
-        { id: 'c156c887-e162-4777-85c9-ec474a666a87', name: 'author1' },
-      ],
-      isbn: '',
-      read: false,
-      owned: false,
-      priority: 50,
-      format: 'UNKNOWN',
-      store: 'UNKNOWN',
-    };
-
     const mockClient = {
       executeQuery: vi.fn(() => never),
     };
@@ -43,55 +56,27 @@ describe('useBookForm', () => {
       })),
     });
 
-    const hookWrapper: React.FC<{ children: React.ReactNode }> = ({
-      children,
-    }) => (
+    const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
       <Provider value={mockClient as unknown as Client}>{children}</Provider>
     );
-    const wrapper: (
-      onSubmit: ReturnType<OnSubmit<IBookForm>>
-    ) => React.FC<{ children: React.ReactNode }> =
-      (onSubmit) =>
-      // eslint-disable-next-line react/display-name, react/prop-types
-      ({ children }) =>
-        (
-          <form onSubmit={onSubmit}>
-            {children}
-            <button type="submit">送信</button>
-          </form>
-        );
     const mockSubmit = vi.fn((_book: IBookForm) => {});
 
-    const { result } = renderHook(
-      () =>
-        useBookForm({
-          onSubmit: mockSubmit,
-          initialValues: emptyBook,
-        }),
-      { wrapper: hookWrapper }
-    );
-    const { getAllByText, getByLabelText, getByRole } = render(
-      result.current.form,
+    const { getAllByText, getByRole } = render(
+      <TestForm onSubmit={mockSubmit} />,
       {
-        wrapper: wrapper(result.current.submitForm),
+        wrapper: wrapper,
       }
     );
 
     expect(getAllByText('書名')[0]).toBeInTheDocument();
     // TODO: 著者など他のフィールドもテストする
-    // const titleInput = getByLabelText('書名') as HTMLInputElement;
     const titleInput = getByRole('textbox', {
       name: '書名',
     });
     const user = userEvent.setup();
     await user.type(titleInput, 'valid title');
 
-    // await userEvent.click(getByRole('button', { name: '送信' }));
-    await act(async () => {
-      await result.current.submitForm({
-        preventDefault: vi.fn(),
-      } as unknown as FormEvent<HTMLFormElement>);
-    });
+    await userEvent.click(getByRole('button', { name: '送信' }));
 
     expect(mockSubmit.mock.calls.length).toBe(1);
     expect(mockSubmit.mock.calls[0][0]).toEqual({

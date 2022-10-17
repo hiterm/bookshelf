@@ -12,7 +12,6 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { z } from 'zod';
 import { useAuthorsQuery } from '../../generated/graphql';
 import {
-  Author,
   BOOK_FORMAT_VALUE,
   BOOK_STORE_VALUE,
   IBookForm,
