@@ -1,8 +1,7 @@
+import { Button, TextInput } from '@mantine/core';
+import { useForm } from '@mantine/form';
 import MaterialTable, { Column } from '@material-table/core';
-import { Button } from '@mui/material';
 import { useMemo } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { TextField } from '../../features/react-hook-form/mui';
 import {
   useAuthorsQuery,
   useCreateAuthorMutation,
@@ -18,28 +17,16 @@ type RegisterAuthorFormInput = {
 
 const RegisterAuthorForm: React.FC = () => {
   const [_createAuthorResult, createAuthor] = useCreateAuthorMutation();
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RegisterAuthorFormInput>({
-    mode: 'all',
-    defaultValues: { name: '' },
+  const form = useForm<RegisterAuthorFormInput>({
+    initialValues: { name: '' },
   });
-  const onSubmit: SubmitHandler<RegisterAuthorFormInput> = (data) =>
+  const handleSubmit = (data: RegisterAuthorFormInput) =>
     createAuthor({ authorData: { name: data.name } });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <TextField
-        label="名前"
-        error={Boolean(errors.name)}
-        helperText={errors.name?.message}
-        control={{ control, name: 'name' }}
-      />
-      <Button variant="contained" onClick={handleSubmit(onSubmit)}>
-        登録
-      </Button>
+    <form onSubmit={form.onSubmit(handleSubmit)}>
+      <TextInput label="名前" {...form.getInputProps('name')} />
+      <Button type="submit">登録</Button>
     </form>
   );
 };
