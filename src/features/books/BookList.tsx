@@ -1,3 +1,4 @@
+import { Anchor } from '@mantine/core';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import {
   DataGrid,
@@ -7,14 +8,22 @@ import {
 } from 'mantine-data-grid';
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Book, displayBookFormat, displayBookStore } from './schema';
 
 const columnHelper = createColumnHelper<Book>();
 
-// TODO: リンクをつける
 // TODO: ストアと形式のフィルタ
 const columns: ColumnDef<Book>[] = [
-  { accessorKey: 'title', header: '書名', filterFn: stringFilterFn },
+  columnHelper.accessor('title', {
+    header: '書名',
+    cell: (info) => (
+      <Anchor component={Link} to={`/books/${info.row.original.id}`}>
+        {info.getValue()}
+      </Anchor>
+    ),
+    filterFn: stringFilterFn,
+  }),
   columnHelper.accessor('authors', {
     header: '著者',
     cell: (info) =>
