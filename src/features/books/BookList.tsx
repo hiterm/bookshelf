@@ -53,6 +53,7 @@ export const BookList: React.FC<{ list: Book[] }> = (props) => {
     <DataGrid
       columns={columns}
       data={props.list}
+      striped
       highlightOnHover
       withGlobalFilter
       withPagination
