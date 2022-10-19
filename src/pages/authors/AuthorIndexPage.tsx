@@ -47,10 +47,10 @@ export const AuthorIndexPage: React.FC = () => {
 
   const columnHelper = createColumnHelper<Author>();
 
-// TODO: asを外す
-// https://github.com/TanStack/table/issues/4382
-// https://github.com/TanStack/table/issues/4302
-// https://github.com/TanStack/table/issues/4241
+  // TODO: asを外す
+  // https://github.com/TanStack/table/issues/4382
+  // https://github.com/TanStack/table/issues/4302
+  // https://github.com/TanStack/table/issues/4241
   const columns = [
     columnHelper.accessor('name', { header: '名前' }),
   ] as ColumnDef<Author>[];
