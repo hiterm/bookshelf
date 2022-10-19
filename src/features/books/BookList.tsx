@@ -1,5 +1,6 @@
 import MaterialTable, { Column } from '@material-table/core';
 import MuiLink from '@mui/material/Link';
+import { DataGrid } from 'mantine-data-grid';
 
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';

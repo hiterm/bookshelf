@@ -2902,7 +2902,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-table@npm:^8.5.13":
+"@tanstack/react-table@npm:^8.5.13, @tanstack/react-table@npm:^8.5.15":
   version: 8.5.15
   resolution: "@tanstack/react-table@npm:8.5.15"
   dependencies:
@@ -3893,6 +3893,7 @@ __metadata:
     "@mui/icons-material": ^5.10.9
     "@mui/lab": ^5.0.0-alpha.103
     "@mui/material": ^5.10.9
+    "@tanstack/react-table": ^8.5.15
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.4.0
     "@testing-library/user-event": ^14.4.3
