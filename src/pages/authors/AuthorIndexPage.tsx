@@ -1,6 +1,7 @@
 import { Button, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import MaterialTable, { Column } from '@material-table/core';
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
+import { DataGrid } from 'mantine-data-grid';
 import { useMemo } from 'react';
 import {
   useAuthorsQuery,
@@ -44,26 +45,28 @@ export const AuthorIndexPage: React.FC = () => {
     return <>loading</>;
   }
 
-  const columns: Column<Author>[] = [
-    {
-      title: '名前',
-      field: 'name',
-    },
-  ];
+  const columnHelper = createColumnHelper<Author>();
+
+// TODO: asを外す
+// https://github.com/TanStack/table/issues/4382
+// https://github.com/TanStack/table/issues/4302
+// https://github.com/TanStack/table/issues/4241
+  const columns = [
+    columnHelper.accessor('name', { header: '名前' }),
+  ] as ColumnDef<Author>[];
 
   return (
     <>
       <RegisterAuthorForm />
-      <MaterialTable
+      <DataGrid
         columns={columns}
         data={data.authors}
-        title=""
-        options={{
-          filtering: true,
-          columnsButton: true,
-          pageSize: 20,
-          pageSizeOptions: [20, 50, 100, 500, 1000],
-        }}
+        striped
+        highlightOnHover
+        withGlobalFilter
+        withPagination
+        withColumnFilters
+        withSorting
       />
     </>
   );

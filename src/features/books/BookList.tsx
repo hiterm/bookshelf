@@ -14,6 +14,10 @@ import { Book, displayBookFormat, displayBookStore } from './schema';
 const columnHelper = createColumnHelper<Book>();
 
 // TODO: ストアと形式のフィルタ
+// TODO: asを外す
+// https://github.com/TanStack/table/issues/4382
+// https://github.com/TanStack/table/issues/4302
+// https://github.com/TanStack/table/issues/4241
 const columns: ColumnDef<Book>[] = [
   columnHelper.accessor('title', {
     header: '書名',
