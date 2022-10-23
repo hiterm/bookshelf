@@ -1,21 +1,11 @@
-import Check from '@mui/icons-material/Check';
-import { Paper, Typography } from '@mui/material';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import { createTheme } from '@mui/material/styles';
+import { Box, Button, Center, Modal, Paper, Text, Title } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
+import { Check } from 'tabler-icons-react';
 import { useDeleteBookMutation } from '../../generated/graphql';
 import { Book, displayBookFormat, displayBookStore } from './schema';
-
-const theme = createTheme();
 
 const BookDetailShowItem: React.FC<{
   field: string;
@@ -28,27 +18,25 @@ const BookDetailShowItem: React.FC<{
 
   return (
     <>
-      <Typography
-        variant="body1"
-        sx={{ fontWeight: 'bold', justifySelf: 'end' }}
+      <Text sx={{ fontWeight: 'bold', justifySelf: 'end' }}>{props.field}</Text>
+      <Box
+        sx={(theme) => ({
+          [theme.fn.smallerThan('sm')]: {
+            gridColumnEnd: 'span 3',
+          },
+          [theme.fn.largerThan('sm')]: {
+            gridColumnEnd: gridColumnEnd,
+          },
+        })}
       >
-        {props.field}
-      </Typography>
-      <Box sx={{ gridColumnEnd: { xs: 'span 3', md: gridColumnEnd } }}>
         {valueForShow}
       </Box>
     </>
   );
 };
 
-const ShowBoolean: React.FC<{ flag: boolean }> = (props) => (
-  <Check
-    sx={{
-      color: props.flag
-        ? theme.palette.success.main
-        : theme.palette.action.disabled,
-    }}
-  />
+const ShowBoolean: React.FC<{ flag: boolean }> = ({ flag }) => (
+  <Check color={flag ? 'green' : undefined} />
 );
 
 const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
@@ -78,30 +66,26 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
 
   return (
     <div>
-      <Button variant="contained" color="error" onClick={handleClickOpen}>
+      <Button color="red" onClick={handleClickOpen}>
         削除
       </Button>
-      <Dialog
-        open={open}
+      <Modal
+        opened={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">削除確認</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {book.title}を削除しますか？
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            キャンセル
-          </Button>
-          <Button onClick={handleDelete} color="primary" autoFocus>
+        <Title order={3} id="alert-dialog-title">
+          削除確認
+        </Title>
+        <Box>{book.title}を削除しますか？</Box>
+        <Center>
+          <Button onClick={handleClose}>キャンセル</Button>
+          <Button onClick={handleDelete} color="red" autoFocus>
             削除する
           </Button>
-        </DialogActions>
-      </Dialog>
+        </Center>
+      </Modal>
     </div>
   );
 };
@@ -117,9 +101,9 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
         sx={{
           display: 'grid',
           gridTemplateColumns: 'max-content 1fr max-content 1fr',
-          rowGap: 2,
-          columnGap: 2,
-          padding: 2,
+          rowGap: 20,
+          columnGap: 20,
+          padding: 20,
         }}
       >
         <BookDetailShowItem field="書名" value={book.title} />
@@ -161,12 +145,7 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
         />
       </Paper>
       <Box sx={{ display: 'flex', gap: 1, marginTop: 1, marginBottom: 1 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          component={Link}
-          to={`${url}/edit`}
-        >
+        <Button color="blue" component={Link} to={`${url}/edit`}>
           変更
         </Button>
         <DeleteButton book={book} />
