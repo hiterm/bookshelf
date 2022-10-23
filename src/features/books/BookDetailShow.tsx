@@ -1,6 +1,6 @@
 import { Box, Button, Center, Modal, Text, Title } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import dayjs from 'dayjs';
-import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import { Check } from 'tabler-icons-react';
@@ -52,15 +52,20 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
     setOpen(false);
   };
 
-  const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
   const handleDelete = async () => {
     try {
       await deleteBook({ bookId: book.id }, { additionalTypenames: ['Book'] });
       history.push('/books');
-      enqueueSnackbar(`${book.title}が削除されました`, { variant: 'success' });
+      showNotification({
+        message: `${book.title}が削除されました`,
+        color: 'teal',
+      });
     } catch (error) {
-      enqueueSnackbar(`削除に失敗しました: ${error}`, { variant: 'error' });
+      showNotification({
+        message: `削除に失敗しました: ${error}`,
+        color: 'red',
+      });
     }
   };
 
