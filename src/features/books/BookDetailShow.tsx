@@ -1,4 +1,4 @@
-import { Box, Button, Center, Modal, Paper, Text, Title } from '@mantine/core';
+import { Box, Button, Center, Modal, Text, Title } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
@@ -97,7 +97,7 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
 
   return (
     <React.Fragment>
-      <Paper
+      <Box
         sx={{
           display: 'grid',
           gridTemplateColumns: 'max-content 1fr max-content 1fr',
@@ -143,7 +143,7 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
           value={dayjs(book.updatedAt).format('YYYY/MM/DD HH:mm:ss')}
           halfWidth
         />
-      </Paper>
+      </Box>
       <Box sx={{ display: 'flex', gap: 1, marginTop: 1, marginBottom: 1 }}>
         <Button color="blue" component={Link} to={`${url}/edit`}>
           変更
