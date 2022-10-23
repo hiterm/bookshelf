@@ -6,7 +6,6 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
-import { OnSubmit } from '@mantine/form/lib/types';
 import { Box } from '@mui/material';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { z } from 'zod';
@@ -31,13 +30,16 @@ const bookFormSchema = z.object({
 });
 
 type BookFormProps = {
-  onSubmit: Parameters<OnSubmit<IBookForm>>[0];
+  onSubmit: (
+    values: IBookForm,
+    event: React.FormEvent<HTMLFormElement>
+  ) => void;
   initialValues: IBookForm;
 };
 
 type BookFormReturn = {
   form: ReactElement;
-  submitForm: ReturnType<OnSubmit<IBookForm>>;
+  submitForm: React.FormEventHandler<HTMLFormElement>;
 };
 
 export const useBookForm = (props: BookFormProps): BookFormReturn => {
