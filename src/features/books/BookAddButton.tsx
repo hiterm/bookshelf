@@ -1,10 +1,5 @@
-import Close from '@mui/icons-material/Close';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import { SnackbarKey, useSnackbar } from 'notistack';
+import { Button, Modal, Title } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useCreateBookMutation } from '../../generated/graphql';
@@ -24,7 +19,6 @@ export const BookAddButton: React.FC = () => {
 
   const [_createBookResult, createBook] = useCreateBookMutation();
 
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const history = useHistory();
 
   const submitBook = async (value: IBookForm) => {
@@ -36,42 +30,30 @@ export const BookAddButton: React.FC = () => {
     const result = await createBook({ bookData });
 
     if (result.data == null) {
-      enqueueSnackbar(
-        `Some thing is wrong. error: ${JSON.stringify(result.error)}`,
-        {
-          variant: 'error',
-        }
-      );
+      showNotification({
+        message: `Some thing is wrong. error: ${JSON.stringify(result.error)}`,
+        color: 'red',
+      });
       return;
     }
     const data = result.data;
 
-    const action = (key: SnackbarKey) => (
-      <React.Fragment>
-        <Button
-          onClick={() => {
-            history.push(`/books/${data.createBook.id}`);
-            closeSnackbar(key);
-          }}
-        >
-          Move
-        </Button>
-        <Button
-          onClick={() => {
-            closeSnackbar(key);
-          }}
-        >
-          <Close />
-        </Button>
-      </React.Fragment>
-    );
-
     setOpen(false);
 
-    const message = `${value.title}を追加しました`;
-    enqueueSnackbar(message, {
-      variant: 'success',
-      action,
+    showNotification({
+      message: (
+        <>
+          <div>{value.title}を追加しました</div>
+          <Button
+            onClick={() => {
+              history.push(`/books/${data.createBook.id}`);
+            }}
+          >
+            Move
+          </Button>
+        </>
+      ),
+      color: 'teal',
     });
   };
 
@@ -93,26 +75,17 @@ export const BookAddButton: React.FC = () => {
 
   return (
     <div>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleDialogOpenClick}
-      >
-        追加
-      </Button>
+      <Button onClick={handleDialogOpenClick}>追加</Button>
 
-      <Dialog open={open} fullWidth maxWidth="sm">
+      <Modal opened={open} onClose={handleDialogCloseClick}>
         <form onSubmit={submitForm}>
-          <DialogTitle>追加</DialogTitle>
-          <DialogContent>{form}</DialogContent>
-          <DialogActions>
-            <Button onClick={handleDialogCloseClick} color="primary">
-              キャンセル
-            </Button>
-            <Button type="submit">追加</Button>
-          </DialogActions>
+          <Title order={3}>追加</Title>
+          {form}
+          <Button type="submit" mt="md">
+            追加
+          </Button>
         </form>
-      </Dialog>
+      </Modal>
     </div>
   );
 };
