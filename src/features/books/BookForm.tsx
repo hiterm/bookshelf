@@ -4,10 +4,10 @@ import {
   MultiSelect,
   NumberInput,
   Select,
+  Stack,
   TextInput,
 } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
-import { Box } from '@mui/material';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { z } from 'zod';
 import { useAuthorsQuery } from '../../generated/graphql';
@@ -64,13 +64,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
   }, [loadingAuthorOptions, reexecuteQuery]);
 
   const formElement = (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-      }}
-    >
+    <Stack>
       <TextInput label="書名" {...form.getInputProps('title')} />
       <MultiSelect
         label="著者"
@@ -122,7 +116,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
         label="所有"
         {...form.getInputProps('owned', { type: 'checkbox' })}
       />
-    </Box>
+    </Stack>
   );
 
   return { form: formElement, submitForm: form.onSubmit(props.onSubmit) };
