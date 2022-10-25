@@ -118,8 +118,14 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
       />
       <NumberInput label="優先度" {...form.getInputProps('priority')} />
       <TextInput label="ISBN" {...form.getInputProps('isbn')} />
-      <Checkbox label="既読" {...form.getInputProps('read')} />
-      <Checkbox label="所有" {...form.getInputProps('owned')} />
+      <Checkbox
+        label="既読"
+        {...form.getInputProps('read', { type: 'checkbox' })}
+      />
+      <Checkbox
+        label="所有"
+        {...form.getInputProps('owned', { type: 'checkbox' })}
+      />
     </Box>
   );
 
