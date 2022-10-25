@@ -1,5 +1,6 @@
 import {
   Checkbox,
+  Loader,
   MultiSelect,
   NumberInput,
   Select,
@@ -48,9 +49,9 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
     validate: zodResolver(bookFormSchema),
   });
 
-  const [open, setOpen] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(false);
   const [queryResult, reexecuteQuery] = useAuthorsQuery({ pause: true });
-  const loadingAuthorOptions = open && queryResult.data == null;
+  const loadingAuthorOptions = shouldLoad && queryResult.data == null;
 
   useEffect(() => {
     if (!loadingAuthorOptions) {
@@ -77,16 +78,9 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
           queryResult.data?.authors.map((author) => ({
             value: author.id,
             label: author.name,
-          })) ?? ['Loading']
+          })) ?? []
         }
-        initiallyOpened={open}
-        onDropdownOpen={() => {
-          setOpen(true);
-        }}
-        onDropdownClose={() => {
-          setOpen(false);
-        }}
-        disabled={loadingAuthorOptions}
+        onClick={() => setShouldLoad(true)}
         {...form.getInputProps('authors')}
         value={form.values.authors.map((author) => author.id)}
         onChange={(authorIds) => {
@@ -99,6 +93,8 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
             }))
           );
         }}
+        // https://github.com/mantinedev/ui.mantine.dev/blob/master/components/AutocompleteLoading/AutocompleteLoading.tsx
+        rightSection={loadingAuthorOptions ? <Loader size={16} /> : null}
       />
       <Select
         label="形式"
