@@ -8,7 +8,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement } from 'react';
 import { z } from 'zod';
 import { useAuthorsQuery } from '../../generated/graphql';
 import {
@@ -49,18 +49,17 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
     validate: zodResolver(bookFormSchema),
   });
 
-  const [shouldLoad, setShouldLoad] = useState(false);
-  const [queryResult, reexecuteQuery] = useAuthorsQuery({ pause: true });
-  const loadingAuthorOptions = shouldLoad && queryResult.data == null;
+  const [queryResult, _reexecuteQuery] = useAuthorsQuery();
 
-  // TODO: 連続して開かれるとおかしなことになるかもしれない
-  useEffect(() => {
-    if (!loadingAuthorOptions) {
-      return;
-    }
+  const submitForm = form.onSubmit(props.onSubmit);
 
-    reexecuteQuery();
-  }, [loadingAuthorOptions, reexecuteQuery]);
+  if (queryResult.fetching || queryResult.data == null) {
+    return { form: <Loader />, submitForm };
+  }
+
+  if (queryResult.error) {
+    return { form: <div>{JSON.stringify(queryResult.error)}</div>, submitForm };
+  }
 
   const formElement = (
     <Stack>
@@ -73,7 +72,6 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
             label: author.name,
           })) ?? []
         }
-        onClick={() => setShouldLoad(true)}
         searchable
         {...form.getInputProps('authors')}
         value={form.values.authors.map((author) => author.id)}
@@ -87,8 +85,6 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
             }))
           );
         }}
-        // https://github.com/mantinedev/ui.mantine.dev/blob/master/components/AutocompleteLoading/AutocompleteLoading.tsx
-        rightSection={loadingAuthorOptions ? <Loader size={16} /> : null}
       />
       <Select
         label="形式"
@@ -119,5 +115,5 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
     </Stack>
   );
 
-  return { form: formElement, submitForm: form.onSubmit(props.onSubmit) };
+  return { form: formElement, submitForm };
 };
