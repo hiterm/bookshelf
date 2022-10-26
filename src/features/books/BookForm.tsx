@@ -53,6 +53,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
   const [queryResult, reexecuteQuery] = useAuthorsQuery({ pause: true });
   const loadingAuthorOptions = shouldLoad && queryResult.data == null;
 
+  // TODO: 連続して開かれるとおかしなことになるかもしれない
   useEffect(() => {
     if (!loadingAuthorOptions) {
       return;
