@@ -19,11 +19,11 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <MantineHeader height={70}>
-      <Anchor component={Link} to="/books">
-        <Title order={1}>Bookshelf</Title>
-      </Anchor>
-      <Group position="right">
+    <MantineHeader height={70} sx={{ paddingLeft: 20, paddingRight: 20 }}>
+      <Group position="apart" align="center" sx={{ height: '100%' }}>
+        <Anchor component={Link} to="/books">
+          <Title order={1}>Bookshelf</Title>
+        </Anchor>
         <Menu>
           <Menu.Target>
             <ActionIcon>
