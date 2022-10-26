@@ -77,9 +77,8 @@ export const BookAddButton: React.FC = () => {
     <div>
       <Button onClick={handleDialogOpenClick}>追加</Button>
 
-      <Modal opened={open} onClose={handleDialogCloseClick}>
+      <Modal title="追加" opened={open} onClose={handleDialogCloseClick}>
         <form onSubmit={submitForm}>
-          <Title order={3}>追加</Title>
           {form}
           <Button type="submit" mt="md">
             追加
