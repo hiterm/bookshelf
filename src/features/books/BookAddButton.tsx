@@ -1,4 +1,4 @@
-import { Button, Modal, Title } from '@mantine/core';
+import { Button, Modal } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';

@@ -26,7 +26,7 @@ export const Header: React.FC = () => {
         </Anchor>
         <Menu>
           <Menu.Target>
-            <ActionIcon variant='default'>
+            <ActionIcon variant="default">
               <User />
             </ActionIcon>
           </Menu.Target>
