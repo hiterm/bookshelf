@@ -74,6 +74,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
           })) ?? []
         }
         onClick={() => setShouldLoad(true)}
+        searchable
         {...form.getInputProps('authors')}
         value={form.values.authors.map((author) => author.id)}
         onChange={(authorIds) => {
