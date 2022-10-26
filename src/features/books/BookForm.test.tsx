@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Client, Provider } from 'urql';
 import { vi } from 'vitest';
-import { never } from 'wonka';
+import { fromValue } from 'wonka';
 import { useBookForm } from './BookForm';
 import { IBookForm } from './schema';
 
@@ -38,7 +38,16 @@ const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
 describe('useBookForm', () => {
   test('works', async () => {
     const mockClient = {
-      executeQuery: vi.fn(() => never),
+      executeQuery: vi.fn(() =>
+        fromValue({
+          data: {
+            authors: [
+              { id: '1', name: 'name1' },
+              { id: '2', name: 'name2' },
+            ],
+          },
+        })
+      ),
     };
 
     // https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
@@ -61,16 +70,15 @@ describe('useBookForm', () => {
     );
     const mockSubmit = vi.fn((_book: IBookForm) => {});
 
-    const { getAllByText, getByRole } = render(
+    const { getByRole, findByRole } = render(
       <TestForm onSubmit={mockSubmit} />,
       {
         wrapper: wrapper,
       }
     );
 
-    expect(getAllByText('書名')[0]).toBeInTheDocument();
     // TODO: 著者など他のフィールドもテストする
-    const titleInput = getByRole('textbox', {
+    const titleInput = await findByRole('textbox', {
       name: '書名',
     });
     const user = userEvent.setup();
