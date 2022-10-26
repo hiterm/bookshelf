@@ -1,18 +1,17 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Box } from '@mui/material';
-import MenuItem from '@mui/material/MenuItem';
-import React, { useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import {
+  Checkbox,
+  Loader,
+  MultiSelect,
+  NumberInput,
+  Select,
+  Stack,
+  TextInput,
+} from '@mantine/core';
+import { useForm, zodResolver } from '@mantine/form';
+import React, { ReactElement } from 'react';
 import { z } from 'zod';
 import { useAuthorsQuery } from '../../generated/graphql';
 import {
-  Autocomplete,
-  Checkbox,
-  TextField as RhfTextField,
-  Select,
-} from '../react-hook-form/mui';
-import {
-  Author,
   BOOK_FORMAT_VALUE,
   BOOK_STORE_VALUE,
   IBookForm,
@@ -32,128 +31,89 @@ const bookFormSchema = z.object({
 });
 
 type BookFormProps = {
-  onSubmit: SubmitHandler<IBookForm>;
+  onSubmit: (
+    values: IBookForm,
+    event: React.FormEvent<HTMLFormElement>
+  ) => void;
   initialValues: IBookForm;
 };
 
-export const useBookForm = (props: BookFormProps) => {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    mode: 'all',
-    resolver: zodResolver(bookFormSchema),
-    defaultValues: props.initialValues,
+type BookFormReturn = {
+  form: ReactElement;
+  submitForm: React.FormEventHandler<HTMLFormElement>;
+};
+
+export const useBookForm = (props: BookFormProps): BookFormReturn => {
+  const form = useForm({
+    initialValues: props.initialValues,
+    validate: zodResolver(bookFormSchema),
   });
 
-  const [open, setOpen] = useState(false);
-  const [queryResult, reexecuteQuery] = useAuthorsQuery({ pause: true });
-  const loadingAuthorOptions = open && queryResult.data == null;
+  const [queryResult, _reexecuteQuery] = useAuthorsQuery();
 
-  useEffect(() => {
-    if (!loadingAuthorOptions) {
-      return;
-    }
+  const submitForm = form.onSubmit(props.onSubmit);
 
-    (async () => {
-      reexecuteQuery();
-    })();
-  }, [loadingAuthorOptions, reexecuteQuery]);
+  if (queryResult.fetching || queryResult.data == null) {
+    return { form: <Loader />, submitForm };
+  }
 
-  const form = (
-    <form>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
+  if (queryResult.error) {
+    return { form: <div>{JSON.stringify(queryResult.error)}</div>, submitForm };
+  }
+
+  const formElement = (
+    <Stack>
+      <TextInput label="書名" {...form.getInputProps('title')} />
+      <MultiSelect
+        label="著者"
+        data={
+          queryResult.data?.authors.map((author) => ({
+            value: author.id,
+            label: author.name,
+          })) ?? []
+        }
+        searchable
+        {...form.getInputProps('authors')}
+        value={form.values.authors.map((author) => author.id)}
+        onChange={(authorIds) => {
+          form.getInputProps('authors').onChange(
+            authorIds.map((authorId) => ({
+              id: authorId,
+              name: queryResult.data!.authors.find(
+                (author) => author.id === authorId
+              )?.name,
+            }))
+          );
         }}
-      >
-        <RhfTextField
-          label="書名"
-          error={Boolean(errors.title)}
-          helperText={errors.title?.message}
-          control={{ control, name: 'title' }}
-        />
-        <Autocomplete
-          label="著者"
-          error={Boolean(errors.authors)}
-          helperText={
-            (errors.authors as { message: string } | undefined)?.message // TODO: 型がおかしいので無理やり直している
-          }
-          control={{ control, name: 'authors' }}
-          multiple
-          id="tags-outlined"
-          options={queryResult.data == null ? [] : queryResult.data.authors}
-          getOptionLabel={(option) =>
-            typeof option === 'string' ? option : option.name
-          }
-          filterSelectedOptions
-          open={open}
-          onOpen={() => {
-            setOpen(true);
-          }}
-          onClose={() => {
-            setOpen(false);
-          }}
-          isOptionEqualToValue={(option: Author, value: Author) =>
-            option.id === value.id
-          }
-          loading={loadingAuthorOptions}
-        />
-        <Select
-          name="format"
-          label="形式"
-          error={Boolean(errors.format)}
-          helperText={errors.format?.message}
-          control={control}
-        >
-          {BOOK_FORMAT_VALUE.map((format) => (
-            <MenuItem key={format} value={format}>
-              {displayBookFormat(format)}
-            </MenuItem>
-          ))}
-        </Select>
-        <Select
-          name="store"
-          label="ストア"
-          error={Boolean(errors.store)}
-          helperText={errors.store?.message}
-          control={control}
-        >
-          {BOOK_STORE_VALUE.map((store) => (
-            <MenuItem key={store} value={store}>
-              {displayBookStore(store)}
-            </MenuItem>
-          ))}
-        </Select>
-        <RhfTextField
-          type="number"
-          label="優先度"
-          error={Boolean(errors.priority)}
-          helperText={errors.priority?.message}
-          control={{
-            control,
-            name: 'priority',
-            transform: {
-              input: (value: number) => (isNaN(value) ? '' : value.toString()),
-              output: (e) => parseInt(e.target.value, 10),
-            },
-          }}
-        />
-        <RhfTextField
-          type="string"
-          label="ISBN"
-          error={Boolean(errors.isbn)}
-          helperText={errors.isbn?.message}
-          control={{ control, name: 'isbn' }}
-        />
-        <Checkbox name="read" label="既読" control={control} />
-        <Checkbox name="owned" label="所有" control={control} />
-      </Box>
-    </form>
+      />
+      <Select
+        label="形式"
+        {...form.getInputProps('format')}
+        data={BOOK_FORMAT_VALUE.map((format) => ({
+          value: format,
+          label: displayBookFormat(format),
+        }))}
+      />
+      <Select
+        label="ストア"
+        {...form.getInputProps('store')}
+        data={BOOK_STORE_VALUE.map((store) => ({
+          value: store,
+          label: displayBookStore(store),
+        }))}
+      />
+      <NumberInput label="優先度" {...form.getInputProps('priority')} />
+      <TextInput label="ISBN" {...form.getInputProps('isbn')} />
+      <Checkbox
+        label="既読"
+        {...form.getInputProps('read', { type: 'checkbox' })}
+      />
+      <Checkbox
+        label="所有"
+        {...form.getInputProps('owned', { type: 'checkbox' })}
+      />
+    </Stack>
   );
 
-  return { form, submitForm: handleSubmit(props.onSubmit) };
+  return { form: formElement, submitForm };
 };

@@ -1,6 +1,5 @@
-import { Box, Paper } from '@mui/material';
-import Button from '@mui/material/Button';
-import { useSnackbar } from 'notistack';
+import { Box, Button, Paper } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useUpdateBookMutation } from '../../generated/graphql';
@@ -10,7 +9,6 @@ import { Book, IBookForm } from './schema';
 export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   const book = props.book;
 
-  const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
 
   const [_createBookResult, updateBook] = useUpdateBookMutation();
@@ -23,7 +21,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
     };
     await updateBook({ bookData: { id: book.id, ...bookData } });
     history.push(`/books/${book.id}`);
-    enqueueSnackbar('更新しました', { variant: 'success' });
+    showNotification({ message: '更新しました', color: 'teal' });
   };
 
   const { form, submitForm } = useBookForm({
@@ -31,22 +29,22 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
     initialValues: book,
   });
 
+  // TODO: Authorが上手く動かない
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-      <Paper
-        sx={{
-          padding: 5,
-          width: {
-            xs: 1,
-            sm: 600,
-          },
-        }}
-      >
-        {form}
-        <Button variant="contained" color="primary" onClick={submitForm}>
-          更新
-        </Button>
-      </Paper>
+      <form onSubmit={submitForm}>
+        <Paper
+          sx={{
+            padding: 5,
+            minWidth: 400,
+          }}
+        >
+          {form}
+          <Button type="submit" mt="md">
+            更新
+          </Button>
+        </Paper>
+      </form>
     </Box>
   );
 };

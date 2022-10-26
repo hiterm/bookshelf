@@ -1,92 +1,68 @@
-import MaterialTable, { Column } from '@material-table/core';
-import MuiLink from '@mui/material/Link';
+import { Anchor } from '@mantine/core';
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
+import {
+  DataGrid,
+  booleanFilterFn,
+  dateFilterFn,
+  stringFilterFn,
+} from 'mantine-data-grid';
 
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import {
-  BOOK_FORMAT_VALUE,
-  BOOK_STORE_VALUE,
-  Book,
-  displayBookFormat,
-  displayBookStore,
-} from './schema';
+import { Link } from 'react-router-dom';
+import { Book, displayBookFormat, displayBookStore } from './schema';
+
+const columnHelper = createColumnHelper<Book>();
+
+// TODO: ストアと形式のフィルタ
+// TODO: asを外す
+// https://github.com/TanStack/table/issues/4382
+// https://github.com/TanStack/table/issues/4302
+// https://github.com/TanStack/table/issues/4241
+const columns: ColumnDef<Book>[] = [
+  columnHelper.accessor('title', {
+    header: '書名',
+    cell: (info) => (
+      <Anchor component={Link} to={`/books/${info.row.original.id}`}>
+        {info.getValue()}
+      </Anchor>
+    ),
+    filterFn: stringFilterFn,
+  }),
+  columnHelper.accessor('authors', {
+    header: '著者',
+    cell: (info) =>
+      info
+        .getValue()
+        .map((author) => author.name)
+        .join(', '),
+  }),
+  { accessorKey: 'isbn', header: 'ISBN', filterFn: stringFilterFn },
+  columnHelper.accessor('format', {
+    header: '形式',
+    cell: (info) => displayBookFormat(info.getValue()),
+  }),
+  columnHelper.accessor('store', {
+    header: 'ストア',
+    cell: (info) => displayBookStore(info.getValue()),
+  }),
+  { accessorKey: 'priority', header: '優先度', filterFn: stringFilterFn },
+  { accessorKey: 'read', header: '既読', filterFn: booleanFilterFn },
+  { accessorKey: 'owned', header: '所有', filterFn: booleanFilterFn },
+  { accessorKey: 'createdAt', header: '追加日時', filterFn: dateFilterFn },
+  { accessorKey: 'updatedAt', header: '更新日時', filterFn: dateFilterFn },
+] as ColumnDef<Book>[];
 
 export const BookList: React.FC<{ list: Book[] }> = (props) => {
-  const columns: Column<Book>[] = [
-    {
-      title: '書名',
-      field: 'title',
-      cellStyle: { minWidth: '200px' },
-      render: (rowData) => (
-        <MuiLink component={RouterLink} to={`/books/${rowData.id}`}>
-          {rowData.title}
-        </MuiLink>
-      ),
-    },
-    {
-      title: '著者',
-      field: 'authors',
-      cellStyle: { minWidth: '150px' },
-      render: (rowData) =>
-        rowData.authors.map((author) => author.name).join(','),
-      customFilterAndSearch: (term, rowData) =>
-        rowData.authors.some((author) => author.name.includes(term)),
-    },
-    { title: 'ISBN', field: 'isbn', hidden: true },
-    {
-      title: '形式',
-      field: 'format',
-      hidden: true,
-      lookup: Object.fromEntries(
-        BOOK_FORMAT_VALUE.map((format) => [format, displayBookFormat(format)])
-      ),
-    },
-    {
-      title: 'ストア',
-      field: 'store',
-      hidden: true,
-      lookup: Object.fromEntries(
-        BOOK_STORE_VALUE.map((store) => [store, displayBookStore(store)])
-      ),
-    },
-    { title: '優先度', field: 'priority', defaultSort: 'desc' },
-    {
-      title: '既読',
-      field: 'read',
-      type: 'boolean',
-      defaultFilter: 'unchecked',
-    },
-    {
-      title: '所有',
-      field: 'owned',
-      type: 'boolean',
-      defaultFilter: 'checked',
-    },
-    {
-      title: '追加日時',
-      field: 'createdAt',
-      type: 'datetime',
-      hidden: true,
-    },
-    {
-      title: '更新日時',
-      field: 'updatedAt',
-      type: 'datetime',
-      hidden: true,
-    },
-  ];
-
   return (
-    <MaterialTable
+    <DataGrid
       columns={columns}
       data={props.list}
-      title=""
-      options={{
-        filtering: true,
-        columnsButton: true,
-        pageSize: 20,
-        pageSizeOptions: [20, 50, 100, 500, 1000],
-      }}
+      striped
+      highlightOnHover
+      withGlobalFilter
+      withPagination
+      withColumnFilters
+      withSorting
     />
   );
 };

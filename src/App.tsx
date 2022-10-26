@@ -1,20 +1,14 @@
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
-import { CircularProgress } from '@mui/material';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import CssBaseline from '@mui/material/CssBaseline';
-import {
-  StyledEngineProvider,
-  ThemeProvider,
-  createTheme,
-} from '@mui/material/styles';
+import { AppShell, Container, Loader, MantineProvider } from '@mantine/core';
+import { NotificationsProvider } from '@mantine/notifications';
+
 import { devtoolsExchange } from '@urql/devtools';
-import { SnackbarKey, SnackbarProvider } from 'notistack';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider as UrqlProvider, createClient, defaultExchanges } from 'urql';
-import { AppBar } from './AppBar';
-import { SignInScreen } from './SignInScreen';
+import { Header } from './compoments/Header';
+import { Navbar } from './compoments/Navbar';
+import { SignInScreen } from './features/auth/SignInScreen';
 import {
   useLoggedInUserQuery,
   useRegisterUserMutation,
@@ -27,7 +21,7 @@ const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   if (isLoading) {
     return (
       <div>
-        <CircularProgress />
+        <Loader />
       </div>
     );
   }
@@ -116,42 +110,28 @@ const AppWithSuccessedLogin: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  const notistackRef = useRef<SnackbarProvider>(null);
-  const onClickDismiss = (key: SnackbarKey) => () => {
-    notistackRef.current?.closeSnackbar(key);
-  };
-
-  const theme = createTheme();
-
   return (
     <React.Fragment>
-      <Auth0Provider
-        domain={import.meta.env.VITE_AUTH0_DOMAIN}
-        clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-        audience={import.meta.env.VITE_AUTH0_AUDIENCE}
-        redirectUri={window.location.origin}
-      >
-        <CssBaseline />
-        <StyledEngineProvider injectFirst>
-          <ThemeProvider theme={theme}>
+      <MantineProvider withGlobalStyles withNormalizeCSS>
+        <NotificationsProvider>
+          <Auth0Provider
+            domain={import.meta.env.VITE_AUTH0_DOMAIN}
+            clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+            audience={import.meta.env.VITE_AUTH0_AUDIENCE}
+            redirectUri={window.location.origin}
+          >
             <Router>
-              <AppBar />
-              <Container>
-                <SnackbarProvider
-                  ref={notistackRef}
-                  action={(key: SnackbarKey) => (
-                    <Button onClick={onClickDismiss(key)}>Dismiss</Button>
-                  )}
-                >
+              <AppShell navbar={<Navbar />} header={<Header />}>
+                <Container>
                   <SignInCheck>
                     <AppWithSuccessedLogin />
                   </SignInCheck>
-                </SnackbarProvider>
-              </Container>
+                </Container>
+              </AppShell>
             </Router>
-          </ThemeProvider>
-        </StyledEngineProvider>
-      </Auth0Provider>
+          </Auth0Provider>
+        </NotificationsProvider>
+      </MantineProvider>
     </React.Fragment>
   );
 };
