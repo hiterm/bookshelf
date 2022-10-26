@@ -2,7 +2,6 @@ import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { MantineProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import { CircularProgress } from '@mui/material';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import {
   StyledEngineProvider,
@@ -10,8 +9,7 @@ import {
   createTheme,
 } from '@mui/material/styles';
 import { devtoolsExchange } from '@urql/devtools';
-import { SnackbarKey, SnackbarProvider } from 'notistack';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider as UrqlProvider, createClient, defaultExchanges } from 'urql';
 import { AppBar } from './AppBar';
@@ -117,11 +115,6 @@ const AppWithSuccessedLogin: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  const notistackRef = useRef<SnackbarProvider>(null);
-  const onClickDismiss = (key: SnackbarKey) => () => {
-    notistackRef.current?.closeSnackbar(key);
-  };
-
   const theme = createTheme();
 
   return (
@@ -139,16 +132,9 @@ const App: React.FC = () => {
                 <Router>
                   <AppBar />
                   <Container>
-                    <SnackbarProvider
-                      ref={notistackRef}
-                      action={(key: SnackbarKey) => (
-                        <Button onClick={onClickDismiss(key)}>Dismiss</Button>
-                      )}
-                    >
-                      <SignInCheck>
-                        <AppWithSuccessedLogin />
-                      </SignInCheck>
-                    </SnackbarProvider>
+                    <SignInCheck>
+                      <AppWithSuccessedLogin />
+                    </SignInCheck>
                   </Container>
                 </Router>
               </ThemeProvider>
