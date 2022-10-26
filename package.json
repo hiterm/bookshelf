@@ -10,6 +10,7 @@
     "test:watch": "vitest",
     "lint": "concurrently --group 'eslint --max-warnings=0 .' 'prettier --check .'",
     "lint:fix": "eslint --fix . && prettier --write .",
+    "typecheck": "tsc --noEmit",
     "generate": "graphql-codegen --config codegen.yml"
   },
   "browserslist": {
