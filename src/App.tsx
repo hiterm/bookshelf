@@ -1,8 +1,6 @@
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
-import { MantineProvider } from '@mantine/core';
+import { AppShell, Container, Loader, MantineProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
-import { CircularProgress } from '@mui/material';
-import Container from '@mui/material/Container';
 import {
   StyledEngineProvider,
   ThemeProvider,
@@ -12,7 +10,8 @@ import { devtoolsExchange } from '@urql/devtools';
 import React, { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider as UrqlProvider, createClient, defaultExchanges } from 'urql';
-import { AppBar } from './AppBar';
+import { Header } from './Header';
+import { Navbar } from './Navbar';
 import { SignInScreen } from './SignInScreen';
 import {
   useLoggedInUserQuery,
@@ -26,7 +25,7 @@ const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   if (isLoading) {
     return (
       <div>
-        <CircularProgress />
+        <Loader />
       </div>
     );
   }
@@ -130,12 +129,13 @@ const App: React.FC = () => {
             <StyledEngineProvider injectFirst>
               <ThemeProvider theme={theme}>
                 <Router>
-                  <AppBar />
-                  <Container>
-                    <SignInCheck>
-                      <AppWithSuccessedLogin />
-                    </SignInCheck>
-                  </Container>
+                  <AppShell navbar={<Navbar />} header={<Header />}>
+                    <Container>
+                      <SignInCheck>
+                        <AppWithSuccessedLogin />
+                      </SignInCheck>
+                    </Container>
+                  </AppShell>
                 </Router>
               </ThemeProvider>
             </StyledEngineProvider>
