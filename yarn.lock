@@ -3828,7 +3828,7 @@ __metadata:
     vite: ^3.1.7
     vite-plugin-checker: ^0.5.1
     vitest: ^0.24.3
-    zod: ^3.9.5
+    zod: ^3.19.1
   languageName: unknown
   linkType: soft
 
@@ -10110,9 +10110,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.9.5":
-  version: 3.11.6
-  resolution: "zod@npm:3.11.6"
-  checksum: 044ac416450f179a0c88240f27849d2886c777cebade42df10e5f04125b0265cec82d9bd741a7dcb11796b2ea88b32c86be7d36932a4bed6af57002560359db1
+"zod@npm:^3.19.1":
+  version: 3.19.1
+  resolution: "zod@npm:3.19.1"
+  checksum: 56e420ea5845912324a8fc61833714a2aec84954e418b52660d76502183c6e62fef9447cbfa64349640c5ce190cf2c24267e006bb80f066183e2f3fa9fe11864
   languageName: node
   linkType: hard
