@@ -1,11 +1,7 @@
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { AppShell, Container, Loader, MantineProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
-import {
-  StyledEngineProvider,
-  ThemeProvider,
-  createTheme,
-} from '@mui/material/styles';
+
 import { devtoolsExchange } from '@urql/devtools';
 import React, { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -114,8 +110,6 @@ const AppWithSuccessedLogin: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  const theme = createTheme();
-
   return (
     <React.Fragment>
       <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -126,19 +120,15 @@ const App: React.FC = () => {
             audience={import.meta.env.VITE_AUTH0_AUDIENCE}
             redirectUri={window.location.origin}
           >
-            <StyledEngineProvider injectFirst>
-              <ThemeProvider theme={theme}>
-                <Router>
-                  <AppShell navbar={<Navbar />} header={<Header />}>
-                    <Container>
-                      <SignInCheck>
-                        <AppWithSuccessedLogin />
-                      </SignInCheck>
-                    </Container>
-                  </AppShell>
-                </Router>
-              </ThemeProvider>
-            </StyledEngineProvider>
+            <Router>
+              <AppShell navbar={<Navbar />} header={<Header />}>
+                <Container>
+                  <SignInCheck>
+                    <AppWithSuccessedLogin />
+                  </SignInCheck>
+                </Container>
+              </AppShell>
+            </Router>
           </Auth0Provider>
         </NotificationsProvider>
       </MantineProvider>
