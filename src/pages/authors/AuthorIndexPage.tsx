@@ -27,7 +27,9 @@ const RegisterAuthorForm: React.FC = () => {
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <TextInput label="名前" {...form.getInputProps('name')} />
-      <Button type="submit">登録</Button>
+      <Button type="submit" mt="md">
+        登録
+      </Button>
     </form>
   );
 };
@@ -67,6 +69,7 @@ export const AuthorIndexPage: React.FC = () => {
         withPagination
         withColumnFilters
         withSorting
+        mt="md"
       />
     </>
   );
