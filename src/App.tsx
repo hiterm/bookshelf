@@ -6,9 +6,9 @@ import { devtoolsExchange } from '@urql/devtools';
 import React, { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider as UrqlProvider, createClient, defaultExchanges } from 'urql';
-import { Header } from './Header';
-import { Navbar } from './Navbar';
-import { SignInScreen } from './SignInScreen';
+import { Header } from './compoments/Header';
+import { Navbar } from './compoments/Navbar';
+import { SignInScreen } from './features/auth/SignInScreen';
 import {
   useLoggedInUserQuery,
   useRegisterUserMutation,
