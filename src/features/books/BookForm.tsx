@@ -58,9 +58,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
       return;
     }
 
-    (async () => {
-      reexecuteQuery();
-    })();
+    reexecuteQuery();
   }, [loadingAuthorOptions, reexecuteQuery]);
 
   const formElement = (
