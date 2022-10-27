@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-query';
 
 import { devtoolsExchange } from '@urql/devtools';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider as UrqlProvider, createClient, defaultExchanges } from 'urql';
 import { ChildrenProps } from './compoments/ChildrenProps';
@@ -124,7 +124,7 @@ const App: React.FC = () => {
       ? DemoUrqlProvider
       : MyUrqlProvider;
   const BranchingSignInCheck =
-    import.meta.env.VITE_DEMO_MODE === 'true' ? React.Fragment : SignInCheck;
+    import.meta.env.VITE_DEMO_MODE === 'true' ? Fragment : SignInCheck;
 
   return (
     <React.Fragment>
