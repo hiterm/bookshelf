@@ -11,6 +11,7 @@ import { devtoolsExchange } from '@urql/devtools';
 import React, { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider as UrqlProvider, createClient, defaultExchanges } from 'urql';
+import { ChildrenProps } from './compoments/ChildrenProps';
 import { Header } from './compoments/Header';
 import { Navbar } from './compoments/Navbar';
 import { SignInScreen } from './features/auth/SignInScreen';
@@ -36,9 +37,7 @@ const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <SignInScreen />;
 };
 
-const RegisterCheck: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
   const context = useMemo(() => ({ additionalTypenames: ['User'] }), []);
   const [result, reexecuteQuery] = useLoggedInUserQuery({ context });
   const { data, fetching, error } = result;
@@ -77,9 +76,7 @@ const RegisterCheck: React.FC<{ children: React.ReactNode }> = ({
   return <>{children}</>;
 };
 
-const MyUrqlProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const MyUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
   const { getAccessTokenSilently } = useAuth0();
   const query = useQuery(['auth0AccessToken'], getAccessTokenSilently, {
     refetchOnMount: false,
@@ -111,9 +108,24 @@ const MyUrqlProvider: React.FC<{ children: React.ReactNode }> = ({
   return <UrqlProvider value={client}>{children}</UrqlProvider>;
 };
 
+const DemoUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
+  const client = createClient({
+    url: import.meta.env.VITE_BOOKSHELF_API,
+    exchanges: [devtoolsExchange, ...defaultExchanges],
+  });
+  return <UrqlProvider value={client}>{children}</UrqlProvider>;
+};
+
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
+  const BranchingUrqlProvider =
+    import.meta.env.VITE_DEMO_MODE === 'true'
+      ? DemoUrqlProvider
+      : MyUrqlProvider;
+  const BranchingSignInCheck =
+    import.meta.env.VITE_DEMO_MODE === 'true' ? React.Fragment : SignInCheck;
+
   return (
     <React.Fragment>
       <QueryClientProvider client={queryClient}>
@@ -128,13 +140,13 @@ const App: React.FC = () => {
               <Router>
                 <AppShell navbar={<Navbar />} header={<Header />}>
                   <Container>
-                    <SignInCheck>
-                      <MyUrqlProvider>
+                    <BranchingSignInCheck>
+                      <BranchingUrqlProvider>
                         <RegisterCheck>
                           <MainRoutes />
                         </RegisterCheck>
-                      </MyUrqlProvider>
-                    </SignInCheck>
+                      </BranchingUrqlProvider>
+                    </BranchingSignInCheck>
                   </Container>
                 </AppShell>
               </Router>
