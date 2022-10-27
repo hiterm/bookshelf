@@ -77,7 +77,9 @@ const RegisterCheck: React.FC<{ children: React.ReactNode }> = ({
   return <>{children}</>;
 };
 
-const AppWithSuccessedLogin: React.FC = () => {
+const MyUrqlProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const { getAccessTokenSilently } = useAuth0();
   const query = useQuery(['auth0AccessToken'], getAccessTokenSilently, {
     refetchOnMount: false,
@@ -106,13 +108,7 @@ const AppWithSuccessedLogin: React.FC = () => {
     exchanges: [devtoolsExchange, ...defaultExchanges],
   });
 
-  return (
-    <UrqlProvider value={client}>
-      <RegisterCheck>
-        <MainRoutes />
-      </RegisterCheck>
-    </UrqlProvider>
-  );
+  return <UrqlProvider value={client}>{children}</UrqlProvider>;
 };
 
 const queryClient = new QueryClient();
@@ -133,7 +129,11 @@ const App: React.FC = () => {
                 <AppShell navbar={<Navbar />} header={<Header />}>
                   <Container>
                     <SignInCheck>
-                      <AppWithSuccessedLogin />
+                      <MyUrqlProvider>
+                        <RegisterCheck>
+                          <MainRoutes />
+                        </RegisterCheck>
+                      </MyUrqlProvider>
                     </SignInCheck>
                   </Container>
                 </AppShell>
