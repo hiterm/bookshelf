@@ -1,7 +1,11 @@
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { AppShell, Container, Loader, MantineProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query';
 
 import { devtoolsExchange } from '@urql/devtools';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -74,28 +78,29 @@ const RegisterCheck: React.FC<{ children: React.ReactNode }> = ({
 };
 
 const AppWithSuccessedLogin: React.FC = () => {
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [token, setToken] = useState<string | null>(null);
+  const { getAccessTokenSilently } = useAuth0();
+  const query = useQuery(['auth0AccessToken'], getAccessTokenSilently, {
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
 
-  useEffect(() => {
-    const getToken = async () => {
-      if (isAuthenticated) {
-        const accessToken = await getAccessTokenSilently();
-        setToken(accessToken);
-      }
-    };
-    getToken();
-  }, [isAuthenticated, getAccessTokenSilently]);
+  if (query.isFetching) {
+    return <Loader />;
+  }
 
-  if (token == null) {
-    return <>loading</>;
+  if (query.isError) {
+    return <>Error: {JSON.stringify(query.error)}</>;
+  }
+
+  if (query.data == null) {
+    return <>Cannot get access token.</>;
   }
 
   const client = createClient({
     url: import.meta.env.VITE_BOOKSHELF_API,
     fetchOptions: () => {
       return {
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${query.data}` },
       };
     },
     exchanges: [devtoolsExchange, ...defaultExchanges],
