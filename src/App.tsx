@@ -1,6 +1,7 @@
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { AppShell, Container, Loader, MantineProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { devtoolsExchange } from '@urql/devtools';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -109,29 +110,33 @@ const AppWithSuccessedLogin: React.FC = () => {
   );
 };
 
+const queryClient = new QueryClient();
+
 const App: React.FC = () => {
   return (
     <React.Fragment>
-      <MantineProvider withGlobalStyles withNormalizeCSS>
-        <NotificationsProvider>
-          <Auth0Provider
-            domain={import.meta.env.VITE_AUTH0_DOMAIN}
-            clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-            audience={import.meta.env.VITE_AUTH0_AUDIENCE}
-            redirectUri={window.location.origin}
-          >
-            <Router>
-              <AppShell navbar={<Navbar />} header={<Header />}>
-                <Container>
-                  <SignInCheck>
-                    <AppWithSuccessedLogin />
-                  </SignInCheck>
-                </Container>
-              </AppShell>
-            </Router>
-          </Auth0Provider>
-        </NotificationsProvider>
-      </MantineProvider>
+      <QueryClientProvider client={queryClient}>
+        <MantineProvider withGlobalStyles withNormalizeCSS>
+          <NotificationsProvider>
+            <Auth0Provider
+              domain={import.meta.env.VITE_AUTH0_DOMAIN}
+              clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+              audience={import.meta.env.VITE_AUTH0_AUDIENCE}
+              redirectUri={window.location.origin}
+            >
+              <Router>
+                <AppShell navbar={<Navbar />} header={<Header />}>
+                  <Container>
+                    <SignInCheck>
+                      <AppWithSuccessedLogin />
+                    </SignInCheck>
+                  </Container>
+                </AppShell>
+              </Router>
+            </Auth0Provider>
+          </NotificationsProvider>
+        </MantineProvider>
+      </QueryClientProvider>
     </React.Fragment>
   );
 };
