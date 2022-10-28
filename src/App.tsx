@@ -1,5 +1,6 @@
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { AppShell, Container, Loader, MantineProvider } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
 import {
   QueryClient,
@@ -118,13 +119,13 @@ const DemoUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
 
 const queryClient = new QueryClient();
 
+const BranchingUrqlProvider =
+  import.meta.env.VITE_DEMO_MODE === 'true' ? DemoUrqlProvider : MyUrqlProvider;
+const BranchingSignInCheck =
+  import.meta.env.VITE_DEMO_MODE === 'true' ? Fragment : SignInCheck;
+
 const App: React.FC = () => {
-  const BranchingUrqlProvider =
-    import.meta.env.VITE_DEMO_MODE === 'true'
-      ? DemoUrqlProvider
-      : MyUrqlProvider;
-  const BranchingSignInCheck =
-    import.meta.env.VITE_DEMO_MODE === 'true' ? Fragment : SignInCheck;
+  const [opened, handlers] = useDisclosure(false);
 
   return (
     <React.Fragment>
@@ -138,7 +139,15 @@ const App: React.FC = () => {
               redirectUri={window.location.origin}
             >
               <Router>
-                <AppShell navbar={<Navbar />} header={<Header />}>
+                <AppShell
+                  navbar={<Navbar hidden={!opened} />}
+                  header={
+                    <Header
+                      burgerOpend={opened}
+                      onBurgerClick={handlers.toggle}
+                    />
+                  }
+                >
                   <Container>
                     <BranchingSignInCheck>
                       <BranchingUrqlProvider>
