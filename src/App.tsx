@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-query';
 
 import { devtoolsExchange } from '@urql/devtools';
-import React, { Fragment, useMemo } from 'react';
+import React, { Fragment, memo, useMemo } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider as UrqlProvider, createClient, defaultExchanges } from 'urql';
 import { ChildrenProps } from './compoments/ChildrenProps';
@@ -124,6 +124,18 @@ const BranchingUrqlProvider =
 const BranchingSignInCheck =
   import.meta.env.VITE_DEMO_MODE === 'true' ? Fragment : SignInCheck;
 
+const MainContent = memo(function MainContent(): JSX.Element {
+  return (
+    <BranchingSignInCheck>
+      <BranchingUrqlProvider>
+        <RegisterCheck>
+          <MainRoutes />
+        </RegisterCheck>
+      </BranchingUrqlProvider>
+    </BranchingSignInCheck>
+  );
+});
+
 const App: React.FC = () => {
   const [opened, handlers] = useDisclosure(false);
 
@@ -151,13 +163,7 @@ const App: React.FC = () => {
                   }
                 >
                   <Container>
-                    <BranchingSignInCheck>
-                      <BranchingUrqlProvider>
-                        <RegisterCheck>
-                          <MainRoutes />
-                        </RegisterCheck>
-                      </BranchingUrqlProvider>
-                    </BranchingSignInCheck>
+                    <MainContent />
                   </Container>
                 </AppShell>
               </Router>
