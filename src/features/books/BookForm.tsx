@@ -47,6 +47,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
   const form = useForm({
     initialValues: props.initialValues,
     validate: zodResolver(bookFormSchema),
+    validateInputOnBlur: true,
   });
 
   const [queryResult, _reexecuteQuery] = useAuthorsQuery();
