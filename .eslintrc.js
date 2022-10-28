@@ -45,6 +45,9 @@ module.exports = {
     'import/order': ['warn', { alphabetize: { order: 'asc' } }],
     'sort-imports': ['warn', { ignoreDeclarationSort: true }],
     'react/react-in-jsx-scope': 'off',
+
+    // Disable slow rules
+    'import/namespace': 'off',
   },
   ignorePatterns: ['/build', '/dist', '/src/generated', '/.yarn'],
 };
