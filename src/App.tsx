@@ -1,6 +1,7 @@
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import {
   AppShell,
+  Button,
   Center,
   Container,
   Loader,
@@ -73,14 +74,16 @@ const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
 
   if (data.loggedInUser == null) {
     return (
-      <button
-        onClick={async () => {
-          await registerUser({});
-          reexecuteQuery();
-        }}
-      >
-        register user
-      </button>
+      <Center>
+        <Button
+          onClick={async () => {
+            await registerUser({});
+            reexecuteQuery();
+          }}
+        >
+          Register user
+        </Button>
+      </Center>
     );
   }
 
