@@ -32,19 +32,12 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   // TODO: Authorが上手く動かない
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-      <form onSubmit={submitForm}>
-        <Paper
-          sx={{
-            padding: 5,
-            minWidth: 400,
-          }}
-        >
-          {form}
-          <Button type="submit" mt="md">
-            更新
-          </Button>
-        </Paper>
-      </form>
+      <Box component="form" onSubmit={submitForm} sx={{ minWidth: 400 }}>
+        {form}
+        <Button type="submit" mt="md">
+          更新
+        </Button>
+      </Box>
     </Box>
   );
 };
