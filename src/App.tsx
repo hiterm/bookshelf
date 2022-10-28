@@ -1,5 +1,6 @@
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import {
+  Alert,
   AppShell,
   Button,
   Center,
@@ -146,6 +147,16 @@ const MainContent = memo(function MainContent(): JSX.Element {
     <BranchingSignInCheck>
       <BranchingUrqlProvider>
         <RegisterCheck>
+          <Alert
+            color="yellow"
+            mb="md"
+            sx={{
+              display:
+                import.meta.env.VITE_DEMO_MODE === 'true' ? undefined : 'none',
+            }}
+          >
+            This is a demo app. Update operations will not be reflected.
+          </Alert>
           <MainRoutes />
         </RegisterCheck>
       </BranchingUrqlProvider>
