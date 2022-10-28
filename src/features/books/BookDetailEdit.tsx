@@ -1,4 +1,4 @@
-import { Box, Button, Paper } from '@mantine/core';
+import { Box, Button } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
