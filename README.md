@@ -3,11 +3,21 @@
 
 # Bookshelf
 
-Web App for books management (currently only accesible to me)
+Web App for books management
+
+## Demo
+
+https://bookshelf-demo.vercel.app/
+
+It uses a [mock server](https://github.com/hiterm/mock-bookshelf-api) which doesn't have its database, so update operations will not be reflected. Because the mock server doesn't have fully compatibility, other features might also not work.
 
 ## Backend
 
-- [Bookshelf API](https://github.com/hiterm/bookshelf-api) v1.1.1
+- [Bookshelf API](https://github.com/hiterm/bookshelf-api) v1.2.0
+
+or
+
+- [Mock server](https://github.com/hiterm/mock-bookshelf-api)
 
 ## Dependent platforms
 
