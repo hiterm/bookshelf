@@ -1,4 +1,4 @@
-import { Box, Center, Loader } from '@mantine/core';
+import { Center, Loader, Paper } from '@mantine/core';
 import React, { useMemo } from 'react';
 import { BookAddButton } from '../../features/books/BookAddButton';
 import { BookList } from '../../features/books/BookList';
@@ -27,9 +27,9 @@ const BookIndexPage: React.FC = () => {
   return (
     <React.Fragment>
       <BookAddButton />
-      <Box mt="md">
+      <Paper shadow="xs" mt="md" p="md">
         <BookList list={books} />
-      </Box>
+      </Paper>
     </React.Fragment>
   );
 };
