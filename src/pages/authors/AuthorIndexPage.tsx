@@ -1,4 +1,4 @@
-import { Button, TextInput } from '@mantine/core';
+import { Button, Center, Loader, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { DataGrid } from 'mantine-data-grid';
@@ -44,7 +44,11 @@ export const AuthorIndexPage: React.FC = () => {
   }
 
   if (fetching || data == null) {
-    return <>loading</>;
+    return (
+      <Center>
+        <Loader />
+      </Center>
+    );
   }
 
   const columnHelper = createColumnHelper<Author>();

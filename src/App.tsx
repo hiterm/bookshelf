@@ -1,5 +1,11 @@
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
-import { AppShell, Container, Loader, MantineProvider } from '@mantine/core';
+import {
+  AppShell,
+  Center,
+  Container,
+  Loader,
+  MantineProvider,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
 import {
@@ -27,9 +33,9 @@ const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div>
+      <Center>
         <Loader />
-      </div>
+      </Center>
     );
   }
   if (isAuthenticated) {
@@ -54,7 +60,11 @@ const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
   }
 
   if (fetching || data == null) {
-    return <>loading</>;
+    return (
+      <Center>
+        <Loader />
+      </Center>
+    );
   }
 
   if (data == null) {
@@ -85,7 +95,11 @@ const MyUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
   });
 
   if (query.isFetching) {
-    return <Loader />;
+    return (
+      <Center>
+        <Loader />
+      </Center>
+    );
   }
 
   if (query.isError) {
