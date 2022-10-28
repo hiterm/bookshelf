@@ -118,14 +118,12 @@ const DemoUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
 
 const queryClient = new QueryClient();
 
-const App: React.FC = () => {
-  const BranchingUrqlProvider =
-    import.meta.env.VITE_DEMO_MODE === 'true'
-      ? DemoUrqlProvider
-      : MyUrqlProvider;
-  const BranchingSignInCheck =
-    import.meta.env.VITE_DEMO_MODE === 'true' ? Fragment : SignInCheck;
+const BranchingUrqlProvider =
+  import.meta.env.VITE_DEMO_MODE === 'true' ? DemoUrqlProvider : MyUrqlProvider;
+const BranchingSignInCheck =
+  import.meta.env.VITE_DEMO_MODE === 'true' ? Fragment : SignInCheck;
 
+const App: React.FC = () => {
   return (
     <React.Fragment>
       <QueryClientProvider client={queryClient}>
