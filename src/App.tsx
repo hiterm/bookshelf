@@ -4,7 +4,6 @@ import {
   AppShell,
   Button,
   Center,
-  Container,
   Loader,
   MantineProvider,
 } from '@mantine/core';
@@ -190,9 +189,7 @@ const App: React.FC = () => {
                     />
                   }
                 >
-                  <Container>
-                    <MainContent />
-                  </Container>
+                  <MainContent />
                 </AppShell>
               </Router>
             </Auth0Provider>
