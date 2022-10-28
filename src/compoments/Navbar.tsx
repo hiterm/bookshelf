@@ -1,16 +1,12 @@
-import { Navbar as MantineNavbar, NavLink } from '@mantine/core';
+import { Drawer, Navbar as MantineNavbar, NavLink } from '@mantine/core';
 import { Link } from 'react-router-dom';
 
-type NavbarProps = { hidden: boolean; closeNavbar: () => void };
+type LinksProps = { closeNavbar: () => void };
+type NavbarProps = { opened: boolean; closeNavbar: () => void };
 
-export const Navbar: React.FC<NavbarProps> = ({ hidden, closeNavbar }) => {
+const Links: React.FC<LinksProps> = ({ closeNavbar }) => {
   return (
-    <MantineNavbar
-      p="md"
-      hiddenBreakpoint="sm"
-      hidden={hidden}
-      width={{ sm: 200, lg: 300 }}
-    >
+    <>
       <NavLink label="本" component={Link} to="/books" onClick={closeNavbar} />
       <NavLink
         label="著者"
@@ -18,6 +14,24 @@ export const Navbar: React.FC<NavbarProps> = ({ hidden, closeNavbar }) => {
         to="/authors"
         onClick={closeNavbar}
       />
-    </MantineNavbar>
+    </>
+  );
+};
+
+export const Navbar: React.FC<NavbarProps> = ({ opened, closeNavbar }) => {
+  return (
+    <>
+      <MantineNavbar
+        p="md"
+        hiddenBreakpoint="sm"
+        hidden={true}
+        width={{ sm: 200, lg: 300 }}
+      >
+        <Links closeNavbar={closeNavbar} />
+      </MantineNavbar>
+      <Drawer opened={opened} onClose={closeNavbar}>
+        <Links closeNavbar={closeNavbar} />
+      </Drawer>
+    </>
   );
 };
