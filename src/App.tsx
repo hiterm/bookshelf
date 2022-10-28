@@ -1,5 +1,12 @@
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
-import { AppShell, Container, Loader, MantineProvider } from '@mantine/core';
+import {
+  Alert,
+  AppShell,
+  Button,
+  Center,
+  Loader,
+  MantineProvider,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
 import {
@@ -27,9 +34,9 @@ const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div>
+      <Center>
         <Loader />
-      </div>
+      </Center>
     );
   }
   if (isAuthenticated) {
@@ -54,7 +61,11 @@ const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
   }
 
   if (fetching || data == null) {
-    return <>loading</>;
+    return (
+      <Center>
+        <Loader />
+      </Center>
+    );
   }
 
   if (data == null) {
@@ -63,14 +74,16 @@ const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
 
   if (data.loggedInUser == null) {
     return (
-      <button
-        onClick={async () => {
-          await registerUser({});
-          reexecuteQuery();
-        }}
-      >
-        register user
-      </button>
+      <Center>
+        <Button
+          onClick={async () => {
+            await registerUser({});
+            reexecuteQuery();
+          }}
+        >
+          Register user
+        </Button>
+      </Center>
     );
   }
 
@@ -85,7 +98,11 @@ const MyUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
   });
 
   if (query.isFetching) {
-    return <Loader />;
+    return (
+      <Center>
+        <Loader />
+      </Center>
+    );
   }
 
   if (query.isError) {
@@ -129,6 +146,16 @@ const MainContent = memo(function MainContent(): JSX.Element {
     <BranchingSignInCheck>
       <BranchingUrqlProvider>
         <RegisterCheck>
+          <Alert
+            color="yellow"
+            mb="md"
+            sx={{
+              display:
+                import.meta.env.VITE_DEMO_MODE === 'true' ? undefined : 'none',
+            }}
+          >
+            This is a demo app. Update operations will not be reflected.
+          </Alert>
           <MainRoutes />
         </RegisterCheck>
       </BranchingUrqlProvider>
@@ -153,7 +180,7 @@ const App: React.FC = () => {
               <Router>
                 <AppShell
                   navbar={
-                    <Navbar hidden={!opened} closeNavbar={handlers.close} />
+                    <Navbar opened={opened} closeNavbar={handlers.close} />
                   }
                   header={
                     <Header
@@ -162,9 +189,7 @@ const App: React.FC = () => {
                     />
                   }
                 >
-                  <Container>
-                    <MainContent />
-                  </Container>
+                  <MainContent />
                 </AppShell>
               </Router>
             </Auth0Provider>

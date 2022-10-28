@@ -1,4 +1,4 @@
-import { Box } from '@mantine/core';
+import { Center, Loader, Paper } from '@mantine/core';
 import React, { useMemo } from 'react';
 import { BookAddButton } from '../../features/books/BookAddButton';
 import { BookList } from '../../features/books/BookList';
@@ -15,18 +15,21 @@ const BookIndexPage: React.FC = () => {
   }
 
   if (fetching || data == null) {
-    return <>loading</>;
+    return (
+      <Center>
+        <Loader />
+      </Center>
+    );
   }
 
   const books: Book[] = data.books.map(graphQlBookToBook);
 
   return (
     <React.Fragment>
-      <h2>一覧</h2>
       <BookAddButton />
-      <Box mt="md">
+      <Paper shadow="xs" mt="md" p="md">
         <BookList list={books} />
-      </Box>
+      </Paper>
     </React.Fragment>
   );
 };

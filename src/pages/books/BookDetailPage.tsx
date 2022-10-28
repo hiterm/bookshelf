@@ -1,3 +1,4 @@
+import { Center, Loader } from '@mantine/core';
 import React from 'react';
 import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
 import { BookDetailEdit } from '../../features/books/BookDetailEdit';
@@ -17,7 +18,11 @@ const BookDetailPage: React.FC = () => {
   }
 
   if (fetching || data == null) {
-    return <>loading</>;
+    return (
+      <Center>
+        <Loader />
+      </Center>
+    );
   }
 
   const graphqlBook = data.book;
