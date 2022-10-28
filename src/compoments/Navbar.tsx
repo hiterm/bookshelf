@@ -1,9 +1,9 @@
 import { Navbar as MantineNavbar, NavLink } from '@mantine/core';
 import { Link } from 'react-router-dom';
 
-type NavbarProps = { hidden: boolean };
+type NavbarProps = { hidden: boolean; closeNavbar: () => void };
 
-export const Navbar: React.FC<NavbarProps> = ({ hidden }) => {
+export const Navbar: React.FC<NavbarProps> = ({ hidden, closeNavbar }) => {
   return (
     <MantineNavbar
       p="md"
@@ -11,8 +11,13 @@ export const Navbar: React.FC<NavbarProps> = ({ hidden }) => {
       hidden={hidden}
       width={{ sm: 200, lg: 300 }}
     >
-      <NavLink label="本" component={Link} to="/books" />
-      <NavLink label="著者" component={Link} to="/authors" />
+      <NavLink label="本" component={Link} to="/books" onClick={closeNavbar} />
+      <NavLink
+        label="著者"
+        component={Link}
+        to="/authors"
+        onClick={closeNavbar}
+      />
     </MantineNavbar>
   );
 };
