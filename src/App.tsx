@@ -140,7 +140,9 @@ const App: React.FC = () => {
             >
               <Router>
                 <AppShell
-                  navbar={<Navbar hidden={!opened} />}
+                  navbar={
+                    <Navbar hidden={!opened} closeNavbar={handlers.close} />
+                  }
                   header={
                     <Header
                       burgerOpend={opened}
