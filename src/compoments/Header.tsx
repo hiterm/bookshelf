@@ -28,12 +28,14 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <MantineHeader height={70} sx={{ paddingLeft: 20, paddingRight: 20 }}>
       <Group position="apart" align="center" sx={{ height: '100%' }}>
-        <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-          <Burger opened={burgerOpend} onClick={onBurgerClick} />
-        </MediaQuery>
-        <Anchor variant="text" component={Link} to="/books">
-          <Title order={1}>Bookshelf</Title>
-        </Anchor>
+        <Group>
+          <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+            <Burger opened={burgerOpend} onClick={onBurgerClick} />
+          </MediaQuery>
+          <Anchor variant="text" component={Link} to="/books">
+            <Title order={1}>Bookshelf</Title>
+          </Anchor>
+        </Group>
         <Menu>
           <Menu.Target>
             <ActionIcon variant="default">
