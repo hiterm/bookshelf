@@ -1,22 +1,22 @@
-import '@testing-library/jest-dom';
-import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import React from 'react';
-import { Client, Provider } from 'urql';
-import { vi } from 'vitest';
-import { fromValue } from 'wonka';
-import { useBookForm } from './BookForm';
-import { IBookForm } from './schema';
+import "@testing-library/jest-dom";
+import { render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import React from "react";
+import { Client, Provider } from "urql";
+import { vi } from "vitest";
+import { fromValue } from "wonka";
+import { useBookForm } from "./BookForm";
+import { IBookForm } from "./schema";
 
 const emptyBook: IBookForm = {
-  title: '',
-  authors: [{ id: 'c156c887-e162-4777-85c9-ec474a666a87', name: 'author1' }],
-  isbn: '',
+  title: "",
+  authors: [{ id: "c156c887-e162-4777-85c9-ec474a666a87", name: "author1" }],
+  isbn: "",
   read: false,
   owned: false,
   priority: 50,
-  format: 'UNKNOWN',
-  store: 'UNKNOWN',
+  format: "UNKNOWN",
+  store: "UNKNOWN",
 };
 
 type TestFormProps = { onSubmit: (values: IBookForm) => void };
@@ -35,15 +35,15 @@ const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
   );
 };
 
-describe('useBookForm', () => {
-  test('works', async () => {
+describe("useBookForm", () => {
+  test("works", async () => {
     const mockClient = {
       executeQuery: vi.fn(() =>
         fromValue({
           data: {
             authors: [
-              { id: '1', name: 'name1' },
-              { id: '2', name: 'name2' },
+              { id: "1", name: "name1" },
+              { id: "2", name: "name2" },
             ],
           },
         })
@@ -51,7 +51,7 @@ describe('useBookForm', () => {
     };
 
     // https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
-    Object.defineProperty(window, 'matchMedia', {
+    Object.defineProperty(window, "matchMedia", {
       writable: true,
       value: vi.fn().mockImplementation((query) => ({
         matches: false,
@@ -74,22 +74,22 @@ describe('useBookForm', () => {
       <TestForm onSubmit={mockSubmit} />,
       {
         wrapper: wrapper,
-      }
+      },
     );
 
     // TODO: 著者など他のフィールドもテストする
-    const titleInput = await findByRole('textbox', {
-      name: '書名',
+    const titleInput = await findByRole("textbox", {
+      name: "書名",
     });
     const user = userEvent.setup();
-    await user.type(titleInput, 'valid title');
+    await user.type(titleInput, "valid title");
 
-    await userEvent.click(getByRole('button', { name: '送信' }));
+    await userEvent.click(getByRole("button", { name: "送信" }));
 
     expect(mockSubmit.mock.calls.length).toBe(1);
     expect(mockSubmit.mock.calls[0][0]).toEqual({
       ...emptyBook,
-      title: 'valid title',
+      title: "valid title",
     });
   });
 });

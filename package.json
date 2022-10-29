@@ -8,8 +8,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "concurrently --group 'eslint_d --cache --max-warnings=0 --ext .js,.jsx,.ts,.tsx .' 'prettier --cache --check .'",
-    "lint:fix": "eslint_d --cache --fix --ext .js,.jsx,.ts,.tsx . && prettier --cache --write .",
+    "lint": "concurrently --group 'eslint_d --max-warnings=0 --ext .js,.jsx,.ts,.tsx .' 'dprint check'",
+    "lint:fix": "eslint_d --fix --ext .js,.jsx,.ts,.tsx . && dprint fmt",
     "typecheck": "tsc --noEmit",
     "generate": "graphql-codegen --config codegen.yml"
   },
@@ -64,6 +64,7 @@
     "@typescript-eslint/parser": "^5.40.0",
     "@vitejs/plugin-react": "^2.1.0",
     "concurrently": "^7.4.0",
+    "dprint": "^0.32.2",
     "eslint": "^8.16.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-typescript": "^3.5.1",
