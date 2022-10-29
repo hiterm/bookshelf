@@ -2,3 +2,9 @@
 /src/generated
 /src/graphql/schema.graphql
 /.yarn
+**/*.ts
+**/*.tsx
+**/*.js
+**/*.jsx
+**/*.json
+**/*.md

@@ -1,12 +1,9 @@
-import { Button, Center, Loader, Paper, TextInput } from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { DataGrid } from 'mantine-data-grid';
-import { useMemo } from 'react';
-import {
-  useAuthorsQuery,
-  useCreateAuthorMutation,
-} from '../../generated/graphql';
+import { Button, Center, Loader, Paper, TextInput } from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import { DataGrid } from "mantine-data-grid";
+import { useMemo } from "react";
+import { useAuthorsQuery, useCreateAuthorMutation } from "../../generated/graphql";
 
 type Author = {
   name: string;
@@ -19,14 +16,13 @@ type RegisterAuthorFormInput = {
 const RegisterAuthorForm: React.FC = () => {
   const [_createAuthorResult, createAuthor] = useCreateAuthorMutation();
   const form = useForm<RegisterAuthorFormInput>({
-    initialValues: { name: '' },
+    initialValues: { name: "" },
   });
-  const handleSubmit = (data: RegisterAuthorFormInput) =>
-    createAuthor({ authorData: { name: data.name } });
+  const handleSubmit = (data: RegisterAuthorFormInput) => createAuthor({ authorData: { name: data.name } });
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-      <TextInput label="名前" {...form.getInputProps('name')} />
+      <TextInput label="名前" {...form.getInputProps("name")} />
       <Button type="submit" mt="md">
         登録
       </Button>
@@ -35,7 +31,7 @@ const RegisterAuthorForm: React.FC = () => {
 };
 
 export const AuthorIndexPage: React.FC = () => {
-  const context = useMemo(() => ({ additionalTypenames: ['Author'] }), []);
+  const context = useMemo(() => ({ additionalTypenames: ["Author"] }), []);
   const [result, _reexecuteQuery] = useAuthorsQuery({ context });
   const { data, fetching, error } = result;
 
@@ -58,7 +54,7 @@ export const AuthorIndexPage: React.FC = () => {
   // https://github.com/TanStack/table/issues/4302
   // https://github.com/TanStack/table/issues/4241
   const columns = [
-    columnHelper.accessor('name', { header: '名前' }),
+    columnHelper.accessor("name", { header: "名前" }),
   ] as ColumnDef<Author>[];
 
   return (

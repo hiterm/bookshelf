@@ -1,23 +1,9 @@
-import {
-  Checkbox,
-  Loader,
-  MultiSelect,
-  NumberInput,
-  Select,
-  Stack,
-  TextInput,
-} from '@mantine/core';
-import { useForm, zodResolver } from '@mantine/form';
-import React, { ReactElement } from 'react';
-import { z } from 'zod';
-import { useAuthorsQuery } from '../../generated/graphql';
-import {
-  BOOK_FORMAT_VALUE,
-  BOOK_STORE_VALUE,
-  IBookForm,
-  displayBookFormat,
-  displayBookStore,
-} from './schema';
+import { Checkbox, Loader, MultiSelect, NumberInput, Select, Stack, TextInput } from "@mantine/core";
+import { useForm, zodResolver } from "@mantine/form";
+import React, { ReactElement } from "react";
+import { z } from "zod";
+import { useAuthorsQuery } from "../../generated/graphql";
+import { BOOK_FORMAT_VALUE, BOOK_STORE_VALUE, displayBookFormat, displayBookStore, IBookForm } from "./schema";
 
 const bookFormSchema = z.object({
   title: z.string().min(1),
@@ -25,15 +11,15 @@ const bookFormSchema = z.object({
   isbn: z.string().regex(/(^$|^(\d-?){12}\d$)/),
   read: z.boolean().default(false),
   priority: z.number().int().min(0).max(100).default(50),
-  format: z.enum(['E_BOOK', 'PRINTED', 'UNKNOWN']),
-  store: z.enum(['KINDLE', 'UNKNOWN']),
+  format: z.enum(["E_BOOK", "PRINTED", "UNKNOWN"]),
+  store: z.enum(["KINDLE", "UNKNOWN"]),
   owned: z.boolean().default(false),
 });
 
 type BookFormProps = {
   onSubmit: (
     values: IBookForm,
-    event: React.FormEvent<HTMLFormElement>
+    event: React.FormEvent<HTMLFormElement>,
   ) => void;
   initialValues: IBookForm;
 };
@@ -64,32 +50,30 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
 
   const formElement = (
     <Stack>
-      <TextInput label="書名" {...form.getInputProps('title')} />
+      <TextInput label="書名" {...form.getInputProps("title")} />
       <MultiSelect
         label="著者"
-        data={
-          queryResult.data?.authors.map((author) => ({
-            value: author.id,
-            label: author.name,
-          })) ?? []
-        }
+        data={queryResult.data?.authors.map((author) => ({
+          value: author.id,
+          label: author.name,
+        })) ?? []}
         searchable
-        {...form.getInputProps('authors')}
+        {...form.getInputProps("authors")}
         value={form.values.authors.map((author) => author.id)}
         onChange={(authorIds) => {
-          form.getInputProps('authors').onChange(
+          form.getInputProps("authors").onChange(
             authorIds.map((authorId) => ({
               id: authorId,
               name: queryResult.data!.authors.find(
-                (author) => author.id === authorId
+                (author) => author.id === authorId,
               )?.name,
-            }))
+            })),
           );
         }}
       />
       <Select
         label="形式"
-        {...form.getInputProps('format')}
+        {...form.getInputProps("format")}
         data={BOOK_FORMAT_VALUE.map((format) => ({
           value: format,
           label: displayBookFormat(format),
@@ -97,21 +81,21 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
       />
       <Select
         label="ストア"
-        {...form.getInputProps('store')}
+        {...form.getInputProps("store")}
         data={BOOK_STORE_VALUE.map((store) => ({
           value: store,
           label: displayBookStore(store),
         }))}
       />
-      <NumberInput label="優先度" {...form.getInputProps('priority')} />
-      <TextInput label="ISBN" {...form.getInputProps('isbn')} />
+      <NumberInput label="優先度" {...form.getInputProps("priority")} />
+      <TextInput label="ISBN" {...form.getInputProps("isbn")} />
       <Checkbox
         label="既読"
-        {...form.getInputProps('read', { type: 'checkbox' })}
+        {...form.getInputProps("read", { type: "checkbox" })}
       />
       <Checkbox
         label="所有"
-        {...form.getInputProps('owned', { type: 'checkbox' })}
+        {...form.getInputProps("owned", { type: "checkbox" })}
       />
     </Stack>
   );

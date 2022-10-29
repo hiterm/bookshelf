@@ -1,12 +1,12 @@
-import { Center, Loader, Paper } from '@mantine/core';
-import React, { useMemo } from 'react';
-import { BookAddButton } from '../../features/books/BookAddButton';
-import { BookList } from '../../features/books/BookList';
-import { Book, graphQlBookToBook } from '../../features/books/schema';
-import { useBooksQuery } from '../../generated/graphql';
+import { Center, Loader, Paper } from "@mantine/core";
+import React, { useMemo } from "react";
+import { BookAddButton } from "../../features/books/BookAddButton";
+import { BookList } from "../../features/books/BookList";
+import { Book, graphQlBookToBook } from "../../features/books/schema";
+import { useBooksQuery } from "../../generated/graphql";
 
 const BookIndexPage: React.FC = () => {
-  const context = useMemo(() => ({ additionalTypenames: ['Book'] }), []);
+  const context = useMemo(() => ({ additionalTypenames: ["Book"] }), []);
   const [result, _reexecuteQuery] = useBooksQuery({ context });
   const { data, fetching, error } = result;
 

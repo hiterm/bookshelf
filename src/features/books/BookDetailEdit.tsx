@@ -1,10 +1,10 @@
-import { Box, Button } from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { useUpdateBookMutation } from '../../generated/graphql';
-import { useBookForm } from './BookForm';
-import { Book, IBookForm } from './schema';
+import { Box, Button } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
+import React from "react";
+import { useHistory } from "react-router-dom";
+import { useUpdateBookMutation } from "../../generated/graphql";
+import { useBookForm } from "./BookForm";
+import { Book, IBookForm } from "./schema";
 
 export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   const book = props.book;
@@ -21,7 +21,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
     };
     await updateBook({ bookData: { id: book.id, ...bookData } });
     history.push(`/books/${book.id}`);
-    showNotification({ message: '更新しました', color: 'teal' });
+    showNotification({ message: "更新しました", color: "teal" });
   };
 
   const { form, submitForm } = useBookForm({
@@ -31,7 +31,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
 
   // TODO: Authorが上手く動かない
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+    <Box sx={{ display: "flex", justifyContent: "center" }}>
       <Box component="form" onSubmit={submitForm} sx={{ minWidth: 400 }}>
         {form}
         <Button type="submit" mt="md">
