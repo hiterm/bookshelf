@@ -35,8 +35,8 @@ vim .env.development  # fill your value
 Start [Bookshelf API](https://github.com/hiterm/bookshelf-api).
 
 ```
-yarn generate
-yarn start
+npm run generate
+npm start
 ```
 
 ## Environment variables
