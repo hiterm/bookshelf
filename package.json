@@ -8,8 +8,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "concurrently --group 'eslint --cache --max-warnings=0 .' 'prettier --cache --check .'",
-    "lint:fix": "eslint --cache --fix . && prettier --cache --write .",
+    "lint": "concurrently --group 'eslint_d --cache --max-warnings=0 --ext .js,.jsx,.ts,.tsx .' 'prettier --cache --check .'",
+    "lint:fix": "eslint_d --cache --fix --ext .js,.jsx,.ts,.tsx . && prettier --cache --write .",
     "typecheck": "tsc --noEmit",
     "generate": "graphql-codegen --config codegen.yml"
   },
@@ -71,6 +71,7 @@
     "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-unused-imports": "^2.0.0",
+    "eslint_d": "^12.2.1",
     "jsdom": "^20.0.1",
     "prettier": "^2.7.1",
     "ts-node": "^8.10.2",
