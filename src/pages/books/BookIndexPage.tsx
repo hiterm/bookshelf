@@ -1,7 +1,7 @@
 import { Center, Loader, Paper } from "@mantine/core";
 import React, { useMemo } from "react";
 import { BookAddButton } from "../../features/books/BookAddButton";
-import { BookList } from "../../features/books/BookList";
+import { BookList, BookList2 } from "../../features/books/BookList";
 import { Book, graphQlBookToBook } from "../../features/books/schema";
 import { useBooksQuery } from "../../generated/graphql";
 
@@ -27,6 +27,9 @@ const BookIndexPage: React.FC = () => {
   return (
     <React.Fragment>
       <BookAddButton />
+      <Paper shadow="xs" mt="md" p="md">
+        <BookList2 list={books} />
+      </Paper>
       <Paper shadow="xs" mt="md" p="md">
         <BookList list={books} />
       </Paper>

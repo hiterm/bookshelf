@@ -1,5 +1,5 @@
-import { Anchor } from "@mantine/core";
-import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import { Anchor, Box, Table } from "@mantine/core";
+import { ColumnDef, createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { booleanFilterFn, DataGrid, dateFilterFn, stringFilterFn } from "mantine-data-grid";
 
 import React from "react";
@@ -61,5 +61,38 @@ export const BookList: React.FC<BookListProps> = (props) => {
       withColumnFilters
       withSorting
     />
+  );
+};
+
+export const BookList2: React.FC<BookListProps> = ({ list }) => {
+  const table = useReactTable({ data: list, columns, getCoreRowModel: getCoreRowModel() });
+
+  return (
+    <Box>
+      <Table>
+        <thead>
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <th key={header.id}>
+                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map(row => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map(cell => (
+                <td key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </Box>
   );
 };
