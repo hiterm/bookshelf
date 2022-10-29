@@ -1,7 +1,7 @@
-import React from 'react';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
-import { BookDetailPage } from './BookDetailPage';
-import { BookIndexPage } from './BookIndexPage';
+import React from "react";
+import { Route, Switch, useRouteMatch } from "react-router-dom";
+import { BookDetailPage } from "./BookDetailPage";
+import { BookIndexPage } from "./BookIndexPage";
 
 export const BookRouter: React.FC<{}> = () => {
   const { path } = useRouteMatch();

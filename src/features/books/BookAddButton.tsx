@@ -1,10 +1,10 @@
-import { Button, Modal } from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useCreateBookMutation } from '../../generated/graphql';
-import { useBookForm } from './BookForm';
-import { IBookForm } from './schema';
+import { Button, Modal } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import { useCreateBookMutation } from "../../generated/graphql";
+import { useBookForm } from "./BookForm";
+import { IBookForm } from "./schema";
 
 export const BookAddButton: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -32,7 +32,7 @@ export const BookAddButton: React.FC = () => {
     if (result.data == null) {
       showNotification({
         message: `Some thing is wrong. error: ${JSON.stringify(result.error)}`,
-        color: 'red',
+        color: "red",
       });
       return;
     }
@@ -53,19 +53,19 @@ export const BookAddButton: React.FC = () => {
           </Button>
         </>
       ),
-      color: 'teal',
+      color: "teal",
     });
   };
 
   const emptyBook: IBookForm = {
-    title: '',
+    title: "",
     authors: [],
-    isbn: '',
+    isbn: "",
     read: false,
     owned: false,
     priority: 50,
-    format: 'UNKNOWN',
-    store: 'UNKNOWN',
+    format: "UNKNOWN",
+    store: "UNKNOWN",
   };
 
   const { form, submitForm } = useBookForm({

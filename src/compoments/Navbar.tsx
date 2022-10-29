@@ -1,5 +1,5 @@
-import { Drawer, Navbar as MantineNavbar, NavLink } from '@mantine/core';
-import { Link } from 'react-router-dom';
+import { Drawer, Navbar as MantineNavbar, NavLink } from "@mantine/core";
+import { Link } from "react-router-dom";
 
 type LinksProps = { closeNavbar: () => void };
 type NavbarProps = { opened: boolean; closeNavbar: () => void };

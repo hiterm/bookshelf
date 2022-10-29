@@ -1,30 +1,29 @@
-import { Box, Button, Center, Modal, Text, Title } from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
-import dayjs from 'dayjs';
-import React, { useState } from 'react';
-import { Link, useHistory, useRouteMatch } from 'react-router-dom';
-import { Check } from 'tabler-icons-react';
-import { useDeleteBookMutation } from '../../generated/graphql';
-import { Book, displayBookFormat, displayBookStore } from './schema';
+import { Box, Button, Center, Modal, Text, Title } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
+import dayjs from "dayjs";
+import React, { useState } from "react";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
+import { Check } from "tabler-icons-react";
+import { useDeleteBookMutation } from "../../generated/graphql";
+import { Book, displayBookFormat, displayBookStore } from "./schema";
 
 const BookDetailShowItem: React.FC<{
   field: string;
   value: React.ReactNode;
   halfWidth?: boolean;
 }> = (props) => {
-  const valueForShow =
-    props.value == null || props.value === '' ? '-' : props.value;
-  const gridColumnEnd = props.halfWidth ? 'span 1' : undefined;
+  const valueForShow = props.value == null || props.value === "" ? "-" : props.value;
+  const gridColumnEnd = props.halfWidth ? "span 1" : undefined;
 
   return (
     <>
-      <Text sx={{ fontWeight: 'bold', justifySelf: 'end' }}>{props.field}</Text>
+      <Text sx={{ fontWeight: "bold", justifySelf: "end" }}>{props.field}</Text>
       <Box
         sx={(theme) => ({
-          [theme.fn.smallerThan('sm')]: {
-            gridColumnEnd: 'span 3',
+          [theme.fn.smallerThan("sm")]: {
+            gridColumnEnd: "span 3",
           },
-          [theme.fn.largerThan('sm')]: {
+          [theme.fn.largerThan("sm")]: {
             gridColumnEnd: gridColumnEnd,
           },
         })}
@@ -35,9 +34,7 @@ const BookDetailShowItem: React.FC<{
   );
 };
 
-const ShowBoolean: React.FC<{ flag: boolean }> = ({ flag }) => (
-  <Check color={flag ? 'green' : undefined} />
-);
+const ShowBoolean: React.FC<{ flag: boolean }> = ({ flag }) => <Check color={flag ? "green" : undefined} />;
 
 const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
   const [open, setOpen] = useState(false);
@@ -55,16 +52,16 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
   const history = useHistory();
   const handleDelete = async () => {
     try {
-      await deleteBook({ bookId: book.id }, { additionalTypenames: ['Book'] });
-      history.push('/books');
+      await deleteBook({ bookId: book.id }, { additionalTypenames: ["Book"] });
+      history.push("/books");
       showNotification({
         message: `${book.title}が削除されました`,
-        color: 'teal',
+        color: "teal",
       });
     } catch (error) {
       showNotification({
         message: `削除に失敗しました: ${error}`,
-        color: 'red',
+        color: "red",
       });
     }
   };
@@ -104,8 +101,8 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
     <React.Fragment>
       <Box
         sx={{
-          display: 'grid',
-          gridTemplateColumns: 'max-content 1fr max-content 1fr',
+          display: "grid",
+          gridTemplateColumns: "max-content 1fr max-content 1fr",
           rowGap: 20,
           columnGap: 20,
           padding: 20,
@@ -114,7 +111,7 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
         <BookDetailShowItem field="書名" value={book.title} />
         <BookDetailShowItem
           field="著者"
-          value={book.authors.map((author) => author.name).join(', ')}
+          value={book.authors.map((author) => author.name).join(", ")}
         />
         <BookDetailShowItem
           field="形式"
@@ -140,16 +137,16 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
         <BookDetailShowItem field="ISBN" value={book.isbn} />
         <BookDetailShowItem
           field="作成日時"
-          value={dayjs(book.createdAt).format('YYYY/MM/DD HH:mm:ss')}
+          value={dayjs(book.createdAt).format("YYYY/MM/DD HH:mm:ss")}
           halfWidth
         />
         <BookDetailShowItem
           field="更新日時"
-          value={dayjs(book.updatedAt).format('YYYY/MM/DD HH:mm:ss')}
+          value={dayjs(book.updatedAt).format("YYYY/MM/DD HH:mm:ss")}
           halfWidth
         />
       </Box>
-      <Box sx={{ display: 'flex', gap: 1, marginTop: 1, marginBottom: 1 }}>
+      <Box sx={{ display: "flex", gap: 1, marginTop: 1, marginBottom: 1 }}>
         <Button color="blue" component={Link} to={`${url}/edit`}>
           変更
         </Button>

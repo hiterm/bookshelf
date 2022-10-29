@@ -1,10 +1,10 @@
-import { Center, Loader } from '@mantine/core';
-import React from 'react';
-import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
-import { BookDetailEdit } from '../../features/books/BookDetailEdit';
-import { BookDetailShow } from '../../features/books/BookDetailShow';
-import { graphQlBookToBook } from '../../features/books/schema';
-import { useBookQuery } from '../../generated/graphql';
+import { Center, Loader } from "@mantine/core";
+import React from "react";
+import { Route, Switch, useParams, useRouteMatch } from "react-router-dom";
+import { BookDetailEdit } from "../../features/books/BookDetailEdit";
+import { BookDetailShow } from "../../features/books/BookDetailShow";
+import { graphQlBookToBook } from "../../features/books/schema";
+import { useBookQuery } from "../../generated/graphql";
 
 const BookDetailPage: React.FC = () => {
   const { path } = useRouteMatch();
