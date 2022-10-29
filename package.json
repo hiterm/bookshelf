@@ -8,8 +8,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "concurrently --group 'eslint_d --cache --max-warnings=0 --ext .js,.jsx,.ts,.tsx .' 'prettier --cache --check .'",
-    "lint:fix": "eslint_d --cache --fix --ext .js,.jsx,.ts,.tsx . && prettier --cache --write .",
+    "lint": "concurrently --group 'eslint_d --max-warnings=0 --ext .js,.jsx,.ts,.tsx .' 'dprint check'",
+    "lint:fix": "eslint_d --fix --ext .js,.jsx,.ts,.tsx . && dprint fmt",
     "typecheck": "tsc --noEmit",
     "generate": "graphql-codegen --config codegen.yml"
   },
