@@ -143,7 +143,7 @@ const MainContent = memo(function MainContent(): JSX.Element {
                 : "none",
             }}
           >
-            This is a demo app. Update operations will not be reflected.
+            This is a read-only demo app. Update operations will not be reflected.
           </Alert>
           <MainRoutes />
         </RegisterCheck>

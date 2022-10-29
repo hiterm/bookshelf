@@ -9,7 +9,7 @@ Web App for books management
 
 https://bookshelf-demo.vercel.app/
 
-It uses a [mock server](https://github.com/hiterm/mock-bookshelf-api) which doesn't have its database, so update operations will not be reflected. Because the mock server doesn't have fully compatibility, other features might also not work.
+This is a read-only demo app. Update operations will not be reflected. It uses a [mock server](https://github.com/hiterm/mock-bookshelf-api). Because the mock server doesn't have fully compatibility, other features might also not work.
 
 ## Backend
 
