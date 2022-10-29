@@ -47,7 +47,9 @@ const columns = [
   columnHelper.accessor("updatedAt", { header: "更新日時", filterFn: dateFilterFn }),
 ] as ColumnDef<Book>[];
 
-export const BookList: React.FC<{ list: Book[] }> = (props) => {
+type BookListProps = { list: Book[] };
+
+export const BookList: React.FC<BookListProps> = (props) => {
   return (
     <DataGrid
       columns={columns}
