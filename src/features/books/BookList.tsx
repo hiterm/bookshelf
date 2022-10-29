@@ -13,7 +13,7 @@ const columnHelper = createColumnHelper<Book>();
 // https://github.com/TanStack/table/issues/4382
 // https://github.com/TanStack/table/issues/4302
 // https://github.com/TanStack/table/issues/4241
-const columns: ColumnDef<Book>[] = [
+const columns = [
   columnHelper.accessor("title", {
     header: "書名",
     cell: (info) => (
@@ -31,7 +31,7 @@ const columns: ColumnDef<Book>[] = [
         .map((author) => author.name)
         .join(", "),
   }),
-  { accessorKey: "isbn", header: "ISBN", filterFn: stringFilterFn },
+  columnHelper.accessor("isbn", { header: "ISBN", filterFn: stringFilterFn }),
   columnHelper.accessor("format", {
     header: "形式",
     cell: (info) => displayBookFormat(info.getValue()),
@@ -40,11 +40,11 @@ const columns: ColumnDef<Book>[] = [
     header: "ストア",
     cell: (info) => displayBookStore(info.getValue()),
   }),
-  { accessorKey: "priority", header: "優先度", filterFn: stringFilterFn },
-  { accessorKey: "read", header: "既読", filterFn: booleanFilterFn },
-  { accessorKey: "owned", header: "所有", filterFn: booleanFilterFn },
-  { accessorKey: "createdAt", header: "追加日時", filterFn: dateFilterFn },
-  { accessorKey: "updatedAt", header: "更新日時", filterFn: dateFilterFn },
+  columnHelper.accessor("priority", { header: "優先度", filterFn: stringFilterFn }),
+  columnHelper.accessor("read", { header: "既読", filterFn: booleanFilterFn }),
+  columnHelper.accessor("owned", { header: "所有", filterFn: booleanFilterFn }),
+  columnHelper.accessor("createdAt", { header: "追加日時", filterFn: dateFilterFn }),
+  columnHelper.accessor("updatedAt", { header: "更新日時", filterFn: dateFilterFn }),
 ] as ColumnDef<Book>[];
 
 export const BookList: React.FC<{ list: Book[] }> = (props) => {
