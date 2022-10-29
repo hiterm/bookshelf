@@ -1,5 +1,12 @@
-import { Anchor, Box, Table } from "@mantine/core";
-import { ColumnDef, createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { Anchor, Box, Pagination, Table } from "@mantine/core";
+import {
+  ColumnDef,
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { booleanFilterFn, DataGrid, dateFilterFn, stringFilterFn } from "mantine-data-grid";
 
 import React from "react";
@@ -65,7 +72,13 @@ export const BookList: React.FC<BookListProps> = (props) => {
 };
 
 export const BookList2: React.FC<BookListProps> = ({ list }) => {
-  const table = useReactTable({ data: list, columns, getCoreRowModel: getCoreRowModel() });
+  const table = useReactTable({
+    data: list,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    debugTable: true,
+  });
 
   return (
     <Box>
@@ -93,6 +106,12 @@ export const BookList2: React.FC<BookListProps> = ({ list }) => {
           ))}
         </tbody>
       </Table>
+      <Pagination
+        total={table.getPageCount()}
+        onChange={(page) => {
+          table.setPageIndex(page);
+        }}
+      />
     </Box>
   );
 };
