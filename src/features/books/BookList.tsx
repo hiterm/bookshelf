@@ -21,13 +21,12 @@ import { Link } from "react-router-dom";
 import { SortAscending, SortDescending } from "tabler-icons-react";
 import { Book, BOOK_FORMAT_VALUE, BOOK_STORE_VALUE, displayBookFormat, displayBookStore } from "./schema";
 
-type ColumnType = "string" | "enum";
+type ColumnType = "string" | "boolean" | "enum";
 
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line unused-imports/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     type: ColumnType;
-    values?: string[];
   }
 }
 
@@ -62,23 +61,25 @@ const columns = [
     header: "形式",
     cell: (info) => displayBookFormat(info.getValue()),
     filterFn: "equalsString",
-    meta: {
-      type: "enum",
-      values: BOOK_FORMAT_VALUE,
-    },
+    meta: { type: "enum" },
   }),
   columnHelper.accessor("store", {
     header: "ストア",
     cell: (info) => displayBookStore(info.getValue()),
     filterFn: "equalsString",
-    meta: {
-      type: "enum",
-      values: BOOK_STORE_VALUE,
-    },
+    meta: { type: "enum" },
   }),
   columnHelper.accessor("priority", { header: "優先度", filterFn: "equals" }),
-  columnHelper.accessor("read", { header: "既読", filterFn: "equals" }),
-  columnHelper.accessor("owned", { header: "所有", filterFn: "equals" }),
+  columnHelper.accessor("read", {
+    header: "既読",
+    filterFn: "equals",
+    meta: { type: "boolean" },
+  }),
+  columnHelper.accessor("owned", {
+    header: "所有",
+    filterFn: "equals",
+    meta: { type: "boolean" },
+  }),
   columnHelper.accessor("createdAt", { header: "追加日時" }),
   columnHelper.accessor("updatedAt", { header: "更新日時" }),
 ] as ColumnDef<Book>[];
@@ -136,6 +137,21 @@ const Filter: React.FC<FilterProps> = ({ column }) => {
         <TextInput
           value={column.getFilterValue() as string}
           onChange={event => column.setFilterValue(event.target.value)}
+        />
+      );
+    case "boolean":
+      return (
+        <Select
+          data={["-", "true", "false"]}
+          onChange={value => {
+            if (value === "true") {
+              column.setFilterValue(true);
+            } else if (value === "false") {
+              column.setFilterValue(false);
+            } else if (value === "-") {
+              column.setFilterValue(undefined);
+            }
+          }}
         />
       );
     case "enum":
