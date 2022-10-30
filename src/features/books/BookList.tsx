@@ -33,9 +33,9 @@ import {
 } from "@tanstack/react-table";
 import dayjs from "dayjs";
 
+import { IconLayoutColumns, IconSortAscending, IconSortDescending } from "@tabler/icons";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Columns, SortAscending, SortDescending } from "tabler-icons-react";
 import { useAuthorsQuery } from "../../generated/graphql";
 import { Author, Book, BOOK_FORMAT_VALUE, BOOK_STORE_VALUE, displayBookFormat, displayBookStore } from "./schema";
 
@@ -133,13 +133,13 @@ const SortIcon: React.FC<SortIconProps> = ({ isSorted }) => {
     case "asc":
       return (
         <ThemeIcon variant="light">
-          <SortAscending />
+          <IconSortAscending />
         </ThemeIcon>
       );
     case "desc":
       return (
         <ThemeIcon variant="light">
-          <SortDescending />
+          <IconSortDescending />
         </ThemeIcon>
       );
     default:
@@ -264,7 +264,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
       <Popover width={200} position="bottom" withArrow shadow="md">
         <Popover.Target>
           <ActionIcon variant="outline">
-            <Columns />
+            <IconLayoutColumns />
           </ActionIcon>
         </Popover.Target>
         <Popover.Dropdown>
