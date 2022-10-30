@@ -321,7 +321,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
           ))}
         </tbody>
       </Table>
-      <Center mt="md">
+      <Center mt="md" mb="md">
         <Pagination
           total={table.getPageCount()}
           onChange={(page) => {
