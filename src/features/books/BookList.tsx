@@ -260,7 +260,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
   });
 
   return (
-    <Box sx={{ overflow: "scroll" }}>
+    <Box>
       <Popover width={200} position="bottom" withArrow shadow="md">
         <Popover.Target>
           <ActionIcon variant="outline">
@@ -289,57 +289,59 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
           </Box>
         </Popover.Dropdown>
       </Popover>
-      <Table withBorder mt="md" sx={{ borderLeft: "none", borderRight: "none" }}>
-        <thead>
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <Box
-                  component="th"
-                  key={header.id}
-                  sx={{ minWidth: header.column.columnDef.minSize, whiteSpace: "nowrap" }}
-                >
-                  {header.isPlaceholder ? null : (
-                    <Group
-                      onClick={header.column.getToggleSortingHandler()}
-                      spacing={0}
-                      noWrap
-                      sx={{ cursor: header.column.getCanSort() ? "pointer" : undefined }}
-                    >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      <SortIcon isSorted={header.column.getIsSorted()} />
-                    </Group>
-                  )}
-                </Box>
-              ))}
-            </tr>
-          ))}
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <th key={header.id}>
-                  <Box sx={{ fontWeight: "normal" }}>
+      <Box sx={{ overflow: "scroll" }}>
+        <Table withBorder mt="md" sx={{ borderLeft: "none", borderRight: "none" }}>
+          <thead>
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <Box
+                    component="th"
+                    key={header.id}
+                    sx={{ minWidth: header.column.columnDef.minSize, whiteSpace: "nowrap" }}
+                  >
                     {header.isPlaceholder ? null : (
-                      header.column.getCanFilter() ? <Filter column={header.column} table={table} /> : null
+                      <Group
+                        onClick={header.column.getToggleSortingHandler()}
+                        spacing={0}
+                        noWrap
+                        sx={{ cursor: header.column.getCanSort() ? "pointer" : undefined }}
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        <SortIcon isSorted={header.column.getIsSorted()} />
+                      </Group>
                     )}
                   </Box>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map(row => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map(cell => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+                ))}
+              </tr>
+            ))}
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <th key={header.id}>
+                    <Box sx={{ fontWeight: "normal" }}>
+                      {header.isPlaceholder ? null : (
+                        header.column.getCanFilter() ? <Filter column={header.column} table={table} /> : null
+                      )}
+                    </Box>
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map(row => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map(cell => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Box>
       <Center mt="md" mb="md">
         <Pagination
           total={table.getPageCount()}
