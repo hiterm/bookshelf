@@ -299,9 +299,11 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => (
                 <th key={header.id}>
-                  {header.isPlaceholder ? null : (
-                    header.column.getCanFilter() ? <Filter column={header.column} table={table} /> : null
-                  )}
+                  <Box sx={{ fontWeight: "normal" }}>
+                    {header.isPlaceholder ? null : (
+                      header.column.getCanFilter() ? <Filter column={header.column} table={table} /> : null
+                    )}
+                  </Box>
                 </th>
               ))}
             </tr>
