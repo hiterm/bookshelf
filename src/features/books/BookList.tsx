@@ -240,19 +240,15 @@ export const BookList2: React.FC<BookListProps> = ({ list }) => {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const [globalFilter, setGlobalFilter] = React.useState("");
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
     data: list,
     columns,
-    state: { columnFilters, globalFilter, sorting },
+    state: { columnFilters, sorting },
 
     onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
-
-    globalFilterFn: "includesString",
 
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -266,8 +262,6 @@ export const BookList2: React.FC<BookListProps> = ({ list }) => {
 
   return (
     <Box>
-      {/* TODO: Not works */}
-      <TextInput value={globalFilter} onChange={event => setGlobalFilter(event.target.value)} />
       <Table>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
