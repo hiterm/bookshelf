@@ -71,6 +71,7 @@ const columns = [
     ),
     filterFn: "includesString",
     meta: { filterType: "string" },
+    minSize: 200,
   }),
   columnHelper.accessor("authors", {
     header: "著者",
@@ -81,6 +82,7 @@ const columns = [
         .join(", "),
     meta: { filterType: "authors" },
     filterFn: authorsFilter,
+    minSize: 200,
   }),
   columnHelper.accessor("isbn", { header: "ISBN", filterFn: "includesString", meta: { filterType: "string" } }),
   columnHelper.accessor("format", {
@@ -88,12 +90,14 @@ const columns = [
     cell: (info) => displayBookFormat(info.getValue()),
     filterFn: "equalsString",
     meta: { filterType: "format" },
+    minSize: 120,
   }),
   columnHelper.accessor("store", {
     header: "ストア",
     cell: (info) => displayBookStore(info.getValue()),
     filterFn: "equalsString",
     meta: { filterType: "store" },
+    minSize: 120,
   }),
   columnHelper.accessor("priority", { header: "優先度", filterFn: "equals" }),
   columnHelper.accessor("read", {
@@ -265,7 +269,7 @@ export const BookList2: React.FC<BookListProps> = ({ list }) => {
   });
 
   return (
-    <Box>
+    <Box sx={{ overflow: "scroll" }}>
       <Group spacing="lg">
         {table.getAllLeafColumns().map(column => {
           return (
@@ -284,7 +288,11 @@ export const BookList2: React.FC<BookListProps> = ({ list }) => {
             <>
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
-                  <th key={header.id}>
+                  <Box
+                    component="th"
+                    key={header.id}
+                    sx={{ minWidth: header.column.columnDef.minSize, whiteSpace: "nowrap" }}
+                  >
                     {header.isPlaceholder ? null : (
                       <Group
                         onClick={header.column.getToggleSortingHandler()}
@@ -296,7 +304,7 @@ export const BookList2: React.FC<BookListProps> = ({ list }) => {
                         <SortIcon isSorted={header.column.getIsSorted()} />
                       </Group>
                     )}
-                  </th>
+                  </Box>
                 ))}
               </tr>
               <tr key={headerGroup.id}>
