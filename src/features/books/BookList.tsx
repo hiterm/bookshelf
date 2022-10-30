@@ -28,7 +28,6 @@ import {
   type Table as ReactTable,
   useReactTable,
 } from "@tanstack/react-table";
-import { DataGrid } from "mantine-data-grid";
 
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
@@ -56,11 +55,6 @@ const authorsFilter: FilterFn<Book> = (row, columnId, filterValue: string[], _ad
 
 const columnHelper = createColumnHelper<Book>();
 
-// TODO: ストアと形式のフィルタ
-// TODO: asを外す
-// https://github.com/TanStack/table/issues/4382
-// https://github.com/TanStack/table/issues/4302
-// https://github.com/TanStack/table/issues/4241
 const columns = [
   columnHelper.accessor("title", {
     header: "書名",
@@ -115,21 +109,6 @@ const columns = [
 ] as ColumnDef<Book>[];
 
 type BookListProps = { list: Book[] };
-
-export const BookList: React.FC<BookListProps> = (props) => {
-  return (
-    <DataGrid
-      columns={columns}
-      data={props.list}
-      striped
-      highlightOnHover
-      withGlobalFilter
-      withPagination
-      withColumnFilters
-      withSorting
-    />
-  );
-};
 
 type SortIconProps = {
   isSorted: ReturnType<Column<Book>["getIsSorted"]>;
@@ -242,7 +221,7 @@ const Filter: React.FC<FilterProps> = ({ column }) => {
   }
 };
 
-export const BookList2: React.FC<BookListProps> = ({ list }) => {
+export const BookList: React.FC<BookListProps> = ({ list }) => {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
