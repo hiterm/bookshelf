@@ -1,5 +1,6 @@
-import { Anchor, Box, Pagination, Table } from "@mantine/core";
+import { Anchor, Box, Group, Pagination, Table, ThemeIcon } from "@mantine/core";
 import {
+  Column,
   ColumnDef,
   createColumnHelper,
   flexRender,
@@ -13,6 +14,7 @@ import { booleanFilterFn, DataGrid, dateFilterFn, stringFilterFn } from "mantine
 
 import React from "react";
 import { Link } from "react-router-dom";
+import { SortAscending, SortDescending } from "tabler-icons-react";
 import { Book, displayBookFormat, displayBookStore } from "./schema";
 
 const columnHelper = createColumnHelper<Book>();
@@ -73,6 +75,33 @@ export const BookList: React.FC<BookListProps> = (props) => {
   );
 };
 
+type SortIconProps = {
+  isSorted: ReturnType<Column<Book>["getIsSorted"]>;
+};
+
+const SortIcon: React.FC<SortIconProps> = ({ isSorted }) => {
+  switch (isSorted) {
+    case false:
+      return <></>;
+    case "asc":
+      return (
+        <ThemeIcon variant="light">
+          <SortAscending />
+        </ThemeIcon>
+      );
+    case "desc":
+      return (
+        <ThemeIcon variant="light">
+          <SortDescending />
+        </ThemeIcon>
+      );
+    default:
+      // eslint-disable-next-line no-case-declarations
+      const _exhaustivenessCheck: never = isSorted;
+      return <></>;
+  }
+};
+
 export const BookList2: React.FC<BookListProps> = ({ list }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -96,15 +125,15 @@ export const BookList2: React.FC<BookListProps> = ({ list }) => {
               {headerGroup.headers.map(header => (
                 <th key={header.id}>
                   {header.isPlaceholder ? null : (
-                    <div
+                    <Group
                       onClick={header.column.getToggleSortingHandler()}
+                      spacing={0}
+                      noWrap
+                      sx={{ cursor: header.column.getCanSort() ? "pointer" : undefined }}
                     >
                       {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{
-                        asc: " 🔼",
-                        desc: " 🔽",
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </div>
+                      <SortIcon isSorted={header.column.getIsSorted()} />
+                    </Group>
                   )}
                 </th>
               ))}
