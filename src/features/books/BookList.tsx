@@ -273,38 +273,38 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
       <Table withBorder mt="md" sx={{ borderLeft: "none", borderRight: "none" }}>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
-            <>
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <Box
-                    component="th"
-                    key={header.id}
-                    sx={{ minWidth: header.column.columnDef.minSize, whiteSpace: "nowrap" }}
-                  >
-                    {header.isPlaceholder ? null : (
-                      <Group
-                        onClick={header.column.getToggleSortingHandler()}
-                        spacing={0}
-                        noWrap
-                        sx={{ cursor: header.column.getCanSort() ? "pointer" : undefined }}
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        <SortIcon isSorted={header.column.getIsSorted()} />
-                      </Group>
-                    )}
-                  </Box>
-                ))}
-              </tr>
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th key={header.id}>
-                    {header.isPlaceholder ? null : (
-                      header.column.getCanFilter() ? <Filter column={header.column} table={table} /> : null
-                    )}
-                  </th>
-                ))}
-              </tr>
-            </>
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <Box
+                  component="th"
+                  key={header.id}
+                  sx={{ minWidth: header.column.columnDef.minSize, whiteSpace: "nowrap" }}
+                >
+                  {header.isPlaceholder ? null : (
+                    <Group
+                      onClick={header.column.getToggleSortingHandler()}
+                      spacing={0}
+                      noWrap
+                      sx={{ cursor: header.column.getCanSort() ? "pointer" : undefined }}
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      <SortIcon isSorted={header.column.getIsSorted()} />
+                    </Group>
+                  )}
+                </Box>
+              ))}
+            </tr>
+          ))}
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <th key={header.id}>
+                  {header.isPlaceholder ? null : (
+                    header.column.getCanFilter() ? <Filter column={header.column} table={table} /> : null
+                  )}
+                </th>
+              ))}
+            </tr>
           ))}
         </thead>
         <tbody>
