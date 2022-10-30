@@ -1,9 +1,21 @@
-import { Anchor, Box, Group, Pagination, Select, Table, TextInput, ThemeIcon } from "@mantine/core";
+import {
+  Anchor,
+  Box,
+  Group,
+  Loader,
+  MultiSelect,
+  Pagination,
+  Select,
+  Table,
+  TextInput,
+  ThemeIcon,
+} from "@mantine/core";
 import {
   Column,
   ColumnDef,
   ColumnFiltersState,
   createColumnHelper,
+  FilterFn,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -19,16 +31,26 @@ import { DataGrid } from "mantine-data-grid";
 import React from "react";
 import { Link } from "react-router-dom";
 import { SortAscending, SortDescending } from "tabler-icons-react";
-import { Book, BOOK_FORMAT_VALUE, BOOK_STORE_VALUE, displayBookFormat, displayBookStore } from "./schema";
+import { useAuthorsQuery } from "../../generated/graphql";
+import { Author, Book, BOOK_FORMAT_VALUE, BOOK_STORE_VALUE, displayBookFormat, displayBookStore } from "./schema";
 
-type ColumnType = "string" | "boolean" | "enum";
+type FilterType = "string" | "boolean" | "store" | "format" | "authors";
 
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line unused-imports/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
-    type: ColumnType;
+    filterType: FilterType;
   }
 }
+
+const authorsFilter: FilterFn<Book> = (row, columnId, filterValue: string[], _addMeta) => {
+  if (filterValue.length === 0) {
+    return true;
+  }
+
+  const value: Author[] = row.getValue(columnId);
+  return value.some(author => filterValue.includes(author.id));
+};
 
 const columnHelper = createColumnHelper<Book>();
 
@@ -46,7 +68,7 @@ const columns = [
       </Anchor>
     ),
     filterFn: "includesString",
-    meta: { type: "string" },
+    meta: { filterType: "string" },
   }),
   columnHelper.accessor("authors", {
     header: "著者",
@@ -55,30 +77,32 @@ const columns = [
         .getValue()
         .map((author) => author.name)
         .join(", "),
+    meta: { filterType: "authors" },
+    filterFn: authorsFilter,
   }),
-  columnHelper.accessor("isbn", { header: "ISBN", filterFn: "includesString", meta: { type: "string" } }),
+  columnHelper.accessor("isbn", { header: "ISBN", filterFn: "includesString", meta: { filterType: "string" } }),
   columnHelper.accessor("format", {
     header: "形式",
     cell: (info) => displayBookFormat(info.getValue()),
     filterFn: "equalsString",
-    meta: { type: "enum" },
+    meta: { filterType: "format" },
   }),
   columnHelper.accessor("store", {
     header: "ストア",
     cell: (info) => displayBookStore(info.getValue()),
     filterFn: "equalsString",
-    meta: { type: "enum" },
+    meta: { filterType: "store" },
   }),
   columnHelper.accessor("priority", { header: "優先度", filterFn: "equals" }),
   columnHelper.accessor("read", {
     header: "既読",
     filterFn: "equals",
-    meta: { type: "boolean" },
+    meta: { filterType: "boolean" },
   }),
   columnHelper.accessor("owned", {
     header: "所有",
     filterFn: "equals",
-    meta: { type: "boolean" },
+    meta: { filterType: "boolean" },
   }),
   columnHelper.accessor("createdAt", { header: "追加日時" }),
   columnHelper.accessor("updatedAt", { header: "更新日時" }),
@@ -128,10 +152,41 @@ const SortIcon: React.FC<SortIconProps> = ({ isSorted }) => {
   }
 };
 
+type AuthorsFilterProps = {
+  value: string[];
+  onChange: (value: string[]) => void;
+};
+
+const AuthorsFilter: React.FC<AuthorsFilterProps> = ({ value, onChange }) => {
+  const [queryResult, _reexecuteQuery] = useAuthorsQuery();
+
+  if (queryResult.fetching || queryResult.data == null) {
+    return <Loader />;
+  }
+
+  if (queryResult.error) {
+    return <div>{JSON.stringify(queryResult.error)}</div>;
+  }
+
+  return (
+    <MultiSelect
+      data={queryResult.data?.authors.map((author) => ({
+        value: author.id,
+        label: author.name,
+      })) ?? []}
+      searchable
+      value={value}
+      onChange={(authorIds) => {
+        onChange(authorIds);
+      }}
+    />
+  );
+};
+
 type FilterProps = { column: Column<any, unknown>; table: ReactTable<any> };
 
 const Filter: React.FC<FilterProps> = ({ column }) => {
-  switch (column.columnDef.meta?.type) {
+  switch (column.columnDef.meta?.filterType) {
     case "string":
       return (
         <TextInput
@@ -154,29 +209,28 @@ const Filter: React.FC<FilterProps> = ({ column }) => {
           }}
         />
       );
-    case "enum":
-      if (column.id === "format") {
-        return (
-          <Select
-            data={BOOK_FORMAT_VALUE.map((format) => ({
-              value: format,
-              label: displayBookFormat(format),
-            }))}
-            onChange={value => column.setFilterValue(value)}
-          />
-        );
-      } else {
-        return (
-          <Select
-            data={BOOK_STORE_VALUE.map((format) => ({
-              value: format,
-              label: displayBookStore(format),
-            }))}
-            onChange={value => column.setFilterValue(value)}
-          />
-        );
-        return <></>;
-      }
+    case "format":
+      return (
+        <Select
+          data={BOOK_FORMAT_VALUE.map((format) => ({
+            value: format,
+            label: displayBookFormat(format),
+          }))}
+          onChange={value => column.setFilterValue(value)}
+        />
+      );
+    case "store":
+      return (
+        <Select
+          data={BOOK_STORE_VALUE.map((format) => ({
+            value: format,
+            label: displayBookStore(format),
+          }))}
+          onChange={value => column.setFilterValue(value)}
+        />
+      );
+    case "authors":
+      return <AuthorsFilter value={column.getFilterValue() as string[]} onChange={column.setFilterValue} />;
     default:
       return <></>;
   }
@@ -217,11 +271,11 @@ export const BookList2: React.FC<BookListProps> = ({ list }) => {
       <Table>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <th key={header.id}>
-                  {header.isPlaceholder ? null : (
-                    <>
+            <>
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <th key={header.id}>
+                    {header.isPlaceholder ? null : (
                       <Group
                         onClick={header.column.getToggleSortingHandler()}
                         spacing={0}
@@ -231,12 +285,20 @@ export const BookList2: React.FC<BookListProps> = ({ list }) => {
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         <SortIcon isSorted={header.column.getIsSorted()} />
                       </Group>
-                      {header.column.getCanFilter() ? <Filter column={header.column} table={table} /> : null}
-                    </>
-                  )}
-                </th>
-              ))}
-            </tr>
+                    )}
+                  </th>
+                ))}
+              </tr>
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <th key={header.id}>
+                    {header.isPlaceholder ? null : (
+                      header.column.getCanFilter() ? <Filter column={header.column} table={table} /> : null
+                    )}
+                  </th>
+                ))}
+              </tr>
+            </>
           ))}
         </thead>
         <tbody>
