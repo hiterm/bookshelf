@@ -187,7 +187,7 @@ const Filter: React.FC<FilterProps> = ({ column }) => {
     case "string":
       return (
         <TextInput
-          value={column.getFilterValue() as string}
+          value={column.getFilterValue() as string ?? ""}
           onChange={event => column.setFilterValue(event.target.value)}
         />
       );
@@ -235,7 +235,7 @@ const Filter: React.FC<FilterProps> = ({ column }) => {
 
 export const BookList: React.FC<BookListProps> = ({ list }) => {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+    [{ id: "title", value: "" }],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
@@ -261,34 +261,43 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
 
   return (
     <Box>
-      <Popover width={200} position="bottom" withArrow shadow="md">
-        <Popover.Target>
-          <ActionIcon variant="outline">
-            <IconLayoutColumns />
-          </ActionIcon>
-        </Popover.Target>
-        <Popover.Dropdown>
-          <Button
-            onClick={() => {
-              table.toggleAllColumnsVisible();
-            }}
-          >
-            Toggle all
-          </Button>
-          <Box mt="md">
-            {table.getAllLeafColumns().map(column => {
-              return (
-                <Checkbox
-                  key={column.id}
-                  label={column.columnDef.header as ReactNode}
-                  checked={column.getIsVisible()}
-                  onChange={column.getToggleVisibilityHandler()}
-                />
-              );
-            })}
-          </Box>
-        </Popover.Dropdown>
-      </Popover>
+      <Group>
+        <Popover width={200} position="bottom" withArrow shadow="md">
+          <Popover.Target>
+            <ActionIcon variant="outline">
+              <IconLayoutColumns />
+            </ActionIcon>
+          </Popover.Target>
+          <Popover.Dropdown>
+            <Button
+              onClick={() => {
+                table.toggleAllColumnsVisible();
+              }}
+            >
+              Toggle all
+            </Button>
+            <Box mt="md">
+              {table.getAllLeafColumns().map(column => {
+                return (
+                  <Checkbox
+                    key={column.id}
+                    label={column.columnDef.header as ReactNode}
+                    checked={column.getIsVisible()}
+                    onChange={column.getToggleVisibilityHandler()}
+                  />
+                );
+              })}
+            </Box>
+          </Popover.Dropdown>
+        </Popover>
+        <Button
+          onClick={() => {
+            table.resetColumnFilters();
+          }}
+        >
+          Reset filter
+        </Button>
+      </Group>
       <Box sx={{ overflow: "scroll" }}>
         <Table withBorder mt="md" sx={{ borderLeft: "none", borderRight: "none" }}>
           <thead>
