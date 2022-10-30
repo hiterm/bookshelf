@@ -104,11 +104,13 @@ const columns = [
     header: "既読",
     filterFn: "equals",
     meta: { filterType: "boolean" },
+    minSize: 100,
   }),
   columnHelper.accessor("owned", {
     header: "所有",
     filterFn: "equals",
     meta: { filterType: "boolean" },
+    minSize: 100,
   }),
   columnHelper.accessor("createdAt", {
     header: "追加日時",
@@ -195,6 +197,7 @@ const Filter: React.FC<FilterProps> = ({ column }) => {
       return (
         <Select
           data={["-", "true", "false"]}
+          value={String(column.getFilterValue() ?? "-")}
           onChange={value => {
             if (value === "true") {
               column.setFilterValue(true);
@@ -209,20 +212,28 @@ const Filter: React.FC<FilterProps> = ({ column }) => {
     case "format":
       return (
         <Select
-          data={BOOK_FORMAT_VALUE.map((format) => ({
-            value: format,
-            label: displayBookFormat(format),
-          }))}
+          data={[
+            { value: "", label: "-" },
+            ...BOOK_FORMAT_VALUE.map((format) => ({
+              value: format,
+              label: displayBookFormat(format),
+            })),
+          ]}
+          value={column.getFilterValue() as string ?? ""}
           onChange={value => column.setFilterValue(value)}
         />
       );
     case "store":
       return (
         <Select
-          data={BOOK_STORE_VALUE.map((format) => ({
-            value: format,
-            label: displayBookStore(format),
-          }))}
+          data={[
+            { value: "", label: "-" },
+            ...BOOK_STORE_VALUE.map((format) => ({
+              value: format,
+              label: displayBookStore(format),
+            })),
+          ]}
+          value={column.getFilterValue() as string ?? ""}
           onChange={value => column.setFilterValue(value)}
         />
       );
