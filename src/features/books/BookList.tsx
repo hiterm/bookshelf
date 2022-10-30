@@ -1,12 +1,15 @@
 import {
+  ActionIcon,
   Anchor,
   Box,
+  Button,
   Center,
   Checkbox,
   Group,
   Loader,
   MultiSelect,
   Pagination,
+  Popover,
   Select,
   Table,
   TextInput,
@@ -32,7 +35,7 @@ import dayjs from "dayjs";
 
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { SortAscending, SortDescending } from "tabler-icons-react";
+import { Columns, SortAscending, SortDescending } from "tabler-icons-react";
 import { useAuthorsQuery } from "../../generated/graphql";
 import { Author, Book, BOOK_FORMAT_VALUE, BOOK_STORE_VALUE, displayBookFormat, displayBookStore } from "./schema";
 
@@ -258,18 +261,34 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
 
   return (
     <Box sx={{ overflow: "scroll" }}>
-      <Group spacing="lg">
-        {table.getAllLeafColumns().map(column => {
-          return (
-            <Checkbox
-              key={column.id}
-              label={column.columnDef.header as ReactNode}
-              checked={column.getIsVisible()}
-              onChange={column.getToggleVisibilityHandler()}
-            />
-          );
-        })}
-      </Group>
+      <Popover width={200} position="bottom" withArrow shadow="md">
+        <Popover.Target>
+          <ActionIcon variant="outline">
+            <Columns />
+          </ActionIcon>
+        </Popover.Target>
+        <Popover.Dropdown>
+          <Button
+            onClick={() => {
+              table.toggleAllColumnsVisible();
+            }}
+          >
+            Toggle all
+          </Button>
+          <Box mt="md">
+            {table.getAllLeafColumns().map(column => {
+              return (
+                <Checkbox
+                  key={column.id}
+                  label={column.columnDef.header as ReactNode}
+                  checked={column.getIsVisible()}
+                  onChange={column.getToggleVisibilityHandler()}
+                />
+              );
+            })}
+          </Box>
+        </Popover.Dropdown>
+      </Popover>
       <Table withBorder mt="md" sx={{ borderLeft: "none", borderRight: "none" }}>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
