@@ -261,7 +261,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
           );
         })}
       </Group>
-      <Table>
+      <Table withBorder mt="md" sx={{ borderLeft: "none", borderRight: "none" }}>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
             <>
@@ -310,7 +310,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
           ))}
         </tbody>
       </Table>
-      <Center>
+      <Center mt="md">
         <Pagination
           total={table.getPageCount()}
           onChange={(page) => {
