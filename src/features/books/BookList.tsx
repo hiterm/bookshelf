@@ -1,6 +1,7 @@
 import {
   Anchor,
   Box,
+  Center,
   Checkbox,
   Group,
   Loader,
@@ -322,12 +323,14 @@ export const BookList2: React.FC<BookListProps> = ({ list }) => {
           ))}
         </tbody>
       </Table>
-      <Pagination
-        total={table.getPageCount()}
-        onChange={(page) => {
-          table.setPageIndex(page);
-        }}
-      />
+      <Center>
+        <Pagination
+          total={table.getPageCount()}
+          onChange={(page) => {
+            table.setPageIndex(page);
+          }}
+        />
+      </Center>
     </Box>
   );
 };
