@@ -7,6 +7,7 @@ import {
   Checkbox,
   Group,
   Loader,
+  Menu,
   MultiSelect,
   Pagination,
   Popover,
@@ -302,10 +303,27 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
             </Box>
           </Popover.Dropdown>
         </Popover>
+        <Menu shadow="md" width={200}>
+          <Menu.Target>
+            <Button>Preset filters</Button>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <Menu.Item
+              onClick={() => {
+                table.setColumnFilters(() => [{ id: "read", value: false }, { id: "owned", value: true }]);
+                table.setSorting(() => [{ id: "priority", desc: true }]);
+              }}
+            >
+              Unread owned, order by priority
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
         <Button
           onClick={() => {
             table.resetColumnFilters();
           }}
+          color="red"
         >
           Reset filter
         </Button>
@@ -373,7 +391,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
       </Center>
       <Center mt="md" mb="md">
         <Select
-        label="Page size"
+          label="Page size"
           data={["20", "50", "100"]}
           onChange={value => {
             if (value !== null) {
