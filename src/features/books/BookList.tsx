@@ -1,4 +1,4 @@
-import { Anchor, Box, Group, Pagination, Table, TextInput, ThemeIcon } from "@mantine/core";
+import { Anchor, Box, Group, Pagination, Select, Table, TextInput, ThemeIcon } from "@mantine/core";
 import {
   Column,
   ColumnDef,
@@ -19,14 +19,15 @@ import { DataGrid } from "mantine-data-grid";
 import React from "react";
 import { Link } from "react-router-dom";
 import { SortAscending, SortDescending } from "tabler-icons-react";
-import { Book, displayBookFormat, displayBookStore } from "./schema";
+import { Book, BOOK_FORMAT_VALUE, BOOK_STORE_VALUE, displayBookFormat, displayBookStore } from "./schema";
 
-type ColumnType = "string";
+type ColumnType = "string" | "enum";
 
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line unused-imports/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     type: ColumnType;
+    values?: string[];
   }
 }
 
@@ -56,14 +57,24 @@ const columns = [
         .map((author) => author.name)
         .join(", "),
   }),
-  columnHelper.accessor("isbn", { header: "ISBN", filterFn: "includesString" }),
+  columnHelper.accessor("isbn", { header: "ISBN", filterFn: "includesString", meta: { type: "string" } }),
   columnHelper.accessor("format", {
     header: "形式",
     cell: (info) => displayBookFormat(info.getValue()),
+    filterFn: "equalsString",
+    meta: {
+      type: "enum",
+      values: BOOK_FORMAT_VALUE,
+    },
   }),
   columnHelper.accessor("store", {
     header: "ストア",
     cell: (info) => displayBookStore(info.getValue()),
+    filterFn: "equalsString",
+    meta: {
+      type: "enum",
+      values: BOOK_STORE_VALUE,
+    },
   }),
   columnHelper.accessor("priority", { header: "優先度", filterFn: "equals" }),
   columnHelper.accessor("read", { header: "既読", filterFn: "equals" }),
@@ -119,16 +130,40 @@ const SortIcon: React.FC<SortIconProps> = ({ isSorted }) => {
 type FilterProps = { column: Column<any, unknown>; table: ReactTable<any> };
 
 const Filter: React.FC<FilterProps> = ({ column }) => {
-  if (column.columnDef.meta?.type === "string") {
-    return (
-      <TextInput
-        value={column.getFilterValue() as string}
-        onChange={event => column.setFilterValue(event.target.value)}
-      />
-    );
+  switch (column.columnDef.meta?.type) {
+    case "string":
+      return (
+        <TextInput
+          value={column.getFilterValue() as string}
+          onChange={event => column.setFilterValue(event.target.value)}
+        />
+      );
+    case "enum":
+      if (column.id === "format") {
+        return (
+          <Select
+            data={BOOK_FORMAT_VALUE.map((format) => ({
+              value: format,
+              label: displayBookFormat(format),
+            }))}
+            onChange={value => column.setFilterValue(value)}
+          />
+        );
+      } else {
+        return (
+          <Select
+            data={BOOK_STORE_VALUE.map((format) => ({
+              value: format,
+              label: displayBookStore(format),
+            }))}
+            onChange={value => column.setFilterValue(value)}
+          />
+        );
+        return <></>;
+      }
+    default:
+      return <></>;
   }
-
-  return <></>;
 };
 
 export const BookList2: React.FC<BookListProps> = ({ list }) => {
