@@ -28,6 +28,7 @@ import {
   type Table as ReactTable,
   useReactTable,
 } from "@tanstack/react-table";
+import dayjs from "dayjs";
 
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
@@ -52,6 +53,8 @@ const authorsFilter: FilterFn<Book> = (row, columnId, filterValue: string[], _ad
   const value: Author[] = row.getValue(columnId);
   return value.some(author => filterValue.includes(author.id));
 };
+
+const formatDate = (date: Date) => (dayjs(date).format("YYYY/MM/DD HH:mm Z"));
 
 const columnHelper = createColumnHelper<Book>();
 
@@ -104,8 +107,14 @@ const columns = [
     filterFn: "equals",
     meta: { filterType: "boolean" },
   }),
-  columnHelper.accessor("createdAt", { header: "追加日時" }),
-  columnHelper.accessor("updatedAt", { header: "更新日時" }),
+  columnHelper.accessor("createdAt", {
+    header: "追加日時",
+    cell: (info) => <Box sx={{ whiteSpace: "nowrap" }}>{formatDate(info.getValue())}</Box>,
+  }),
+  columnHelper.accessor("updatedAt", {
+    header: "更新日時",
+    cell: (info) => <Box sx={{ whiteSpace: "nowrap" }}>{formatDate(info.getValue())}</Box>,
+  }),
 ] as ColumnDef<Book>[];
 
 type BookListProps = { list: Book[] };
