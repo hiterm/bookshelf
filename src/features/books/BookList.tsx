@@ -254,6 +254,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
   const table = useReactTable({
     data: list,
     columns,
+    initialState: { pagination: { pageSize: 20 } },
     state: { columnFilters, sorting, columnVisibility },
 
     onColumnFiltersChange: setColumnFilters,
@@ -367,6 +368,17 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
           total={table.getPageCount()}
           onChange={(page) => {
             table.setPageIndex(page);
+          }}
+        />
+      </Center>
+      <Center mt="md" mb="md">
+        <Select
+        label="Page size"
+          data={["20", "50", "100"]}
+          onChange={value => {
+            if (value !== null) {
+              table.setPageSize(parseInt(value, 10));
+            }
           }}
         />
       </Center>
