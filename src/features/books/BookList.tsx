@@ -5,6 +5,8 @@ import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { booleanFilterFn, DataGrid, dateFilterFn, stringFilterFn } from "mantine-data-grid";
@@ -72,10 +74,15 @@ export const BookList: React.FC<BookListProps> = (props) => {
 };
 
 export const BookList2: React.FC<BookListProps> = ({ list }) => {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+
   const table = useReactTable({
     data: list,
     columns,
+    state: { sorting },
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     debugTable: true,
   });
@@ -88,7 +95,17 @@ export const BookList2: React.FC<BookListProps> = ({ list }) => {
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => (
                 <th key={header.id}>
-                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  {header.isPlaceholder ? null : (
+                    <div
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {{
+                        asc: " 🔼",
+                        desc: " 🔽",
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  )}
                 </th>
               ))}
             </tr>
