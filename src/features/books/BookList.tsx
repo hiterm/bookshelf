@@ -1,6 +1,7 @@
 import {
   Anchor,
   Box,
+  Checkbox,
   Group,
   Loader,
   MultiSelect,
@@ -28,7 +29,7 @@ import {
 } from "@tanstack/react-table";
 import { DataGrid } from "mantine-data-grid";
 
-import React from "react";
+import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { SortAscending, SortDescending } from "tabler-icons-react";
 import { useAuthorsQuery } from "../../generated/graphql";
@@ -241,14 +242,16 @@ export const BookList2: React.FC<BookListProps> = ({ list }) => {
     [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState({});
 
   const table = useReactTable({
     data: list,
     columns,
-    state: { columnFilters, sorting },
+    state: { columnFilters, sorting, columnVisibility },
 
     onColumnFiltersChange: setColumnFilters,
     onSortingChange: setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
 
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -262,6 +265,18 @@ export const BookList2: React.FC<BookListProps> = ({ list }) => {
 
   return (
     <Box>
+      <Group spacing="lg">
+        {table.getAllLeafColumns().map(column => {
+          return (
+            <Checkbox
+              key={column.id}
+              label={column.columnDef.header as ReactNode}
+              checked={column.getIsVisible()}
+              onChange={column.getToggleVisibilityHandler()}
+            />
+          );
+        })}
+      </Group>
       <Table>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
