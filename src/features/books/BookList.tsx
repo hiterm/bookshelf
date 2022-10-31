@@ -239,7 +239,12 @@ const Filter: React.FC<FilterProps> = ({ column }) => {
         />
       );
     case "authors":
-      return <AuthorsFilter value={column.getFilterValue() as string[]} onChange={column.setFilterValue} />;
+      return (
+        <AuthorsFilter
+          value={(column.getFilterValue() ?? []) as string[]}
+          onChange={column.setFilterValue}
+        />
+      );
     default:
       return <></>;
   }
