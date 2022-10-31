@@ -1,9 +1,9 @@
-import { Box, Button, Center, Modal, Text, Title } from "@mantine/core";
+import { Box, Button, Center, Group, Modal, Text, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
-import { Check } from "tabler-icons-react";
+import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { useDeleteBookMutation } from "../../generated/graphql";
 import { Book, displayBookFormat, displayBookStore } from "./schema";
 
@@ -11,30 +11,21 @@ const BookDetailShowItem: React.FC<{
   field: string;
   value: React.ReactNode;
   halfWidth?: boolean;
-}> = (props) => {
-  const valueForShow = props.value == null || props.value === "" ? "-" : props.value;
-  const gridColumnEnd = props.halfWidth ? "span 1" : undefined;
-
+}> = ({ field, value, halfWidth }) => {
   return (
     <>
-      <Text sx={{ fontWeight: "bold", justifySelf: "end" }}>{props.field}</Text>
-      <Box
-        sx={(theme) => ({
-          [theme.fn.smallerThan("sm")]: {
-            gridColumnEnd: "span 3",
-          },
-          [theme.fn.largerThan("sm")]: {
-            gridColumnEnd: gridColumnEnd,
-          },
-        })}
+      <Text weight="bold">{field}</Text>
+      <Group
+        align="center"
+        sx={{
+          gridColumn: halfWidth ? "span 1" : "2 / -1",
+        }}
       >
-        {valueForShow}
-      </Box>
+        {value}
+      </Group>
     </>
   );
 };
-
-const ShowBoolean: React.FC<{ flag: boolean }> = ({ flag }) => <Check color={flag ? "green" : undefined} />;
 
 const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
   const [open, setOpen] = useState(false);
@@ -100,13 +91,18 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
   return (
     <React.Fragment>
       <Box
-        sx={{
+        sx={theme => ({
           display: "grid",
-          gridTemplateColumns: "max-content 1fr max-content 1fr",
           rowGap: 20,
           columnGap: 20,
           padding: 20,
-        }}
+          [theme.fn.smallerThan("sm")]: {
+            gridTemplateColumns: "max-content 1fr",
+          },
+          [theme.fn.largerThan("sm")]: {
+            gridTemplateColumns: "max-content 1fr max-content 1fr",
+          },
+        })}
       >
         <BookDetailShowItem field="書名" value={book.title} />
         <BookDetailShowItem

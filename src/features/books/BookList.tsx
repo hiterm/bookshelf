@@ -37,6 +37,7 @@ import dayjs from "dayjs";
 import { IconLayoutColumns, IconSortAscending, IconSortDescending } from "@tabler/icons";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { useAuthorsQuery } from "../../generated/graphql";
 import { Author, Book, BOOK_FORMAT_VALUE, BOOK_STORE_VALUE, displayBookFormat, displayBookStore } from "./schema";
 
@@ -103,12 +104,14 @@ const columns = [
   columnHelper.accessor("priority", { header: "優先度", filterFn: "equals" }),
   columnHelper.accessor("read", {
     header: "既読",
+    cell: (info) => <ShowBoolean flag={info.getValue()} />,
     filterFn: "equals",
     meta: { filterType: "boolean" },
     minSize: 100,
   }),
   columnHelper.accessor("owned", {
     header: "所有",
+    cell: (info) => <ShowBoolean flag={info.getValue()} />,
     filterFn: "equals",
     meta: { filterType: "boolean" },
     minSize: 100,
