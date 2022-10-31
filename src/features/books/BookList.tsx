@@ -160,9 +160,7 @@ type AuthorsFilterProps = {
 const AuthorsFilter: React.FC<AuthorsFilterProps> = ({ value, onChange }) => {
   const [queryResult, _reexecuteQuery] = useAuthorsQuery();
 
-  if (queryResult.fetching || queryResult.data == null) {
-    return <Loader />;
-  }
+  const fetching = queryResult.fetching || queryResult.data == null;
 
   if (queryResult.error) {
     return <div>{JSON.stringify(queryResult.error)}</div>;
@@ -179,6 +177,8 @@ const AuthorsFilter: React.FC<AuthorsFilterProps> = ({ value, onChange }) => {
       onChange={(authorIds) => {
         onChange(authorIds);
       }}
+      rightSection={fetching ? <Loader size={12} /> : null}
+      disabled={fetching}
     />
   );
 };
@@ -239,7 +239,12 @@ const Filter: React.FC<FilterProps> = ({ column }) => {
         />
       );
     case "authors":
-      return <AuthorsFilter value={column.getFilterValue() as string[]} onChange={column.setFilterValue} />;
+      return (
+        <AuthorsFilter
+          value={(column.getFilterValue() ?? []) as string[]}
+          onChange={column.setFilterValue}
+        />
+      );
     default:
       return <></>;
   }
@@ -384,8 +389,9 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
       <Center mt="md" mb="md">
         <Pagination
           total={table.getPageCount()}
+          page={table.getState().pagination.pageIndex + 1}
           onChange={(page) => {
-            table.setPageIndex(page);
+            table.setPageIndex(page - 1);
           }}
         />
       </Center>
@@ -393,6 +399,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
         <Select
           label="Page size"
           data={["20", "50", "100"]}
+          value={table.getState().pagination.pageSize.toString()}
           onChange={value => {
             if (value !== null) {
               table.setPageSize(parseInt(value, 10));
