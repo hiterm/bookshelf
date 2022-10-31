@@ -19,7 +19,6 @@ import {
 import {
   Column,
   ColumnDef,
-  ColumnFiltersState,
   createColumnHelper,
   FilterFn,
   flexRender,
@@ -33,12 +32,14 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import dayjs from "dayjs";
+import { useRecoilState } from "recoil";
 
 import { IconLayoutColumns, IconSortAscending, IconSortDescending } from "@tabler/icons";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { useAuthorsQuery } from "../../generated/graphql";
+import { bookListColumnVisibility, bookListFilter, bookListSorting } from "../../recoil/atoms/BookListState";
 import { Author, Book, BOOK_FORMAT_VALUE, BOOK_STORE_VALUE, displayBookFormat, displayBookStore } from "./schema";
 
 type FilterType = "string" | "boolean" | "store" | "format" | "authors";
@@ -254,11 +255,9 @@ const Filter: React.FC<FilterProps> = ({ column }) => {
 };
 
 export const BookList: React.FC<BookListProps> = ({ list }) => {
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [{ id: "title", value: "" }],
-  );
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState({});
+  const [columnFilters, setColumnFilters] = useRecoilState(bookListFilter);
+  const [sorting, setSorting] = useRecoilState(bookListSorting);
+  const [columnVisibility, setColumnVisibility] = useRecoilState(bookListColumnVisibility);
 
   const table = useReactTable({
     data: list,
