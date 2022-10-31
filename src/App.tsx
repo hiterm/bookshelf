@@ -3,10 +3,10 @@ import { Alert, AppShell, Button, Center, Loader, MantineProvider } from "@manti
 import { useDisclosure } from "@mantine/hooks";
 import { NotificationsProvider } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
-
 import { devtoolsExchange } from "@urql/devtools";
 import React, { Fragment, memo, useMemo } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
+import { RecoilRoot } from "recoil";
 import { createClient, defaultExchanges, Provider as UrqlProvider } from "urql";
 import { ChildrenProps } from "./compoments/ChildrenProps";
 import { Header } from "./compoments/layout/Header";
@@ -156,7 +156,7 @@ const App: React.FC = () => {
   const [opened, handlers] = useDisclosure(false);
 
   return (
-    <React.Fragment>
+    <RecoilRoot>
       <QueryClientProvider client={queryClient}>
         <MantineProvider withGlobalStyles withNormalizeCSS>
           <NotificationsProvider>
@@ -183,7 +183,7 @@ const App: React.FC = () => {
           </NotificationsProvider>
         </MantineProvider>
       </QueryClientProvider>
-    </React.Fragment>
+    </RecoilRoot>
   );
 };
 
