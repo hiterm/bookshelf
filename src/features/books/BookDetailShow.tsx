@@ -1,4 +1,4 @@
-import { Box, Button, Center, Modal, Text, ThemeIcon, Title } from "@mantine/core";
+import { Box, Button, Center, Group, Modal, Text, ThemeIcon, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons";
 import dayjs from "dayjs";
@@ -17,8 +17,9 @@ const BookDetailShowItem: React.FC<{
 
   return (
     <>
-      <Text sx={{ fontWeight: "bold", justifySelf: "end" }}>{props.field}</Text>
-      <Box
+      <Text weight="bold">{props.field}</Text>
+      <Group
+        align="center"
         sx={(theme) => ({
           [theme.fn.smallerThan("sm")]: {
             gridColumnEnd: "span 3",
@@ -29,7 +30,7 @@ const BookDetailShowItem: React.FC<{
         })}
       >
         {valueForShow}
-      </Box>
+      </Group>
     </>
   );
 };
