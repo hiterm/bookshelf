@@ -13,21 +13,15 @@ const BookDetailShowItem: React.FC<{
   halfWidth?: boolean;
 }> = (props) => {
   const valueForShow = props.value == null || props.value === "" ? "-" : props.value;
-  const gridColumnEnd = props.halfWidth ? "span 1" : undefined;
 
   return (
     <>
       <Text weight="bold">{props.field}</Text>
       <Group
         align="center"
-        sx={(theme) => ({
-          [theme.fn.smallerThan("sm")]: {
-            gridColumnEnd: "span 3",
-          },
-          [theme.fn.largerThan("sm")]: {
-            gridColumnEnd: gridColumnEnd,
-          },
-        })}
+        sx={{
+          gridColumn: props.halfWidth ? "span 1" : "2 / -1",
+        }}
       >
         {valueForShow}
       </Group>
@@ -113,13 +107,18 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
   return (
     <React.Fragment>
       <Box
-        sx={{
+        sx={theme => ({
           display: "grid",
-          gridTemplateColumns: "max-content 1fr max-content 1fr",
           rowGap: 20,
           columnGap: 20,
           padding: 20,
-        }}
+          [theme.fn.smallerThan("sm")]: {
+            gridTemplateColumns: "max-content 1fr",
+          },
+          [theme.fn.largerThan("sm")]: {
+            gridTemplateColumns: "max-content 1fr max-content 1fr",
+          },
+        })}
       >
         <BookDetailShowItem field="書名" value={book.title} />
         <BookDetailShowItem
