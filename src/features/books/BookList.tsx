@@ -160,9 +160,7 @@ type AuthorsFilterProps = {
 const AuthorsFilter: React.FC<AuthorsFilterProps> = ({ value, onChange }) => {
   const [queryResult, _reexecuteQuery] = useAuthorsQuery();
 
-  if (queryResult.fetching || queryResult.data == null) {
-    return <Loader />;
-  }
+  const fetching = queryResult.fetching || queryResult.data == null;
 
   if (queryResult.error) {
     return <div>{JSON.stringify(queryResult.error)}</div>;
@@ -179,6 +177,8 @@ const AuthorsFilter: React.FC<AuthorsFilterProps> = ({ value, onChange }) => {
       onChange={(authorIds) => {
         onChange(authorIds);
       }}
+      rightSection={fetching ? <Loader size={12} /> : null}
+      disabled={fetching}
     />
   );
 };
