@@ -384,8 +384,9 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
       <Center mt="md" mb="md">
         <Pagination
           total={table.getPageCount()}
+          page={table.getState().pagination.pageIndex + 1}
           onChange={(page) => {
-            table.setPageIndex(page);
+            table.setPageIndex(page - 1);
           }}
         />
       </Center>
@@ -393,6 +394,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
         <Select
           label="Page size"
           data={["20", "50", "100"]}
+          value={table.getState().pagination.pageSize.toString()}
           onChange={value => {
             if (value !== null) {
               table.setPageSize(parseInt(value, 10));
