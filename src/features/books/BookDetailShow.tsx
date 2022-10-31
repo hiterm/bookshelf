@@ -1,9 +1,9 @@
-import { Box, Button, Center, Group, Modal, Text, ThemeIcon, Title } from "@mantine/core";
+import { Box, Button, Center, Group, Modal, Text, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
+import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { useDeleteBookMutation } from "../../generated/graphql";
 import { Book, displayBookFormat, displayBookStore } from "./schema";
 
@@ -25,20 +25,6 @@ const BookDetailShowItem: React.FC<{
       </Group>
     </>
   );
-};
-
-const ShowBoolean: React.FC<{ flag: boolean }> = ({ flag }) => {
-  return flag
-    ? (
-      <ThemeIcon size="sm" color="green">
-        <IconCheck />
-      </ThemeIcon>
-    )
-    : (
-      <ThemeIcon size="sm" color="grey">
-        <IconX />
-      </ThemeIcon>
-    );
 };
 
 const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
