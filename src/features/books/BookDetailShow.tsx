@@ -11,19 +11,17 @@ const BookDetailShowItem: React.FC<{
   field: string;
   value: React.ReactNode;
   halfWidth?: boolean;
-}> = (props) => {
-  const valueForShow = props.value == null || props.value === "" ? "-" : props.value;
-
+}> = ({ field, value, halfWidth }) => {
   return (
     <>
-      <Text weight="bold">{props.field}</Text>
+      <Text weight="bold">{field}</Text>
       <Group
         align="center"
         sx={{
-          gridColumn: props.halfWidth ? "span 1" : "2 / -1",
+          gridColumn: halfWidth ? "span 1" : "2 / -1",
         }}
       >
-        {valueForShow}
+        {value}
       </Group>
     </>
   );
