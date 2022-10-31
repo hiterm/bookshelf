@@ -1,8 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { ActionIcon, Anchor, Burger, Group, Header as MantineHeader, MediaQuery, Menu, Title } from "@mantine/core";
+import { IconUser } from "@tabler/icons";
 import React from "react";
 import { Link } from "react-router-dom";
-import { User } from "tabler-icons-react";
 
 type HeaderProps = { onBurgerClick: () => void; burgerOpend: boolean };
 
@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
         <Menu>
           <Menu.Target>
             <ActionIcon variant="default">
-              <User />
+              <IconUser />
             </ActionIcon>
           </Menu.Target>
 
