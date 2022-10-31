@@ -7,6 +7,7 @@ import { devtoolsExchange } from "@urql/devtools";
 import React, { Fragment, memo, useMemo } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { RecoilRoot } from "recoil";
+import { RecoilURLSyncJSON } from "recoil-sync";
 import { createClient, defaultExchanges, Provider as UrqlProvider } from "urql";
 import { ChildrenProps } from "./compoments/ChildrenProps";
 import { Header } from "./compoments/layout/Header";
@@ -157,32 +158,34 @@ const App: React.FC = () => {
 
   return (
     <RecoilRoot>
-      <QueryClientProvider client={queryClient}>
-        <MantineProvider withGlobalStyles withNormalizeCSS>
-          <NotificationsProvider>
-            <Auth0Provider
-              domain={import.meta.env.VITE_AUTH0_DOMAIN}
-              clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-              audience={import.meta.env.VITE_AUTH0_AUDIENCE}
-              redirectUri={window.location.origin}
-            >
-              <Router>
-                <AppShell
-                  navbar={<Navbar opened={opened} closeNavbar={handlers.close} />}
-                  header={
-                    <Header
-                      burgerOpend={opened}
-                      onBurgerClick={handlers.toggle}
-                    />
-                  }
-                >
-                  <MainContent />
-                </AppShell>
-              </Router>
-            </Auth0Provider>
-          </NotificationsProvider>
-        </MantineProvider>
-      </QueryClientProvider>
+      <RecoilURLSyncJSON location={{ part: "queryParams" }}>
+        <QueryClientProvider client={queryClient}>
+          <MantineProvider withGlobalStyles withNormalizeCSS>
+            <NotificationsProvider>
+              <Auth0Provider
+                domain={import.meta.env.VITE_AUTH0_DOMAIN}
+                clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+                audience={import.meta.env.VITE_AUTH0_AUDIENCE}
+                redirectUri={window.location.origin}
+              >
+                <Router>
+                  <AppShell
+                    navbar={<Navbar opened={opened} closeNavbar={handlers.close} />}
+                    header={
+                      <Header
+                        burgerOpend={opened}
+                        onBurgerClick={handlers.toggle}
+                      />
+                    }
+                  >
+                    <MainContent />
+                  </AppShell>
+                </Router>
+              </Auth0Provider>
+            </NotificationsProvider>
+          </MantineProvider>
+        </QueryClientProvider>
+      </RecoilURLSyncJSON>
     </RecoilRoot>
   );
 };
