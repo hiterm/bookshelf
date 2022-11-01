@@ -158,6 +158,8 @@ const App: React.FC = () => {
 
   return (
     <RecoilRoot>
+      {/* There is bug with fast refresh and Firefox. */}
+      {/* https://github.com/facebookexperimental/Recoil/issues/1994 */}
       <RecoilURLSyncJSON location={{ part: "queryParams" }}>
         <QueryClientProvider client={queryClient}>
           <MantineProvider withGlobalStyles withNormalizeCSS>
