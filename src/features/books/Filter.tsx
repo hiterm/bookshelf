@@ -3,9 +3,9 @@ import { Column, Table as ReactTable } from "@tanstack/react-table";
 import { AuthorsFilter } from "./AuthorsFilter";
 import { BOOK_FORMAT_VALUE, BOOK_STORE_VALUE, displayBookFormat, displayBookStore } from "./schema";
 
-type FilterProps = { column: Column<any, unknown>; table: ReactTable<any> };
+type FilterProps<TData, TValue> = { column: Column<TData, TValue>; table: ReactTable<TData> };
 
-export const Filter: React.FC<FilterProps> = ({ column }) => {
+export const Filter = <TData, TValue>({ column }: FilterProps<TData, TValue>): JSX.Element => {
   switch (column.columnDef.meta?.filterType) {
     case "string":
       return (
