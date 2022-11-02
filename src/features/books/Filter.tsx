@@ -1,38 +1,7 @@
-import { Loader, MultiSelect, Select, TextInput } from "@mantine/core";
+import { Select, TextInput } from "@mantine/core";
 import { Column, Table as ReactTable } from "@tanstack/react-table";
-import { useAuthorsQuery } from "../../generated/graphql";
+import { AuthorsFilter } from "./AuthorsFilter";
 import { BOOK_FORMAT_VALUE, BOOK_STORE_VALUE, displayBookFormat, displayBookStore } from "./schema";
-
-type AuthorsFilterProps = {
-  value: string[];
-  onChange: (value: string[]) => void;
-};
-
-const AuthorsFilter: React.FC<AuthorsFilterProps> = ({ value, onChange }) => {
-  const [queryResult, _reexecuteQuery] = useAuthorsQuery();
-
-  const fetching = queryResult.fetching || queryResult.data == null;
-
-  if (queryResult.error) {
-    return <div>{JSON.stringify(queryResult.error)}</div>;
-  }
-
-  return (
-    <MultiSelect
-      data={queryResult.data?.authors.map((author) => ({
-        value: author.id,
-        label: author.name,
-      })) ?? []}
-      searchable
-      value={value}
-      onChange={(authorIds) => {
-        onChange(authorIds);
-      }}
-      rightSection={fetching ? <Loader size={12} /> : null}
-      disabled={fetching}
-    />
-  );
-};
 
 type FilterProps = { column: Column<any, unknown>; table: ReactTable<any> };
 
