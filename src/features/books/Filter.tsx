@@ -9,7 +9,7 @@ type FilterProps<TData, TValue> = { column: Column<TData, TValue>; table: ReactT
 export const Filter = <TData, TValue>({ column }: FilterProps<TData, TValue>): JSX.Element => {
   switch (column.columnDef.meta?.filterType) {
     case "string":
-      return <StringFilter column={column} />;
+      return <StringFilter value={(column.getFilterValue() ?? "") as string} onChange={column.setFilterValue} />;
     case "boolean":
       return (
         <Select
