@@ -1,19 +1,15 @@
-import { Select, TextInput } from "@mantine/core";
+import { Select } from "@mantine/core";
 import { Column, Table as ReactTable } from "@tanstack/react-table";
 import { AuthorsFilter } from "./AuthorsFilter";
 import { BOOK_FORMAT_VALUE, BOOK_STORE_VALUE, displayBookFormat, displayBookStore } from "./schema";
+import { StringFilter } from "./StringFilter";
 
 type FilterProps<TData, TValue> = { column: Column<TData, TValue>; table: ReactTable<TData> };
 
 export const Filter = <TData, TValue>({ column }: FilterProps<TData, TValue>): JSX.Element => {
   switch (column.columnDef.meta?.filterType) {
     case "string":
-      return (
-        <TextInput
-          value={column.getFilterValue() as string ?? ""}
-          onChange={event => column.setFilterValue(event.target.value)}
-        />
-      );
+      return <StringFilter column={column} />;
     case "boolean":
       return (
         <Select
