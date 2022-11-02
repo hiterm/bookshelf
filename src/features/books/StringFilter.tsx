@@ -1,15 +1,13 @@
 import { TextInput } from "@mantine/core";
+import { Column } from "@tanstack/react-table";
 
-export type StringFilterProps = {
-  value: string;
-  onChange: (value: string) => void;
-};
+export type StringFilterProps<TData, TValue> = { column: Column<TData, TValue> };
 
-export const StringFilter = ({ value, onChange }: StringFilterProps) => {
+export const StringFilter = <TData, TValue>({ column }: StringFilterProps<TData, TValue>) => {
   return (
     <TextInput
-      value={value}
-      onChange={event => onChange(event.target.value)}
+      value={column.getFilterValue() as string ?? ""}
+      onChange={event => column.setFilterValue(event.target.value)}
     />
   );
 };
