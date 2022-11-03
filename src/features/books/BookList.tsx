@@ -170,10 +170,6 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: false,
   });
 
   return (
