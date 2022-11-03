@@ -42,6 +42,9 @@ module.exports = {
         argsIgnorePattern: "^_",
       },
     ],
+    "react-hooks/exhaustive-deps": ["warn", {
+      "additionalHooks": "useDebouncedEffect",
+    }],
 
     // Disable slow rules
     "import/namespace": "off",
