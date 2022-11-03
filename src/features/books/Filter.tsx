@@ -18,12 +18,7 @@ export const Filter = <TData, TValue>({ column }: FilterProps<TData, TValue>): J
     case "store":
       return <StoreFilter column={column} />;
     case "authors":
-      return (
-        <AuthorsFilter
-          value={(column.getFilterValue() ?? []) as string[]}
-          onChange={column.setFilterValue}
-        />
-      );
+      return <AuthorsFilter column={column} />;
     default:
       return <></>;
   }
