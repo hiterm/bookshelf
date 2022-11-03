@@ -1,5 +1,6 @@
 import { Box, Button, Center, Group, Modal, Text, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import { IconArrowBack } from "@tabler/icons";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
@@ -85,11 +86,22 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
 
 export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
   const { url } = useRouteMatch();
+  const history = useHistory();
 
   const book = props.book;
 
   return (
     <React.Fragment>
+      <Button
+        onClick={() => {
+          history.goBack();
+        }}
+        leftIcon={<IconArrowBack />}
+        variant="outline"
+        m={20}
+      >
+        Back
+      </Button>
       <Box
         sx={theme => ({
           display: "grid",
