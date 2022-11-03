@@ -51,7 +51,7 @@ const authorsFilter: FilterFn<Book> = (row, columnId, filterValue: string[], _ad
     return true;
   }
 
-  const value: Author[] = row.getValue(columnId);
+  const value = row.getValue(columnId) as Author[];
   return value.some(author => filterValue.includes(author.id));
 };
 
