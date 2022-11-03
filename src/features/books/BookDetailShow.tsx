@@ -1,5 +1,6 @@
 import { Box, Button, Center, Group, Modal, Text, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import { IconArrowBack } from "@tabler/icons";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
@@ -85,17 +86,28 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
 
 export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
   const { url } = useRouteMatch();
+  const history = useHistory();
 
   const book = props.book;
 
   return (
     <React.Fragment>
+      <Button
+        onClick={() => {
+          history.goBack();
+        }}
+        leftIcon={<IconArrowBack />}
+        variant="outline"
+        m={20}
+      >
+        Back
+      </Button>
       <Box
         sx={theme => ({
           display: "grid",
           rowGap: 20,
           columnGap: 20,
-          padding: 20,
+          margin: 20,
           [theme.fn.smallerThan("sm")]: {
             gridTemplateColumns: "max-content 1fr",
           },
@@ -142,12 +154,12 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
           halfWidth
         />
       </Box>
-      <Box sx={{ display: "flex", gap: 1, marginTop: 1, marginBottom: 1 }}>
+      <Group m={20}>
         <Button color="blue" component={Link} to={`${url}/edit`}>
           変更
         </Button>
         <DeleteButton book={book} />
-      </Box>
+      </Group>
     </React.Fragment>
   );
 };

@@ -9,7 +9,7 @@ export const ShowBoolean: React.FC<{ flag: boolean }> = ({ flag }) => {
       </ThemeIcon>
     )
     : (
-      <ThemeIcon size="sm" color="grey">
+      <ThemeIcon size="sm" color="gray">
         <IconX />
       </ThemeIcon>
     );

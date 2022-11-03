@@ -1,4 +1,4 @@
-import { Box, Button } from "@mantine/core";
+import { Box, Button, Group } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -34,9 +34,19 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
     <Box sx={{ display: "flex", justifyContent: "center" }}>
       <Box component="form" onSubmit={submitForm} sx={{ minWidth: 400 }}>
         {form}
-        <Button type="submit" mt="md">
-          更新
-        </Button>
+        <Group mt="md">
+          <Button type="submit">
+            Save
+          </Button>
+          <Button
+            color="gray"
+            onClick={() => {
+              history.goBack();
+            }}
+          >
+            Cancel
+          </Button>
+        </Group>
       </Box>
     </Box>
   );
