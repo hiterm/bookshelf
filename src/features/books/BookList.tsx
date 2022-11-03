@@ -6,20 +6,16 @@ import {
   Center,
   Checkbox,
   Group,
-  Loader,
   Menu,
-  MultiSelect,
   Pagination,
   Popover,
   Select,
   Table,
-  TextInput,
   ThemeIcon,
 } from "@mantine/core";
 import {
   Column,
   ColumnDef,
-  ColumnFiltersState,
   createColumnHelper,
   FilterFn,
   flexRender,
@@ -28,18 +24,18 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   RowData,
-  SortingState,
-  type Table as ReactTable,
   useReactTable,
 } from "@tanstack/react-table";
 import dayjs from "dayjs";
+import { useRecoilState } from "recoil";
 
 import { IconLayoutColumns, IconSortAscending, IconSortDescending } from "@tabler/icons";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
-import { useAuthorsQuery } from "../../generated/graphql";
-import { Author, Book, BOOK_FORMAT_VALUE, BOOK_STORE_VALUE, displayBookFormat, displayBookStore } from "./schema";
+import { bookListColumnVisibility, bookListFilter, bookListSorting } from "../../recoil/atoms/BookListState";
+import { Filter } from "./Filter";
+import { Author, Book, displayBookFormat, displayBookStore } from "./schema";
 
 type FilterType = "string" | "boolean" | "store" | "format" | "authors";
 
@@ -55,7 +51,7 @@ const authorsFilter: FilterFn<Book> = (row, columnId, filterValue: string[], _ad
     return true;
   }
 
-  const value: Author[] = row.getValue(columnId);
+  const value = row.getValue(columnId) as Author[];
   return value.some(author => filterValue.includes(author.id));
 };
 
@@ -155,110 +151,10 @@ const SortIcon: React.FC<SortIconProps> = ({ isSorted }) => {
   }
 };
 
-type AuthorsFilterProps = {
-  value: string[];
-  onChange: (value: string[]) => void;
-};
-
-const AuthorsFilter: React.FC<AuthorsFilterProps> = ({ value, onChange }) => {
-  const [queryResult, _reexecuteQuery] = useAuthorsQuery();
-
-  const fetching = queryResult.fetching || queryResult.data == null;
-
-  if (queryResult.error) {
-    return <div>{JSON.stringify(queryResult.error)}</div>;
-  }
-
-  return (
-    <MultiSelect
-      data={queryResult.data?.authors.map((author) => ({
-        value: author.id,
-        label: author.name,
-      })) ?? []}
-      searchable
-      value={value}
-      onChange={(authorIds) => {
-        onChange(authorIds);
-      }}
-      rightSection={fetching ? <Loader size={12} /> : null}
-      disabled={fetching}
-    />
-  );
-};
-
-type FilterProps = { column: Column<any, unknown>; table: ReactTable<any> };
-
-const Filter: React.FC<FilterProps> = ({ column }) => {
-  switch (column.columnDef.meta?.filterType) {
-    case "string":
-      return (
-        <TextInput
-          value={column.getFilterValue() as string ?? ""}
-          onChange={event => column.setFilterValue(event.target.value)}
-        />
-      );
-    case "boolean":
-      return (
-        <Select
-          data={["-", "true", "false"]}
-          value={String(column.getFilterValue() ?? "-")}
-          onChange={value => {
-            if (value === "true") {
-              column.setFilterValue(true);
-            } else if (value === "false") {
-              column.setFilterValue(false);
-            } else if (value === "-") {
-              column.setFilterValue(undefined);
-            }
-          }}
-        />
-      );
-    case "format":
-      return (
-        <Select
-          data={[
-            { value: "", label: "-" },
-            ...BOOK_FORMAT_VALUE.map((format) => ({
-              value: format,
-              label: displayBookFormat(format),
-            })),
-          ]}
-          value={column.getFilterValue() as string ?? ""}
-          onChange={value => column.setFilterValue(value)}
-        />
-      );
-    case "store":
-      return (
-        <Select
-          data={[
-            { value: "", label: "-" },
-            ...BOOK_STORE_VALUE.map((format) => ({
-              value: format,
-              label: displayBookStore(format),
-            })),
-          ]}
-          value={column.getFilterValue() as string ?? ""}
-          onChange={value => column.setFilterValue(value)}
-        />
-      );
-    case "authors":
-      return (
-        <AuthorsFilter
-          value={(column.getFilterValue() ?? []) as string[]}
-          onChange={column.setFilterValue}
-        />
-      );
-    default:
-      return <></>;
-  }
-};
-
 export const BookList: React.FC<BookListProps> = ({ list }) => {
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [{ id: "title", value: "" }],
-  );
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState({});
+  const [columnFilters, setColumnFilters] = useRecoilState(bookListFilter);
+  const [sorting, setSorting] = useRecoilState(bookListSorting);
+  const [columnVisibility, setColumnVisibility] = useRecoilState(bookListColumnVisibility);
 
   const table = useReactTable({
     data: list,
@@ -274,10 +170,6 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: false,
   });
 
   return (
