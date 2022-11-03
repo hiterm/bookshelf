@@ -95,7 +95,7 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
           display: "grid",
           rowGap: 20,
           columnGap: 20,
-          padding: 20,
+          margin: 20,
           [theme.fn.smallerThan("sm")]: {
             gridTemplateColumns: "max-content 1fr",
           },
@@ -142,12 +142,12 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
           halfWidth
         />
       </Box>
-      <Box sx={{ display: "flex", gap: 1, marginTop: 1, marginBottom: 1 }}>
+      <Group m={20}>
         <Button color="blue" component={Link} to={`${url}/edit`}>
           変更
         </Button>
         <DeleteButton book={book} />
-      </Box>
+      </Group>
     </React.Fragment>
   );
 };
