@@ -3,7 +3,7 @@ import React from "react";
 import { Route, Switch, useParams, useRouteMatch } from "react-router-dom";
 import { BookDetailEdit } from "../../features/books/BookDetailEdit";
 import { BookDetailShow } from "../../features/books/BookDetailShow";
-import { graphQlBookToBook } from "../../features/books/types";
+import { graphQlBookToBook } from "../../features/books/entity/Book";
 import { useBookQuery } from "../../generated/graphql";
 
 const BookDetailPage: React.FC = () => {
