@@ -36,7 +36,8 @@ import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { bookListColumnVisibility, bookListFilter, bookListSorting } from "../../recoil/atoms/BookListState";
 import { displayBookFormat } from "./entity/BookFormat";
 import { Filter } from "./Filter";
-import { Author, Book, displayBookStore } from "./types";
+import { Author, Book } from "./types";
+import { displayBookStore } from "./entity/BookStore";
 
 type FilterType = "string" | "boolean" | "store" | "format" | "authors";
 

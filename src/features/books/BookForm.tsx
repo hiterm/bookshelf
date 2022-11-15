@@ -4,7 +4,8 @@ import React, { ReactElement } from "react";
 import { z } from "zod";
 import { useAuthorsQuery } from "../../generated/graphql";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
-import { BOOK_STORE_VALUE, displayBookStore, IBookForm } from "./types";
+import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
+import { IBookForm } from "./types";
 
 const bookFormSchema = z.object({
   title: z.string().min(1),

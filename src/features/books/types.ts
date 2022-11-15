@@ -39,14 +39,3 @@ export const graphQlBookToBook = (book: GraphQLBook): Book => {
     updatedAt: new Date(1000 * book.updatedAt),
   };
 };
-
-export const BOOK_STORE_VALUE: BookStore[] = ["UNKNOWN", "KINDLE"];
-
-export const displayBookStore = (store: BookStore): string => {
-  switch (store) {
-    case "KINDLE":
-      return "Kindle";
-    case "UNKNOWN":
-      return "Unknown";
-  }
-};
