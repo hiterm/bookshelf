@@ -3,7 +3,8 @@ import { useForm, zodResolver } from "@mantine/form";
 import React, { ReactElement } from "react";
 import { z } from "zod";
 import { useAuthorsQuery } from "../../generated/graphql";
-import { BOOK_FORMAT_VALUE, BOOK_STORE_VALUE, displayBookFormat, displayBookStore, IBookForm } from "./types";
+import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
+import { BOOK_STORE_VALUE, displayBookStore, IBookForm } from "./types";
 
 const bookFormSchema = z.object({
   title: z.string().min(1),

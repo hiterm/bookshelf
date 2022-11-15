@@ -6,7 +6,8 @@ import React, { useState } from "react";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { useDeleteBookMutation } from "../../generated/graphql";
-import { Book, displayBookFormat, displayBookStore } from "./types";
+import { displayBookFormat } from "./entity/BookFormat";
+import { Book,  displayBookStore } from "./types";
 
 const BookDetailShowItem: React.FC<{
   field: string;

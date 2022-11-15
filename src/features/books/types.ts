@@ -40,19 +40,7 @@ export const graphQlBookToBook = (book: GraphQLBook): Book => {
   };
 };
 
-export const BOOK_FORMAT_VALUE: BookFormat[] = ["UNKNOWN", "E_BOOK", "PRINTED"];
 export const BOOK_STORE_VALUE: BookStore[] = ["UNKNOWN", "KINDLE"];
-
-export const displayBookFormat = (format: BookFormat): string => {
-  switch (format) {
-    case "E_BOOK":
-      return "eBook";
-    case "PRINTED":
-      return "Printed";
-    case "UNKNOWN":
-      return "Unknown";
-  }
-};
 
 export const displayBookStore = (store: BookStore): string => {
   switch (store) {

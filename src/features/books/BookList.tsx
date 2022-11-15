@@ -34,8 +34,9 @@ import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { bookListColumnVisibility, bookListFilter, bookListSorting } from "../../recoil/atoms/BookListState";
+import { displayBookFormat } from "./entity/BookFormat";
 import { Filter } from "./Filter";
-import { Author, Book, displayBookFormat, displayBookStore } from "./types";
+import { Author, Book, displayBookStore } from "./types";
 
 type FilterType = "string" | "boolean" | "store" | "format" | "authors";
 
