@@ -3,7 +3,7 @@ import { showNotification } from "@mantine/notifications";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { useUpdateBookMutation } from "../../generated/graphql";
-import { IBookForm, useBookForm } from "./BookForm";
+import { BookFormValues, useBookForm } from "./BookForm";
 import { Book } from "./entity/Book";
 
 export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
@@ -13,7 +13,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
 
   const [_createBookResult, updateBook] = useUpdateBookMutation();
 
-  const handleSubmit = async (values: IBookForm) => {
+  const handleSubmit = async (values: BookFormValues) => {
     const { authors, ...rest } = values;
     const bookData = {
       ...rest,

@@ -7,7 +7,7 @@ import { Author } from "./entity/Author";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
 import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
 
-export type IBookForm = {
+export type BookFormValues = {
   title: string;
   authors: Author[];
   isbn: string;
@@ -31,10 +31,10 @@ const bookFormSchema = z.object({
 
 type BookFormProps = {
   onSubmit: (
-    values: IBookForm,
+    values: BookFormValues,
     event: React.FormEvent<HTMLFormElement>,
   ) => void;
-  initialValues: IBookForm;
+  initialValues: BookFormValues;
 };
 
 type BookFormReturn = {

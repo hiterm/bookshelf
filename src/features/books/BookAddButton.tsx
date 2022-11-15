@@ -3,7 +3,7 @@ import { showNotification } from "@mantine/notifications";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useCreateBookMutation } from "../../generated/graphql";
-import { IBookForm, useBookForm } from "./BookForm";
+import { BookFormValues, useBookForm } from "./BookForm";
 
 export const BookAddButton: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -20,7 +20,7 @@ export const BookAddButton: React.FC = () => {
 
   const history = useHistory();
 
-  const submitBook = async (value: IBookForm) => {
+  const submitBook = async (value: BookFormValues) => {
     const { authors, ...rest } = value;
     const bookData = {
       ...rest,
@@ -56,7 +56,7 @@ export const BookAddButton: React.FC = () => {
     });
   };
 
-  const emptyBook: IBookForm = {
+  const emptyBook: BookFormValues = {
     title: "",
     authors: [],
     isbn: "",
