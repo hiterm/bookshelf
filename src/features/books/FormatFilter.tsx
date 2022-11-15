@@ -1,6 +1,6 @@
 import { Select } from "@mantine/core";
 import { Column } from "@tanstack/react-table";
-import { BOOK_FORMAT_VALUE, displayBookFormat } from "./schema";
+import { BOOK_FORMAT_VALUE, displayBookFormat } from "./types";
 
 export type FormatFilterProps<TData, TValue> = { column: Column<TData, TValue> };
 

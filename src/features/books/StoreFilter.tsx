@@ -1,6 +1,6 @@
 import { Select } from "@mantine/core";
 import { Column } from "@tanstack/react-table";
-import { BOOK_STORE_VALUE, displayBookStore } from "./schema";
+import { BOOK_STORE_VALUE, displayBookStore } from "./types";
 
 export type StoreFilterProps<TData, TValue> = { column: Column<TData, TValue> };
 

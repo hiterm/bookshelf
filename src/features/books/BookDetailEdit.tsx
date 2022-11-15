@@ -4,7 +4,7 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { useUpdateBookMutation } from "../../generated/graphql";
 import { useBookForm } from "./BookForm";
-import { Book, IBookForm } from "./schema";
+import { Book, IBookForm } from "./types";
 
 export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   const book = props.book;

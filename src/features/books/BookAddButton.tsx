@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useCreateBookMutation } from "../../generated/graphql";
 import { useBookForm } from "./BookForm";
-import { IBookForm } from "./schema";
+import { IBookForm } from "./types";
 
 export const BookAddButton: React.FC = () => {
   const [open, setOpen] = useState(false);

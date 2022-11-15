@@ -6,7 +6,7 @@ import { Client, Provider } from "urql";
 import { vi } from "vitest";
 import { fromValue } from "wonka";
 import { useBookForm } from "./BookForm";
-import { IBookForm } from "./schema";
+import { IBookForm } from "./types";
 
 const emptyBook: IBookForm = {
   title: "",

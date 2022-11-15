@@ -2,7 +2,7 @@ import { Center, Loader, Paper } from "@mantine/core";
 import React, { useMemo } from "react";
 import { BookAddButton } from "../../features/books/BookAddButton";
 import { BookList } from "../../features/books/BookList";
-import { Book, graphQlBookToBook } from "../../features/books/schema";
+import { Book, graphQlBookToBook } from "../../features/books/types";
 import { useBooksQuery } from "../../generated/graphql";
 
 const BookIndexPage: React.FC = () => {
