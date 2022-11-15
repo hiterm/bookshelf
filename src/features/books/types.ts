@@ -1,9 +1,5 @@
 import { BookFormat, BookStore } from "../../generated/graphql";
-
-export type Author = {
-  id: string;
-  name: string;
-};
+import { Author } from "./entity/Author";
 
 export type IBookForm = {
   title: string;

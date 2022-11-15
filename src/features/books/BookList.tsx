@@ -37,8 +37,8 @@ import { bookListColumnVisibility, bookListFilter, bookListSorting } from "../..
 import { displayBookFormat } from "./entity/BookFormat";
 import { displayBookStore } from "./entity/BookStore";
 import { Filter } from "./Filter";
-import { Author } from "./types";
 import { Book } from "./entity/Book";
+import { Author } from "./entity/Author";
 
 type FilterType = "string" | "boolean" | "store" | "format" | "authors";
 
