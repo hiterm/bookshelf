@@ -2,10 +2,21 @@ import { Checkbox, Loader, MultiSelect, NumberInput, Select, Stack, TextInput } 
 import { useForm, zodResolver } from "@mantine/form";
 import React, { ReactElement } from "react";
 import { z } from "zod";
-import { useAuthorsQuery } from "../../generated/graphql";
+import { BookFormat, BookStore, useAuthorsQuery } from "../../generated/graphql";
+import { Author } from "./entity/Author";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
 import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
-import { IBookForm } from "./types";
+
+export type IBookForm = {
+  title: string;
+  authors: Author[];
+  isbn: string;
+  read: boolean;
+  owned: boolean;
+  priority: number;
+  format: BookFormat;
+  store: BookStore;
+};
 
 const bookFormSchema = z.object({
   title: z.string().min(1),

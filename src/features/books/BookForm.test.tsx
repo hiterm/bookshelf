@@ -5,8 +5,7 @@ import React from "react";
 import { Client, Provider } from "urql";
 import { vi } from "vitest";
 import { fromValue } from "wonka";
-import { useBookForm } from "./BookForm";
-import { IBookForm } from "./types";
+import { IBookForm, useBookForm } from "./BookForm";
 
 const emptyBook: IBookForm = {
   title: "",
