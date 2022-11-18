@@ -41,11 +41,14 @@ module.exports = {
       "additionalHooks": "useDebouncedEffect",
     }],
 
-    // Disable slow rules
+    // https://typescript-eslint.io/docs/linting/troubleshooting/#eslint-plugin-import
+    "import/named": "off",
     "import/namespace": "off",
     "import/default": "off",
-    "import/no-named-as-default": "off",
     "import/no-named-as-default-member": "off",
+
+    // Disable slow rules
+    "import/no-named-as-default": "off",
   },
   ignorePatterns: ["/build", "/dist", "/src/generated", "/.yarn"],
 };
