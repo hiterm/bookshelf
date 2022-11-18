@@ -43,7 +43,7 @@ import { Filter } from "./Filter";
 type FilterType = "string" | "boolean" | "store" | "format" | "authors";
 
 declare module "@tanstack/table-core" {
-  // eslint-disable-next-line unused-imports/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     filterType: FilterType;
   }

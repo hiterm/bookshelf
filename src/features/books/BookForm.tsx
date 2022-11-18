@@ -77,7 +77,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
           form.getInputProps("authors").onChange(
             authorIds.map((authorId) => ({
               id: authorId,
-              name: queryResult.data!.authors.find(
+              name: queryResult.data?.authors.find(
                 (author) => author.id === authorId,
               )?.name,
             })),
