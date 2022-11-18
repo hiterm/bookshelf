@@ -4,16 +4,16 @@ module.exports = {
     node: true,
   },
   parser: "@typescript-eslint/parser",
-  // parserOptions: {
-  //   tsconfigRootDir: __dirname,
-  //   project: ["./tsconfig.json"],
-  // },
+  parserOptions: {
+    tsconfigRootDir: __dirname,
+    project: ["./tsconfig.json"],
+  },
   extends: [
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:@typescript-eslint/recommended",
-    // "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
     // "plugin:@typescript-eslint/strict",
     "plugin:import/recommended",
     "plugin:import/typescript",
@@ -59,5 +59,5 @@ module.exports = {
     // Disable slow rules
     "import/no-named-as-default": "off",
   },
-  ignorePatterns: ["/build", "/dist", "/src/generated", "/.yarn"],
+  ignorePatterns: ["/build", "/dist", "/src/generated", "/.yarn", "/.eslintrc.js"],
 };
