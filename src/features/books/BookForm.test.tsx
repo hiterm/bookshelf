@@ -5,10 +5,9 @@ import React from "react";
 import { Client, Provider } from "urql";
 import { vi } from "vitest";
 import { fromValue } from "wonka";
-import { useBookForm } from "./BookForm";
-import { IBookForm } from "./schema";
+import { BookFormValues, useBookForm } from "./BookForm";
 
-const emptyBook: IBookForm = {
+const emptyBook: BookFormValues = {
   title: "",
   authors: [{ id: "c156c887-e162-4777-85c9-ec474a666a87", name: "author1" }],
   isbn: "",
@@ -19,7 +18,7 @@ const emptyBook: IBookForm = {
   store: "UNKNOWN",
 };
 
-type TestFormProps = { onSubmit: (values: IBookForm) => void };
+type TestFormProps = { onSubmit: (values: BookFormValues) => void };
 
 const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
   const { form, submitForm } = useBookForm({
@@ -68,7 +67,7 @@ describe("useBookForm", () => {
     const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
       <Provider value={mockClient as unknown as Client}>{children}</Provider>
     );
-    const mockSubmit = vi.fn((_book: IBookForm) => {});
+    const mockSubmit = vi.fn((_book: BookFormValues) => {});
 
     const { getByRole, findByRole } = render(
       <TestForm onSubmit={mockSubmit} />,
