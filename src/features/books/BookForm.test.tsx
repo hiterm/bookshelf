@@ -67,7 +67,7 @@ describe("useBookForm", () => {
     const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
       <Provider value={mockClient as unknown as Client}>{children}</Provider>
     );
-    const mockSubmit = vi.fn((_book: BookFormValues) => {});
+    const mockSubmit = vi.fn();
 
     const { getByRole, findByRole } = render(
       <TestForm onSubmit={mockSubmit} />,
