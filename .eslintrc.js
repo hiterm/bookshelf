@@ -19,7 +19,7 @@ module.exports = {
     "plugin:import/typescript",
     "prettier",
   ],
-  plugins: ["@typescript-eslint", "import", "unused-imports"],
+  plugins: ["@typescript-eslint", "import"],
   settings: {
     react: {
       version: "detect",
@@ -37,17 +37,6 @@ module.exports = {
     eqeqeq: ["error", "smart"],
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
-    "@typescript-eslint/no-unused-vars": "off",
-    "unused-imports/no-unused-imports": "warn",
-    "unused-imports/no-unused-vars": [
-      "warn",
-      {
-        vars: "all",
-        varsIgnorePattern: "^_",
-        args: "after-used",
-        argsIgnorePattern: "^_",
-      },
-    ],
     "react-hooks/exhaustive-deps": ["warn", {
       "additionalHooks": "useDebouncedEffect",
     }],
