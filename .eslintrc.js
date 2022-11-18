@@ -40,6 +40,15 @@ module.exports = {
     "react-hooks/exhaustive-deps": ["warn", {
       "additionalHooks": "useDebouncedEffect",
     }],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_",
+      },
+    ],
 
     // https://typescript-eslint.io/docs/linting/troubleshooting/#eslint-plugin-import
     "import/named": "off",
