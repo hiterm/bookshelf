@@ -68,5 +68,5 @@ module.exports = {
     // Disable slow rules
     "import/no-named-as-default": "off",
   },
-  ignorePatterns: ["/build", "/dist", "/src/generated", "/.yarn", "/.eslintrc.js"],
+  ignorePatterns: ["/build", "/dist", "/src/generated", "/.yarn", "/.eslintrc.js", "/vite.config.ts"],
 };

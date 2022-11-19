@@ -54,7 +54,7 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
       });
     } catch (error) {
       showNotification({
-        message: `削除に失敗しました: ${error}`,
+        message: `削除に失敗しました: ${String(error)}`,
         color: "red",
       });
     }

@@ -25,6 +25,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   };
 
   const { form, submitForm } = useBookForm({
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     onSubmit: handleSubmit,
     initialValues: book,
   });

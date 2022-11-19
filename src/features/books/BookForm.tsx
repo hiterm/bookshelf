@@ -76,6 +76,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
         {...form.getInputProps("authors")}
         value={form.values.authors.map((author) => author.id)}
         onChange={(authorIds) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
           form.getInputProps("authors").onChange(
             authorIds.map((authorId) => ({
               id: authorId,
