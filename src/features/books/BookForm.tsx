@@ -51,9 +51,11 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
 
   const [queryResult, _reexecuteQuery] = useAuthorsQuery();
 
+  const data = queryResult.data;
+
   const submitForm = form.onSubmit(props.onSubmit);
 
-  if (queryResult.fetching || queryResult.data == null) {
+  if (queryResult.fetching || data == null) {
     return { form: <Loader />, submitForm };
   }
 
@@ -66,7 +68,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
       <TextInput label="書名" {...form.getInputProps("title")} />
       <MultiSelect
         label="著者"
-        data={queryResult.data?.authors.map((author) => ({
+        data={data?.authors.map((author) => ({
           value: author.id,
           label: author.name,
         })) ?? []}
@@ -77,7 +79,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
           form.getInputProps("authors").onChange(
             authorIds.map((authorId) => ({
               id: authorId,
-              name: queryResult.data?.authors.find(
+              name: data.authors.find(
                 (author) => author.id === authorId,
               )?.name,
             })),
