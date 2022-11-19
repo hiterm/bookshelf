@@ -79,7 +79,7 @@ const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
 
 const MyUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
   const { getAccessTokenSilently } = useAuth0();
-  const query = useQuery(["auth0AccessToken"], getAccessTokenSilently, {
+  const query = useQuery(["auth0AccessToken"], () => getAccessTokenSilently(), {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });

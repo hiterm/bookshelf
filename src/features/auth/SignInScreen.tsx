@@ -9,7 +9,7 @@ export const SignInScreen: React.FC = () => {
     <Center>
       <Button
         onClick={() => {
-          loginWithRedirect();
+          void loginWithRedirect();
         }}
       >
         Login

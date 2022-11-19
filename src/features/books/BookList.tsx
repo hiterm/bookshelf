@@ -54,6 +54,7 @@ const authorsFilter: FilterFn<Book> = (row, columnId, filterValue: string[], _ad
     return true;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const value = row.getValue(columnId) as Author[];
   return value.some(author => filterValue.includes(author.id));
 };
