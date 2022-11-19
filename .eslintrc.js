@@ -4,16 +4,22 @@ module.exports = {
     node: true,
   },
   parser: "@typescript-eslint/parser",
+  parserOptions: {
+    tsconfigRootDir: __dirname,
+    project: ["./tsconfig.json"],
+  },
   extends: [
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:@typescript-eslint/strict",
     "plugin:import/recommended",
     "plugin:import/typescript",
     "prettier",
   ],
-  plugins: ["@typescript-eslint", "import", "unused-imports"],
+  plugins: ["@typescript-eslint", "import"],
   settings: {
     react: {
       version: "detect",
@@ -31,26 +37,37 @@ module.exports = {
     eqeqeq: ["error", "smart"],
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
-    "no-unused-vars": "off",
-    "unused-imports/no-unused-imports": "warn",
-    "unused-imports/no-unused-vars": [
-      "warn",
-      {
-        vars: "all",
-        varsIgnorePattern: "^_",
-        args: "after-used",
-        argsIgnorePattern: "^_",
-      },
-    ],
     "react-hooks/exhaustive-deps": ["warn", {
       "additionalHooks": "useDebouncedEffect",
     }],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_",
+      },
+    ],
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        "checksVoidReturn": {
+          "arguments": false,
+          "attributes": false,
+        },
+      },
+    ],
+    "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
 
-    // Disable slow rules
+    // https://typescript-eslint.io/docs/linting/troubleshooting/#eslint-plugin-import
+    "import/named": "off",
     "import/namespace": "off",
     "import/default": "off",
-    "import/no-named-as-default": "off",
     "import/no-named-as-default-member": "off",
+
+    // Disable slow rules
+    "import/no-named-as-default": "off",
   },
-  ignorePatterns: ["/build", "/dist", "/src/generated", "/.yarn"],
+  ignorePatterns: ["/build", "/dist", "/src/generated", "/.yarn", "/.eslintrc.js", "/vite.config.ts"],
 };

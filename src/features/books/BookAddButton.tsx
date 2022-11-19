@@ -68,6 +68,7 @@ export const BookAddButton: React.FC = () => {
   };
 
   const { form, submitForm } = useBookForm({
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     onSubmit: submitBook,
     initialValues: emptyBook,
   });

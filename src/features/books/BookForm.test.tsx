@@ -52,7 +52,7 @@ describe("useBookForm", () => {
     // https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
     Object.defineProperty(window, "matchMedia", {
       writable: true,
-      value: vi.fn().mockImplementation((query) => ({
+      value: vi.fn().mockImplementation((query: string) => ({
         matches: false,
         media: query,
         onchange: null,
@@ -67,6 +67,7 @@ describe("useBookForm", () => {
     const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
       <Provider value={mockClient as unknown as Client}>{children}</Provider>
     );
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const mockSubmit = vi.fn((_book: BookFormValues) => {});
 
     const { getByRole, findByRole } = render(

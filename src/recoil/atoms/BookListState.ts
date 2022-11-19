@@ -15,7 +15,7 @@ export const bookListSorting = atom<SortingState>({
   key: "BookListSorting",
   default: [],
   effects: [
-    syncEffect({ refine: writableArray(object({ id: string(), desc: bool() })) } as any),
+    syncEffect({ refine: writableArray(object({ id: string(), desc: bool() })) }),
   ],
 });
 
