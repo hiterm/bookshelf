@@ -55,10 +55,6 @@ const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
     );
   }
 
-  if (data == null) {
-    return <>something is wrong.</>;
-  }
-
   if (data.loggedInUser == null) {
     return (
       <Center>

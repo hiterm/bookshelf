@@ -68,10 +68,10 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
       <TextInput label="書名" {...form.getInputProps("title")} />
       <MultiSelect
         label="著者"
-        data={data?.authors.map((author) => ({
+        data={data.authors.map((author) => ({
           value: author.id,
           label: author.name,
-        })) ?? []}
+        }))}
         searchable
         {...form.getInputProps("authors")}
         value={form.values.authors.map((author) => author.id)}

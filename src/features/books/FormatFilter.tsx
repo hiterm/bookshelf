@@ -14,7 +14,7 @@ export const FormatFilter = <TData, TValue>({ column }: FormatFilterProps<TData,
           label: displayBookFormat(format),
         })),
       ]}
-      value={column.getFilterValue() as string ?? ""}
+      value={column.getFilterValue() as (string | undefined) ?? ""}
       onChange={value => column.setFilterValue(value)}
     />
   );
