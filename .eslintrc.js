@@ -14,7 +14,7 @@ module.exports = {
     "plugin:react-hooks/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    // "plugin:@typescript-eslint/strict",
+    "plugin:@typescript-eslint/strict",
     "plugin:import/recommended",
     "plugin:import/typescript",
     "prettier",
@@ -58,6 +58,7 @@ module.exports = {
         },
       },
     ],
+    "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
 
     // https://typescript-eslint.io/docs/linting/troubleshooting/#eslint-plugin-import
     "import/named": "off",
