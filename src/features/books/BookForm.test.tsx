@@ -67,7 +67,8 @@ describe("useBookForm", () => {
     const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
       <Provider value={mockClient as unknown as Client}>{children}</Provider>
     );
-    const mockSubmit = vi.fn();
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    const mockSubmit = vi.fn((_book: BookFormValues) => {});
 
     const { getByRole, findByRole } = render(
       <TestForm onSubmit={mockSubmit} />,
