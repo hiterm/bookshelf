@@ -55,7 +55,7 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^2.13.5",
+    "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/typescript": "2.7.3",
     "@graphql-codegen/typescript-operations": "2.5.3",
     "@graphql-codegen/typescript-urql": "^3.7.0",
@@ -78,7 +78,7 @@
     "jsdom": "^20.0.1",
     "prettier": "^2.7.1",
     "vite": "^3.2.10",
-    "vite-plugin-checker": "^0.5.1",
+    "vite-plugin-checker": "^0.6.4",
     "vitest": "^0.24.3"
   },
   "resolutions": {
