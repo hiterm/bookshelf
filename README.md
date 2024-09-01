@@ -48,3 +48,7 @@ npm start
 | VITE_AUTH0_AUDIENCE  | The identifier of Bookshelf API. See https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#parameters.                        |
 | VITE_BOOKSHELF_API   | An URL of Bookshelf API endpoint.                                                                                                            |
 | VITE_DEMO_MODE       | If it is 'true', sign-in will be skipped. It is intended to be used with [mock-bookshelf-api](https://github.com/hiterm/mock-bookshelf-api). |
+
+## Deploy to production
+
+Commit into master.
