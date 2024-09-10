@@ -47,7 +47,7 @@
     "mantine-data-grid": "^0.0.20",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^5.3.4",
+    "react-router-dom": "^6.26.2",
     "recoil": "^0.7.6",
     "recoil-sync": "^0.2.0",
     "typescript": "~4.9.3",
