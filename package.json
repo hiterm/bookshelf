@@ -83,5 +83,8 @@
   },
   "resolutions": {
     "undici": "^5.10.0"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
