@@ -65,7 +65,7 @@
     "@types/react-router-dom": "^5.1.7",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "^7.4.0",
     "dprint": "^0.32.2",
     "eslint": "^8.16.0",
@@ -77,9 +77,9 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "jsdom": "^20.0.1",
     "prettier": "^2.7.1",
-    "vite": "^5.4.14",
+    "vite": "^6.2.3",
     "vite-plugin-checker": "^0.6.4",
-    "vitest": "^2.1.1"
+    "vitest": "^3.0.9"
   },
   "resolutions": {
     "undici": "^5.10.0"
