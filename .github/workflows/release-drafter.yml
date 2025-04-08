@@ -11,8 +11,8 @@ jobs:
   update_release_draft:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: release-drafter/release-drafter@v5
+      - uses: actions/checkout@v4
+      - uses: release-drafter/release-drafter@v6
         id: release_drafter
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -21,6 +21,6 @@ jobs:
           tag=${{ steps.release_drafter.outputs.tag_name }}
           npm --no-git-tag-version version ${tag#v}
         continue-on-error: true
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Bump version
