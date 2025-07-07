@@ -288,7 +288,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
       <Center mt="md" mb="md">
         <Pagination
           total={table.getPageCount()}
-          page={table.getState().pagination.pageIndex + 1}
+          value={table.getState().pagination.pageIndex + 1}
           onChange={(page) => {
             table.setPageIndex(page - 1);
           }}

@@ -1,7 +1,7 @@
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { Alert, AppShell, Button, Center, Loader, MantineProvider } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { NotificationsProvider } from "@mantine/notifications";
+import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { devtoolsExchange } from "@urql/devtools";
 import React, { Fragment, memo, useMemo } from "react";
@@ -159,28 +159,27 @@ const App: React.FC = () => {
       <RecoilURLSyncJSON location={{ part: "queryParams" }}>
         <QueryClientProvider client={queryClient}>
           <MantineProvider withGlobalStyles withNormalizeCSS>
-            <NotificationsProvider>
-              <Auth0Provider
-                domain={import.meta.env.VITE_AUTH0_DOMAIN}
-                clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-                audience={import.meta.env.VITE_AUTH0_AUDIENCE}
-                redirectUri={window.location.origin}
-              >
-                <Router>
-                  <AppShell
-                    navbar={<Navbar opened={opened} closeNavbar={handlers.close} />}
-                    header={
-                      <Header
-                        burgerOpend={opened}
-                        onBurgerClick={handlers.toggle}
-                      />
-                    }
-                  >
-                    <MainContent />
-                  </AppShell>
-                </Router>
-              </Auth0Provider>
-            </NotificationsProvider>
+            <Notifications />
+            <Auth0Provider
+              domain={import.meta.env.VITE_AUTH0_DOMAIN}
+              clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+              audience={import.meta.env.VITE_AUTH0_AUDIENCE}
+              redirectUri={window.location.origin}
+            >
+              <Router>
+                <AppShell
+                  navbar={<Navbar opened={opened} closeNavbar={handlers.close} />}
+                  header={
+                    <Header
+                      burgerOpend={opened}
+                      onBurgerClick={handlers.toggle}
+                    />
+                  }
+                >
+                  <MainContent />
+                </AppShell>
+              </Router>
+            </Auth0Provider>
           </MantineProvider>
         </QueryClientProvider>
       </RecoilURLSyncJSON>
