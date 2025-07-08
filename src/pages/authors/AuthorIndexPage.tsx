@@ -3,12 +3,13 @@ import {
   useReactTable,
   getCoreRowModel,
   getPaginationRowModel,
+  getFilteredRowModel,
   flexRender,
 } from "@tanstack/react-table";
 import { useForm } from "@mantine/form";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { DataGrid } from "mantine-data-grid";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useAuthorsQuery, useCreateAuthorMutation } from "../../generated/graphql";
 
 type Author = {
@@ -54,6 +55,8 @@ export const AuthorIndexPage: React.FC = () => {
   }
 
 
+  const [globalFilter, setGlobalFilter] = useState("");
+
   const columnHelper = createColumnHelper<Author>();
   const columns = [
     columnHelper.accessor("name", { header: "名前" }),
@@ -62,8 +65,11 @@ export const AuthorIndexPage: React.FC = () => {
   const table = useReactTable({
     data: data.authors,
     columns,
+    state: { globalFilter },
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
   return (
@@ -72,6 +78,12 @@ export const AuthorIndexPage: React.FC = () => {
         <RegisterAuthorForm />
       </Paper>
       <Paper shadow="xs" p="md" mt="md">
+        <TextInput
+          placeholder="検索..."
+          value={globalFilter}
+          onChange={e => setGlobalFilter(e.currentTarget.value)}
+          mb="md"
+        />
         <Table>
           <Table.Thead>
             {table.getHeaderGroups().map(headerGroup => (
