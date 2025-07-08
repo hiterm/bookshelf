@@ -1,4 +1,4 @@
-import { Button, Center, Loader, Paper, TextInput } from "@mantine/core";
+import { Button, Center, Loader, Paper, Table, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { DataGrid } from "mantine-data-grid";
@@ -63,7 +63,7 @@ export const AuthorIndexPage: React.FC = () => {
         <RegisterAuthorForm />
       </Paper>
       <Paper shadow="xs" p="md" mt="md">
-        <DataGrid
+        {/* <DataGrid
           columns={columns}
           data={data.authors}
           striped
@@ -73,7 +73,25 @@ export const AuthorIndexPage: React.FC = () => {
           withColumnFilters
           withSorting
           mt="md"
-        />
+        /> */}
+        <Table>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Td>
+                名前
+              </Table.Td>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {data.authors.map(({ name }) => (
+              <Table.Tr>
+                <Table.Td>
+                  {name}
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
       </Paper>
     </>
   );
