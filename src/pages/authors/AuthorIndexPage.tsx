@@ -1,13 +1,14 @@
-import { Button, Center, Loader, Paper, Table, TextInput, Pagination } from "@mantine/core";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getFilteredRowModel,
-  flexRender,
-} from "@tanstack/react-table";
+import { Button, Center, Loader, Pagination, Paper, Table, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import {
+  ColumnDef,
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useAuthorsQuery, useCreateAuthorMutation } from "../../generated/graphql";
 
@@ -40,6 +41,20 @@ export const AuthorIndexPage: React.FC = () => {
   const context = useMemo(() => ({ additionalTypenames: ["Author"] }), []);
   const [result, _reexecuteQuery] = useAuthorsQuery({ context });
   const { data, fetching, error } = result;
+  const [globalFilter, setGlobalFilter] = useState("");
+  const columnHelper = createColumnHelper<Author>();
+  const columns = [
+    columnHelper.accessor("name", { header: "名前" }),
+  ] as ColumnDef<Author>[];
+  const table = useReactTable({
+    data: data?.authors ?? [], // その場しのぎ
+    columns,
+    state: { globalFilter },
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+  });
 
   if (error != null) {
     return <>{JSON.stringify(error)}</>;
@@ -52,24 +67,6 @@ export const AuthorIndexPage: React.FC = () => {
       </Center>
     );
   }
-
-
-  const [globalFilter, setGlobalFilter] = useState("");
-
-  const columnHelper = createColumnHelper<Author>();
-  const columns = [
-    columnHelper.accessor("name", { header: "名前" }),
-  ] as ColumnDef<Author>[];
-
-  const table = useReactTable({
-    data: data.authors,
-    columns,
-    state: { globalFilter },
-    onGlobalFilterChange: setGlobalFilter,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-  });
 
   return (
     <>
