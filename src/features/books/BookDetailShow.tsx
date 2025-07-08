@@ -92,7 +92,7 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
   const history = useHistory();
 
   const theme = useMantineTheme();
-  const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm}px)`);
+  const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
   const book = props.book;
 
