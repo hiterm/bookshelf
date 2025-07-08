@@ -1,4 +1,10 @@
-import { Button, Center, Loader, Paper, Table, TextInput } from "@mantine/core";
+import { Button, Center, Loader, Paper, Table, TextInput, Pagination } from "@mantine/core";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 import { useForm } from "@mantine/form";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { DataGrid } from "mantine-data-grid";
@@ -47,15 +53,18 @@ export const AuthorIndexPage: React.FC = () => {
     );
   }
 
-  const columnHelper = createColumnHelper<Author>();
 
-  // TODO: asを外す
-  // https://github.com/TanStack/table/issues/4382
-  // https://github.com/TanStack/table/issues/4302
-  // https://github.com/TanStack/table/issues/4241
+  const columnHelper = createColumnHelper<Author>();
   const columns = [
     columnHelper.accessor("name", { header: "名前" }),
   ] as ColumnDef<Author>[];
+
+  const table = useReactTable({
+    data: data.authors,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
 
   return (
     <>
@@ -63,35 +72,37 @@ export const AuthorIndexPage: React.FC = () => {
         <RegisterAuthorForm />
       </Paper>
       <Paper shadow="xs" p="md" mt="md">
-        {/* <DataGrid
-          columns={columns}
-          data={data.authors}
-          striped
-          highlightOnHover
-          withGlobalFilter
-          withPagination
-          withColumnFilters
-          withSorting
-          mt="md"
-        /> */}
         <Table>
           <Table.Thead>
-            <Table.Tr>
-              <Table.Td>
-                名前
-              </Table.Td>
-            </Table.Tr>
+            {table.getHeaderGroups().map(headerGroup => (
+              <Table.Tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <Table.Th key={header.id}>
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </Table.Th>
+                ))}
+              </Table.Tr>
+            ))}
           </Table.Thead>
           <Table.Tbody>
-            {data.authors.map(({ name }) => (
-              <Table.Tr>
-                <Table.Td>
-                  {name}
-                </Table.Td>
+            {table.getRowModel().rows.map(row => (
+              <Table.Tr key={row.id}>
+                {row.getVisibleCells().map(cell => (
+                  <Table.Td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </Table.Td>
+                ))}
               </Table.Tr>
             ))}
           </Table.Tbody>
         </Table>
+        <Center mt="md">
+          <Pagination
+            total={table.getPageCount()}
+            value={table.getState().pagination.pageIndex + 1}
+            onChange={(page) => table.setPageIndex(page - 1)}
+          />
+        </Center>
       </Paper>
     </>
   );
