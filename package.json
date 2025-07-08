@@ -27,8 +27,6 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^1.9.0",
-    "@emotion/react": "^11.10.4",
-    "@emotion/styled": "^11.10.4",
     "@mantine/core": "^7.17.8",
     "@mantine/dates": "^7.17.8",
     "@mantine/form": "^7.17.8",
