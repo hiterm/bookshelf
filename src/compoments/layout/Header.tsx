@@ -13,7 +13,7 @@ export const HeaderContents: React.FC<HeaderProps> = ({
   const { isAuthenticated, user, logout } = useAuth0();
 
   const handleSignOut = () => {
-    logout({ returnTo: window.location.origin });
+    logout({ logoutParams: { returnTo: window.location.origin } });
   };
 
   return (
