@@ -10,11 +10,14 @@ import { RecoilRoot } from "recoil";
 import { RecoilURLSyncJSON } from "recoil-sync";
 import { createClient, defaultExchanges, Provider as UrqlProvider } from "urql";
 import { ChildrenProps } from "./compoments/ChildrenProps";
-import { Header } from "./compoments/layout/Header";
-import { Navbar } from "./compoments/layout/Navbar";
+import { HeaderContents } from "./compoments/layout/Header";
+import { NavbarContents } from "./compoments/layout/Navbar";
 import { SignInScreen } from "./features/auth/SignInScreen";
 import { useLoggedInUserQuery, useRegisterUserMutation } from "./generated/graphql";
 import { MainRoutes } from "./pages/MainRoutes";
+import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
+import "@mantine/notifications/styles.css";
 
 const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -134,7 +137,7 @@ const MainContent = memo(function MainContent(): JSX.Element {
           <Alert
             color="yellow"
             mb="md"
-            sx={{
+            style={{
               display: import.meta.env.VITE_DEMO_MODE === "true"
                 ? undefined
                 : "none",
@@ -158,7 +161,7 @@ const App: React.FC = () => {
       {/* https://github.com/facebookexperimental/Recoil/issues/1994 */}
       <RecoilURLSyncJSON location={{ part: "queryParams" }}>
         <QueryClientProvider client={queryClient}>
-          <MantineProvider withGlobalStyles withNormalizeCSS>
+          <MantineProvider>
             <Notifications />
             <Auth0Provider
               domain={import.meta.env.VITE_AUTH0_DOMAIN}
@@ -168,15 +171,23 @@ const App: React.FC = () => {
             >
               <Router>
                 <AppShell
-                  navbar={<Navbar opened={opened} closeNavbar={handlers.close} />}
-                  header={
-                    <Header
-                      burgerOpend={opened}
-                      onBurgerClick={handlers.toggle}
-                    />
-                  }
+                  header={{ height: 70 }}
+                  navbar={{
+                    width: 300,
+                    breakpoint: "sm",
+                    collapsed: { mobile: !opened },
+                  }}
+                  padding="md"
                 >
-                  <MainContent />
+                  <AppShell.Header>
+                    <HeaderContents burgerOpened={opened} onBurgerClick={handlers.toggle} />
+                  </AppShell.Header>
+                  <AppShell.Navbar p="md">
+                    <NavbarContents />
+                  </AppShell.Navbar>
+                  <AppShell.Main>
+                    <MainContent />
+                  </AppShell.Main>
                 </AppShell>
               </Router>
             </Auth0Provider>

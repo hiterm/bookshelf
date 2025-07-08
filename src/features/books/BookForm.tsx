@@ -32,7 +32,7 @@ const bookFormSchema = z.object({
 type BookFormProps = {
   onSubmit: (
     values: BookFormValues,
-    event: React.FormEvent<HTMLFormElement>,
+    event: React.FormEvent<HTMLFormElement> | undefined,
   ) => void;
   initialValues: BookFormValues;
 };

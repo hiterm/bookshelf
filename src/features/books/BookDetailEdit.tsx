@@ -32,8 +32,8 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
 
   // TODO: Authorが上手く動かない
   return (
-    <Box sx={{ display: "flex", justifyContent: "center" }}>
-      <Box component="form" onSubmit={submitForm} sx={{ minWidth: 400 }}>
+    <Box style={{ display: "flex", justifyContent: "center" }}>
+      <Box component="form" onSubmit={submitForm} style={{ minWidth: 400 }}>
         {form}
         <Group mt="md">
           <Button type="submit">
