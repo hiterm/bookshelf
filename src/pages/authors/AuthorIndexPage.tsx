@@ -8,7 +8,6 @@ import {
 } from "@tanstack/react-table";
 import { useForm } from "@mantine/form";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import { DataGrid } from "mantine-data-grid";
 import { useMemo, useState } from "react";
 import { useAuthorsQuery, useCreateAuthorMutation } from "../../generated/graphql";
 

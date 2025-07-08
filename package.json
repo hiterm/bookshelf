@@ -42,7 +42,6 @@
     "@urql/devtools": "^2.0.3",
     "dayjs": "^1.11.5",
     "graphql": "^16.8.1",
-    "mantine-data-grid": "^0.0.20",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^5.3.4",
