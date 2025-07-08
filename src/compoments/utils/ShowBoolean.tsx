@@ -1,5 +1,5 @@
 import { ThemeIcon } from "@mantine/core";
-import { IconCheck, IconX } from "@tabler/icons";
+import { IconCheck, IconX } from "@tabler/icons-react";
 
 export const ShowBoolean: React.FC<{ flag: boolean }> = ({ flag }) => {
   return flag
