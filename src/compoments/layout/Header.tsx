@@ -12,8 +12,8 @@ export const HeaderContents: React.FC<HeaderProps> = ({
 }) => {
   const { isAuthenticated, user, logout } = useAuth0();
 
-  const handleSignOut = () => {
-    logout({ logoutParams: { returnTo: window.location.origin } });
+  const handleSignOut = async () => {
+    await logout({ logoutParams: { returnTo: window.location.origin } });
   };
 
   return (
