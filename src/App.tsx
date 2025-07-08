@@ -16,7 +16,6 @@ import { SignInScreen } from "./features/auth/SignInScreen";
 import { useLoggedInUserQuery, useRegisterUserMutation } from "./generated/graphql";
 import { MainRoutes } from "./pages/MainRoutes";
 import "@mantine/core/styles.css";
-import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
 
 const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
