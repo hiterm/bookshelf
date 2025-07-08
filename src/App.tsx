@@ -1,7 +1,7 @@
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { Alert, AppShell, Button, Center, Loader, MantineProvider } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { NotificationsProvider } from "@mantine/notifications";
+import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { devtoolsExchange } from "@urql/devtools";
 import React, { Fragment, memo, useMemo } from "react";
@@ -10,11 +10,13 @@ import { RecoilRoot } from "recoil";
 import { RecoilURLSyncJSON } from "recoil-sync";
 import { createClient, defaultExchanges, Provider as UrqlProvider } from "urql";
 import { ChildrenProps } from "./compoments/ChildrenProps";
-import { Header } from "./compoments/layout/Header";
-import { Navbar } from "./compoments/layout/Navbar";
+import { HeaderContents } from "./compoments/layout/Header";
+import { NavbarContents } from "./compoments/layout/Navbar";
 import { SignInScreen } from "./features/auth/SignInScreen";
 import { useLoggedInUserQuery, useRegisterUserMutation } from "./generated/graphql";
 import { MainRoutes } from "./pages/MainRoutes";
+import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
 
 const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -134,7 +136,7 @@ const MainContent = memo(function MainContent(): JSX.Element {
           <Alert
             color="yellow"
             mb="md"
-            sx={{
+            style={{
               display: import.meta.env.VITE_DEMO_MODE === "true"
                 ? undefined
                 : "none",
@@ -158,29 +160,36 @@ const App: React.FC = () => {
       {/* https://github.com/facebookexperimental/Recoil/issues/1994 */}
       <RecoilURLSyncJSON location={{ part: "queryParams" }}>
         <QueryClientProvider client={queryClient}>
-          <MantineProvider withGlobalStyles withNormalizeCSS>
-            <NotificationsProvider>
-              <Auth0Provider
-                domain={import.meta.env.VITE_AUTH0_DOMAIN}
-                clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-                audience={import.meta.env.VITE_AUTH0_AUDIENCE}
-                redirectUri={window.location.origin}
-              >
-                <Router>
-                  <AppShell
-                    navbar={<Navbar opened={opened} closeNavbar={handlers.close} />}
-                    header={
-                      <Header
-                        burgerOpend={opened}
-                        onBurgerClick={handlers.toggle}
-                      />
-                    }
-                  >
+          <MantineProvider>
+            <Notifications />
+            <Auth0Provider
+              domain={import.meta.env.VITE_AUTH0_DOMAIN}
+              clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+              audience={import.meta.env.VITE_AUTH0_AUDIENCE}
+              redirectUri={window.location.origin}
+            >
+              <Router>
+                <AppShell
+                  header={{ height: 70 }}
+                  navbar={{
+                    width: 300,
+                    breakpoint: "sm",
+                    collapsed: { mobile: !opened },
+                  }}
+                  padding="md"
+                >
+                  <AppShell.Header>
+                    <HeaderContents burgerOpened={opened} onBurgerClick={handlers.toggle} />
+                  </AppShell.Header>
+                  <AppShell.Navbar p="md">
+                    <NavbarContents />
+                  </AppShell.Navbar>
+                  <AppShell.Main>
                     <MainContent />
-                  </AppShell>
-                </Router>
-              </Auth0Provider>
-            </NotificationsProvider>
+                  </AppShell.Main>
+                </AppShell>
+              </Router>
+            </Auth0Provider>
           </MantineProvider>
         </QueryClientProvider>
       </RecoilURLSyncJSON>

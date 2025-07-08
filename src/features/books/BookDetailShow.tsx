@@ -1,4 +1,5 @@
-import { Box, Button, Center, Group, Modal, Text, Title } from "@mantine/core";
+import { Box, Button, Center, Group, Modal, Text, Title, useMantineTheme } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { IconArrowBack } from "@tabler/icons";
 import dayjs from "dayjs";
@@ -17,10 +18,10 @@ const BookDetailShowItem: React.FC<{
 }> = ({ field, value, halfWidth }) => {
   return (
     <>
-      <Text weight="bold">{field}</Text>
+      <Text fw="bold">{field}</Text>
       <Group
         align="center"
-        sx={{
+        style={{
           gridColumn: halfWidth ? "span 1" : "2 / -1",
         }}
       >
@@ -90,6 +91,9 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
   const { url } = useRouteMatch();
   const history = useHistory();
 
+  const theme = useMantineTheme();
+  const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+
   const book = props.book;
 
   return (
@@ -98,25 +102,22 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
         onClick={() => {
           history.goBack();
         }}
-        leftIcon={<IconArrowBack />}
+        leftSection={<IconArrowBack />}
         variant="outline"
         m={20}
       >
         Back
       </Button>
       <Box
-        sx={theme => ({
+        style={{
           display: "grid",
           rowGap: 20,
           columnGap: 20,
           margin: 20,
-          [theme.fn.smallerThan("sm")]: {
-            gridTemplateColumns: "max-content 1fr",
-          },
-          [theme.fn.largerThan("sm")]: {
-            gridTemplateColumns: "max-content 1fr max-content 1fr",
-          },
-        })}
+          gridTemplateColumns: isSmallScreen
+            ? "max-content 1fr"
+            : "max-content 1fr max-content 1fr",
+        }}
       >
         <BookDetailShowItem field="書名" value={book.title} />
         <BookDetailShowItem

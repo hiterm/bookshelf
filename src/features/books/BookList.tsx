@@ -118,11 +118,11 @@ const columns = [
   }),
   columnHelper.accessor("createdAt", {
     header: "追加日時",
-    cell: (info) => <Box sx={{ whiteSpace: "nowrap" }}>{formatDate(info.getValue())}</Box>,
+    cell: (info) => <Box style={{ whiteSpace: "nowrap" }}>{formatDate(info.getValue())}</Box>,
   }),
   columnHelper.accessor("updatedAt", {
     header: "更新日時",
-    cell: (info) => <Box sx={{ whiteSpace: "nowrap" }}>{formatDate(info.getValue())}</Box>,
+    cell: (info) => <Box style={{ whiteSpace: "nowrap" }}>{formatDate(info.getValue())}</Box>,
   }),
 ] as ColumnDef<Book>[];
 
@@ -232,63 +232,62 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
           Reset filter
         </Button>
       </Group>
-      <Box sx={{ overflow: "scroll" }}>
-        <Table withBorder mt="md" sx={{ borderLeft: "none", borderRight: "none" }}>
-          <thead>
+      <Box style={{ overflow: "scroll" }}>
+        <Table withTableBorder mt="md" style={{ borderLeft: "none", borderRight: "none" }}>
+          <Table.Thead>
             {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
+              <Table.Tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
-                  <Box
-                    component="th"
+                  <Table.Th
                     key={header.id}
-                    sx={{ minWidth: header.column.columnDef.minSize, whiteSpace: "nowrap" }}
+                    style={{ minWidth: header.column.columnDef.minSize, whiteSpace: "nowrap" }}
                   >
                     {header.isPlaceholder ? null : (
                       <Group
                         onClick={header.column.getToggleSortingHandler()}
-                        spacing={0}
-                        noWrap
-                        sx={{ cursor: header.column.getCanSort() ? "pointer" : undefined }}
+                        gap={0}
+                        wrap="nowrap"
+                        style={{ cursor: header.column.getCanSort() ? "pointer" : undefined }}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         <SortIcon isSorted={header.column.getIsSorted()} />
                       </Group>
                     )}
-                  </Box>
+                  </Table.Th>
                 ))}
-              </tr>
+              </Table.Tr>
             ))}
             {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
+              <Table.Tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
-                  <th key={header.id}>
-                    <Box sx={{ fontWeight: "normal" }}>
+                  <Table.Th key={header.id}>
+                    <Box style={{ fontWeight: "normal" }}>
                       {header.isPlaceholder ? null : (
                         header.column.getCanFilter() ? <Filter column={header.column} table={table} /> : null
                       )}
                     </Box>
-                  </th>
+                  </Table.Th>
                 ))}
-              </tr>
+              </Table.Tr>
             ))}
-          </thead>
-          <tbody>
+          </Table.Thead>
+          <Table.Tbody>
             {table.getRowModel().rows.map(row => (
-              <tr key={row.id}>
+              <Table.Tr key={row.id}>
                 {row.getVisibleCells().map(cell => (
-                  <td key={cell.id}>
+                  <Table.Td key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
+                  </Table.Td>
                 ))}
-              </tr>
+              </Table.Tr>
             ))}
-          </tbody>
+          </Table.Tbody>
         </Table>
       </Box>
       <Center mt="md" mb="md">
         <Pagination
           total={table.getPageCount()}
-          page={table.getState().pagination.pageIndex + 1}
+          value={table.getState().pagination.pageIndex + 1}
           onChange={(page) => {
             table.setPageIndex(page - 1);
           }}

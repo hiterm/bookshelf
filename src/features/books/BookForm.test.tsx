@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom";
+import { MantineProvider } from "@mantine/core";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
@@ -6,6 +7,21 @@ import { Client, Provider } from "urql";
 import { vi } from "vitest";
 import { fromValue } from "wonka";
 import { BookFormValues, useBookForm } from "./BookForm";
+
+// mock ResizeObserver
+beforeAll(() => {
+  global.ResizeObserver = class ResizeObserver {
+    observe() {
+      // do nothing
+    }
+    unobserve() {
+      // do nothing
+    }
+    disconnect() {
+      // do nothing
+    }
+  };
+});
 
 const emptyBook: BookFormValues = {
   title: "",
@@ -65,7 +81,11 @@ describe("useBookForm", () => {
     });
 
     const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-      <Provider value={mockClient as unknown as Client}>{children}</Provider>
+      <Provider value={mockClient as unknown as Client}>
+        <MantineProvider>
+          {children}
+        </MantineProvider>
+      </Provider>
     );
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const mockSubmit = vi.fn((_book: BookFormValues) => {});

@@ -1,14 +1,14 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { ActionIcon, Anchor, Burger, Group, Header as MantineHeader, MediaQuery, Menu, Title } from "@mantine/core";
+import { ActionIcon, Burger, Group, Menu, Title } from "@mantine/core";
 import { IconUser } from "@tabler/icons";
 import React from "react";
 import { Link } from "react-router-dom";
 
-type HeaderProps = { onBurgerClick: () => void; burgerOpend: boolean };
+type HeaderProps = { onBurgerClick: () => void; burgerOpened: boolean };
 
-export const Header: React.FC<HeaderProps> = ({
+export const HeaderContents: React.FC<HeaderProps> = ({
   onBurgerClick,
-  burgerOpend,
+  burgerOpened: burgerOpened,
 }) => {
   const { isAuthenticated, user, logout } = useAuth0();
 
@@ -17,31 +17,34 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <MantineHeader height={70} sx={{ paddingLeft: 20, paddingRight: 20 }}>
-      <Group position="apart" align="center" sx={{ height: "100%" }}>
-        <Group>
-          <MediaQuery largerThan="sm" styles={{ display: "none" }}>
-            <Burger opened={burgerOpend} onClick={onBurgerClick} />
-          </MediaQuery>
-          <Anchor variant="text" component={Link} to="/books">
-            <Title order={1}>Bookshelf</Title>
-          </Anchor>
-        </Group>
-        <Menu>
-          <Menu.Target>
-            <ActionIcon variant="default">
-              <IconUser />
-            </ActionIcon>
-          </Menu.Target>
-
-          <Menu.Dropdown>
-            <Menu.Item>
-              User: {isAuthenticated && user != null && user.name}
-            </Menu.Item>
-            <Menu.Item onClick={handleSignOut}>Logout</Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
+    <Group justify="space-between" align="center" style={{ height: "100%" }} px={20}>
+      <Group>
+        <Burger opened={burgerOpened} onClick={onBurgerClick} hiddenFrom="sm" />
+        <Title
+          order={1}
+          renderRoot={(props) => <Link to="/books" {...props} />}
+          style={{
+            color: "inherit",
+            textDecoration: "none",
+          }}
+        >
+          Bookshelf
+        </Title>
       </Group>
-    </MantineHeader>
+      <Menu>
+        <Menu.Target>
+          <ActionIcon variant="default">
+            <IconUser />
+          </ActionIcon>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          <Menu.Item>
+            User: {isAuthenticated && user != null && user.name}
+          </Menu.Item>
+          <Menu.Item onClick={handleSignOut}>Logout</Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+    </Group>
   );
 };
