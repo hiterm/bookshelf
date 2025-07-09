@@ -4,7 +4,7 @@ import { showNotification } from "@mantine/notifications";
 import { IconArrowBack } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import React, { useState } from "react";
-import { Link, useHistory, useRouteMatch } from "react-router-dom";
+import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { useDeleteBookMutation } from "../../generated/graphql";
 import { Book } from "./entity/Book";
@@ -44,11 +44,11 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
     setOpen(false);
   };
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const handleDelete = async () => {
     try {
       await deleteBook({ bookId: book.id }, { additionalTypenames: ["Book"] });
-      history.push("/books");
+      navigate({ to: "/books" });
       showNotification({
         message: `${book.title}が削除されました`,
         color: "teal",
@@ -88,8 +88,9 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
 };
 
 export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
-  const { url } = useRouteMatch();
-  const history = useHistory();
+  // TanStack Router では useRouteMatch の代替は useRouter で取得可能
+  // const { url } = useRouteMatch();
+  const navigate = useNavigate();
 
   const theme = useMantineTheme();
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
@@ -100,7 +101,7 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
     <React.Fragment>
       <Button
         onClick={() => {
-          history.goBack();
+          navigate({ to: '../' }); // 1つ前の階層に戻る
         }}
         leftSection={<IconArrowBack />}
         variant="outline"
@@ -158,7 +159,7 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
         />
       </Box>
       <Group m={20}>
-        <Button color="blue" component={Link} to={`${url}/edit`}>
+        <Button color="blue" component={Link} to="edit">
           変更
         </Button>
         <DeleteButton book={book} />

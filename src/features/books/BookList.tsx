@@ -31,7 +31,7 @@ import { useRecoilState } from "recoil";
 
 import { IconLayoutColumns, IconSortAscending, IconSortDescending } from "@tabler/icons-react";
 import React, { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { bookListColumnVisibility, bookListFilter, bookListSorting } from "../../recoil/atoms/BookListState";
 import { Author } from "./entity/Author";

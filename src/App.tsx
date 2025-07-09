@@ -1,11 +1,12 @@
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
+import { Outlet } from '@tanstack/react-router';
 import { Alert, AppShell, Button, Center, Loader, MantineProvider } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { devtoolsExchange } from "@urql/devtools";
 import React, { Fragment, memo, useMemo } from "react";
-import { BrowserRouter as Router } from "react-router-dom";
+// TanStack Router への移行のため、react-router-dom の import を削除
 import { RecoilRoot } from "recoil";
 import { RecoilURLSyncJSON } from "recoil-sync";
 import { createClient, defaultExchanges, Provider as UrqlProvider } from "urql";
@@ -14,7 +15,7 @@ import { HeaderContents } from "./compoments/layout/Header";
 import { NavbarContents } from "./compoments/layout/Navbar";
 import { SignInScreen } from "./features/auth/SignInScreen";
 import { useLoggedInUserQuery, useRegisterUserMutation } from "./generated/graphql";
-import { MainRoutes } from "./pages/MainRoutes";
+// import { MainRoutes } from "./pages/MainRoutes";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 
@@ -146,7 +147,7 @@ const MainContent = memo(function MainContent(): JSX.Element {
           >
             This is a read-only demo app. Update operations will not be reflected.
           </Alert>
-          <MainRoutes />
+          {/* TanStack Router でルーティングを管理するため MainRoutes を削除 */}
         </RegisterCheck>
       </BranchingUrqlProvider>
     </BranchingSignInCheck>
@@ -172,27 +173,40 @@ const App: React.FC = () => {
                 redirectUri: window.location.origin,
               }}
             >
-              <Router>
-                <AppShell
-                  header={{ height: 70 }}
-                  navbar={{
-                    width: 300,
-                    breakpoint: "sm",
-                    collapsed: { mobile: !opened },
-                  }}
-                  padding="md"
-                >
-                  <AppShell.Header>
-                    <HeaderContents burgerOpened={opened} onBurgerClick={handlers.toggle} />
-                  </AppShell.Header>
-                  <AppShell.Navbar p="md">
-                    <NavbarContents />
-                  </AppShell.Navbar>
-                  <AppShell.Main>
-                    <MainContent />
-                  </AppShell.Main>
-                </AppShell>
-              </Router>
+              <BranchingUrqlProvider>
+                <RegisterCheck>
+                  <AppShell
+                    header={{ height: 70 }}
+                    navbar={{
+                      width: 300,
+                      breakpoint: "sm",
+                      collapsed: { mobile: !opened },
+                    }}
+                    padding="md"
+                  >
+                    <AppShell.Header>
+                      <HeaderContents burgerOpened={opened} onBurgerClick={handlers.toggle} />
+                    </AppShell.Header>
+                    <AppShell.Navbar p="md">
+                      <NavbarContents />
+                    </AppShell.Navbar>
+                    <AppShell.Main>
+                      <Alert
+                        color="yellow"
+                        mb="md"
+                        style={{
+                          display: import.meta.env.VITE_DEMO_MODE === "true"
+                            ? undefined
+                            : "none",
+                        }}
+                      >
+                        This is a read-only demo app. Update operations will not be reflected.
+                      </Alert>
+                      <Outlet />
+                    </AppShell.Main>
+                  </AppShell>
+                </RegisterCheck>
+              </BranchingUrqlProvider>
             </Auth0Provider>
           </MantineProvider>
         </QueryClientProvider>

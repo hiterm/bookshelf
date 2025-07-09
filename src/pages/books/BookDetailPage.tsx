@@ -1,14 +1,13 @@
 import { Center, Loader } from "@mantine/core";
 import React from "react";
-import { Route, Switch, useParams, useRouteMatch } from "react-router-dom";
+import { useParams, Outlet } from "@tanstack/react-router";
 import { BookDetailEdit } from "../../features/books/BookDetailEdit";
 import { BookDetailShow } from "../../features/books/BookDetailShow";
 import { graphQlBookToBook } from "../../features/books/entity/Book";
 import { useBookQuery } from "../../generated/graphql";
 
 const BookDetailPage: React.FC = () => {
-  const { path } = useRouteMatch();
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams({ from: '/books/$id' });
 
   const [result, _reexecuteQuery] = useBookQuery({ variables: { bookId: id } });
   const { data, fetching, error } = result;
@@ -33,18 +32,9 @@ const BookDetailPage: React.FC = () => {
 
   const book = graphQlBookToBook(graphqlBook);
 
-  return (
-    <React.Fragment>
-      <Switch>
-        <Route exact path={path}>
-          <BookDetailShow book={book} />
-        </Route>
-        <Route path={`${path}/edit`}>
-          <BookDetailEdit book={book} />
-        </Route>
-      </Switch>
-    </React.Fragment>
-  );
+  // TanStack Router の Outlet には context プロパティはありません。子ルートで useRouteContext などを使って book を渡す設計に変更する必要があります。
+  // ここでは一旦 book を props で渡す形に戻します。
+  return <BookDetailShow book={book} />;
 };
 
 export { BookDetailPage };
