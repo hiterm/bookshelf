@@ -170,7 +170,7 @@ const App: React.FC = () => {
               clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
               authorizationParams={{
                 audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-                redirectUri: window.location.origin,
+                redirect_uri: window.location.origin,
               }}
             >
               <BranchingUrqlProvider>
