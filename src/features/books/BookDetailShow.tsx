@@ -1,7 +1,7 @@
 import { Box, Button, Center, Group, Modal, Text, Title, useMantineTheme } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconArrowBack } from "@tabler/icons";
+import { IconArrowBack } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";

@@ -29,7 +29,7 @@ import {
 import dayjs from "dayjs";
 import { useRecoilState } from "recoil";
 
-import { IconLayoutColumns, IconSortAscending, IconSortDescending } from "@tabler/icons";
+import { IconLayoutColumns, IconSortAscending, IconSortDescending } from "@tabler/icons-react";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
