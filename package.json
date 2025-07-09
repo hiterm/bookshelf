@@ -34,7 +34,7 @@
     "@recoiljs/refine": "^0.1.1",
     "@tabler/icons-react": "^3.34.0",
     "@tanstack/react-query": "^5.81.5",
-    "@tanstack/react-table": "^8.5.15",
+    "@tanstack/react-table": "^8.21.3",
     "@types/node": "^22.14.0",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
