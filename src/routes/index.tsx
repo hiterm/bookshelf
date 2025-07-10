@@ -1,9 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  component: RouteComponent,
+  beforeLoad: () => {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    throw redirect({ to: "/books" });
+  },
 });
-
-function RouteComponent() {
-  return <div>Hello !</div>;
-}
