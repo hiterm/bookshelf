@@ -1,9 +1,18 @@
 import { Center, Loader, Paper } from "@mantine/core";
+import { createFileRoute } from "@tanstack/react-router";
 import React, { useMemo } from "react";
 import { BookAddButton } from "../../features/books/BookAddButton";
 import { BookList } from "../../features/books/BookList";
 import { Book, graphQlBookToBook } from "../../features/books/entity/Book";
 import { useBooksQuery } from "../../generated/graphql";
+
+export const Route = createFileRoute("/books/")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
+  return <BookIndexPage />;
+}
 
 const BookIndexPage: React.FC = () => {
   const context = useMemo(() => ({ additionalTypenames: ["Book"] }), []);
@@ -33,5 +42,3 @@ const BookIndexPage: React.FC = () => {
     </React.Fragment>
   );
 };
-
-export { BookIndexPage };

@@ -1,5 +1,6 @@
 import { Button, Center, Loader, Pagination, Paper, Table, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { createFileRoute } from "@tanstack/react-router";
 import {
   ColumnDef,
   createColumnHelper,
@@ -11,6 +12,14 @@ import {
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useAuthorsQuery, useCreateAuthorMutation } from "../../generated/graphql";
+
+export const Route = createFileRoute("/authors/")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
+  return <AuthorIndexPage />;
+}
 
 type Author = {
   name: string;
@@ -37,7 +46,7 @@ const RegisterAuthorForm: React.FC = () => {
   );
 };
 
-export const AuthorIndexPage: React.FC = () => {
+const AuthorIndexPage: React.FC = () => {
   const context = useMemo(() => ({ additionalTypenames: ["Author"] }), []);
   const [result, _reexecuteQuery] = useAuthorsQuery({ context });
   const { data, fetching, error } = result;

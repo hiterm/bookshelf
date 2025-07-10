@@ -1,7 +1,7 @@
 import { Box, Button, Group } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import { useNavigate } from "@tanstack/react-router";
 import React from "react";
-import { useHistory } from "react-router-dom";
 import { useUpdateBookMutation } from "../../generated/graphql";
 import { BookFormValues, useBookForm } from "./BookForm";
 import { Book } from "./entity/Book";
@@ -9,7 +9,7 @@ import { Book } from "./entity/Book";
 export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   const book = props.book;
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [_createBookResult, updateBook] = useUpdateBookMutation();
 
@@ -20,7 +20,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
       authorIds: authors.map((author) => author.id),
     };
     await updateBook({ bookData: { id: book.id, ...bookData } });
-    history.push(`/books/${book.id}`);
+    await navigate({ to: `/books/$id`, params: { id: book.id } });
     showNotification({ message: "更新しました", color: "teal" });
   };
 
@@ -41,8 +41,8 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
           </Button>
           <Button
             color="gray"
-            onClick={() => {
-              history.goBack();
+            onClick={async () => {
+              await navigate({ to: "/books/$id", params: { id: book.id } });
             }}
           >
             Cancel

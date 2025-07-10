@@ -3,9 +3,9 @@ import { Alert, AppShell, Button, Center, Loader, MantineProvider } from "@manti
 import { useDisclosure } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { Outlet } from "@tanstack/react-router";
 import { devtoolsExchange } from "@urql/devtools";
 import React, { Fragment, memo, useMemo } from "react";
-import { BrowserRouter as Router } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import { RecoilURLSyncJSON } from "recoil-sync";
 import { createClient, defaultExchanges, Provider as UrqlProvider } from "urql";
@@ -14,7 +14,6 @@ import { HeaderContents } from "./compoments/layout/Header";
 import { NavbarContents } from "./compoments/layout/Navbar";
 import { SignInScreen } from "./features/auth/SignInScreen";
 import { useLoggedInUserQuery, useRegisterUserMutation } from "./generated/graphql";
-import { MainRoutes } from "./pages/MainRoutes";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 
@@ -146,7 +145,7 @@ const MainContent = memo(function MainContent(): JSX.Element {
           >
             This is a read-only demo app. Update operations will not be reflected.
           </Alert>
-          <MainRoutes />
+          <Outlet />
         </RegisterCheck>
       </BranchingUrqlProvider>
     </BranchingSignInCheck>
@@ -169,30 +168,28 @@ const App: React.FC = () => {
               clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
               authorizationParams={{
                 audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-                redirectUri: window.location.origin,
+                redirect_uri: window.location.origin,
               }}
             >
-              <Router>
-                <AppShell
-                  header={{ height: 70 }}
-                  navbar={{
-                    width: 300,
-                    breakpoint: "sm",
-                    collapsed: { mobile: !opened },
-                  }}
-                  padding="md"
-                >
-                  <AppShell.Header>
-                    <HeaderContents burgerOpened={opened} onBurgerClick={handlers.toggle} />
-                  </AppShell.Header>
-                  <AppShell.Navbar p="md">
-                    <NavbarContents />
-                  </AppShell.Navbar>
-                  <AppShell.Main>
-                    <MainContent />
-                  </AppShell.Main>
-                </AppShell>
-              </Router>
+              <AppShell
+                header={{ height: 70 }}
+                navbar={{
+                  width: 300,
+                  breakpoint: "sm",
+                  collapsed: { mobile: !opened },
+                }}
+                padding="md"
+              >
+                <AppShell.Header>
+                  <HeaderContents burgerOpened={opened} onBurgerClick={handlers.toggle} />
+                </AppShell.Header>
+                <AppShell.Navbar p="md">
+                  <NavbarContents />
+                </AppShell.Navbar>
+                <AppShell.Main>
+                  <MainContent />
+                </AppShell.Main>
+              </AppShell>
             </Auth0Provider>
           </MantineProvider>
         </QueryClientProvider>
