@@ -1,5 +1,5 @@
 import { Center, Loader } from "@mantine/core";
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 import { BookDetailEdit } from "../../features/books/BookDetailEdit";
 import { graphQlBookToBook } from "../../features/books/entity/Book";
@@ -14,7 +14,7 @@ function RouteComponent() {
 }
 
 const BookDetailEditPage: React.FC = () => {
-  const { id } = useParams({ from: "/books/$id_/edit" });
+  const { id } = Route.useParams();
   const [result] = useBookQuery({ variables: { bookId: id } });
   const { data, fetching, error } = result;
 
