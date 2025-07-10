@@ -1,9 +1,9 @@
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
-import { Outlet } from '@tanstack/react-router';
 import { Alert, AppShell, Button, Center, Loader, MantineProvider } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { Outlet } from "@tanstack/react-router";
 import { devtoolsExchange } from "@urql/devtools";
 import React, { Fragment, memo, useMemo } from "react";
 // TanStack Router への移行のため、react-router-dom の import を削除

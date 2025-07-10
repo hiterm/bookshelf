@@ -2,9 +2,9 @@ import { Box, Button, Center, Group, Modal, Text, Title, useMantineTheme } from 
 import { useMediaQuery } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { IconArrowBack } from "@tabler/icons-react";
+import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import React, { useState } from "react";
-import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { useDeleteBookMutation } from "../../generated/graphql";
 import { Book } from "./entity/Book";
@@ -101,7 +101,7 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
     <React.Fragment>
       <Button
         onClick={() => {
-          navigate({ to: '../' }); // 1つ前の階層に戻る
+          navigate({ to: "/books" }); // 1つ前の階層に戻る
         }}
         leftSection={<IconArrowBack />}
         variant="outline"

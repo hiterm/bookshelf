@@ -1,13 +1,13 @@
 import { Center, Loader } from "@mantine/core";
+import { Outlet, useParams } from "@tanstack/react-router";
 import React from "react";
-import { useParams, Outlet } from "@tanstack/react-router";
 import { BookDetailEdit } from "../../features/books/BookDetailEdit";
 import { BookDetailShow } from "../../features/books/BookDetailShow";
 import { graphQlBookToBook } from "../../features/books/entity/Book";
 import { useBookQuery } from "../../generated/graphql";
 
 const BookDetailPage: React.FC = () => {
-  const { id } = useParams({ from: '/books/$id' });
+  const { id } = useParams({ from: "/books/$id" });
 
   const [result, _reexecuteQuery] = useBookQuery({ variables: { bookId: id } });
   const { data, fetching, error } = result;

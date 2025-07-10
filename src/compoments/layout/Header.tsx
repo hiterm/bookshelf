@@ -1,8 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { ActionIcon, Burger, Group, Menu, Title } from "@mantine/core";
 import { IconUser } from "@tabler/icons-react";
-import React from "react";
 import { Link } from "@tanstack/react-router";
+import React from "react";
 
 type HeaderProps = { onBurgerClick: () => void; burgerOpened: boolean };
 

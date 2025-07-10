@@ -1,5 +1,11 @@
-import { Outlet } from '@tanstack/react-router';
+import { createRootRoute, Outlet } from "@tanstack/react-router";
+import * as React from "react";
+import App from "../App";
 
-export default function RootRoute() {
-  return <Outlet />;
+export const Route = createRootRoute({
+  component: RootComponent,
+});
+
+function RootComponent() {
+  return <App />;
 }
