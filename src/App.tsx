@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-quer
 import { Outlet } from "@tanstack/react-router";
 import { devtoolsExchange } from "@urql/devtools";
 import React, { Fragment, memo, useMemo } from "react";
-// TanStack Router への移行のため、react-router-dom の import を削除
 import { RecoilRoot } from "recoil";
 import { RecoilURLSyncJSON } from "recoil-sync";
 import { createClient, defaultExchanges, Provider as UrqlProvider } from "urql";
@@ -15,7 +14,6 @@ import { HeaderContents } from "./compoments/layout/Header";
 import { NavbarContents } from "./compoments/layout/Navbar";
 import { SignInScreen } from "./features/auth/SignInScreen";
 import { useLoggedInUserQuery, useRegisterUserMutation } from "./generated/graphql";
-// import { MainRoutes } from "./pages/MainRoutes";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 

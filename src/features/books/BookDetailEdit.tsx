@@ -20,7 +20,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
       authorIds: authors.map((author) => author.id),
     };
     await updateBook({ bookData: { id: book.id, ...bookData } });
-    await navigate({ to: `/books/${book.id}` });
+    await navigate({ to: `/books/$id`, params: { id: book.id } });
     showNotification({ message: "更新しました", color: "teal" });
   };
 

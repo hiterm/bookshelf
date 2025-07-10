@@ -39,7 +39,5 @@ const BookDetailPage: React.FC = () => {
 
   const book = graphQlBookToBook(graphqlBook);
 
-  // TanStack Router の Outlet には context プロパティはありません。子ルートで useRouteContext などを使って book を渡す設計に変更する必要があります。
-  // ここでは一旦 book を props で渡す形に戻します。
   return <BookDetailShow book={book} />;
 };

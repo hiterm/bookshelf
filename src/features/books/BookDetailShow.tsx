@@ -88,8 +88,6 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
 };
 
 export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
-  // TanStack Router では useRouteMatch の代替は useRouter で取得可能
-  // const { url } = useRouteMatch();
   const navigate = useNavigate();
 
   const theme = useMantineTheme();
