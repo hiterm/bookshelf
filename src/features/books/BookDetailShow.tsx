@@ -2,7 +2,7 @@ import { Box, Button, Center, Group, Modal, Text, Title, useMantineTheme } from 
 import { useMediaQuery } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { IconArrowBack } from "@tabler/icons-react";
-import { Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
@@ -48,7 +48,7 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
   const handleDelete = async () => {
     try {
       await deleteBook({ bookId: book.id }, { additionalTypenames: ["Book"] });
-      navigate({ to: "/books" });
+      await navigate({ to: "/books" });
       showNotification({
         message: `${book.title}が削除されました`,
         color: "teal",
@@ -100,8 +100,8 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
   return (
     <React.Fragment>
       <Button
-        onClick={() => {
-          navigate({ to: "/books" }); // 1つ前の階層に戻る
+        onClick={async () => {
+          await navigate({ to: "/books" }); // 1つ前の階層に戻る
         }}
         leftSection={<IconArrowBack />}
         variant="outline"

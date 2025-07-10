@@ -147,7 +147,7 @@ const MainContent = memo(function MainContent(): JSX.Element {
           >
             This is a read-only demo app. Update operations will not be reflected.
           </Alert>
-          {/* TanStack Router でルーティングを管理するため MainRoutes を削除 */}
+          <Outlet />
         </RegisterCheck>
       </BranchingUrqlProvider>
     </BranchingSignInCheck>
@@ -173,40 +173,25 @@ const App: React.FC = () => {
                 redirect_uri: window.location.origin,
               }}
             >
-              <BranchingUrqlProvider>
-                <RegisterCheck>
-                  <AppShell
-                    header={{ height: 70 }}
-                    navbar={{
-                      width: 300,
-                      breakpoint: "sm",
-                      collapsed: { mobile: !opened },
-                    }}
-                    padding="md"
-                  >
-                    <AppShell.Header>
-                      <HeaderContents burgerOpened={opened} onBurgerClick={handlers.toggle} />
-                    </AppShell.Header>
-                    <AppShell.Navbar p="md">
-                      <NavbarContents />
-                    </AppShell.Navbar>
-                    <AppShell.Main>
-                      <Alert
-                        color="yellow"
-                        mb="md"
-                        style={{
-                          display: import.meta.env.VITE_DEMO_MODE === "true"
-                            ? undefined
-                            : "none",
-                        }}
-                      >
-                        This is a read-only demo app. Update operations will not be reflected.
-                      </Alert>
-                      <Outlet />
-                    </AppShell.Main>
-                  </AppShell>
-                </RegisterCheck>
-              </BranchingUrqlProvider>
+              <AppShell
+                header={{ height: 70 }}
+                navbar={{
+                  width: 300,
+                  breakpoint: "sm",
+                  collapsed: { mobile: !opened },
+                }}
+                padding="md"
+              >
+                <AppShell.Header>
+                  <HeaderContents burgerOpened={opened} onBurgerClick={handlers.toggle} />
+                </AppShell.Header>
+                <AppShell.Navbar p="md">
+                  <NavbarContents />
+                </AppShell.Navbar>
+                <AppShell.Main>
+                  <MainContent />
+                </AppShell.Main>
+              </AppShell>
             </Auth0Provider>
           </MantineProvider>
         </QueryClientProvider>

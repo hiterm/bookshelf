@@ -1,7 +1,6 @@
 import { Center, Loader } from "@mantine/core";
-import { Outlet, useParams } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
 import React from "react";
-import { BookDetailEdit } from "../../features/books/BookDetailEdit";
 import { BookDetailShow } from "../../features/books/BookDetailShow";
 import { graphQlBookToBook } from "../../features/books/entity/Book";
 import { useBookQuery } from "../../generated/graphql";

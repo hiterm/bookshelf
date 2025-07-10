@@ -44,8 +44,8 @@ export const BookAddButton: React.FC = () => {
         <>
           <div>{value.title}を追加しました</div>
           <Button
-            onClick={() => {
-              navigate({ to: `/books/${data.createBook.id}` });
+            onClick={async () => {
+              await navigate({ to: `/books/${data.createBook.id}` });
             }}
           >
             Move

@@ -20,7 +20,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
       authorIds: authors.map((author) => author.id),
     };
     await updateBook({ bookData: { id: book.id, ...bookData } });
-    navigate({ to: `/books/${book.id}` });
+    await navigate({ to: `/books/${book.id}` });
     showNotification({ message: "更新しました", color: "teal" });
   };
 
@@ -41,8 +41,8 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
           </Button>
           <Button
             color="gray"
-            onClick={() => {
-              navigate({ to: "/books/$id", params: { id: book.id } });
+            onClick={async () => {
+              await navigate({ to: "/books/$id", params: { id: book.id } });
             }}
           >
             Cancel
