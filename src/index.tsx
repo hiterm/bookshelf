@@ -9,9 +9,11 @@ const router = createRouter({ routeTree });
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
+  /* eslint-disable @typescript-eslint/consistent-type-definitions */
   interface Register {
     router: typeof router;
   }
+  /* eslint-enable @typescript-eslint/consistent-type-definitions */
 }
 
 const container = document.getElementById("root");
