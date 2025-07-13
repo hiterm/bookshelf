@@ -28,7 +28,9 @@ import {
 import dayjs from "dayjs";
 
 import { IconLayoutColumns, IconSortAscending, IconSortDescending } from "@tabler/icons-react";
+import { getRouteApi } from "@tanstack/react-router";
 import React, { ReactNode } from "react";
+import { useTableSearchParams } from "tanstack-table-search-params";
 import { Link } from "../../compoments/mantineTsr";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { Author } from "./entity/Author";
@@ -36,8 +38,6 @@ import { Book } from "./entity/Book";
 import { displayBookFormat } from "./entity/BookFormat";
 import { displayBookStore } from "./entity/BookStore";
 import { Filter } from "./Filter";
-import { getRouteApi } from "@tanstack/react-router";
-import { useTableSearchParams } from "tanstack-table-search-params";
 
 type FilterType = "string" | "boolean" | "store" | "format" | "authors";
 
@@ -155,7 +155,7 @@ const SortIcon: React.FC<SortIconProps> = ({ isSorted }) => {
 };
 
 export const BookList: React.FC<BookListProps> = ({ list }) => {
-  const routeApi = getRouteApi('/books/')
+  const routeApi = getRouteApi("/books/");
   const navigate = routeApi.useNavigate();
   const query = routeApi.useSearch();
 
