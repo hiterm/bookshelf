@@ -4,7 +4,7 @@ import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
 
 export type FormatFilterProps<TData, TValue> = { column: Column<TData, TValue> };
 
-export const FormatFilter = <TData, TValue>({ column }: FormatFilterProps<TData, TValue>): JSX.Element => {
+export const FormatFilter = <TData, TValue>({ column }: FormatFilterProps<TData, TValue>): React.JSX.Element => {
   return (
     <Select
       data={[

@@ -10,7 +10,8 @@
     "**/*-lock.json",
     "/dist",
     "/src/generated",
-    "/.yarn"
+    "/.yarn",
+    "/src/routeTree.gen.ts"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.76.0.wasm",

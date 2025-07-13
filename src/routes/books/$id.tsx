@@ -1,14 +1,20 @@
 import { Center, Loader } from "@mantine/core";
+import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
-import { Route, Switch, useParams, useRouteMatch } from "react-router-dom";
-import { BookDetailEdit } from "../../features/books/BookDetailEdit";
 import { BookDetailShow } from "../../features/books/BookDetailShow";
 import { graphQlBookToBook } from "../../features/books/entity/Book";
 import { useBookQuery } from "../../generated/graphql";
 
+export const Route = createFileRoute("/books/$id")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
+  return <BookDetailPage />;
+}
+
 const BookDetailPage: React.FC = () => {
-  const { path } = useRouteMatch();
-  const { id } = useParams<{ id: string }>();
+  const { id } = Route.useParams();
 
   const [result, _reexecuteQuery] = useBookQuery({ variables: { bookId: id } });
   const { data, fetching, error } = result;
@@ -33,18 +39,5 @@ const BookDetailPage: React.FC = () => {
 
   const book = graphQlBookToBook(graphqlBook);
 
-  return (
-    <React.Fragment>
-      <Switch>
-        <Route exact path={path}>
-          <BookDetailShow book={book} />
-        </Route>
-        <Route path={`${path}/edit`}>
-          <BookDetailEdit book={book} />
-        </Route>
-      </Switch>
-    </React.Fragment>
-  );
+  return <BookDetailShow book={book} />;
 };
-
-export { BookDetailPage };

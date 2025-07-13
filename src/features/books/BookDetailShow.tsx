@@ -2,9 +2,10 @@ import { Box, Button, Center, Group, Modal, Text, Title, useMantineTheme } from 
 import { useMediaQuery } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { IconArrowBack } from "@tabler/icons-react";
+import { useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import React, { useState } from "react";
-import { Link, useHistory, useRouteMatch } from "react-router-dom";
+import { LinkButton } from "../../compoments/mantineTsr";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { useDeleteBookMutation } from "../../generated/graphql";
 import { Book } from "./entity/Book";
@@ -44,11 +45,11 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
     setOpen(false);
   };
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const handleDelete = async () => {
     try {
       await deleteBook({ bookId: book.id }, { additionalTypenames: ["Book"] });
-      history.push("/books");
+      await navigate({ to: "/books" });
       showNotification({
         message: `${book.title}が削除されました`,
         color: "teal",
@@ -88,9 +89,6 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
 };
 
 export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
-  const { url } = useRouteMatch();
-  const history = useHistory();
-
   const theme = useMantineTheme();
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
@@ -98,16 +96,14 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
 
   return (
     <React.Fragment>
-      <Button
-        onClick={() => {
-          history.goBack();
-        }}
+      <LinkButton
         leftSection={<IconArrowBack />}
         variant="outline"
         m={20}
+        linkOptions={{ to: "/books" }}
       >
         Back
-      </Button>
+      </LinkButton>
       <Box
         style={{
           display: "grid",
@@ -158,9 +154,9 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
         />
       </Box>
       <Group m={20}>
-        <Button color="blue" component={Link} to={`${url}/edit`}>
+        <LinkButton color="blue" linkOptions={{ to: "/books/$id/edit", params: { id: book.id } }}>
           変更
-        </Button>
+        </LinkButton>
         <DeleteButton book={book} />
       </Group>
     </React.Fragment>

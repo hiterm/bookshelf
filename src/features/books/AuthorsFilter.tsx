@@ -4,7 +4,7 @@ import { useAuthorsQuery } from "../../generated/graphql";
 
 export type AuthorsFilterProps<TData, TValue> = { column: Column<TData, TValue> };
 
-export const AuthorsFilter = <TData, TValue>({ column }: AuthorsFilterProps<TData, TValue>): JSX.Element => {
+export const AuthorsFilter = <TData, TValue>({ column }: AuthorsFilterProps<TData, TValue>): React.JSX.Element => {
   const [queryResult, _reexecuteQuery] = useAuthorsQuery();
 
   const fetching = queryResult.fetching || queryResult.data == null;

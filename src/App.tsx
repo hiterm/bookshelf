@@ -3,18 +3,15 @@ import { Alert, AppShell, Button, Center, Loader, MantineProvider } from "@manti
 import { useDisclosure } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { Outlet } from "@tanstack/react-router";
 import { devtoolsExchange } from "@urql/devtools";
 import React, { Fragment, memo, useMemo } from "react";
-import { BrowserRouter as Router } from "react-router-dom";
-import { RecoilRoot } from "recoil";
-import { RecoilURLSyncJSON } from "recoil-sync";
 import { createClient, defaultExchanges, Provider as UrqlProvider } from "urql";
 import { ChildrenProps } from "./compoments/ChildrenProps";
 import { HeaderContents } from "./compoments/layout/Header";
 import { NavbarContents } from "./compoments/layout/Navbar";
 import { SignInScreen } from "./features/auth/SignInScreen";
 import { useLoggedInUserQuery, useRegisterUserMutation } from "./generated/graphql";
-import { MainRoutes } from "./pages/MainRoutes";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 
@@ -130,7 +127,7 @@ const BranchingSignInCheck = import.meta.env.VITE_DEMO_MODE === "true"
   ? Fragment
   : SignInCheck;
 
-const MainContent = memo(function MainContent(): JSX.Element {
+const MainContent = memo(function MainContent(): React.JSX.Element {
   return (
     <BranchingSignInCheck>
       <BranchingUrqlProvider>
@@ -146,7 +143,7 @@ const MainContent = memo(function MainContent(): JSX.Element {
           >
             This is a read-only demo app. Update operations will not be reflected.
           </Alert>
-          <MainRoutes />
+          <Outlet />
         </RegisterCheck>
       </BranchingUrqlProvider>
     </BranchingSignInCheck>
@@ -157,47 +154,39 @@ const App: React.FC = () => {
   const [opened, handlers] = useDisclosure(false);
 
   return (
-    <RecoilRoot>
-      {/* There is bug with fast refresh and Firefox. */}
-      {/* https://github.com/facebookexperimental/Recoil/issues/1994 */}
-      <RecoilURLSyncJSON location={{ part: "queryParams" }}>
-        <QueryClientProvider client={queryClient}>
-          <MantineProvider>
-            <Notifications />
-            <Auth0Provider
-              domain={import.meta.env.VITE_AUTH0_DOMAIN}
-              clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-              authorizationParams={{
-                audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-                redirectUri: window.location.origin,
-              }}
-            >
-              <Router>
-                <AppShell
-                  header={{ height: 70 }}
-                  navbar={{
-                    width: 300,
-                    breakpoint: "sm",
-                    collapsed: { mobile: !opened },
-                  }}
-                  padding="md"
-                >
-                  <AppShell.Header>
-                    <HeaderContents burgerOpened={opened} onBurgerClick={handlers.toggle} />
-                  </AppShell.Header>
-                  <AppShell.Navbar p="md">
-                    <NavbarContents />
-                  </AppShell.Navbar>
-                  <AppShell.Main>
-                    <MainContent />
-                  </AppShell.Main>
-                </AppShell>
-              </Router>
-            </Auth0Provider>
-          </MantineProvider>
-        </QueryClientProvider>
-      </RecoilURLSyncJSON>
-    </RecoilRoot>
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider>
+        <Notifications />
+        <Auth0Provider
+          domain={import.meta.env.VITE_AUTH0_DOMAIN}
+          clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+          authorizationParams={{
+            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+            redirect_uri: window.location.origin,
+          }}
+        >
+          <AppShell
+            header={{ height: 70 }}
+            navbar={{
+              width: 300,
+              breakpoint: "sm",
+              collapsed: { mobile: !opened },
+            }}
+            padding="md"
+          >
+            <AppShell.Header>
+              <HeaderContents burgerOpened={opened} onBurgerClick={handlers.toggle} />
+            </AppShell.Header>
+            <AppShell.Navbar p="md">
+              <NavbarContents />
+            </AppShell.Navbar>
+            <AppShell.Main>
+              <MainContent />
+            </AppShell.Main>
+          </AppShell>
+        </Auth0Provider>
+      </MantineProvider>
+    </QueryClientProvider>
   );
 };
 

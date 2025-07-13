@@ -1,7 +1,7 @@
 import { Button, Modal } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { LinkButton } from "../../compoments/mantineTsr";
 import { useCreateBookMutation } from "../../generated/graphql";
 import { BookFormValues, useBookForm } from "./BookForm";
 
@@ -17,8 +17,6 @@ export const BookAddButton: React.FC = () => {
   };
 
   const [_createBookResult, createBook] = useCreateBookMutation();
-
-  const history = useHistory();
 
   const submitBook = async (value: BookFormValues) => {
     const { authors, ...rest } = value;
@@ -43,13 +41,11 @@ export const BookAddButton: React.FC = () => {
       message: (
         <>
           <div>{value.title}を追加しました</div>
-          <Button
-            onClick={() => {
-              history.push(`/books/${data.createBook.id}`);
-            }}
+          <LinkButton
+            linkOptions={{ to: "/books/$id", params: { id: data.createBook.id } }}
           >
             Move
-          </Button>
+          </LinkButton>
         </>
       ),
       color: "teal",

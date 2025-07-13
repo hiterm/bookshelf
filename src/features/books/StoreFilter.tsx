@@ -4,7 +4,7 @@ import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
 
 export type StoreFilterProps<TData, TValue> = { column: Column<TData, TValue> };
 
-export const StoreFilter = <TData, TValue>({ column }: StoreFilterProps<TData, TValue>): JSX.Element => {
+export const StoreFilter = <TData, TValue>({ column }: StoreFilterProps<TData, TValue>): React.JSX.Element => {
   return (
     <Select
       data={[

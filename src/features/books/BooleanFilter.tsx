@@ -3,7 +3,7 @@ import { Column } from "@tanstack/react-table";
 
 export type BooleanFilterProps<TData, TValue> = { column: Column<TData, TValue> };
 
-export const BooleanFilter = <TData, TValue>({ column }: BooleanFilterProps<TData, TValue>): JSX.Element => {
+export const BooleanFilter = <TData, TValue>({ column }: BooleanFilterProps<TData, TValue>): React.JSX.Element => {
   return (
     <Select
       data={["-", "true", "false"]}

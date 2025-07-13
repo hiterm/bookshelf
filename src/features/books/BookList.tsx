@@ -1,6 +1,5 @@
 import {
   ActionIcon,
-  Anchor,
   Box,
   Button,
   Center,
@@ -27,13 +26,13 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import dayjs from "dayjs";
-import { useRecoilState } from "recoil";
 
 import { IconLayoutColumns, IconSortAscending, IconSortDescending } from "@tabler/icons-react";
+import { getRouteApi } from "@tanstack/react-router";
 import React, { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { useTableSearchParams } from "tanstack-table-search-params";
+import { Link } from "../../compoments/mantineTsr";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
-import { bookListColumnVisibility, bookListFilter, bookListSorting } from "../../recoil/atoms/BookListState";
 import { Author } from "./entity/Author";
 import { Book } from "./entity/Book";
 import { displayBookFormat } from "./entity/BookFormat";
@@ -67,9 +66,9 @@ const columns = [
   columnHelper.accessor("title", {
     header: "書名",
     cell: (info) => (
-      <Anchor component={Link} to={`/books/${info.row.original.id}`}>
+      <Link to={`/books/$id`} params={{ id: info.row.original.id }}>
         {info.getValue()}
-      </Anchor>
+      </Link>
     ),
     filterFn: "includesString",
     meta: { filterType: "string" },
@@ -156,19 +155,32 @@ const SortIcon: React.FC<SortIconProps> = ({ isSorted }) => {
 };
 
 export const BookList: React.FC<BookListProps> = ({ list }) => {
-  const [columnFilters, setColumnFilters] = useRecoilState(bookListFilter);
-  const [sorting, setSorting] = useRecoilState(bookListSorting);
-  const [columnVisibility, setColumnVisibility] = useRecoilState(bookListColumnVisibility);
+  const routeApi = getRouteApi("/books/");
+  const navigate = routeApi.useNavigate();
+  const query = routeApi.useSearch();
+
+  const stateAndOnChanges = useTableSearchParams({
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    replace: async (url) => {
+      const searchParams = new URLSearchParams(url.split("?")[1]);
+      await navigate({
+        search: (prev) => {
+          // navigateが非同期の関係上、差分更新にしないと反映されない場合がある
+          // TODO: しかしこれにより、reset filterが動かなくなってしまう
+          return { ...prev, ...Object.fromEntries(searchParams.entries()) };
+        },
+        replace: true,
+      });
+    },
+    query,
+    pathname: "/books",
+  });
 
   const table = useReactTable({
     data: list,
     columns,
     initialState: { pagination: { pageSize: 20 } },
-    state: { columnFilters, sorting, columnVisibility },
-
-    onColumnFiltersChange: setColumnFilters,
-    onSortingChange: setSorting,
-    onColumnVisibilityChange: setColumnVisibility,
+    ...stateAndOnChanges,
 
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -224,8 +236,10 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
           </Menu.Dropdown>
         </Menu>
         <Button
-          onClick={() => {
-            table.resetColumnFilters();
+          onClick={async () => {
+            // table.resetColumnFilters();
+            // 上記だと動かないので、暫定対応
+            await navigate({ search: {}, replace: true });
           }}
           color="red"
         >
