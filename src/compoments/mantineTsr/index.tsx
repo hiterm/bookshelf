@@ -55,9 +55,9 @@ export function LinkButton<TRouter extends RegisteredRouter, TOptions>(
   props: LinkButtonProps<TRouter, TOptions>,
 ): React.ReactNode;
 export function LinkButton(props: LinkButtonProps): React.ReactNode {
-  console.log(`ButtonLinkProps: ${JSON.stringify(props)}`);
+  const {linkOptions: linkOptions, ...buttonProps} = props;
   return (
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    <Button {...props} renderRoot={(props) => <Link {...props.linkOptions} {...props} />} />
+    <Button {...buttonProps} renderRoot={(props) => <Link {...linkOptions} {...props} />} />
   );
 }
