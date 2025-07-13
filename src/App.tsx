@@ -129,7 +129,7 @@ const BranchingSignInCheck = import.meta.env.VITE_DEMO_MODE === "true"
   ? Fragment
   : SignInCheck;
 
-const MainContent = memo(function MainContent(): JSX.Element {
+const MainContent = memo(function MainContent(): React.JSX.Element {
   return (
     <BranchingSignInCheck>
       <BranchingUrqlProvider>

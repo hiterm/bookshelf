@@ -26,18 +26,18 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import dayjs from "dayjs";
-import { useRecoilState } from "recoil";
 
 import { IconLayoutColumns, IconSortAscending, IconSortDescending } from "@tabler/icons-react";
 import React, { ReactNode } from "react";
 import { Link } from "../../compoments/mantineTsr";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
-import { bookListColumnVisibility, bookListFilter, bookListSorting } from "../../recoil/atoms/BookListState";
 import { Author } from "./entity/Author";
 import { Book } from "./entity/Book";
 import { displayBookFormat } from "./entity/BookFormat";
 import { displayBookStore } from "./entity/BookStore";
 import { Filter } from "./Filter";
+import { getRouteApi } from "@tanstack/react-router";
+import { useTableSearchParams } from "tanstack-table-search-params";
 
 type FilterType = "string" | "boolean" | "store" | "format" | "authors";
 
@@ -155,19 +155,29 @@ const SortIcon: React.FC<SortIconProps> = ({ isSorted }) => {
 };
 
 export const BookList: React.FC<BookListProps> = ({ list }) => {
-  const [columnFilters, setColumnFilters] = useRecoilState(bookListFilter);
-  const [sorting, setSorting] = useRecoilState(bookListSorting);
-  const [columnVisibility, setColumnVisibility] = useRecoilState(bookListColumnVisibility);
+  const routeApi = getRouteApi('/books/')
+  const navigate = routeApi.useNavigate();
+  const query = routeApi.useSearch();
+
+  const stateAndOnChanges = useTableSearchParams({
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    replace: async (url) => {
+      const searchParams = new URLSearchParams(url.split("?")[1]);
+      await navigate({ search: Object.fromEntries(searchParams.entries()) });
+    },
+    query,
+    pathname: "/books",
+  });
+
+  // const [columnFilters, setColumnFilters] = useRecoilState(bookListFilter);
+  // const [sorting, setSorting] = useRecoilState(bookListSorting);
+  // const [columnVisibility, setColumnVisibility] = useRecoilState(bookListColumnVisibility);
 
   const table = useReactTable({
     data: list,
     columns,
     initialState: { pagination: { pageSize: 20 } },
-    state: { columnFilters, sorting, columnVisibility },
-
-    onColumnFiltersChange: setColumnFilters,
-    onSortingChange: setSorting,
-    onColumnVisibilityChange: setColumnVisibility,
+    ...stateAndOnChanges,
 
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
