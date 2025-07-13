@@ -163,15 +163,18 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     replace: async (url) => {
       const searchParams = new URLSearchParams(url.split("?")[1]);
-      await navigate({ search: Object.fromEntries(searchParams.entries()) });
+      await navigate({
+        search: (prev) => {
+          // navigateが非同期の関係上、差分更新にしないと反映されない場合がある
+          // TODO: しかしこれにより、reset filterが動かなくなってしまう
+            return { ...prev, ...Object.fromEntries(searchParams.entries()) };
+        },
+        replace: true,
+      });
     },
     query,
     pathname: "/books",
   });
-
-  // const [columnFilters, setColumnFilters] = useRecoilState(bookListFilter);
-  // const [sorting, setSorting] = useRecoilState(bookListSorting);
-  // const [columnVisibility, setColumnVisibility] = useRecoilState(bookListColumnVisibility);
 
   const table = useReactTable({
     data: list,
@@ -233,8 +236,10 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
           </Menu.Dropdown>
         </Menu>
         <Button
-          onClick={() => {
-            table.resetColumnFilters();
+          onClick={async () => {
+            // table.resetColumnFilters();
+            // 上記だと動かないので、暫定対応
+            await navigate({ search: {}, replace: true });
           }}
           color="red"
         >
