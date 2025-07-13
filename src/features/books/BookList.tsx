@@ -167,7 +167,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
         search: (prev) => {
           // navigateが非同期の関係上、差分更新にしないと反映されない場合がある
           // TODO: しかしこれにより、reset filterが動かなくなってしまう
-            return { ...prev, ...Object.fromEntries(searchParams.entries()) };
+          return { ...prev, ...Object.fromEntries(searchParams.entries()) };
         },
         replace: true,
       });
