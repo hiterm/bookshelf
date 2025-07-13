@@ -1,6 +1,5 @@
 import {
   ActionIcon,
-  Anchor,
   Box,
   Button,
   Center,
@@ -30,8 +29,8 @@ import dayjs from "dayjs";
 import { useRecoilState } from "recoil";
 
 import { IconLayoutColumns, IconSortAscending, IconSortDescending } from "@tabler/icons-react";
-import { Link } from "@tanstack/react-router";
 import React, { ReactNode } from "react";
+import { Link } from "../../compoments/mantineTsr";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { bookListColumnVisibility, bookListFilter, bookListSorting } from "../../recoil/atoms/BookListState";
 import { Author } from "./entity/Author";
@@ -67,9 +66,9 @@ const columns = [
   columnHelper.accessor("title", {
     header: "書名",
     cell: (info) => (
-      <Anchor component={Link} to={`/books/${info.row.original.id}`}>
+      <Link to={`/books/$id`} params={{ id: info.row.original.id }}>
         {info.getValue()}
-      </Anchor>
+      </Link>
     ),
     filterFn: "includesString",
     meta: { filterType: "string" },

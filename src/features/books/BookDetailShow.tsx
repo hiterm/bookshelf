@@ -2,9 +2,10 @@ import { Box, Button, Center, Group, Modal, Text, Title, useMantineTheme } from 
 import { useMediaQuery } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { IconArrowBack } from "@tabler/icons-react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import React, { useState } from "react";
+import { LinkButton } from "../../compoments/mantineTsr";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { useDeleteBookMutation } from "../../generated/graphql";
 import { Book } from "./entity/Book";
@@ -88,8 +89,6 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
 };
 
 export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
-  const navigate = useNavigate();
-
   const theme = useMantineTheme();
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
@@ -97,16 +96,14 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
 
   return (
     <React.Fragment>
-      <Button
-        onClick={async () => {
-          await navigate({ to: "/books" }); // 1つ前の階層に戻る
-        }}
+      <LinkButton
         leftSection={<IconArrowBack />}
         variant="outline"
         m={20}
+        linkOptions={{ to: "/books" }}
       >
         Back
-      </Button>
+      </LinkButton>
       <Box
         style={{
           display: "grid",
@@ -157,9 +154,9 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
         />
       </Box>
       <Group m={20}>
-        <Button color="blue" component={Link} to="edit">
+        <LinkButton color="blue" linkOptions={{ to: "/books/$id/edit", params: { id: book.id } }}>
           変更
-        </Button>
+        </LinkButton>
         <DeleteButton book={book} />
       </Group>
     </React.Fragment>

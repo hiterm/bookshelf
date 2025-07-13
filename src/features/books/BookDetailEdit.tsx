@@ -2,6 +2,7 @@ import { Box, Button, Group } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "@tanstack/react-router";
 import React from "react";
+import { LinkButton } from "../../compoments/mantineTsr";
 import { useUpdateBookMutation } from "../../generated/graphql";
 import { BookFormValues, useBookForm } from "./BookForm";
 import { Book } from "./entity/Book";
@@ -39,14 +40,9 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
           <Button type="submit">
             Save
           </Button>
-          <Button
-            color="gray"
-            onClick={async () => {
-              await navigate({ to: "/books/$id", params: { id: book.id } });
-            }}
-          >
+          <LinkButton color="gray" linkOptions={{ to: "/books/$id", params: { id: book.id } }}>
             Cancel
-          </Button>
+          </LinkButton>
         </Group>
       </Box>
     </Box>

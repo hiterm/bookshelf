@@ -1,11 +1,10 @@
-import { NavLink } from "@mantine/core";
-import { Link } from "@tanstack/react-router";
+import { NavLink } from "../mantineTsr";
 
 const Links: React.FC = () => {
   return (
     <>
-      <NavLink label="本" component={Link} to="/books" />
-      <NavLink label="著者" component={Link} to="/authors" />
+      <NavLink label="本" to="/books" />
+      <NavLink label="著者" to="/authors" />
     </>
   );
 };
