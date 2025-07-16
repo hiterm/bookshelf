@@ -15,7 +15,7 @@ export const FormatFilter = <TData, TValue>({ column }: FormatFilterProps<TData,
         })),
       ]}
       value={column.getFilterValue() as (string | undefined) ?? ""}
-      onChange={value => column.setFilterValue(value)}
+      onChange={value => { column.setFilterValue(value); }}
     />
   );
 };

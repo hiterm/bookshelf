@@ -73,6 +73,7 @@ export default tseslint.config(
     ".yarn",
     ".eslintrc.js",
     "vite.config.ts",
+    "eslint.config.mjs",
   ]},
   eslintConfigPrettier,
 );
