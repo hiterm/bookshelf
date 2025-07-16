@@ -1,11 +1,12 @@
 import { Checkbox, Loader, MultiSelect, NumberInput, Select, Stack, TextInput } from "@mantine/core";
-import { useForm, zodResolver } from "@mantine/form";
+import { useForm } from "@mantine/form";
 import React, { ReactElement } from "react";
 import { z } from "zod";
 import { BookFormat, BookStore, useAuthorsQuery } from "../../generated/graphql";
 import { Author } from "./entity/Author";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
 import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
+import { zodResolver } from 'mantine-form-zod-resolver';
 
 export type BookFormValues = {
   title: string;
