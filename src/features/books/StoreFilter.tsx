@@ -15,7 +15,9 @@ export const StoreFilter = <TData, TValue>({ column }: StoreFilterProps<TData, T
         })),
       ]}
       value={column.getFilterValue() as (string | undefined) ?? ""}
-      onChange={value => column.setFilterValue(value)}
+      onChange={value => {
+        column.setFilterValue(value);
+      }}
     />
   );
 };

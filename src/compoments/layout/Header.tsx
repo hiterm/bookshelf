@@ -40,7 +40,7 @@ export const HeaderContents: React.FC<HeaderProps> = ({
 
         <Menu.Dropdown>
           <Menu.Item>
-            User: {isAuthenticated && user != null && user.name}
+            User: {isAuthenticated && user?.name}
           </Menu.Item>
           <Menu.Item onClick={handleSignOut}>Logout</Menu.Item>
         </Menu.Dropdown>

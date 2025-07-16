@@ -1,5 +1,6 @@
 import { Checkbox, Loader, MultiSelect, NumberInput, Select, Stack, TextInput } from "@mantine/core";
-import { useForm, zodResolver } from "@mantine/form";
+import { useForm } from "@mantine/form";
+import { zodResolver } from "mantine-form-zod-resolver";
 import React, { ReactElement } from "react";
 import { z } from "zod";
 import { BookFormat, BookStore, useAuthorsQuery } from "../../generated/graphql";
@@ -76,7 +77,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
         {...form.getInputProps("authors")}
         value={form.values.authors.map((author) => author.id)}
         onChange={(authorIds) => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           form.getInputProps("authors").onChange(
             authorIds.map((authorId) => ({
               id: authorId,

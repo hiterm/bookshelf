@@ -7,6 +7,7 @@ export const BooleanFilter = <TData, TValue>({ column }: BooleanFilterProps<TDat
   return (
     <Select
       data={["-", "true", "false"]}
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       value={String(column.getFilterValue() ?? "-")}
       onChange={value => {
         if (value === "true") {
