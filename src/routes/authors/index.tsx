@@ -86,7 +86,9 @@ const AuthorIndexPage: React.FC = () => {
         <TextInput
           placeholder="検索..."
           value={globalFilter}
-          onChange={e => { setGlobalFilter(e.currentTarget.value); }}
+          onChange={e => {
+            setGlobalFilter(e.currentTarget.value);
+          }}
           mb="md"
         />
         <Table>
@@ -117,7 +119,9 @@ const AuthorIndexPage: React.FC = () => {
           <Pagination
             total={table.getPageCount()}
             value={table.getState().pagination.pageIndex + 1}
-            onChange={(page) => { table.setPageIndex(page - 1); }}
+            onChange={(page) => {
+              table.setPageIndex(page - 1);
+            }}
           />
         </Center>
       </Paper>

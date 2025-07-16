@@ -20,7 +20,9 @@ export const StringFilter = <TData, TValue>({ column }: StringFilterProps<TData,
   return (
     <TextInput
       value={value}
-      onChange={event => { setValue(event.target.value); }}
+      onChange={event => {
+        setValue(event.target.value);
+      }}
     />
   );
 };

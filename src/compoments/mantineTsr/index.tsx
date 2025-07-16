@@ -56,8 +56,5 @@ export function LinkButton<TRouter extends RegisteredRouter, TOptions>(
 ): React.ReactNode;
 export function LinkButton(props: LinkButtonProps): React.ReactNode {
   const { linkOptions: linkOptions, ...buttonProps } = props;
-  return (
-     
-    <Button {...buttonProps} renderRoot={(props) => <Link {...linkOptions} {...props} />} />
-  );
+  return <Button {...buttonProps} renderRoot={(props) => <Link {...linkOptions} {...props} />} />;
 }

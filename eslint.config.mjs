@@ -9,7 +9,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   eslint.configs.recommended,
-//   tseslint.configs.recommendedTypeChecked,
+  //   tseslint.configs.recommendedTypeChecked,
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
   {
@@ -66,14 +66,16 @@ export default tseslint.config(
       "import/no-named-as-default": "off",
     },
   },
-  {ignores: [
-    "build",
-    "dist",
-    "src/generated",
-    ".yarn",
-    ".eslintrc.js",
-    "vite.config.ts",
-    "eslint.config.mjs",
-  ]},
+  {
+    ignores: [
+      "build",
+      "dist",
+      "src/generated",
+      ".yarn",
+      ".eslintrc.js",
+      "vite.config.ts",
+      "eslint.config.mjs",
+    ],
+  },
   eslintConfigPrettier,
 );
