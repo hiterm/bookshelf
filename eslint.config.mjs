@@ -71,7 +71,6 @@ export default tseslint.config(
       "dist",
       "src/generated",
       ".yarn",
-      ".eslintrc.js",
       "vite.config.ts",
       "eslint.config.mjs",
     ],
