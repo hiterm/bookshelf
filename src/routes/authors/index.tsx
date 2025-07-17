@@ -1,4 +1,12 @@
-import { Button, Center, Loader, Pagination, Paper, Table, TextInput } from "@mantine/core";
+import {
+  Button,
+  Center,
+  Loader,
+  Pagination,
+  Paper,
+  Table,
+  TextInput,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { createFileRoute } from "@tanstack/react-router";
 import {
@@ -11,7 +19,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
-import { useAuthorsQuery, useCreateAuthorMutation } from "../../generated/graphql";
+import {
+  useAuthorsQuery,
+  useCreateAuthorMutation,
+} from "../../generated/graphql";
 
 export const Route = createFileRoute("/authors/")({
   component: RouteComponent,
@@ -34,7 +45,8 @@ const RegisterAuthorForm: React.FC = () => {
   const form = useForm<RegisterAuthorFormInput>({
     initialValues: { name: "" },
   });
-  const handleSubmit = (data: RegisterAuthorFormInput) => createAuthor({ authorData: { name: data.name } });
+  const handleSubmit = (data: RegisterAuthorFormInput) =>
+    createAuthor({ authorData: { name: data.name } });
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -86,27 +98,30 @@ const AuthorIndexPage: React.FC = () => {
         <TextInput
           placeholder="検索..."
           value={globalFilter}
-          onChange={e => {
+          onChange={(e) => {
             setGlobalFilter(e.currentTarget.value);
           }}
           mb="md"
         />
         <Table>
           <Table.Thead>
-            {table.getHeaderGroups().map(headerGroup => (
+            {table.getHeaderGroups().map((headerGroup) => (
               <Table.Tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
+                {headerGroup.headers.map((header) => (
                   <Table.Th key={header.id}>
-                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
                   </Table.Th>
                 ))}
               </Table.Tr>
             ))}
           </Table.Thead>
           <Table.Tbody>
-            {table.getRowModel().rows.map(row => (
+            {table.getRowModel().rows.map((row) => (
               <Table.Tr key={row.id}>
-                {row.getVisibleCells().map(cell => (
+                {row.getVisibleCells().map((cell) => (
                   <Table.Td key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </Table.Td>

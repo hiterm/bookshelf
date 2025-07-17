@@ -2,9 +2,13 @@ import { Loader, MultiSelect } from "@mantine/core";
 import { Column } from "@tanstack/react-table";
 import { useAuthorsQuery } from "../../generated/graphql";
 
-export type AuthorsFilterProps<TData, TValue> = { column: Column<TData, TValue> };
+export type AuthorsFilterProps<TData, TValue> = {
+  column: Column<TData, TValue>;
+};
 
-export const AuthorsFilter = <TData, TValue>({ column }: AuthorsFilterProps<TData, TValue>): React.JSX.Element => {
+export const AuthorsFilter = <TData, TValue>({
+  column,
+}: AuthorsFilterProps<TData, TValue>): React.JSX.Element => {
   const [queryResult, _reexecuteQuery] = useAuthorsQuery();
 
   const fetching = queryResult.fetching || queryResult.data == null;
@@ -15,10 +19,12 @@ export const AuthorsFilter = <TData, TValue>({ column }: AuthorsFilterProps<TDat
 
   return (
     <MultiSelect
-      data={queryResult.data?.authors.map((author) => ({
-        value: author.id,
-        label: author.name,
-      })) ?? []}
+      data={
+        queryResult.data?.authors.map((author) => ({
+          value: author.id,
+          label: author.name,
+        })) ?? []
+      }
       searchable
       value={(column.getFilterValue() ?? []) as string[]}
       onChange={(authorIds) => {

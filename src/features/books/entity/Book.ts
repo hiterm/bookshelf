@@ -1,4 +1,9 @@
-import { Author, BookFormat, BooksQuery, BookStore } from "../../../generated/graphql";
+import {
+  Author,
+  BookFormat,
+  BooksQuery,
+  BookStore,
+} from "../../../generated/graphql";
 
 type GraphQLBook = BooksQuery["books"][0];
 

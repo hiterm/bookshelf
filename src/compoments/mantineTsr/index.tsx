@@ -1,5 +1,18 @@
-import { Anchor, AnchorProps, Button, ButtonProps, NavLink, NavLinkProps } from "@mantine/core";
-import { createLink, Link, LinkComponent, RegisteredRouter, ValidateLinkOptions } from "@tanstack/react-router";
+import {
+  Anchor,
+  AnchorProps,
+  Button,
+  ButtonProps,
+  NavLink,
+  NavLinkProps,
+} from "@mantine/core";
+import {
+  createLink,
+  Link,
+  LinkComponent,
+  RegisteredRouter,
+  ValidateLinkOptions,
+} from "@tanstack/react-router";
 import * as React from "react";
 
 // Link
@@ -14,9 +27,7 @@ const MantineLinkComponent = React.forwardRef<
 
 const CreatedLinkComponent = createLink(MantineLinkComponent);
 
-const CustomLink: LinkComponent<typeof MantineLinkComponent> = (
-  props,
-) => {
+const CustomLink: LinkComponent<typeof MantineLinkComponent> = (props) => {
   return <CreatedLinkComponent preload="intent" {...props} />;
 };
 
@@ -56,5 +67,10 @@ export function LinkButton<TRouter extends RegisteredRouter, TOptions>(
 ): React.ReactNode;
 export function LinkButton(props: LinkButtonProps): React.ReactNode {
   const { linkOptions: linkOptions, ...buttonProps } = props;
-  return <Button {...buttonProps} renderRoot={(props) => <Link {...linkOptions} {...props} />} />;
+  return (
+    <Button
+      {...buttonProps}
+      renderRoot={(props) => <Link {...linkOptions} {...props} />}
+    />
+  );
 }

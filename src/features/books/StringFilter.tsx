@@ -3,10 +3,16 @@ import { Column } from "@tanstack/react-table";
 import { useState } from "react";
 import { useDebouncedEffect } from "../../compoments/hooks/useDebouncedEffect";
 
-export type StringFilterProps<TData, TValue> = { column: Column<TData, TValue> };
+export type StringFilterProps<TData, TValue> = {
+  column: Column<TData, TValue>;
+};
 
-export const StringFilter = <TData, TValue>({ column }: StringFilterProps<TData, TValue>) => {
-  const [value, setValue] = useState<string>((column.getFilterValue() ?? "") as string);
+export const StringFilter = <TData, TValue>({
+  column,
+}: StringFilterProps<TData, TValue>) => {
+  const [value, setValue] = useState<string>(
+    (column.getFilterValue() ?? "") as string,
+  );
 
   useDebouncedEffect(
     () => {
@@ -20,7 +26,7 @@ export const StringFilter = <TData, TValue>({ column }: StringFilterProps<TData,
   return (
     <TextInput
       value={value}
-      onChange={event => {
+      onChange={(event) => {
         setValue(event.target.value);
       }}
     />

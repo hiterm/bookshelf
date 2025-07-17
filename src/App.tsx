@@ -1,8 +1,19 @@
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
-import { Alert, AppShell, Button, Center, Loader, MantineProvider } from "@mantine/core";
+import {
+  Alert,
+  AppShell,
+  Button,
+  Center,
+  Loader,
+  MantineProvider,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
-import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
 import { Outlet } from "@tanstack/react-router";
 import { devtoolsExchange } from "@urql/devtools";
 import React, { Fragment, memo, useMemo } from "react";
@@ -11,7 +22,10 @@ import { ChildrenProps } from "./compoments/ChildrenProps";
 import { HeaderContents } from "./compoments/layout/Header";
 import { NavbarContents } from "./compoments/layout/Navbar";
 import { SignInScreen } from "./features/auth/SignInScreen";
-import { useLoggedInUserQuery, useRegisterUserMutation } from "./generated/graphql";
+import {
+  useLoggedInUserQuery,
+  useRegisterUserMutation,
+} from "./generated/graphql";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 
@@ -120,12 +134,10 @@ const DemoUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
 
 const queryClient = new QueryClient();
 
-const BranchingUrqlProvider = import.meta.env.VITE_DEMO_MODE === "true"
-  ? DemoUrqlProvider
-  : MyUrqlProvider;
-const BranchingSignInCheck = import.meta.env.VITE_DEMO_MODE === "true"
-  ? Fragment
-  : SignInCheck;
+const BranchingUrqlProvider =
+  import.meta.env.VITE_DEMO_MODE === "true" ? DemoUrqlProvider : MyUrqlProvider;
+const BranchingSignInCheck =
+  import.meta.env.VITE_DEMO_MODE === "true" ? Fragment : SignInCheck;
 
 const MainContent = memo(function MainContent(): React.JSX.Element {
   return (
@@ -136,12 +148,12 @@ const MainContent = memo(function MainContent(): React.JSX.Element {
             color="yellow"
             mb="md"
             style={{
-              display: import.meta.env.VITE_DEMO_MODE === "true"
-                ? undefined
-                : "none",
+              display:
+                import.meta.env.VITE_DEMO_MODE === "true" ? undefined : "none",
             }}
           >
-            This is a read-only demo app. Update operations will not be reflected.
+            This is a read-only demo app. Update operations will not be
+            reflected.
           </Alert>
           <Outlet />
         </RegisterCheck>
@@ -175,7 +187,10 @@ const App: React.FC = () => {
             padding="md"
           >
             <AppShell.Header>
-              <HeaderContents burgerOpened={opened} onBurgerClick={handlers.toggle} />
+              <HeaderContents
+                burgerOpened={opened}
+                onBurgerClick={handlers.toggle}
+              />
             </AppShell.Header>
             <AppShell.Navbar p="md">
               <NavbarContents />

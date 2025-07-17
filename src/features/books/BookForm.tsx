@@ -1,9 +1,21 @@
-import { Checkbox, Loader, MultiSelect, NumberInput, Select, Stack, TextInput } from "@mantine/core";
+import {
+  Checkbox,
+  Loader,
+  MultiSelect,
+  NumberInput,
+  Select,
+  Stack,
+  TextInput,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { zodResolver } from "mantine-form-zod-resolver";
 import React, { ReactElement } from "react";
 import { z } from "zod";
-import { BookFormat, BookStore, useAuthorsQuery } from "../../generated/graphql";
+import {
+  BookFormat,
+  BookStore,
+  useAuthorsQuery,
+} from "../../generated/graphql";
 import { Author } from "./entity/Author";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
 import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
@@ -81,9 +93,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
           form.getInputProps("authors").onChange(
             authorIds.map((authorId) => ({
               id: authorId,
-              name: data.authors.find(
-                (author) => author.id === authorId,
-              )?.name,
+              name: data.authors.find((author) => author.id === authorId)?.name,
             })),
           );
         }}

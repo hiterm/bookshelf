@@ -1,15 +1,19 @@
 import { Select } from "@mantine/core";
 import { Column } from "@tanstack/react-table";
 
-export type BooleanFilterProps<TData, TValue> = { column: Column<TData, TValue> };
+export type BooleanFilterProps<TData, TValue> = {
+  column: Column<TData, TValue>;
+};
 
-export const BooleanFilter = <TData, TValue>({ column }: BooleanFilterProps<TData, TValue>): React.JSX.Element => {
+export const BooleanFilter = <TData, TValue>({
+  column,
+}: BooleanFilterProps<TData, TValue>): React.JSX.Element => {
   return (
     <Select
       data={["-", "true", "false"]}
       // eslint-disable-next-line @typescript-eslint/no-base-to-string
       value={String(column.getFilterValue() ?? "-")}
-      onChange={value => {
+      onChange={(value) => {
         if (value === "true") {
           column.setFilterValue(true);
         } else if (value === "false") {

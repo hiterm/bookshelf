@@ -17,7 +17,12 @@ export const HeaderContents: React.FC<HeaderProps> = ({
   };
 
   return (
-    <Group justify="space-between" align="center" style={{ height: "100%" }} px={20}>
+    <Group
+      justify="space-between"
+      align="center"
+      style={{ height: "100%" }}
+      px={20}
+    >
       <Group>
         <Burger opened={burgerOpened} onClick={onBurgerClick} hiddenFrom="sm" />
         <Title
@@ -39,9 +44,7 @@ export const HeaderContents: React.FC<HeaderProps> = ({
         </Menu.Target>
 
         <Menu.Dropdown>
-          <Menu.Item>
-            User: {isAuthenticated && user?.name}
-          </Menu.Item>
+          <Menu.Item>User: {isAuthenticated && user?.name}</Menu.Item>
           <Menu.Item onClick={handleSignOut}>Logout</Menu.Item>
         </Menu.Dropdown>
       </Menu>

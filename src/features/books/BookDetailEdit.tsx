@@ -37,10 +37,11 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
       <Box component="form" onSubmit={submitForm} style={{ minWidth: 400 }}>
         {form}
         <Group mt="md">
-          <Button type="submit">
-            Save
-          </Button>
-          <LinkButton color="gray" linkOptions={{ to: "/books/$id", params: { id: book.id } }}>
+          <Button type="submit">Save</Button>
+          <LinkButton
+            color="gray"
+            linkOptions={{ to: "/books/$id", params: { id: book.id } }}
+          >
             Cancel
           </LinkButton>
         </Group>

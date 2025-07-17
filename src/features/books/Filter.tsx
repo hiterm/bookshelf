@@ -5,9 +5,14 @@ import { FormatFilter } from "./FormatFilter";
 import { StoreFilter } from "./StoreFilter";
 import { StringFilter } from "./StringFilter";
 
-type FilterProps<TData, TValue> = { column: Column<TData, TValue>; table: ReactTable<TData> };
+type FilterProps<TData, TValue> = {
+  column: Column<TData, TValue>;
+  table: ReactTable<TData>;
+};
 
-export const Filter = <TData, TValue>({ column }: FilterProps<TData, TValue>): React.JSX.Element => {
+export const Filter = <TData, TValue>({
+  column,
+}: FilterProps<TData, TValue>): React.JSX.Element => {
   switch (column.columnDef.meta?.filterType) {
     case "string":
       return <StringFilter column={column} />;
