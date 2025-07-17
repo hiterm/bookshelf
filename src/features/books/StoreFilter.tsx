@@ -4,7 +4,9 @@ import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
 
 export type StoreFilterProps<TData, TValue> = { column: Column<TData, TValue> };
 
-export const StoreFilter = <TData, TValue>({ column }: StoreFilterProps<TData, TValue>): React.JSX.Element => {
+export const StoreFilter = <TData, TValue>({
+  column,
+}: StoreFilterProps<TData, TValue>): React.JSX.Element => {
   return (
     <Select
       data={[
@@ -14,8 +16,8 @@ export const StoreFilter = <TData, TValue>({ column }: StoreFilterProps<TData, T
           label: displayBookStore(format),
         })),
       ]}
-      value={column.getFilterValue() as (string | undefined) ?? ""}
-      onChange={value => {
+      value={(column.getFilterValue() as string | undefined) ?? ""}
+      onChange={(value) => {
         column.setFilterValue(value);
       }}
     />

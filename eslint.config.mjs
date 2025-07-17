@@ -23,15 +23,18 @@ export default tseslint.config(
   reactPlugin.configs.flat["jsx-runtime"], // Add this if you are using React 17+
   reactHooks.configs["recommended-latest"],
   {
-    "settings": {
-      "react": {
-        "version": "detect",
+    settings: {
+      react: {
+        version: "detect",
       },
     },
   },
   {
     files: ["**/*.{ts,tsx}"],
-    extends: [importPlugin.flatConfigs.recommended, importPlugin.flatConfigs.typescript],
+    extends: [
+      importPlugin.flatConfigs.recommended,
+      importPlugin.flatConfigs.typescript,
+    ],
   },
   {
     rules: {
@@ -39,23 +42,32 @@ export default tseslint.config(
       "react/prop-types": "off",
       "react/react-in-jsx-scope": "off",
 
-      "react-hooks/exhaustive-deps": ["warn", {
-        additionalHooks: "useDebouncedEffect",
-      }],
-
-      "@typescript-eslint/no-unused-vars": ["warn", {
-        argsIgnorePattern: "^_",
-        varsIgnorePattern: "^_",
-        caughtErrorsIgnorePattern: "^_",
-        destructuredArrayIgnorePattern: "^_",
-      }],
-
-      "@typescript-eslint/no-misused-promises": ["error", {
-        checksVoidReturn: {
-          arguments: false,
-          attributes: false,
+      "react-hooks/exhaustive-deps": [
+        "warn",
+        {
+          additionalHooks: "useDebouncedEffect",
         },
-      }],
+      ],
+
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+        },
+      ],
+
+      "@typescript-eslint/no-misused-promises": [
+        "error",
+        {
+          checksVoidReturn: {
+            arguments: false,
+            attributes: false,
+          },
+        },
+      ],
 
       "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
       "import/named": "off",
@@ -71,7 +83,6 @@ export default tseslint.config(
       "dist",
       "src/generated",
       ".yarn",
-      ".eslintrc.js",
       "vite.config.ts",
       "eslint.config.mjs",
     ],

@@ -42,7 +42,10 @@ export const BookAddButton: React.FC = () => {
         <>
           <div>{value.title}を追加しました</div>
           <LinkButton
-            linkOptions={{ to: "/books/$id", params: { id: data.createBook.id } }}
+            linkOptions={{
+              to: "/books/$id",
+              params: { id: data.createBook.id },
+            }}
           >
             Move
           </LinkButton>

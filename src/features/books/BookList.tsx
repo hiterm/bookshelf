@@ -27,7 +27,11 @@ import {
 } from "@tanstack/react-table";
 import dayjs from "dayjs";
 
-import { IconLayoutColumns, IconSortAscending, IconSortDescending } from "@tabler/icons-react";
+import {
+  IconLayoutColumns,
+  IconSortAscending,
+  IconSortDescending,
+} from "@tabler/icons-react";
 import { getRouteApi } from "@tanstack/react-router";
 import React, { ReactNode } from "react";
 import { useTableSearchParams } from "tanstack-table-search-params";
@@ -48,17 +52,22 @@ declare module "@tanstack/table-core" {
   }
 }
 
-const authorsFilter: FilterFn<Book> = (row, columnId, filterValue: string[], _addMeta) => {
+const authorsFilter: FilterFn<Book> = (
+  row,
+  columnId,
+  filterValue: string[],
+  _addMeta,
+) => {
   if (filterValue.length === 0) {
     return true;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const value = row.getValue(columnId) as Author[];
-  return value.some(author => filterValue.includes(author.id));
+  return value.some((author) => filterValue.includes(author.id));
 };
 
-const formatDate = (date: Date) => (dayjs(date).format("YYYY/MM/DD HH:mm Z"));
+const formatDate = (date: Date) => dayjs(date).format("YYYY/MM/DD HH:mm Z");
 
 const columnHelper = createColumnHelper<Book>();
 
@@ -85,7 +94,11 @@ const columns = [
     filterFn: authorsFilter,
     minSize: 200,
   }),
-  columnHelper.accessor("isbn", { header: "ISBN", filterFn: "includesString", meta: { filterType: "string" } }),
+  columnHelper.accessor("isbn", {
+    header: "ISBN",
+    filterFn: "includesString",
+    meta: { filterType: "string" },
+  }),
   columnHelper.accessor("format", {
     header: "形式",
     cell: (info) => displayBookFormat(info.getValue()),
@@ -117,11 +130,15 @@ const columns = [
   }),
   columnHelper.accessor("createdAt", {
     header: "追加日時",
-    cell: (info) => <Box style={{ whiteSpace: "nowrap" }}>{formatDate(info.getValue())}</Box>,
+    cell: (info) => (
+      <Box style={{ whiteSpace: "nowrap" }}>{formatDate(info.getValue())}</Box>
+    ),
   }),
   columnHelper.accessor("updatedAt", {
     header: "更新日時",
-    cell: (info) => <Box style={{ whiteSpace: "nowrap" }}>{formatDate(info.getValue())}</Box>,
+    cell: (info) => (
+      <Box style={{ whiteSpace: "nowrap" }}>{formatDate(info.getValue())}</Box>
+    ),
   }),
 ] as ColumnDef<Book>[];
 
@@ -206,7 +223,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
               Toggle all
             </Button>
             <Box mt="md">
-              {table.getAllLeafColumns().map(column => {
+              {table.getAllLeafColumns().map((column) => {
                 return (
                   <Checkbox
                     key={column.id}
@@ -227,7 +244,10 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
           <Menu.Dropdown>
             <Menu.Item
               onClick={() => {
-                table.setColumnFilters(() => [{ id: "read", value: false }, { id: "owned", value: true }]);
+                table.setColumnFilters(() => [
+                  { id: "read", value: false },
+                  { id: "owned", value: true },
+                ]);
                 table.setSorting(() => [{ id: "priority", desc: true }]);
               }}
             >
@@ -247,23 +267,37 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
         </Button>
       </Group>
       <Box style={{ overflow: "scroll" }}>
-        <Table withTableBorder mt="md" style={{ borderLeft: "none", borderRight: "none" }}>
+        <Table
+          withTableBorder
+          mt="md"
+          style={{ borderLeft: "none", borderRight: "none" }}
+        >
           <Table.Thead>
-            {table.getHeaderGroups().map(headerGroup => (
+            {table.getHeaderGroups().map((headerGroup) => (
               <Table.Tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
+                {headerGroup.headers.map((header) => (
                   <Table.Th
                     key={header.id}
-                    style={{ minWidth: header.column.columnDef.minSize, whiteSpace: "nowrap" }}
+                    style={{
+                      minWidth: header.column.columnDef.minSize,
+                      whiteSpace: "nowrap",
+                    }}
                   >
                     {header.isPlaceholder ? null : (
                       <Group
                         onClick={header.column.getToggleSortingHandler()}
                         gap={0}
                         wrap="nowrap"
-                        style={{ cursor: header.column.getCanSort() ? "pointer" : undefined }}
+                        style={{
+                          cursor: header.column.getCanSort()
+                            ? "pointer"
+                            : undefined,
+                        }}
                       >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                         <SortIcon isSorted={header.column.getIsSorted()} />
                       </Group>
                     )}
@@ -271,14 +305,14 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
                 ))}
               </Table.Tr>
             ))}
-            {table.getHeaderGroups().map(headerGroup => (
+            {table.getHeaderGroups().map((headerGroup) => (
               <Table.Tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
+                {headerGroup.headers.map((header) => (
                   <Table.Th key={header.id}>
                     <Box style={{ fontWeight: "normal" }}>
-                      {header.isPlaceholder ? null : (
-                        header.column.getCanFilter() ? <Filter column={header.column} table={table} /> : null
-                      )}
+                      {header.isPlaceholder ? null : header.column.getCanFilter() ? (
+                        <Filter column={header.column} table={table} />
+                      ) : null}
                     </Box>
                   </Table.Th>
                 ))}
@@ -286,9 +320,9 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
             ))}
           </Table.Thead>
           <Table.Tbody>
-            {table.getRowModel().rows.map(row => (
+            {table.getRowModel().rows.map((row) => (
               <Table.Tr key={row.id}>
-                {row.getVisibleCells().map(cell => (
+                {row.getVisibleCells().map((cell) => (
                   <Table.Td key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </Table.Td>
@@ -312,7 +346,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
           label="Page size"
           data={["20", "50", "100"]}
           value={table.getState().pagination.pageSize.toString()}
-          onChange={value => {
+          onChange={(value) => {
             if (value !== null) {
               table.setPageSize(parseInt(value, 10));
             }

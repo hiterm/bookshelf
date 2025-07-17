@@ -61,7 +61,7 @@ describe("useBookForm", () => {
               { id: "2", name: "name2" },
             ],
           },
-        })
+        }),
       ),
     };
 
@@ -82,9 +82,7 @@ describe("useBookForm", () => {
 
     const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
       <Provider value={mockClient as unknown as Client}>
-        <MantineProvider>
-          {children}
-        </MantineProvider>
+        <MantineProvider>{children}</MantineProvider>
       </Provider>
     );
     // eslint-disable-next-line @typescript-eslint/no-empty-function

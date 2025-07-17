@@ -2,9 +2,13 @@ import { Select } from "@mantine/core";
 import { Column } from "@tanstack/react-table";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
 
-export type FormatFilterProps<TData, TValue> = { column: Column<TData, TValue> };
+export type FormatFilterProps<TData, TValue> = {
+  column: Column<TData, TValue>;
+};
 
-export const FormatFilter = <TData, TValue>({ column }: FormatFilterProps<TData, TValue>): React.JSX.Element => {
+export const FormatFilter = <TData, TValue>({
+  column,
+}: FormatFilterProps<TData, TValue>): React.JSX.Element => {
   return (
     <Select
       data={[
@@ -14,8 +18,8 @@ export const FormatFilter = <TData, TValue>({ column }: FormatFilterProps<TData,
           label: displayBookFormat(format),
         })),
       ]}
-      value={column.getFilterValue() as (string | undefined) ?? ""}
-      onChange={value => {
+      value={(column.getFilterValue() as string | undefined) ?? ""}
+      onChange={(value) => {
         column.setFilterValue(value);
       }}
     />

@@ -1,0 +1,22 @@
+// biome configuration
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space"
+  },
+  "linter": {
+    "enabled": false
+  },
+  "files": {
+    "includes": [
+      "**/*.{js,jsx,ts,tsx,mjs,cjs,json,jsonc,md,css,html,yaml,yml}",
+      "!build/**",
+      "!dist/**",
+      "!src/generated/**",
+      "!.yarn/**",
+      "!src/routeTree.gen.ts",
+      "!node_modules/**"
+    ]
+  }
+}

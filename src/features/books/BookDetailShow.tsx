@@ -1,4 +1,13 @@
-import { Box, Button, Center, Group, Modal, Text, Title, useMantineTheme } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Center,
+  Group,
+  Modal,
+  Text,
+  Title,
+  useMantineTheme,
+} from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { IconArrowBack } from "@tabler/icons-react";
@@ -154,7 +163,10 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
         />
       </Box>
       <Group m={20}>
-        <LinkButton color="blue" linkOptions={{ to: "/books/$id/edit", params: { id: book.id } }}>
+        <LinkButton
+          color="blue"
+          linkOptions={{ to: "/books/$id/edit", params: { id: book.id } }}
+        >
           変更
         </LinkButton>
         <DeleteButton book={book} />
