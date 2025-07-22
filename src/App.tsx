@@ -1,4 +1,4 @@
-import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
+import { useAuth0 } from "@auth0/auth0-react";
 import {
   Alert,
   AppShell,
@@ -169,37 +169,28 @@ const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <MantineProvider>
         <Notifications />
-        <Auth0Provider
-          domain={import.meta.env.VITE_AUTH0_DOMAIN}
-          clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-          authorizationParams={{
-            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-            redirect_uri: window.location.origin,
+        <AppShell
+          header={{ height: 70 }}
+          navbar={{
+            width: 300,
+            breakpoint: "sm",
+            collapsed: { mobile: !opened },
           }}
+          padding="md"
         >
-          <AppShell
-            header={{ height: 70 }}
-            navbar={{
-              width: 300,
-              breakpoint: "sm",
-              collapsed: { mobile: !opened },
-            }}
-            padding="md"
-          >
-            <AppShell.Header>
-              <HeaderContents
-                burgerOpened={opened}
-                onBurgerClick={handlers.toggle}
-              />
-            </AppShell.Header>
-            <AppShell.Navbar p="md">
-              <NavbarContents />
-            </AppShell.Navbar>
-            <AppShell.Main>
-              <MainContent />
-            </AppShell.Main>
-          </AppShell>
-        </Auth0Provider>
+          <AppShell.Header>
+            <HeaderContents
+              burgerOpened={opened}
+              onBurgerClick={handlers.toggle}
+            />
+          </AppShell.Header>
+          <AppShell.Navbar p="md">
+            <NavbarContents />
+          </AppShell.Navbar>
+          <AppShell.Main>
+            <MainContent />
+          </AppShell.Main>
+        </AppShell>
       </MantineProvider>
     </QueryClientProvider>
   );

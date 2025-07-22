@@ -3,9 +3,15 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
+import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 
 // Create a new router instance
-const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  // This value is always overwritten
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  context: { auth: undefined! },
+});
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
@@ -18,8 +24,24 @@ declare module "@tanstack/react-router" {
 const container = document.getElementById("root");
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const root = createRoot(container!);
+
+function AppWithRouterContext() {
+  const auth = useAuth0();
+  return <RouterProvider router={router} context={{ auth }} />;
+}
+
+
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Auth0Provider
+      domain={import.meta.env.VITE_AUTH0_DOMAIN}
+      clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+      authorizationParams={{
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        redirect_uri: window.location.origin,
+      }}
+    >
+      <AppWithRouterContext />
+    </Auth0Provider>
   </React.StrictMode>,
 );
