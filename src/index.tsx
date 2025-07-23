@@ -42,7 +42,9 @@ function AppWithRouterContext() {
       return client.request(doc, variables);
     } else {
       const token = await auth.getAccessTokenSilently();
-      return client.request(doc, variables, { Authorization: `Bearer ${token}` });
+      return client.request(doc, variables, {
+        Authorization: `Bearer ${token}`,
+      });
     }
   };
 

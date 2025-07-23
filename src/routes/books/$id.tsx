@@ -1,6 +1,6 @@
 // Book detail page with graphql-request loader (urql removed)
 
-import { Center, Loader } from "@mantine/core";
+import { Loader } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 import { BookDetailShow } from "../../features/books/BookDetailShow";
@@ -30,10 +30,9 @@ export const BookQueryDocument = graphql(/* GraphQL */ `
 
 export const Route = createFileRoute("/books/$id")({
   loader: async ({ params, context }) => {
-    const data = await context.graphql.requestWithAuth(
-      BookQueryDocument,
-      { bookId: params.id }
-    );
+    const data = await context.graphql.requestWithAuth(BookQueryDocument, {
+      bookId: params.id,
+    });
     return data.book;
   },
   component: RouteComponent,
