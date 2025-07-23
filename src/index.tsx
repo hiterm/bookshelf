@@ -33,17 +33,20 @@ function AppWithRouterContext() {
 
   const requestWithAuth = async <
     TData,
-    TVariables extends object | undefined = undefined
+    TVariables extends object | undefined = undefined,
   >(
     doc: TypedDocumentNode<TData, TVariables>,
-    variables?: TVariables
+    variables?: TVariables,
   ): Promise<TData> => {
     const token = await auth.getAccessTokenSilently();
     return client.request(doc, variables, { Authorization: `Bearer ${token}` });
   };
 
   return (
-    <RouterProvider router={router} context={{ auth, graphql: { requestWithAuth } }} />
+    <RouterProvider
+      router={router}
+      context={{ auth, graphql: { requestWithAuth } }}
+    />
   );
 }
 

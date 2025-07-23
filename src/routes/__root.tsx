@@ -6,7 +6,7 @@ import { TypedDocumentNode } from "@graphql-typed-document-node/core";
 type GraphQLContextInterface = {
   requestWithAuth: <T, V extends object = object>(
     doc: TypedDocumentNode<T, V>,
-    variables?: V
+    variables?: V,
   ) => Promise<T>;
 };
 

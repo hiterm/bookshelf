@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "lint": "concurrently --group 'eslint_d --max-warnings=0 --ext .js,.jsx,.ts,.tsx .' 'biome check --assist-enabled false .'",
     "lint:fix": "eslint_d --fix --ext .js,.jsx,.ts,.tsx . && biome format . --write",
+    "format": "biome format . --write",
     "typecheck": "tsc --noEmit",
     "generate": "graphql-codegen --config codegen.yml"
   },
