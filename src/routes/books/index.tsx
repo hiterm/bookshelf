@@ -6,15 +6,10 @@ import { BookList } from "../../features/books/BookList";
 import { Book, graphQlBookToBook } from "../../features/books/entity/Book";
 import { graphql } from "../../generated/gql";
 
-import { requestWithAuthMode } from "../../features/common/functions/requestWithAuthMode";
 
 export const Route = createFileRoute("/books/")({
-  loader: async ({ context: { auth, graphql } }) => {
-    const booksResponse = await requestWithAuthMode(
-      graphql.client,
-      auth.getAccessTokenSilently,
-      BooksQueryDocument
-    );
+  loader: async ({ context }) => {
+    const booksResponse = await context.graphql.requestWithAuth(BooksQueryDocument);
     return booksResponse.books;
   },
   component: RouteComponent,

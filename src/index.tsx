@@ -5,6 +5,7 @@ import { routeTree } from "./routeTree.gen";
 import "./index.css";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { GraphQLClient } from "graphql-request";
+import { TypedDocumentNode } from "@graphql-typed-document-node/core";
 
 // Create a new router instance
 const router = createRouter({
@@ -29,8 +30,20 @@ const root = createRoot(container!);
 function AppWithRouterContext() {
   const auth = useAuth0();
   const client = new GraphQLClient(import.meta.env.VITE_BOOKSHELF_API);
+
+  const requestWithAuth = async <
+    TData,
+    TVariables extends object | undefined = undefined
+  >(
+    doc: TypedDocumentNode<TData, TVariables>,
+    variables?: TVariables
+  ): Promise<TData> => {
+    const token = await auth.getAccessTokenSilently();
+    return client.request(doc, variables, { Authorization: `Bearer ${token}` });
+  };
+
   return (
-    <RouterProvider router={router} context={{ auth, graphql: { client } }} />
+    <RouterProvider router={router} context={{ auth, graphql: { requestWithAuth } }} />
   );
 }
 

@@ -1,10 +1,13 @@
 import { createRootRouteWithContext } from "@tanstack/react-router";
 import App from "../App";
 import { type Auth0ContextInterface } from "@auth0/auth0-react";
-import { GraphQLClient } from "graphql-request";
+import { TypedDocumentNode } from "@graphql-typed-document-node/core";
 
 type GraphQLContextInterface = {
-  client: GraphQLClient;
+  requestWithAuth: <T, V extends object = object>(
+    doc: TypedDocumentNode<T, V>,
+    variables?: V
+  ) => Promise<T>;
 };
 
 type MyRouterContext = {
