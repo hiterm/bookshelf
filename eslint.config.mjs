@@ -75,6 +75,7 @@ export default tseslint.config(
       "import/default": "off",
       "import/no-named-as-default-member": "off",
       "import/no-named-as-default": "off",
+      "import/no-unresolved": "off",
     },
   },
   {

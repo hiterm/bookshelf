@@ -4,13 +4,14 @@ import { createRoot } from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
+import { GraphQLClient } from "graphql-request";
 
 // Create a new router instance
 const router = createRouter({
   routeTree,
   // This value is always overwritten
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  context: { auth: undefined! },
+  context: { auth: undefined!, graphql: undefined! },
 });
 
 // Register the router instance for type safety
@@ -27,9 +28,11 @@ const root = createRoot(container!);
 
 function AppWithRouterContext() {
   const auth = useAuth0();
-  return <RouterProvider router={router} context={{ auth }} />;
+  const client = new GraphQLClient(import.meta.env.VITE_BOOKSHELF_API);
+  return (
+    <RouterProvider router={router} context={{ auth, graphql: { client } }} />
+  );
 }
-
 
 root.render(
   <React.StrictMode>
