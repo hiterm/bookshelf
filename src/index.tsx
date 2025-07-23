@@ -38,8 +38,12 @@ function AppWithRouterContext() {
     doc: TypedDocumentNode<TData, TVariables>,
     variables?: TVariables,
   ): Promise<TData> => {
-    const token = await auth.getAccessTokenSilently();
-    return client.request(doc, variables, { Authorization: `Bearer ${token}` });
+    if (import.meta.env.VITE_DEMO_MODE === "true") {
+      return client.request(doc, variables);
+    } else {
+      const token = await auth.getAccessTokenSilently();
+      return client.request(doc, variables, { Authorization: `Bearer ${token}` });
+    }
   };
 
   return (
