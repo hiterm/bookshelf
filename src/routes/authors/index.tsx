@@ -18,14 +18,18 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
-import {
-  useAuthorsQuery,
-  useCreateAuthorMutation,
-} from "../../generated/graphql";
+import { useState } from "react";
+import { useCreateAuthorMutation } from "../../generated/graphql";
+import { graphql } from "../../generated/gql";
 
 export const Route = createFileRoute("/authors/")({
+  loader: async ({ context }) => {
+    const authorsResponse =
+      await context.graphql.requestWithAuth(AuthorsQueryDocument);
+    return authorsResponse.authors;
+  },
   component: RouteComponent,
+  pendingComponent: Loader,
 });
 
 function RouteComponent() {
@@ -59,16 +63,15 @@ const RegisterAuthorForm: React.FC = () => {
 };
 
 const AuthorIndexPage: React.FC = () => {
-  const context = useMemo(() => ({ additionalTypenames: ["Author"] }), []);
-  const [result, _reexecuteQuery] = useAuthorsQuery({ context });
-  const { data, fetching, error } = result;
+  const authors = Route.useLoaderData();
+
   const [globalFilter, setGlobalFilter] = useState("");
   const columnHelper = createColumnHelper<Author>();
   const columns = [
     columnHelper.accessor("name", { header: "名前" }),
   ] as ColumnDef<Author>[];
   const table = useReactTable({
-    data: data?.authors ?? [], // その場しのぎ
+    data: authors, // その場しのぎ
     columns,
     state: { globalFilter },
     onGlobalFilterChange: setGlobalFilter,
@@ -76,18 +79,6 @@ const AuthorIndexPage: React.FC = () => {
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
-
-  if (error != null) {
-    return <>{JSON.stringify(error)}</>;
-  }
-
-  if (fetching || data == null) {
-    return (
-      <Center>
-        <Loader />
-      </Center>
-    );
-  }
 
   return (
     <>
@@ -143,3 +134,12 @@ const AuthorIndexPage: React.FC = () => {
     </>
   );
 };
+
+const AuthorsQueryDocument = graphql(/* GraphQL */ `
+  query authors {
+    authors {
+      id
+      name
+    }
+  }
+`);
