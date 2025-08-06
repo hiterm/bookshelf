@@ -58,7 +58,7 @@ const BookIndexPage: React.FC = () => {
 
   return (
     <React.Fragment>
-      <BookAddButton />
+      <BookAddButton authors={authors} />
       <Paper shadow="xs" mt="md" p="lg">
         <BookList list={books} authors={authors} />
       </Paper>

@@ -34,12 +34,13 @@ const emptyBook: BookFormValues = {
   store: "UNKNOWN",
 };
 
-type TestFormProps = { onSubmit: (values: BookFormValues) => void };
+type TestFormProps = { onSubmit: (values: BookFormValues) => void; authors: Author[] };
 
-const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
+const TestForm: React.FC<TestFormProps> = ({ onSubmit, authors }) => {
   const { form, submitForm } = useBookForm({
     initialValues: emptyBook,
     onSubmit: onSubmit,
+    authors: authors,
   });
 
   return (
