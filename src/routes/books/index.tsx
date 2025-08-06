@@ -8,9 +8,11 @@ import { graphql } from "../../generated/gql";
 
 export const Route = createFileRoute("/books/")({
   loader: async ({ context }) => {
-    const booksResponse =
-      await context.graphql.requestWithAuth(BooksQueryDocument);
-    return booksResponse.books;
+    const [booksResponse, authorsResponse] = await Promise.all([
+      context.graphql.requestWithAuth(BooksQueryDocument),
+      context.graphql.requestWithAuth(AuthorsQueryDocument),
+    ]);
+    return { books: booksResponse.books, authors: authorsResponse.authors };
   },
   component: RouteComponent,
   pendingComponent: Loader,
@@ -19,6 +21,15 @@ export const Route = createFileRoute("/books/")({
 function RouteComponent() {
   return <BookIndexPage />;
 }
+
+const AuthorsQueryDocument = graphql(/* GraphQL */ `
+  query authors {
+    authors {
+      id
+      name
+    }
+  }
+`);
 
 const BooksQueryDocument = graphql(/* GraphQL */ `
   query books {
@@ -42,14 +53,14 @@ const BooksQueryDocument = graphql(/* GraphQL */ `
 `);
 
 const BookIndexPage: React.FC = () => {
-  const rawBooks = Route.useLoaderData();
+  const { books: rawBooks, authors } = Route.useLoaderData();
   const books: Book[] = rawBooks.map(graphQlBookToBook);
 
   return (
     <React.Fragment>
       <BookAddButton />
       <Paper shadow="xs" mt="md" p="lg">
-        <BookList list={books} />
+        <BookList list={books} authors={authors} />
       </Paper>
     </React.Fragment>
   );

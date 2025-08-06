@@ -15,6 +15,22 @@ type MyRouterContext = {
   graphql: GraphQLContextInterface;
 };
 
+import { graphql } from "../generated/gql";
+
+const LoggedInUserDocument = graphql(/* GraphQL */ `
+  query loggedInUser {
+    loggedInUser {
+      id
+    }
+  }
+`);
+
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  loader: async ({ context }) => {
+    const loggedInUserResponse = await context.graphql.requestWithAuth(
+      LoggedInUserDocument,
+    );
+    return { loggedInUser: loggedInUserResponse.loggedInUser };
+  },
   component: App,
 });

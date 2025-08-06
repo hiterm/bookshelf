@@ -142,7 +142,7 @@ const columns = [
   }),
 ] as ColumnDef<Book>[];
 
-type BookListProps = { list: Book[] };
+type BookListProps = { list: Book[]; authors: Author[] };
 
 type SortIconProps = {
   isSorted: ReturnType<Column<Book>["getIsSorted"]>;
@@ -171,7 +171,7 @@ const SortIcon: React.FC<SortIconProps> = ({ isSorted }) => {
   }
 };
 
-export const BookList: React.FC<BookListProps> = ({ list }) => {
+export const BookList: React.FC<BookListProps> = ({ list, authors }) => {
   const routeApi = getRouteApi("/books/");
   const navigate = routeApi.useNavigate();
   const query = routeApi.useSearch();
@@ -311,7 +311,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
                   <Table.Th key={header.id}>
                     <Box style={{ fontWeight: "normal" }}>
                       {header.isPlaceholder ? null : header.column.getCanFilter() ? (
-                        <Filter column={header.column} table={table} />
+                        <Filter column={header.column} table={table} authors={authors} />
                       ) : null}
                     </Box>
                   </Table.Th>

@@ -12,22 +12,29 @@ import { Notifications } from "@mantine/notifications";
 import {
   QueryClient,
   QueryClientProvider,
+  useMutation,
   useQuery,
 } from "@tanstack/react-query";
 import { Outlet } from "@tanstack/react-router";
 import { devtoolsExchange } from "@urql/devtools";
-import React, { Fragment, memo, useMemo } from "react";
+import React, { Fragment, memo } from "react";
 import { createClient, defaultExchanges, Provider as UrqlProvider } from "urql";
 import { ChildrenProps } from "./compoments/ChildrenProps";
 import { HeaderContents } from "./compoments/layout/Header";
 import { NavbarContents } from "./compoments/layout/Navbar";
 import { SignInScreen } from "./features/auth/SignInScreen";
-import {
-  useLoggedInUserQuery,
-  useRegisterUserMutation,
-} from "./generated/graphql";
+import { useRegisterUserMutation } from "./generated/graphql";
+import { graphql } from "./generated/gql";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
+
+const RegisterUserDocument = graphql(/* GraphQL */ `
+  mutation registerUser {
+    registerUser {
+      id
+    }
+  }
+`);
 
 const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -46,35 +53,16 @@ const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
-  const context = useMemo(() => ({ additionalTypenames: ["User"] }), []);
-  const [result, reexecuteQuery] = useLoggedInUserQuery({ context });
-  const { data, fetching, error } = result;
+  const { loggedInUser } = Route.useLoaderData();
 
   const [_registerUserResult, registerUser] = useRegisterUserMutation();
 
-  if (error != null) {
-    return (
-      <>
-        <div>query error: {JSON.stringify(error)}</div>
-      </>
-    );
-  }
-
-  if (fetching || data == null) {
-    return (
-      <Center>
-        <Loader />
-      </Center>
-    );
-  }
-
-  if (data.loggedInUser == null) {
+  if (loggedInUser == null) {
     return (
       <Center>
         <Button
           onClick={async () => {
             await registerUser({});
-            reexecuteQuery();
           }}
         >
           Register user
