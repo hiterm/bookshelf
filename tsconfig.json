@@ -15,7 +15,13 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "noFallthroughCasesInSwitch": true,
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals"],
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "./src/graphql/schema.graphql"
+      }
+    ]
   },
-  "include": ["src", "eslint.config.mjs"]
+  "include": ["src", "eslint.config.mjs", "codegen.ts"]
 }

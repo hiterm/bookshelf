@@ -5,11 +5,13 @@ import React from "react";
 import { LinkButton } from "../../compoments/mantineTsr";
 import { useUpdateBookMutation } from "../../generated/graphql";
 import { BookFormValues, useBookForm } from "./BookForm";
+import { Author } from "./entity/Author";
 import { Book } from "./entity/Book";
 
-export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
-  const book = props.book;
-
+export const BookDetailEdit: React.FC<{ book: Book; authors: Author[] }> = ({
+  book,
+  authors,
+}) => {
   const navigate = useNavigate();
 
   const [_createBookResult, updateBook] = useUpdateBookMutation();
@@ -29,6 +31,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     onSubmit: handleSubmit,
     initialValues: book,
+    authors,
   });
 
   // TODO: Authorが上手く動かない

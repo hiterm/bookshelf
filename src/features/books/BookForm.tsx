@@ -1,6 +1,5 @@
 import {
   Checkbox,
-  Loader,
   MultiSelect,
   NumberInput,
   Select,
@@ -11,11 +10,7 @@ import { useForm } from "@mantine/form";
 import { zodResolver } from "mantine-form-zod-resolver";
 import React, { ReactElement } from "react";
 import { z } from "zod";
-import {
-  BookFormat,
-  BookStore,
-  useAuthorsQuery,
-} from "../../generated/graphql";
+import { BookFormat, BookStore } from "../../generated/graphql";
 import { Author } from "./entity/Author";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
 import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
@@ -48,6 +43,7 @@ type BookFormProps = {
     event: React.FormEvent<HTMLFormElement> | undefined,
   ) => void;
   initialValues: BookFormValues;
+  authors: Author[];
 };
 
 type BookFormReturn = {
@@ -62,26 +58,14 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
     validateInputOnBlur: true,
   });
 
-  const [queryResult, _reexecuteQuery] = useAuthorsQuery();
-
-  const data = queryResult.data;
-
   const submitForm = form.onSubmit(props.onSubmit);
-
-  if (queryResult.fetching || data == null) {
-    return { form: <Loader />, submitForm };
-  }
-
-  if (queryResult.error) {
-    return { form: <div>{JSON.stringify(queryResult.error)}</div>, submitForm };
-  }
 
   const formElement = (
     <Stack>
       <TextInput label="書名" {...form.getInputProps("title")} />
       <MultiSelect
         label="著者"
-        data={data.authors.map((author) => ({
+        data={props.authors.map((author) => ({
           value: author.id,
           label: author.name,
         }))}
@@ -93,7 +77,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
           form.getInputProps("authors").onChange(
             authorIds.map((authorId) => ({
               id: authorId,
-              name: data.authors.find((author) => author.id === authorId)?.name,
+              name: props.authors.find((author) => author.id === authorId)?.name,
             })),
           );
         }}

@@ -3,9 +3,10 @@ import { showNotification } from "@mantine/notifications";
 import React, { useState } from "react";
 import { LinkButton } from "../../compoments/mantineTsr";
 import { useCreateBookMutation } from "../../generated/graphql";
+import { Author } from "./entity/Author";
 import { BookFormValues, useBookForm } from "./BookForm";
 
-export const BookAddButton: React.FC = () => {
+export const BookAddButton: React.FC<{ authors: Author[] }> = ({ authors }) => {
   const [open, setOpen] = useState(false);
 
   const handleDialogOpenClick = () => {
@@ -70,6 +71,7 @@ export const BookAddButton: React.FC = () => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     onSubmit: submitBook,
     initialValues: emptyBook,
+    authors,
   });
 
   return (
