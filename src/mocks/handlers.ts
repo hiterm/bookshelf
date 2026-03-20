@@ -1,18 +1,14 @@
+import { makeExecutableSchema } from "@graphql-tools/schema";
 import { importJWK, SignJWT } from "jose";
 import { graphql, HttpResponse, http } from "msw";
+import schemaString from "../graphql/schema.graphql?raw";
+import { mockStore } from "./mockStore";
 import { TEST_AUTH0_CLIENT_ID, TEST_AUTH0_DOMAIN } from "./testConstants";
 import { TEST_PRIVATE_KEY_JWK } from "./testKeys";
 
 const AUTH0_DOMAIN = TEST_AUTH0_DOMAIN;
 const AUTH0_CLIENT_ID = TEST_AUTH0_CLIENT_ID;
 
-/**
- * RS256 で署名した Auth0 互換の id_token を生成する。
- * MSW の /oauth/token ハンドラーから呼ばれる。
- *
- * @param nonce /authorize リクエストの nonce パラメータ。
- *              code に埋め込まれた base64url エンコード済み文字列をデコードして渡す。
- */
 async function buildIdToken(nonce: string): Promise<string> {
   const privateKey = await importJWK(TEST_PRIVATE_KEY_JWK, "RS256");
   const now = Math.floor(Date.now() / 1000);
@@ -31,8 +27,50 @@ async function buildIdToken(nonce: string): Promise<string> {
     .sign(privateKey);
 }
 
+const resolvers = {
+  Query: {
+    loggedInUser: () => ({ id: "test-user-id" }),
+    authors: () => mockStore.getAllAuthors(),
+    author: (_: unknown, { id }: { id: string }) => mockStore.getAuthor(id),
+    books: () => mockStore.getAllBooks(),
+    book: (_: unknown, { id }: { id: string }) => mockStore.getBook(id),
+  },
+  Mutation: {
+    registerUser: () => ({ id: "test-user-id" }),
+    createAuthor: (
+      _: unknown,
+      { authorData }: { authorData: { name: string } },
+    ) => mockStore.createAuthor(authorData.name),
+    createBook: (
+      _: unknown,
+      { bookData }: { bookData: Parameters<typeof mockStore.createBook>[0] },
+    ) => mockStore.createBook(bookData),
+    updateBook: (
+      _: unknown,
+      { bookData }: { bookData: Parameters<typeof mockStore.updateBook>[0] },
+    ) => mockStore.updateBook(bookData),
+    deleteBook: (_: unknown, { bookId }: { bookId: string }) => {
+      const deleted = mockStore.deleteBook(bookId);
+      return deleted ? bookId : null;
+    },
+  },
+  Book: {
+    authors: (book: { authorIds: string[] }) => {
+      return book.authorIds
+        .map((id) => mockStore.getAuthor(id))
+        .filter(
+          (author): author is NonNullable<typeof author> => author !== null,
+        );
+    },
+  },
+};
+
+const executableSchema = makeExecutableSchema({
+  typeDefs: schemaString,
+  resolvers,
+});
+
 export const handlers = [
-  // Auth0: JWKS エンドポイント (id_token の署名検証用)
   http.get(`https://${AUTH0_DOMAIN}/.well-known/jwks.json`, () => {
     return HttpResponse.json({
       keys: [
@@ -48,15 +86,11 @@ export const handlers = [
     });
   }),
 
-  // Auth0: トークンエンドポイント
-  // code パラメータに nonce が埋め込まれている:
-  //   code = "mock-auth-code::<base64url(nonce)>"
   http.post(`https://${AUTH0_DOMAIN}/oauth/token`, async ({ request }) => {
     const body = await request.text();
     const params = new URLSearchParams(body);
     const code = params.get("code") ?? "";
 
-    // code から nonce を取り出す
     const parts = code.split("::");
     const nonce =
       parts.length >= 2
@@ -79,60 +113,13 @@ export const handlers = [
     });
   }),
 
-  // GraphQL: loggedInUser (RegisterCheck を通過させる)
-  graphql.query("loggedInUser", () => {
-    return HttpResponse.json({
-      data: {
-        loggedInUser: { id: "test-user-id" },
-      },
+  graphql.operation(async ({ query, variables }) => {
+    const { graphqlSync } = await import("graphql");
+    const result = graphqlSync({
+      schema: executableSchema,
+      source: query,
+      variableValues: variables,
     });
-  }),
-
-  // GraphQL: books (書籍一覧)
-  graphql.query("books", () => {
-    return HttpResponse.json({
-      data: {
-        books: [
-          {
-            id: "book-1",
-            title: "テスト書籍1",
-            authors: [{ id: "author-1", name: "著者1" }],
-            isbn: "978-4-00-000001-0",
-            read: false,
-            owned: true,
-            priority: 50,
-            format: "PRINTED",
-            store: "UNKNOWN",
-            createdAt: 1700000000,
-            updatedAt: 1700000000,
-          },
-          {
-            id: "book-2",
-            title: "テスト書籍2",
-            authors: [{ id: "author-2", name: "著者2" }],
-            isbn: "978-4-00-000002-7",
-            read: true,
-            owned: true,
-            priority: 80,
-            format: "E_BOOK",
-            store: "KINDLE",
-            createdAt: 1700000001,
-            updatedAt: 1700000001,
-          },
-        ],
-      },
-    });
-  }),
-
-  // GraphQL: authors (BookForm などで使用)
-  graphql.query("authors", () => {
-    return HttpResponse.json({
-      data: {
-        authors: [
-          { id: "author-1", name: "著者1" },
-          { id: "author-2", name: "著者2" },
-        ],
-      },
-    });
+    return HttpResponse.json(result);
   }),
 ];
