@@ -1,6 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-
-const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
+import { isDemoMode } from "../config";
 
 export const Route = createFileRoute("/")({
   beforeLoad: ({ context }) => {
