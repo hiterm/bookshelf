@@ -1,4 +1,4 @@
-import { Auth0ContextInterface, useAuth0 } from "@auth0/auth0-react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Alert, AppShell, Button, Center, Loader } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
@@ -16,7 +16,9 @@ import {
 } from "../generated/graphql";
 
 export type RouterContext = {
-  auth: Auth0ContextInterface;
+  auth: {
+    isAuthenticated: boolean;
+  };
 };
 
 const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {

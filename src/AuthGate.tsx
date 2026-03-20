@@ -25,7 +25,12 @@ function AuthGate() {
       </Center>
     );
   }
-  return <RouterProvider router={router} context={{ auth }} />;
+  return (
+    <RouterProvider
+      router={router}
+      context={{ auth: { isAuthenticated: auth.isAuthenticated } }}
+    />
+  );
 }
 
 export const AppRoot: React.FC = () => {
