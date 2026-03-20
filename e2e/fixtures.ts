@@ -60,6 +60,7 @@ export const test = base.extend<{
         const redirectUri = url.searchParams.get("redirect_uri");
         const state = url.searchParams.get("state");
         const nonce = url.searchParams.get("nonce") ?? "";
+        const responseMode = url.searchParams.get("response_mode");
 
         if (!redirectUri || !state) {
           await route.abort();
@@ -68,6 +69,32 @@ export const test = base.extend<{
 
         const encodedNonce = Buffer.from(nonce).toString("base64url");
         const mockCode = `mock-auth-code::${encodedNonce}`;
+
+        if (responseMode === "web_message") {
+          const idToken = await buildIdToken(nonce);
+          const html = `
+<!DOCTYPE html>
+<html>
+<head><title>Auth0 Mock</title></head>
+<body>
+<script>
+window.parent.postMessage({
+  type: 'authorization_response',
+  response: {
+    code: '${mockCode}',
+    state: '${state}'
+  }
+}, '*');
+</script>
+</body>
+</html>`;
+          await route.fulfill({
+            status: 200,
+            contentType: "text/html",
+            body: html,
+          });
+          return;
+        }
 
         const callbackUrl = new URL(redirectUri);
         callbackUrl.searchParams.set("code", mockCode);
