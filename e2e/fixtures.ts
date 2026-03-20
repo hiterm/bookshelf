@@ -17,6 +17,11 @@ const schemaString = readFileSync(
   "utf-8",
 );
 
+const DEBUG = process.env.DEBUG_E2E === "true";
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const log = DEBUG ? console.log : () => {};
+
 async function buildIdToken(nonce: string): Promise<string> {
   const privateKey = await importJWK(TEST_PRIVATE_KEY_JWK, "RS256");
   const now = Math.floor(Date.now() / 1000);
@@ -46,16 +51,15 @@ export const test = base.extend<{
   },
 
   page: async ({ page, mockStore }, useFixture) => {
-    // Debug: log all requests
     page.on("request", (request) => {
-      console.log(`>> ${request.method()} ${request.url()}`);
+      log(`>> ${request.method()} ${request.url()}`);
     });
 
     // Auth0 authorize endpoint mock
     await page.route(
       `https://${TEST_AUTH0_DOMAIN}/authorize**`,
       async (route) => {
-        console.log("Auth0 authorize route hit");
+        log("Auth0 authorize route hit");
         const url = new URL(route.request().url());
         const redirectUri = url.searchParams.get("redirect_uri");
         const state = url.searchParams.get("state");
@@ -112,7 +116,7 @@ window.parent.postMessage({
     await page.route(
       `https://${TEST_AUTH0_DOMAIN}/oauth/token`,
       async (route) => {
-        console.log("Auth0 token route hit");
+        log("Auth0 token route hit");
         const body = route.request().postData();
         if (!body) {
           await route.abort();
@@ -150,7 +154,7 @@ window.parent.postMessage({
     await page.route(
       `https://${TEST_AUTH0_DOMAIN}/.well-known/jwks.json`,
       async (route) => {
-        console.log("Auth0 JWKS route hit");
+        log("Auth0 JWKS route hit");
         await route.fulfill({
           json: {
             keys: [
@@ -170,13 +174,13 @@ window.parent.postMessage({
 
     // GraphQL mock
     await page.route("http://localhost:4000/graphql", async (route) => {
-      console.log("GraphQL route hit");
+      log("GraphQL route hit");
       try {
         const body = route.request().postDataJSON() as {
           query: string;
           variables: Record<string, unknown>;
         };
-        console.log("GraphQL query:", body.query.substring(0, 50));
+        log("GraphQL query:", body.query.substring(0, 50));
         const { query, variables } = body;
 
         const resolvers = createResolvers(mockStore);
@@ -191,10 +195,7 @@ window.parent.postMessage({
           variableValues: variables,
         });
 
-        console.log(
-          "GraphQL result:",
-          JSON.stringify(result).substring(0, 100),
-        );
+        log("GraphQL result:", JSON.stringify(result).substring(0, 100));
         await route.fulfill({ json: result });
       } catch (error) {
         console.error("GraphQL mock error:", error);

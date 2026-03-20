@@ -57,6 +57,7 @@ test.describe("Books CREATE", () => {
     await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
   });
 
+  // TODO: MultiSelectコンポーネントの著者選択がPlaywrightで操作できない
   test.skip("書籍を新規作成できる", async ({ page }) => {
     await page.getByRole("button", { name: "追加" }).click();
     await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
@@ -117,6 +118,7 @@ test.describe("Books UPDATE", () => {
     await expect(page).toHaveURL(/.*books\/book-1\/edit/);
   });
 
+  // TODO: BookDetailEdit.tsxの著者フィールドに問題がある（TODO: Authorが上手く動かない）
   test.skip("書籍タイトルを更新できる", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await page.getByRole("link", { name: "変更" }).click();
