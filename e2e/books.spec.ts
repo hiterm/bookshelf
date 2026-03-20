@@ -25,11 +25,9 @@ test.describe("Books READ", () => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await expect(page).toHaveURL(/.*books\/book-1/);
 
-    // 詳細情報が表示される
     await expect(page.getByText("テスト書籍1")).toBeVisible();
     await expect(page.getByText("978-4-00-000001-0")).toBeVisible();
 
-    // アクションボタンが表示される
     await expect(page.getByRole("link", { name: "Back" })).toBeVisible();
     await expect(page.getByRole("link", { name: "変更" })).toBeVisible();
     await expect(page.getByRole("button", { name: "削除" })).toBeVisible();
@@ -43,5 +41,146 @@ test.describe("Books READ", () => {
     await expect(page).toHaveURL(/.*books/);
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
     await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
+  });
+});
+
+test.describe("Books CREATE", () => {
+  test.beforeEach(async ({ page }) => {
+    await mockAuth0Login(page);
+    await page.goto("/books");
+    await page.getByRole("button", { name: "Login" }).click();
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
+      timeout: 15000,
+    });
+  });
+
+  test("追加ボタンでモーダルが開く", async ({ page }) => {
+    await page.getByRole("button", { name: "追加" }).click();
+    await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
+  });
+
+  test("書籍を新規作成できる", async ({ page }) => {
+    await page.getByRole("button", { name: "追加" }).click();
+    await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
+
+    await page.getByLabel("書名").fill("新しい書籍");
+    await page.getByLabel("著者").fill("著者1");
+    await page.getByRole("option", { name: "著者1" }).click();
+    await page.getByLabel("ISBN").fill("9784000000010");
+
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "追加" })
+      .click();
+
+    await expect(page.getByText("新しい書籍を追加しました")).toBeVisible({
+      timeout: 10000,
+    });
+    await expect(page.getByRole("link", { name: "新しい書籍" })).toBeVisible();
+  });
+
+  test("必須項目が未入力だと追加できない", async ({ page }) => {
+    await page.getByRole("button", { name: "追加" }).click();
+    await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
+
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "追加" })
+      .click();
+
+    await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "新しい書籍" }),
+    ).not.toBeVisible();
+  });
+});
+
+test.describe("Books UPDATE", () => {
+  test.beforeEach(async ({ page }) => {
+    await mockAuth0Login(page);
+    await page.goto("/books");
+    await page.getByRole("button", { name: "Login" }).click();
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
+      timeout: 15000,
+    });
+  });
+
+  test("変更ボタンで編集ページに遷移する", async ({ page }) => {
+    await page.getByRole("link", { name: "テスト書籍1" }).click();
+    await expect(page).toHaveURL(/.*books\/book-1/);
+
+    await page.getByRole("link", { name: "変更" }).click();
+    await expect(page).toHaveURL(/.*books\/book-1\/edit/);
+  });
+
+  test("書籍タイトルを更新できる", async ({ page }) => {
+    await page.getByRole("link", { name: "テスト書籍1" }).click();
+    await page.getByRole("link", { name: "変更" }).click();
+    await expect(page).toHaveURL(/.*books\/book-1\/edit/);
+
+    await page.getByLabel("書名").fill("更新された書籍");
+    await page.getByRole("button", { name: "Save" }).click();
+
+    await expect(page).toHaveURL(/.*books\/book-1/, { timeout: 10000 });
+    await expect(page.getByText("更新しました")).toBeVisible({
+      timeout: 10000,
+    });
+    await expect(page.getByText("更新された書籍")).toBeVisible();
+  });
+
+  test("Cancelで詳細ページに戻る", async ({ page }) => {
+    await page.getByRole("link", { name: "テスト書籍1" }).click();
+    await page.getByRole("link", { name: "変更" }).click();
+    await expect(page).toHaveURL(/.*books\/book-1\/edit/);
+
+    await page.getByRole("link", { name: "Cancel" }).click();
+    await expect(page).toHaveURL(/.*books\/book-1/);
+  });
+});
+
+test.describe("Books DELETE", () => {
+  test.beforeEach(async ({ page }) => {
+    await mockAuth0Login(page);
+    await page.goto("/books");
+    await page.getByRole("button", { name: "Login" }).click();
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
+      timeout: 15000,
+    });
+  });
+
+  test("削除ボタンで確認ダイアログが開く", async ({ page }) => {
+    await page.getByRole("link", { name: "テスト書籍1" }).click();
+    await expect(page).toHaveURL(/.*books\/book-1/);
+
+    await page.getByRole("button", { name: "削除" }).click();
+    await expect(page.getByRole("dialog", { name: "削除確認" })).toBeVisible();
+    await expect(page.getByText("テスト書籍1を削除しますか？")).toBeVisible();
+  });
+
+  test("キャンセルで削除ダイアログを閉じられる", async ({ page }) => {
+    await page.getByRole("link", { name: "テスト書籍1" }).click();
+    await page.getByRole("button", { name: "削除" }).click();
+    await expect(page.getByRole("dialog", { name: "削除確認" })).toBeVisible();
+
+    await page.getByRole("button", { name: "キャンセル" }).click();
+    await expect(
+      page.getByRole("dialog", { name: "削除確認" }),
+    ).not.toBeVisible();
+    await expect(page).toHaveURL(/.*books\/book-1/);
+  });
+
+  test("書籍を削除できる", async ({ page }) => {
+    await page.getByRole("link", { name: "テスト書籍1" }).click();
+    await expect(page).toHaveURL(/.*books\/book-1/);
+
+    await page.getByRole("button", { name: "削除" }).click();
+    await expect(page.getByRole("dialog", { name: "削除確認" })).toBeVisible();
+
+    await page.getByRole("button", { name: "削除する" }).click();
+
+    await expect(page).toHaveURL(/\/books$/, { timeout: 10000 });
+    await expect(
+      page.getByRole("link", { name: "テスト書籍1" }),
+    ).not.toBeVisible();
   });
 });
