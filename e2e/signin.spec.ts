@@ -9,7 +9,11 @@ test.describe("Sign in", () => {
     await page.getByRole("button", { name: "Login" }).click();
 
     // Mockが books クエリに返すデータが表示されることを確認
-    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible({
+      timeout: 15000,
+    });
   });
 });

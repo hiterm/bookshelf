@@ -38,7 +38,8 @@ async function buildIdToken(nonce: string): Promise<string> {
 export const test = base.extend<{
   mockStore: MockStore;
 }>({
-  mockStore: async (_args, useFixture) => {
+  // eslint-disable-next-line no-empty-pattern
+  mockStore: async ({}, useFixture) => {
     const { MockStore } = await import("./mockStore");
     const store = new MockStore();
     await useFixture(store);
