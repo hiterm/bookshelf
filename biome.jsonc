@@ -16,7 +16,10 @@
       "!src/generated/**",
       "!.yarn/**",
       "!src/routeTree.gen.ts",
-      "!node_modules/**"
+      "!node_modules/**",
+      "!public/mockServiceWorker.js",
+      "!test-results/**",
+      "!playwright-report/**"
     ]
   }
 }

@@ -14,7 +14,10 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ["playwright.config.ts"],
+          defaultProject: "./e2e/tsconfig.json",
+        },
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -85,6 +88,7 @@ export default tseslint.config(
       ".yarn",
       "vite.config.ts",
       "eslint.config.mjs",
+      "public/mockServiceWorker.js",
     ],
   },
   eslintConfigPrettier,
