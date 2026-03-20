@@ -32,3 +32,15 @@
 - Answer in English when the user writes in English
 - Think and work in **English**
 - Use Japanese for user confirmation and final reports
+
+## Pre-commit Checklist
+
+Before committing changes, always run the following commands to ensure code quality:
+
+```bash
+npm run test       # Run unit tests
+npm run typecheck  # Run TypeScript type checking
+npm run lint       # Run ESLint and Biome checks
+```
+
+All checks must pass before committing.

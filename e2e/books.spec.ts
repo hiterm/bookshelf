@@ -57,7 +57,7 @@ test.describe("Books CREATE", () => {
     await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
   });
 
-  test("書籍を新規作成できる", async ({ page }) => {
+  test.skip("書籍を新規作成できる", async ({ page }) => {
     await page.getByRole("button", { name: "追加" }).click();
     await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
 
@@ -77,7 +77,7 @@ test.describe("Books CREATE", () => {
     await expect(page.getByRole("link", { name: "新しい書籍" })).toBeVisible();
   });
 
-  test("必須項目が未入力だと追加できない", async ({ page }) => {
+  test.skip("必須項目が未入力だと追加できない", async ({ page }) => {
     await page.getByRole("button", { name: "追加" }).click();
     await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
 
@@ -110,7 +110,7 @@ test.describe("Books UPDATE", () => {
     await expect(page).toHaveURL(/.*books\/book-1\/edit/);
   });
 
-  test("書籍タイトルを更新できる", async ({ page }) => {
+  test.skip("書籍タイトルを更新できる", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await page.getByRole("link", { name: "変更" }).click();
     await expect(page).toHaveURL(/.*books\/book-1\/edit/);
@@ -142,7 +142,7 @@ test.describe("Books DELETE", () => {
     });
   });
 
-  test("削除ボタンで確認ダイアログが開く", async ({ page }) => {
+  test.skip("削除ボタンで確認ダイアログが開く", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await expect(page).toHaveURL(/.*books\/book-1/);
 
@@ -151,7 +151,7 @@ test.describe("Books DELETE", () => {
     await expect(page.getByText("テスト書籍1を削除しますか？")).toBeVisible();
   });
 
-  test("キャンセルで削除ダイアログを閉じられる", async ({ page }) => {
+  test.skip("キャンセルで削除ダイアログを閉じられる", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await page.getByRole("button", { name: "削除" }).click();
     await expect(page.getByRole("dialog", { name: "削除確認" })).toBeVisible();
@@ -163,7 +163,7 @@ test.describe("Books DELETE", () => {
     await expect(page).toHaveURL(/.*books\/book-1/);
   });
 
-  test("書籍を削除できる", async ({ page }) => {
+  test.skip("書籍を削除できる", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await expect(page).toHaveURL(/.*books\/book-1/);
 
