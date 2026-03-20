@@ -1,6 +1,7 @@
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { importJWK, SignJWT } from "jose";
 import { graphql, HttpResponse, http } from "msw";
+// eslint-disable-next-line import/no-unresolved
 import schemaString from "../graphql/schema.graphql?raw";
 import { mockStore } from "./mockStore";
 import { TEST_AUTH0_CLIENT_ID, TEST_AUTH0_DOMAIN } from "./testConstants";
