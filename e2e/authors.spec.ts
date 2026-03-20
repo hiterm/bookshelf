@@ -11,13 +11,12 @@ test.describe("Authors READ", () => {
     await page.goto("/authors");
   });
 
-  test("著者一覧が表示される", async ({ page }) => {
-    // 著者一覧ページで著者名が表示されることを確認
+  test("displays author list", async ({ page }) => {
     await expect(page.locator("td").filter({ hasText: "著者1" })).toBeVisible();
     await expect(page.locator("td").filter({ hasText: "著者2" })).toBeVisible();
   });
 
-  test("検索機能が動作する", async ({ page }) => {
+  test("search functionality works", async ({ page }) => {
     const searchInput = page.getByPlaceholder("検索...");
     await expect(searchInput).toBeVisible();
 
@@ -39,12 +38,12 @@ test.describe("Authors CREATE", () => {
     await page.goto("/authors");
   });
 
-  test("著者作成フォームが表示される", async ({ page }) => {
+  test("displays author creation form", async ({ page }) => {
     await expect(page.getByLabel("名前")).toBeVisible();
     await expect(page.getByRole("button", { name: "登録" })).toBeVisible();
   });
 
-  test("著者を作成できる", async ({ page }) => {
+  test("creates an author", async ({ page }) => {
     const newAuthorName = "新しい著者";
 
     await page.getByLabel("名前").fill(newAuthorName);
