@@ -3,7 +3,7 @@ import { test } from "./fixtures";
 
 test.describe("Sign in", () => {
   test("shows book list after clicking login button", async ({ page }) => {
-    await page.goto("/books");
+    await page.goto("/");
 
     // 未認証状態では Login ボタンが表示されるのでクリック
     await page.getByRole("button", { name: "Login" }).click();
