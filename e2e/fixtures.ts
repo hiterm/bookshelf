@@ -71,7 +71,6 @@ export const test = base.extend<{
         const mockCode = `mock-auth-code::${encodedNonce}`;
 
         if (responseMode === "web_message") {
-          const idToken = await buildIdToken(nonce);
           const html = `
 <!DOCTYPE html>
 <html>

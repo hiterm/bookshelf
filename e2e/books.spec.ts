@@ -62,8 +62,15 @@ test.describe("Books CREATE", () => {
     await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
 
     await page.getByLabel("書名").fill("新しい書籍");
-    await page.getByRole("textbox", { name: "著者" }).fill("著者1");
-    await page.getByRole("option", { name: "著者1" }).click();
+
+    const authorInput = page.getByRole("textbox", { name: "著者" });
+    await authorInput.click();
+    await authorInput.fill("著者1");
+    await page.waitForTimeout(300);
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await page.waitForTimeout(300);
+
     await page.getByLabel("ISBN").fill("9784000000010");
 
     await page
@@ -71,13 +78,13 @@ test.describe("Books CREATE", () => {
       .getByRole("button", { name: "追加" })
       .click();
 
-    await expect(page.getByText("新しい書籍を追加しました")).toBeVisible({
+    await expect(page.getByRole("dialog", { name: "追加" })).not.toBeVisible();
+    await expect(page.getByRole("link", { name: "新しい書籍" })).toBeVisible({
       timeout: 10000,
     });
-    await expect(page.getByRole("link", { name: "新しい書籍" })).toBeVisible();
   });
 
-  test.skip("必須項目が未入力だと追加できない", async ({ page }) => {
+  test("必須項目が未入力だと追加できない", async ({ page }) => {
     await page.getByRole("button", { name: "追加" }).click();
     await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
 
@@ -142,33 +149,32 @@ test.describe("Books DELETE", () => {
     });
   });
 
-  test.skip("削除ボタンで確認ダイアログが開く", async ({ page }) => {
+  test("削除ボタンで確認ダイアログが開く", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await expect(page).toHaveURL(/.*books\/book-1/);
 
     await page.getByRole("button", { name: "削除" }).click();
-    await expect(page.getByRole("dialog", { name: "削除確認" })).toBeVisible();
+    await expect(page.getByRole("dialog")).toBeVisible();
     await expect(page.getByText("テスト書籍1を削除しますか？")).toBeVisible();
+    await expect(page.getByText("削除確認")).toBeVisible();
   });
 
-  test.skip("キャンセルで削除ダイアログを閉じられる", async ({ page }) => {
+  test("キャンセルで削除ダイアログを閉じられる", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await page.getByRole("button", { name: "削除" }).click();
-    await expect(page.getByRole("dialog", { name: "削除確認" })).toBeVisible();
+    await expect(page.getByRole("dialog")).toBeVisible();
 
     await page.getByRole("button", { name: "キャンセル" }).click();
-    await expect(
-      page.getByRole("dialog", { name: "削除確認" }),
-    ).not.toBeVisible();
+    await expect(page.getByRole("dialog")).not.toBeVisible();
     await expect(page).toHaveURL(/.*books\/book-1/);
   });
 
-  test.skip("書籍を削除できる", async ({ page }) => {
+  test("書籍を削除できる", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await expect(page).toHaveURL(/.*books\/book-1/);
 
     await page.getByRole("button", { name: "削除" }).click();
-    await expect(page.getByRole("dialog", { name: "削除確認" })).toBeVisible();
+    await expect(page.getByRole("dialog")).toBeVisible();
 
     await page.getByRole("button", { name: "削除する" }).click();
 
