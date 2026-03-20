@@ -1,6 +1,5 @@
 import type { Page } from "@playwright/test";
-
-const AUTH0_DOMAIN = "test.auth0.hiterm.dev";
+import { TEST_AUTH0_DOMAIN } from "../../src/mocks/testConstants";
 
 /**
  * Auth0 の /authorize をモックして認証済み状態にする。
@@ -16,30 +15,33 @@ const AUTH0_DOMAIN = "test.auth0.hiterm.dev";
  * フォーマット: code = "mock-auth-code::<base64url(nonce)>"
  */
 export async function mockAuth0Login(page: Page): Promise<void> {
-  await page.route(`https://${AUTH0_DOMAIN}/authorize**`, async (route) => {
-    const url = new URL(route.request().url());
-    const redirectUri = url.searchParams.get("redirect_uri");
-    const state = url.searchParams.get("state");
-    const nonce = url.searchParams.get("nonce") ?? "";
+  await page.route(
+    `https://${TEST_AUTH0_DOMAIN}/authorize**`,
+    async (route) => {
+      const url = new URL(route.request().url());
+      const redirectUri = url.searchParams.get("redirect_uri");
+      const state = url.searchParams.get("state");
+      const nonce = url.searchParams.get("nonce") ?? "";
 
-    if (!redirectUri || !state) {
-      await route.abort();
-      return;
-    }
+      if (!redirectUri || !state) {
+        await route.abort();
+        return;
+      }
 
-    // nonce を code に埋め込む (MSW ハンドラーが取り出して id_token を生成する)
-    const encodedNonce = Buffer.from(nonce).toString("base64url");
-    const mockCode = `mock-auth-code::${encodedNonce}`;
+      // nonce を code に埋め込む (MSW ハンドラーが取り出して id_token を生成する)
+      const encodedNonce = Buffer.from(nonce).toString("base64url");
+      const mockCode = `mock-auth-code::${encodedNonce}`;
 
-    const callbackUrl = new URL(redirectUri);
-    callbackUrl.searchParams.set("code", mockCode);
-    callbackUrl.searchParams.set("state", state);
+      const callbackUrl = new URL(redirectUri);
+      callbackUrl.searchParams.set("code", mockCode);
+      callbackUrl.searchParams.set("state", state);
 
-    await route.fulfill({
-      status: 302,
-      headers: {
-        Location: callbackUrl.toString(),
-      },
-    });
-  });
+      await route.fulfill({
+        status: 302,
+        headers: {
+          Location: callbackUrl.toString(),
+        },
+      });
+    },
+  );
 }

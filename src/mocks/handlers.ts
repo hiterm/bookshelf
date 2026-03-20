@@ -1,9 +1,10 @@
 import { importJWK, SignJWT } from "jose";
 import { graphql, HttpResponse, http } from "msw";
+import { TEST_AUTH0_CLIENT_ID, TEST_AUTH0_DOMAIN } from "./testConstants";
 import { TEST_PRIVATE_KEY_JWK } from "./testKeys";
 
-const AUTH0_DOMAIN = "test.auth0.hiterm.dev";
-const AUTH0_CLIENT_ID = "test-client-id";
+const AUTH0_DOMAIN = TEST_AUTH0_DOMAIN;
+const AUTH0_CLIENT_ID = TEST_AUTH0_CLIENT_ID;
 
 /**
  * RS256 で署名した Auth0 互換の id_token を生成する。
