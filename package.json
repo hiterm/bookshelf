@@ -11,7 +11,7 @@
     "test:watch": "vitest",
     "lint": "concurrently --group 'eslint_d --max-warnings=0 --ext .js,.jsx,.ts,.tsx .' 'biome check --assist-enabled false .'",
     "lint:fix": "eslint_d --fix --ext .js,.jsx,.ts,.tsx . && biome format . --write",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p e2e/tsconfig.json",
     "generate": "graphql-codegen --config codegen.yml",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
