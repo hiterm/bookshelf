@@ -80,6 +80,20 @@ const MyUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
     refetchOnWindowFocus: false,
   });
 
+  const client = useMemo(
+    () =>
+      createClient({
+        url: import.meta.env.VITE_BOOKSHELF_API,
+        fetchOptions: () => {
+          return {
+            headers: { authorization: `Bearer ${query.data ?? ""}` },
+          };
+        },
+        exchanges: [devtoolsExchange, ...defaultExchanges],
+      }),
+    [query.data],
+  );
+
   if (query.isFetching) {
     return (
       <Center>
@@ -95,16 +109,6 @@ const MyUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
   if (query.data == null) {
     return <>Cannot get access token.</>;
   }
-
-  const client = createClient({
-    url: import.meta.env.VITE_BOOKSHELF_API,
-    fetchOptions: () => {
-      return {
-        headers: { authorization: `Bearer ${query.data}` },
-      };
-    },
-    exchanges: [devtoolsExchange, ...defaultExchanges],
-  });
 
   return <UrqlProvider value={client}>{children}</UrqlProvider>;
 };
