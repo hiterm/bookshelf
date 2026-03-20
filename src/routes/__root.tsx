@@ -9,6 +9,7 @@ import { createClient, defaultExchanges, Provider as UrqlProvider } from "urql";
 import { ChildrenProps } from "../compoments/ChildrenProps";
 import { HeaderContents } from "../compoments/layout/Header";
 import { NavbarContents } from "../compoments/layout/Navbar";
+import { isDemoMode } from "../config";
 import { SignInScreen } from "../features/auth/SignInScreen";
 import {
   useLoggedInUserQuery,
@@ -121,10 +122,8 @@ const DemoUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
   return <UrqlProvider value={client}>{children}</UrqlProvider>;
 };
 
-const BranchingUrqlProvider =
-  import.meta.env.VITE_DEMO_MODE === "true" ? DemoUrqlProvider : MyUrqlProvider;
-const BranchingSignInCheck =
-  import.meta.env.VITE_DEMO_MODE === "true" ? Fragment : SignInCheck;
+const BranchingUrqlProvider = isDemoMode ? DemoUrqlProvider : MyUrqlProvider;
+const BranchingSignInCheck = isDemoMode ? Fragment : SignInCheck;
 
 const MainContent = memo(function MainContent(): React.JSX.Element {
   return (
@@ -135,8 +134,7 @@ const MainContent = memo(function MainContent(): React.JSX.Element {
             color="yellow"
             mb="md"
             style={{
-              display:
-                import.meta.env.VITE_DEMO_MODE === "true" ? undefined : "none",
+              display: isDemoMode ? undefined : "none",
             }}
           >
             This is a read-only demo app. Update operations will not be
