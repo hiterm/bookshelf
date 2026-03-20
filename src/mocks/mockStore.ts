@@ -115,6 +115,18 @@ export class MockStore {
   deleteBook(id: string): boolean {
     return this.books.delete(id);
   }
+
+  reset(): void {
+    this.authors.clear();
+    this.books.clear();
+    this.nextAuthorId = 1;
+    this.nextBookId = 1;
+    this.seedData();
+  }
 }
 
 export const mockStore = new MockStore();
+
+export function resetMockStore(): void {
+  mockStore.reset();
+}
