@@ -117,7 +117,6 @@ test.describe("Books UPDATE", () => {
     await expect(page).toHaveURL(/.*books\/book-1\/edit/);
   });
 
-  // TODO: BookDetailEdit.tsxの著者フィールドに問題がある（TODO: Authorが上手く動かない）
   test("書籍タイトルを更新できる", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await page.getByRole("link", { name: "変更" }).click();

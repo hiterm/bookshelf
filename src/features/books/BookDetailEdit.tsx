@@ -37,7 +37,6 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
     initialValues: book,
   });
 
-  // TODO: Authorが上手く動かない
   return (
     <Box style={{ display: "flex", justifyContent: "center" }}>
       <Box component="form" onSubmit={submitForm} style={{ minWidth: 400 }}>
