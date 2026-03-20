@@ -39,7 +39,9 @@ test.describe("Layout - ログイン後", () => {
     await page.getByRole("button", { name: "Login" }).click();
 
     // 認証完了を待つ（書籍データが表示されるまで）
-    await expect(page.getByText("テスト書籍1")).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
+      timeout: 15000,
+    });
 
     // ヘッダーに Bookshelf タイトルが表示される
     await expect(page.getByText("Bookshelf").first()).toBeVisible();

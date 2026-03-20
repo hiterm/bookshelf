@@ -11,7 +11,11 @@ test.describe("Sign in", () => {
     await page.getByRole("button", { name: "Login" }).click();
 
     // MSW が books クエリに返すモックデータが表示されることを確認
-    await expect(page.getByText("テスト書籍1")).toBeVisible({ timeout: 15000 });
-    await expect(page.getByText("テスト書籍2")).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible({
+      timeout: 15000,
+    });
   });
 });
