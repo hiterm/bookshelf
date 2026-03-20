@@ -19,5 +19,5 @@ prepare()
   .then(renderApp)
   .catch((err: unknown) => {
     console.error("Failed to start MSW:", err);
-    renderApp();
+    throw err;
   });
