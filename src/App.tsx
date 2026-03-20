@@ -1,20 +1,12 @@
-import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
-import {
-  Alert,
-  AppShell,
-  Button,
-  Center,
-  Loader,
-  MantineProvider,
-} from "@mantine/core";
+import { useAuth0 } from "@auth0/auth0-react";
+import { Alert, AppShell, Button, Center, Loader } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Notifications } from "@mantine/notifications";
 import {
   QueryClient,
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
-import { Outlet, useRouter } from "@tanstack/react-router";
+import { Outlet } from "@tanstack/react-router";
 import { devtoolsExchange } from "@urql/devtools";
 import React, { Fragment, memo, useMemo } from "react";
 import { createClient, defaultExchanges, Provider as UrqlProvider } from "urql";
@@ -30,15 +22,8 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 
 const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth0();
+  const { isAuthenticated } = useAuth0();
 
-  if (isLoading) {
-    return (
-      <Center>
-        <Loader />
-      </Center>
-    );
-  }
   if (isAuthenticated) {
     return <>{children}</>;
   }
@@ -164,47 +149,31 @@ const MainContent = memo(function MainContent(): React.JSX.Element {
 
 const App: React.FC = () => {
   const [opened, handlers] = useDisclosure(false);
-  const router = useRouter();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <MantineProvider>
-        <Notifications />
-        <Auth0Provider
-          domain={import.meta.env.VITE_AUTH0_DOMAIN}
-          clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-          authorizationParams={{
-            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-            redirect_uri: window.location.origin,
-          }}
-          onRedirectCallback={() => {
-            void router.navigate({ to: "/books" });
-          }}
-        >
-          <AppShell
-            header={{ height: 70 }}
-            navbar={{
-              width: 300,
-              breakpoint: "sm",
-              collapsed: { mobile: !opened },
-            }}
-            padding="md"
-          >
-            <AppShell.Header>
-              <HeaderContents
-                burgerOpened={opened}
-                onBurgerClick={handlers.toggle}
-              />
-            </AppShell.Header>
-            <AppShell.Navbar p="md">
-              <NavbarContents />
-            </AppShell.Navbar>
-            <AppShell.Main>
-              <MainContent />
-            </AppShell.Main>
-          </AppShell>
-        </Auth0Provider>
-      </MantineProvider>
+      <AppShell
+        header={{ height: 70 }}
+        navbar={{
+          width: 300,
+          breakpoint: "sm",
+          collapsed: { mobile: !opened },
+        }}
+        padding="md"
+      >
+        <AppShell.Header>
+          <HeaderContents
+            burgerOpened={opened}
+            onBurgerClick={handlers.toggle}
+          />
+        </AppShell.Header>
+        <AppShell.Navbar p="md">
+          <NavbarContents />
+        </AppShell.Navbar>
+        <AppShell.Main>
+          <MainContent />
+        </AppShell.Main>
+      </AppShell>
     </QueryClientProvider>
   );
 };
