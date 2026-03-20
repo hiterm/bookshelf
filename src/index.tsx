@@ -26,10 +26,19 @@ const container = document.getElementById("root");
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const root = createRoot(container!);
 
-prepare().then(() => {
-  root.render(
-    <React.StrictMode>
-      <RouterProvider router={router} />
-    </React.StrictMode>,
-  );
-});
+prepare()
+  .then(() => {
+    root.render(
+      <React.StrictMode>
+        <RouterProvider router={router} />
+      </React.StrictMode>,
+    );
+  })
+  .catch((err: unknown) => {
+    console.error("Failed to start MSW:", err);
+    root.render(
+      <React.StrictMode>
+        <RouterProvider router={router} />
+      </React.StrictMode>,
+    );
+  });

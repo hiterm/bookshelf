@@ -85,6 +85,7 @@ export default tseslint.config(
       ".yarn",
       "vite.config.ts",
       "eslint.config.mjs",
+      "public/mockServiceWorker.js",
     ],
   },
   eslintConfigPrettier,

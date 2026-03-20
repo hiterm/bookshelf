@@ -21,6 +21,8 @@ export default defineConfig({
     command: "npm run start",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
+    stdout: "pipe",
+    stderr: "pipe",
     env: {
       VITE_AUTH0_DOMAIN: "test.auth0.hiterm.dev",
       VITE_AUTH0_CLIENT_ID: "test-client-id",

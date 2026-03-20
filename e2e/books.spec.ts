@@ -12,6 +12,6 @@ test.describe("書籍一覧", () => {
 
     // MSW が books クエリに返すモックデータが表示されることを確認
     await expect(page.getByText("テスト書籍1")).toBeVisible({ timeout: 15000 });
-    await expect(page.getByText("テスト書籍2")).toBeVisible();
+    await expect(page.getByText("テスト書籍2")).toBeVisible({ timeout: 15000 });
   });
 });

@@ -1,7 +1,10 @@
 /**
  * テスト用 RSA 秘密鍵 (JWK 形式)
  * この鍵はテスト専用です。本番環境では使用しないでください。
- * 対応する公開鍵は e2e/fixtures/test-jwks.json にあります。
+ * 対応する公開鍵は handlers.ts の JWKS エンドポイントハンドラーで返しています。
+ *
+ * このファイルは src/index.tsx の prepare() 内で動的インポートされるため、
+ * 本番ビルド (VITE_MSW !== "true") にはバンドルされません。
  */
 export const TEST_PRIVATE_KEY_JWK = {
   kty: "RSA",
