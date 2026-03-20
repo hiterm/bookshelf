@@ -28,15 +28,22 @@ declare module "@tanstack/react-router" {
   }
 }
 
+const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
+
 /**
  * Auth0 の初期化が完了してから RouterProvider を mount することで、
  * beforeLoad が /?code=...&state=... のコールバック URL で発火する前に
  * Auth0 SDK が handleRedirectCallback() を完了することを保証する。
  * https://github.com/TanStack/router/discussions/1322
+ *
+ * DEMO モード時は Auth0 の設定が空なので checkSession() がエラーになるが、
+ * その場合も isLoading が false になった時点で RouterProvider をマウントする。
+ * BranchingSignInCheck が Fragment に差し替えられるため認証チェックはスキップされる。
  */
 function AuthGate() {
   const auth = useAuth0();
-  if (auth.isLoading) {
+  // DEMO モード時は Auth0 初期化エラーになっても RouterProvider をマウントする
+  if (auth.isLoading && !isDemoMode) {
     return (
       <Center style={{ height: "100vh" }}>
         <Loader />
@@ -44,6 +51,21 @@ function AuthGate() {
     );
   }
   return <RouterProvider router={router} context={{ auth }} />;
+}
+
+function AppRoot() {
+  return (
+    <Auth0Provider
+      domain={import.meta.env.VITE_AUTH0_DOMAIN}
+      clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+      authorizationParams={{
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        redirect_uri: window.location.origin,
+      }}
+    >
+      <AuthGate />
+    </Auth0Provider>
+  );
 }
 
 async function prepare() {
@@ -64,16 +86,7 @@ prepare()
         <QueryClientProvider client={queryClient}>
           <MantineProvider>
             <Notifications />
-            <Auth0Provider
-              domain={import.meta.env.VITE_AUTH0_DOMAIN}
-              clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-              authorizationParams={{
-                audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-                redirect_uri: window.location.origin,
-              }}
-            >
-              <AuthGate />
-            </Auth0Provider>
+            <AppRoot />
           </MantineProvider>
         </QueryClientProvider>
       </React.StrictMode>,
@@ -86,16 +99,7 @@ prepare()
         <QueryClientProvider client={queryClient}>
           <MantineProvider>
             <Notifications />
-            <Auth0Provider
-              domain={import.meta.env.VITE_AUTH0_DOMAIN}
-              clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-              authorizationParams={{
-                audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-                redirect_uri: window.location.origin,
-              }}
-            >
-              <AuthGate />
-            </Auth0Provider>
+            <AppRoot />
           </MantineProvider>
         </QueryClientProvider>
       </React.StrictMode>,
