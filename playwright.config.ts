@@ -1,4 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
+import {
+  TEST_AUTH0_CLIENT_ID,
+  TEST_AUTH0_DOMAIN,
+} from "./src/mocks/testConstants";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -23,8 +27,8 @@ export default defineConfig({
     stdout: "pipe",
     stderr: "pipe",
     env: {
-      VITE_AUTH0_DOMAIN: "test.auth0.hiterm.dev",
-      VITE_AUTH0_CLIENT_ID: "test-client-id",
+      VITE_AUTH0_DOMAIN: TEST_AUTH0_DOMAIN,
+      VITE_AUTH0_CLIENT_ID: TEST_AUTH0_CLIENT_ID,
       VITE_AUTH0_AUDIENCE: "test-audience",
       VITE_BOOKSHELF_API: "http://localhost:4000/graphql",
       VITE_MSW: "true",
