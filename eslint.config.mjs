@@ -15,12 +15,8 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         projectService: {
-          allowDefaultProject: [
-            "e2e/*.ts",
-            "e2e/helpers/*.ts",
-            "playwright.config.ts",
-          ],
-          defaultProject: "./tsconfig.e2e.json",
+          allowDefaultProject: ["playwright.config.ts"],
+          defaultProject: "./e2e/tsconfig.json",
         },
         tsconfigRootDir: import.meta.dirname,
       },
