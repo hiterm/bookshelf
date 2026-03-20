@@ -73,6 +73,12 @@ export default tseslint.config(
       ],
 
       "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
+      "no-plusplus": [
+        "error",
+        {
+          allowForLoopAfterthoughts: true,
+        },
+      ],
       "import/named": "off",
       "import/namespace": "off",
       "import/default": "off",
