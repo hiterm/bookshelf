@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { mockAuth0Login } from "./helpers/auth";
 
-test.describe("書籍一覧", () => {
-  test("書籍一覧ページが表示される", async ({ page }) => {
+test.describe("Sign in", () => {
+  test("shows book list after clicking login button", async ({ page }) => {
     await mockAuth0Login(page);
 
     await page.goto("/books");
