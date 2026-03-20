@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
-import { mockAuth0Login } from "./helpers/auth";
+import { expect } from "@playwright/test";
+import { test } from "./fixtures";
 
 test.describe("Layout - ログイン前", () => {
   test.beforeEach(async ({ page }) => {
@@ -28,7 +28,6 @@ test.describe("Layout - ログイン前", () => {
 
 test.describe("Layout - ログイン後", () => {
   test("ログイン後のレイアウトが正しく表示される", async ({ page }) => {
-    await mockAuth0Login(page);
     await page.goto("/books");
 
     // ログイン前：ヘッダーとログインボタンが表示される
@@ -39,9 +38,7 @@ test.describe("Layout - ログイン後", () => {
     await page.getByRole("button", { name: "Login" }).click();
 
     // 認証完了を待つ（書籍データが表示されるまで）
-    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
 
     // ヘッダーに Bookshelf タイトルが表示される
     await expect(page.getByText("Bookshelf").first()).toBeVisible();

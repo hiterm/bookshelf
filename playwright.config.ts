@@ -1,8 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
-import {
-  TEST_AUTH0_CLIENT_ID,
-  TEST_AUTH0_DOMAIN,
-} from "./src/mocks/testConstants";
+import { TEST_AUTH0_CLIENT_ID, TEST_AUTH0_DOMAIN } from "./e2e/testConstants";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -33,7 +30,6 @@ export default defineConfig({
       VITE_AUTH0_CLIENT_ID: TEST_AUTH0_CLIENT_ID,
       VITE_AUTH0_AUDIENCE: "test-audience",
       VITE_BOOKSHELF_API: "http://localhost:4000/graphql",
-      VITE_MSW: "true",
       VITE_DEMO_MODE: "false",
     },
   },

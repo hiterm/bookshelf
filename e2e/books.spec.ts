@@ -1,9 +1,8 @@
-import { expect, test } from "@playwright/test";
-import { mockAuth0Login } from "./helpers/auth";
+import { expect } from "@playwright/test";
+import { test } from "./fixtures";
 
 test.describe("Books READ", () => {
   test.beforeEach(async ({ page }) => {
-    await mockAuth0Login(page);
     await page.goto("/books");
     await page.getByRole("button", { name: "Login" }).click();
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
@@ -46,7 +45,6 @@ test.describe("Books READ", () => {
 
 test.describe("Books CREATE", () => {
   test.beforeEach(async ({ page }) => {
-    await mockAuth0Login(page);
     await page.goto("/books");
     await page.getByRole("button", { name: "Login" }).click();
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
@@ -64,7 +62,7 @@ test.describe("Books CREATE", () => {
     await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
 
     await page.getByLabel("書名").fill("新しい書籍");
-    await page.getByLabel("著者").fill("著者1");
+    await page.getByRole("textbox", { name: "著者" }).fill("著者1");
     await page.getByRole("option", { name: "著者1" }).click();
     await page.getByLabel("ISBN").fill("9784000000010");
 
@@ -97,7 +95,6 @@ test.describe("Books CREATE", () => {
 
 test.describe("Books UPDATE", () => {
   test.beforeEach(async ({ page }) => {
-    await mockAuth0Login(page);
     await page.goto("/books");
     await page.getByRole("button", { name: "Login" }).click();
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
@@ -121,10 +118,8 @@ test.describe("Books UPDATE", () => {
     await page.getByLabel("書名").fill("更新された書籍");
     await page.getByRole("button", { name: "Save" }).click();
 
-    await expect(page).toHaveURL(/.*books\/book-1/, { timeout: 10000 });
-    await expect(page.getByText("更新しました")).toBeVisible({
-      timeout: 10000,
-    });
+    await expect(page).toHaveURL(/.*books\/book-1/);
+    await expect(page.getByText("更新しました")).toBeVisible();
     await expect(page.getByText("更新された書籍")).toBeVisible();
   });
 
@@ -140,7 +135,6 @@ test.describe("Books UPDATE", () => {
 
 test.describe("Books DELETE", () => {
   test.beforeEach(async ({ page }) => {
-    await mockAuth0Login(page);
     await page.goto("/books");
     await page.getByRole("button", { name: "Login" }).click();
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
@@ -178,7 +172,7 @@ test.describe("Books DELETE", () => {
 
     await page.getByRole("button", { name: "削除する" }).click();
 
-    await expect(page).toHaveURL(/\/books$/, { timeout: 10000 });
+    await expect(page).toHaveURL(/\/books$/);
     await expect(
       page.getByRole("link", { name: "テスト書籍1" }),
     ).not.toBeVisible();
