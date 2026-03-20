@@ -14,7 +14,7 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
-import { Outlet } from "@tanstack/react-router";
+import { Outlet, useRouter } from "@tanstack/react-router";
 import { devtoolsExchange } from "@urql/devtools";
 import React, { Fragment, memo, useMemo } from "react";
 import { createClient, defaultExchanges, Provider as UrqlProvider } from "urql";
@@ -164,6 +164,7 @@ const MainContent = memo(function MainContent(): React.JSX.Element {
 
 const App: React.FC = () => {
   const [opened, handlers] = useDisclosure(false);
+  const router = useRouter();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -175,6 +176,9 @@ const App: React.FC = () => {
           authorizationParams={{
             audience: import.meta.env.VITE_AUTH0_AUDIENCE,
             redirect_uri: window.location.origin,
+          }}
+          onRedirectCallback={() => {
+            void router.navigate({ to: "/books" });
           }}
         >
           <AppShell

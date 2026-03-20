@@ -1,0 +1,19 @@
+/**
+ * テスト用 RSA 秘密鍵 (JWK 形式)
+ * この鍵はテスト専用です。本番環境では使用しないでください。
+ * 対応する公開鍵は e2e/fixtures/test-jwks.json にあります。
+ */
+export const TEST_PRIVATE_KEY_JWK = {
+  kty: "RSA",
+  n: "rfMjC7sMuexH7Z9qAMSeojs-IOR1gPkOGfsXsY5oG6Ahy4pGWQYHN0VzBi--WGUW4J4DQnMaL6zIbyGdez134mVBYMgOm0odqjFsH7WdgyCD8eyVIJZ1hNN8dUDdD_4kjIpO03aBsqVjA3JLijiR2_fLlkCNCHvHc0Sk0_SY86loCQHt7h9HJDqvfLkXKXn62mIvZaFWaNz5-SpokpJ9JGUTvtcobQoFzsnOKGl4Z3BGZEVhQIu8V1K6rwVu8puANVpjH-uRKmsJFBp3w-fmiRGayhlfq1a8tE5p1TthtpECNNVExnYJRQXYEbGOlgJGObq8eQmj3fYEfrbfLSHHcQ",
+  e: "AQAB",
+  d: "QDpq4c12pP3MDz7R7qeq5T8XsSB6DJ2paclvVbW91hl58QRE9mEF8BAaKRoe39evq09c57_FVv4m4fXZBqTLK9J0Ye5sikVDD9EA2fJ-zuiGH6FZ7PbxPJK0PT0ugtW1nBkDgwwaVqK_nQmqP8akgMKNrxR1nsDJg9PAQqzpfuodqZ2WTzL-4rSrRWlh_9WwDmHARPGlRpWeZI7C0K5gXYi5TimPnFo4iQYj6iJnyhTPD9HQSXNGprxPUurbn3pLggOzmV2fY8UVM_QpucNzmg9izaapWMpSTrbD0uDlcTKN2KVZgb-0c5TT1SSZ-P6MnJZ3r84m_7emDH3Wk1HbMw",
+  p: "4FGTMlG6lKHejGOzUf6-O1Nxc4CBmr5tMJFa7x1t7QCN58eerRscV-eK0MxOQus58idXEwrVGut1aLbBdhZVx3NF_7zmuzPuVes0XgXuE8n_FT0f5ST0d61LetnZyxSvy_Qsj0DX-N_vc2eugEH5tzrvrEfBlhoycMjpij0cQDs",
+  q: "xoRu2vWRNVAurbykw_QMNYwt2ST0Su0qd4wd1JT1KET2g6RKvQygRyv0tW3a0HhcQPzkJfwq13WpR9fWpCpU5HO9GoWlv13rgESuX3WnoTr_MeqrV0U244N2yndotyLGv2dyCiNstclb8mYZg6qElROs98iSD_olBjDvKHCfaEM",
+  dp: "RGk8fgUk5P101NX3M1OAirFJEVOosxvOSxiZZgFQrA4WORDNGLgC7eAkmsckOw5oDqzmxlzwXxReK0BJQg1PvdMvDu56Y69TyYpA30fpsslQ7RZGKukZUYJdWask2-WEM6xVBp9c_n61FToSovT8BmCIBb-gj3mP1ou_hbRbcE8",
+  dq: "C5eiLZEXeKiFAUo5yOOQbvQPnVWGGnX8-9wnxckpA7_7MTa_0ohRN7a-ZHXUyEWvBXB_FiTCj7BkQTi-ZPm_2VNU4J6bTjB61xOrpxFkx4p9annMpZz6FpEPt8T_TWpvdq_gvezRpU_r2ZzSspibg2URvapttRcjYFgtLwxckqc",
+  qi: "LDs_F4b_sZo1GBUEvPj9S_1EaaL9_K00MfhZ_-Cwk28e_UxdBVhMQ7jkKoc3ow0ftvaYBAkc5O3wgasG0DfiMPLdDN1WrGsEMsbDnelgPtbaUNIG_teB3Oo_ikbL4-R-D5xRgl14ZjHYf8FbqTJn1RP-JjcgxuXL68Qe4AGyakA",
+  kid: "test-key-1",
+  alg: "RS256",
+  use: "sig",
+} as const;

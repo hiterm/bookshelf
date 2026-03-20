@@ -9,8 +9,15 @@ function RootComponent() {
   // To avoid auth0 issue
   // https://github.com/TanStack/router/discussions/1322
   const navigate = useNavigate();
+  const search = new URLSearchParams(window.location.search);
+  const hasAuthCallback = search.has("code") && search.has("state");
+
   useEffect(() => {
-    void navigate({ to: "/books" });
+    // Auth0 コールバック中 (/?code=...&state=...) はリダイレクトしない
+    // Auth0 SDK が handleRedirectCallback() を呼び、onRedirectCallback で /books に遷移する
+    if (!hasAuthCallback) {
+      void navigate({ to: "/books" });
+    }
   });
   return <div />;
 }

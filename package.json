@@ -12,7 +12,9 @@
     "lint": "concurrently --group 'eslint_d --max-warnings=0 --ext .js,.jsx,.ts,.tsx .' 'biome check --assist-enabled false .'",
     "lint:fix": "eslint_d --fix --ext .js,.jsx,.ts,.tsx . && biome format . --write",
     "typecheck": "tsc --noEmit",
-    "generate": "graphql-codegen --config codegen.yml"
+    "generate": "graphql-codegen --config codegen.yml",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "browserslist": {
     "production": [
@@ -58,6 +60,7 @@
     "@graphql-codegen/typescript": "2.7.3",
     "@graphql-codegen/typescript-operations": "2.5.3",
     "@graphql-codegen/typescript-urql": "^3.7.0",
+    "@playwright/test": "^1.58.2",
     "@tanstack/router-plugin": "^1.127.5",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -70,7 +73,9 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "jose": "^6.2.2",
     "jsdom": "^26.1.0",
+    "msw": "^2.12.13",
     "typescript-eslint": "^8.37.0",
     "vite": "^7.3.1",
     "vite-plugin-checker": "^0.10.0",
@@ -78,5 +83,10 @@
   },
   "engines": {
     "node": "22.x"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
