@@ -15,12 +15,18 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   const [_createBookResult, updateBook] = useUpdateBookMutation();
 
   const handleSubmit = async (values: BookFormValues) => {
-    const { authors, ...rest } = values;
     const bookData = {
-      ...rest,
-      authorIds: authors.map((author) => author.id),
+      id: book.id,
+      title: values.title,
+      isbn: values.isbn,
+      read: values.read,
+      owned: values.owned,
+      priority: values.priority,
+      format: values.format,
+      store: values.store,
+      authorIds: values.authors.map((author) => author.id),
     };
-    await updateBook({ bookData: { id: book.id, ...bookData } });
+    await updateBook({ bookData });
     await navigate({ to: `/books/$id`, params: { id: book.id } });
     showNotification({ message: "更新しました", color: "teal" });
   };
