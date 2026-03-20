@@ -1,6 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { Alert, AppShell, Button, Center, Loader } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { Notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { devtoolsExchange } from "@urql/devtools";
@@ -170,6 +171,13 @@ function RootComponent() {
       }}
       padding="md"
     >
+      {/* 
+        Notifications is placed inside RouterProvider context so that
+        components like LinkButton inside notifications can access router.
+        App.tsx's MantineProvider is outside Auth0Provider/RouterProvider,
+        so we place Notifications here to have both Mantine and Router context.
+      */}
+      <Notifications />
       <AppShell.Header>
         <HeaderContents burgerOpened={opened} onBurgerClick={handlers.toggle} />
       </AppShell.Header>

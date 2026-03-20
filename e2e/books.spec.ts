@@ -58,7 +58,7 @@ test.describe("Books CREATE", () => {
   });
 
   // TODO: MultiSelectコンポーネントの著者選択がPlaywrightで操作できない
-  test.skip("書籍を新規作成できる", async ({ page }) => {
+  test("書籍を新規作成できる", async ({ page }) => {
     await page.getByRole("button", { name: "追加" }).click();
     await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
 
