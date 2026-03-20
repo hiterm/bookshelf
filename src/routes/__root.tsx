@@ -23,6 +23,8 @@ export type RouterContext = {
 };
 
 const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // AuthGate ensures Auth0 has finished loading before RouterProvider is mounted,
+  // so isLoading check is not needed here.
   const { isAuthenticated } = useAuth0();
 
   if (isAuthenticated) {
@@ -115,10 +117,14 @@ const MyUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
 };
 
 const DemoUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
-  const client = createClient({
-    url: import.meta.env.VITE_BOOKSHELF_API,
-    exchanges: [devtoolsExchange, ...defaultExchanges],
-  });
+  const client = useMemo(
+    () =>
+      createClient({
+        url: import.meta.env.VITE_BOOKSHELF_API,
+        exchanges: [devtoolsExchange, ...defaultExchanges],
+      }),
+    [],
+  );
   return <UrqlProvider value={client}>{children}</UrqlProvider>;
 };
 
