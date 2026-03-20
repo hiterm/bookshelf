@@ -59,7 +59,7 @@ export class MockStore {
   }
 
   createAuthor(name: string): Author {
-    const id = `author-${this.nextAuthorId++}`;
+    const id = `author-${String(this.nextAuthorId++)}`;
     const author: Author = { id, name };
     this.authors.set(id, author);
     return author;
@@ -74,7 +74,7 @@ export class MockStore {
   }
 
   createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">): Book {
-    const id = `book-${this.nextBookId++}`;
+    const id = `book-${String(this.nextBookId++)}`;
     const now = Math.floor(Date.now() / 1000);
     const book: Book = {
       ...bookData,
