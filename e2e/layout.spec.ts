@@ -69,14 +69,11 @@ test.describe("Layout - After Login", () => {
     // Wait for redirect to home page after logout
     await page.waitForURL("/");
 
-    // Clear auth state and reload to ensure logout is reflected
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
-    await page.reload();
-
     // Verify logged out state - Login button should be visible
+    await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+
+    // Verify the unauthenticated state persists after reload
+    await page.reload();
     await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
   });
 });
