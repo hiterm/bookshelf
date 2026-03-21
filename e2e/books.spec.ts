@@ -61,9 +61,7 @@ test.describe("Books CREATE", () => {
 
     await page.getByLabel("書名").fill("新しい書籍");
 
-    // TODO: MultiSelect options are rendered in a Portal, so { force: true } click
-    // doesn't work. Using keyboard navigation (ArrowDown + Enter) is the most reliable approach.
-    // If a better method is found, update all MultiSelect/Select interactions.
+    // Set author (MultiSelect)
     const authorInput = page.getByRole("textbox", { name: "著者" });
     await authorInput.click();
     await authorInput.fill("著者1");
@@ -73,44 +71,14 @@ test.describe("Books CREATE", () => {
 
     await page.getByLabel("ISBN").fill("9784000000010");
 
-    await page
-      .getByRole("dialog")
-      .getByRole("button", { name: "追加" })
-      .click();
-
-    await expect(page.getByRole("dialog", { name: "追加" })).not.toBeVisible();
-    await expect(page.getByRole("link", { name: "新しい書籍" })).toBeVisible();
-
-    // Verify created book details
-    await page.getByRole("link", { name: "新しい書籍" }).click();
-    await expect(page).toHaveURL(/.*books\/book-3/);
-    await expect(page.getByText("9784000000010")).toBeVisible();
-    await expect(page.locator("text=著者1").first()).toBeVisible();
-  });
-
-  test("creates a new book with all fields", async ({ page }) => {
-    await page.getByRole("button", { name: "追加" }).click();
-    await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
-
-    await page.getByLabel("書名").fill("全フィールド書籍");
-
-    const authorInput = page.getByRole("textbox", { name: "著者" });
-    await authorInput.click();
-    await authorInput.fill("著者2");
-    await expect(page.getByRole("listbox")).toBeVisible();
-    await page.keyboard.press("ArrowDown");
-    await page.keyboard.press("Enter");
-
-    await page.getByLabel("ISBN").fill("9784000000027");
-
-    // Set format (Select component)
+    // Set format (Select)
     const formatSelect = page.getByRole("textbox", { name: "形式" });
     await formatSelect.click();
     await expect(page.getByRole("listbox")).toBeVisible();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
-    // Set store (Select component)
+    // Set store (Select)
     const storeSelect = page.getByRole("textbox", { name: "ストア" });
     await storeSelect.click();
     await expect(page.getByRole("listbox")).toBeVisible();
@@ -130,14 +98,13 @@ test.describe("Books CREATE", () => {
       .click();
 
     await expect(page.getByRole("dialog", { name: "追加" })).not.toBeVisible();
-    await expect(
-      page.getByRole("link", { name: "全フィールド書籍" }),
-    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "新しい書籍" })).toBeVisible();
 
     // Verify created book details
-    await page.getByRole("link", { name: "全フィールド書籍" }).click();
-    await expect(page.getByText("9784000000027")).toBeVisible();
-    await expect(page.locator("text=著者2").first()).toBeVisible();
+    await page.getByRole("link", { name: "新しい書籍" }).click();
+    await expect(page).toHaveURL(/.*books\/book-3/);
+    await expect(page.getByText("9784000000010")).toBeVisible();
+    await expect(page.locator("text=著者1").first()).toBeVisible();
   });
 });
 
