@@ -39,7 +39,7 @@ test.describe("Books READ", () => {
     await expect(page).toHaveURL(/.*books\/book-1/);
 
     await page.getByRole("link", { name: "Back" }).click();
-    await expect(page).toHaveURL(/.*books/);
+    await expect(page).toHaveURL(/\/books$/);
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
     await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
   });
