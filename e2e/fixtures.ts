@@ -39,11 +39,12 @@ async function buildIdToken(nonce: string): Promise<string> {
 
 export const test = base.extend<{
   mockStore: MockStore;
+  isNewUser: boolean;
 }>({
-  // eslint-disable-next-line no-empty-pattern
-  mockStore: async ({}, useFixture) => {
+  isNewUser: false,
+  mockStore: async ({ isNewUser }, useFixture) => {
     const { MockStore } = await import("./mockStore");
-    const store = new MockStore();
+    const store = new MockStore({ userRegistered: !isNewUser });
     await useFixture(store);
   },
 

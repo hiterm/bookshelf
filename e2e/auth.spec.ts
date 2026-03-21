@@ -1,6 +1,5 @@
 import { expect } from "@playwright/test";
 import { test } from "./fixtures";
-import { MockStore } from "./mockStore";
 
 test.describe("Existing user", () => {
   test("/ redirects to /books after login", async ({ page }) => {
@@ -13,7 +12,7 @@ test.describe("Existing user", () => {
 });
 
 test.describe("New user", () => {
-  test.use({ mockStore: new MockStore({ userRegistered: false }) });
+  test.use({ isNewUser: true });
 
   test("shows register button for new user", async ({ page }) => {
     await page.goto("/books");
