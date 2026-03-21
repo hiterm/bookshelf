@@ -67,6 +67,7 @@ test.describe("Books CREATE", () => {
     const authorInput = page.getByRole("textbox", { name: "著者" });
     await authorInput.click();
     await authorInput.fill("著者1");
+    await expect(page.getByRole("listbox")).toBeVisible();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
@@ -111,6 +112,7 @@ test.describe("Books CREATE", () => {
     const authorInput = page.getByRole("textbox", { name: "著者" });
     await authorInput.click();
     await authorInput.fill("著者2");
+    await expect(page.getByRole("listbox")).toBeVisible();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
@@ -119,12 +121,14 @@ test.describe("Books CREATE", () => {
     // Set format (Select component)
     const formatSelect = page.getByRole("textbox", { name: "形式" });
     await formatSelect.click();
+    await expect(page.getByRole("listbox")).toBeVisible();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
     // Set store (Select component)
     const storeSelect = page.getByRole("textbox", { name: "ストア" });
     await storeSelect.click();
+    await expect(page.getByRole("listbox")).toBeVisible();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
@@ -196,12 +200,14 @@ test.describe("Books UPDATE", () => {
     // Change format (Select component) - from PRINTED to E_BOOK
     const formatSelect = page.getByRole("textbox", { name: "形式" });
     await formatSelect.click();
+    await expect(page.getByRole("listbox")).toBeVisible();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
     // Change store (Select component) - from UNKNOWN to KINDLE
     const storeSelect = page.getByRole("textbox", { name: "ストア" });
     await storeSelect.click();
+    await expect(page.getByRole("listbox")).toBeVisible();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
