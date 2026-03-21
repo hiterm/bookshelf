@@ -29,7 +29,7 @@ async function buildIdToken(nonce: string): Promise<string> {
     email: "test@example.com",
     nonce,
   })
-    .setProtectedHeader({ alg: "RS256", kid: "test-key-1" })
+    .setProtectedHeader({ alg: "RS256", kid: TEST_PRIVATE_KEY_JWK.kid })
     .setIssuer(`https://${TEST_AUTH0_DOMAIN}/`)
     .setAudience(TEST_AUTH0_CLIENT_ID)
     .setIssuedAt(now)
