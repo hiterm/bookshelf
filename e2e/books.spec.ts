@@ -65,6 +65,9 @@ test.describe("Books CREATE", () => {
 
     await page.getByLabel("書名").fill("新しい書籍");
 
+    // TODO: MultiSelect options are rendered in a Portal, so { force: true } click
+    // doesn't work. Using keyboard navigation (ArrowDown + Enter) is the most reliable approach.
+    // If a better method is found, update all MultiSelect/Select interactions.
     const authorInput = page.getByRole("textbox", { name: "著者" });
     await authorInput.click();
     await authorInput.fill("著者1");
