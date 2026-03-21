@@ -52,3 +52,19 @@ npm start
 ## Deploy to production
 
 Commit into master.
+
+## E2E Testing
+
+Run E2E tests:
+
+```bash
+npm run test:e2e
+```
+
+Enable debug logging:
+
+```bash
+DEBUG_E2E=true npm run test:e2e
+```
+
+This will output GraphQL queries and responses for debugging test failures.

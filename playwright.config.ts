@@ -1,8 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
-import {
-  TEST_AUTH0_CLIENT_ID,
-  TEST_AUTH0_DOMAIN,
-} from "./src/mocks/testConstants";
+import { TEST_AUTH0_CLIENT_ID, TEST_AUTH0_DOMAIN } from "./e2e/testConstants";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -11,8 +8,9 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: "html",
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: "http://localhost:4173",
     trace: "on-first-retry",
+    screenshot: "only-on-failure",
   },
   projects: [
     {
@@ -21,8 +19,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run start",
-    url: "http://localhost:3000",
+    command: "npm run build && npm run preview",
+    url: "http://localhost:4173",
     reuseExistingServer: !process.env.CI,
     stdout: "pipe",
     stderr: "pipe",
@@ -31,7 +29,6 @@ export default defineConfig({
       VITE_AUTH0_CLIENT_ID: TEST_AUTH0_CLIENT_ID,
       VITE_AUTH0_AUDIENCE: "test-audience",
       VITE_BOOKSHELF_API: "http://localhost:4000/graphql",
-      VITE_MSW: "true",
       VITE_DEMO_MODE: "false",
     },
   },

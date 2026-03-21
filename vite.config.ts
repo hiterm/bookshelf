@@ -9,6 +9,7 @@ import vitePluginChecker from "vite-plugin-checker";
 // https://vitejs.dev/config/
 export default defineConfig({
   server: { port: 3000 },
+  preview: { port: 4173 },
   plugins: [
     // Please make sure that '@tanstack/router-plugin' is passed before '@vitejs/plugin-react'
     tanstackRouter({
