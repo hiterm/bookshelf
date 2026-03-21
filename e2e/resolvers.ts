@@ -2,14 +2,18 @@ import type { MockStore } from "./mockStore";
 
 export const createResolvers = (mockStore: MockStore) => ({
   Query: {
-    loggedInUser: () => ({ id: "test-user-id" }),
+    loggedInUser: () =>
+      mockStore.isUserRegistered() ? { id: "test-user-id" } : null,
     authors: () => mockStore.getAllAuthors(),
     author: (_: unknown, { id }: { id: string }) => mockStore.getAuthor(id),
     books: () => mockStore.getAllBooks(),
     book: (_: unknown, { id }: { id: string }) => mockStore.getBook(id),
   },
   Mutation: {
-    registerUser: () => ({ id: "test-user-id" }),
+    registerUser: () => {
+      mockStore.registerUser();
+      return { id: "test-user-id" };
+    },
     createAuthor: (
       _: unknown,
       { authorData }: { authorData: { name: string } },

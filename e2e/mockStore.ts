@@ -22,13 +22,23 @@ export class MockStore {
   private books: Map<string, Book>;
   private nextAuthorId: number;
   private nextBookId: number;
+  private _userRegistered: boolean;
 
-  constructor() {
+  constructor(options?: { userRegistered?: boolean }) {
     this.authors = new Map();
     this.books = new Map();
     this.nextAuthorId = 1;
     this.nextBookId = 1;
+    this._userRegistered = options?.userRegistered ?? true;
     this.seedData();
+  }
+
+  isUserRegistered(): boolean {
+    return this._userRegistered;
+  }
+
+  registerUser(): void {
+    this._userRegistered = true;
   }
 
   private seedData(): void {

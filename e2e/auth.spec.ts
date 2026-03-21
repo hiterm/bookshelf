@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable no-empty-pattern */
 /* eslint-disable react-hooks/rules-of-hooks */
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { test as base } from "@playwright/test";
+import { test as base, expect } from "@playwright/test";
 import { readFileSync } from "fs";
 import { graphqlSync } from "graphql";
 import { importJWK, SignJWT } from "jose";
 import { fileURLToPath } from "url";
-import type { MockStore } from "./mockStore";
+import { MockStore } from "./mockStore";
 import { createResolvers } from "./resolvers";
 import { TEST_AUTH0_CLIENT_ID, TEST_AUTH0_DOMAIN } from "./testConstants";
 import { TEST_PRIVATE_KEY_JWK } from "./testKeys";
@@ -19,7 +21,6 @@ const schemaString = readFileSync(
 
 const DEBUG = process.env.DEBUG_E2E === "true";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
 const log = DEBUG ? console.log : () => {};
 
 async function buildIdToken(nonce: string): Promise<string> {
@@ -43,10 +44,8 @@ async function buildIdToken(nonce: string): Promise<string> {
 export const test = base.extend<{
   mockStore: MockStore;
 }>({
-  // eslint-disable-next-line no-empty-pattern
   mockStore: async ({}, useFixture) => {
-    const { MockStore } = await import("./mockStore");
-    const store = new MockStore();
+    const store = new MockStore({ userRegistered: false });
     await useFixture(store);
   },
 
@@ -55,7 +54,6 @@ export const test = base.extend<{
       log(`>> ${request.method()} ${request.url()}`);
     });
 
-    // Auth0 authorize endpoint mock
     await page.route(
       `https://${TEST_AUTH0_DOMAIN}/authorize**`,
       async (route) => {
@@ -112,7 +110,6 @@ window.parent.postMessage({
       },
     );
 
-    // Auth0 token endpoint mock
     await page.route(
       `https://${TEST_AUTH0_DOMAIN}/oauth/token`,
       async (route) => {
@@ -150,7 +147,6 @@ window.parent.postMessage({
       },
     );
 
-    // Auth0 JWKS endpoint mock
     await page.route(
       `https://${TEST_AUTH0_DOMAIN}/.well-known/jwks.json`,
       async (route) => {
@@ -172,7 +168,6 @@ window.parent.postMessage({
       },
     );
 
-    // Auth0 logout endpoint mock
     await page.route(
       `https://${TEST_AUTH0_DOMAIN}/v2/logout**`,
       async (route) => {
@@ -188,7 +183,6 @@ window.parent.postMessage({
       },
     );
 
-    // GraphQL mock
     await page.route("http://localhost:4000/graphql", async (route) => {
       log("GraphQL route hit");
       try {
@@ -221,4 +215,38 @@ window.parent.postMessage({
 
     await useFixture(page);
   },
+});
+
+test.describe("Auth", () => {
+  test("shows register button for new user", async ({ page }) => {
+    await page.goto("/books");
+    await page.getByRole("button", { name: "Login" }).click();
+
+    // First-time user should see "Register user" button
+    await expect(
+      page.getByRole("button", { name: "Register user" }),
+    ).toBeVisible({
+      timeout: 15000,
+    });
+  });
+
+  test("registers user and shows books", async ({ page }) => {
+    await page.goto("/books");
+    await page.getByRole("button", { name: "Login" }).click();
+
+    await expect(
+      page.getByRole("button", { name: "Register user" }),
+    ).toBeVisible({ timeout: 15000 });
+
+    await page.getByRole("button", { name: "Register user" }).click();
+
+    // After registration, should see books
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
+      timeout: 15000,
+    });
+
+    // Navigation should now be visible
+    await expect(page.getByRole("link", { name: "本" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "著者" })).toBeVisible();
+  });
 });

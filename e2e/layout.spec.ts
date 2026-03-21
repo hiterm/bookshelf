@@ -56,4 +56,27 @@ test.describe("Layout - After Login", () => {
     await page.getByText("Bookshelf").first().click();
     await expect(page).toHaveURL(/.*books/);
   });
+
+  test("logs out successfully", async ({ page }) => {
+    await page.goto("/books");
+    await page.getByRole("button", { name: "Login" }).click();
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+
+    // Open user menu and click Logout
+    await page.locator('header button[aria-haspopup="menu"]').click();
+    await page.getByText("Logout").click();
+
+    // Wait for redirect to home page after logout
+    await page.waitForURL("/");
+
+    // Clear auth state and reload to ensure logout is reflected
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    });
+    await page.reload();
+
+    // Verify logged out state - Login button should be visible
+    await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+  });
 });
