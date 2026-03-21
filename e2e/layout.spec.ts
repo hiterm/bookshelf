@@ -69,11 +69,23 @@ test.describe("Layout - After Login", () => {
     // Wait for redirect to home page after logout
     await page.waitForURL("/");
 
-    // Verify logged out state - Login button should be visible
+    // Verify logged out state
     await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍1" }),
+    ).not.toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍2" }),
+    ).not.toBeVisible();
 
     // Verify the unauthenticated state persists after reload
     await page.reload();
     await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍1" }),
+    ).not.toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍2" }),
+    ).not.toBeVisible();
   });
 });
