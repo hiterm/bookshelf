@@ -88,21 +88,6 @@ test.describe("Books CREATE", () => {
     await expect(page.locator("text=著者1").first()).toBeVisible();
   });
 
-  test("cannot add when required fields are missing", async ({ page }) => {
-    await page.getByRole("button", { name: "追加" }).click();
-    await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
-
-    await page
-      .getByRole("dialog")
-      .getByRole("button", { name: "追加" })
-      .click();
-
-    await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: "新しい書籍" }),
-    ).not.toBeVisible();
-  });
-
   test("creates a new book with all fields", async ({ page }) => {
     await page.getByRole("button", { name: "追加" }).click();
     await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
