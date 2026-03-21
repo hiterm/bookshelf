@@ -17,12 +17,12 @@ test.describe("Books READ", () => {
     page,
   }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
-    await expect(page).toHaveURL(/.*books\/book-1/);
+    await expect(page).toHaveURL(/\/books\/book-1$/);
   });
 
   test("displays book information on detail page", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
-    await expect(page).toHaveURL(/.*books\/book-1/);
+    await expect(page).toHaveURL(/\/books\/book-1$/);
 
     await expect(page.getByText("テスト書籍1")).toBeVisible();
     await expect(page.getByText("978-4-00-000001-0")).toBeVisible();
@@ -34,7 +34,7 @@ test.describe("Books READ", () => {
 
   test("returns to list with Back button", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
-    await expect(page).toHaveURL(/.*books\/book-1/);
+    await expect(page).toHaveURL(/\/books\/book-1$/);
 
     await page.getByRole("link", { name: "Back" }).click();
     await expect(page).toHaveURL(/\/books$/);
@@ -102,7 +102,7 @@ test.describe("Books CREATE", () => {
 
     // Verify created book details
     await page.getByRole("link", { name: "新しい書籍" }).click();
-    await expect(page).toHaveURL(/.*books\/book-3/);
+    await expect(page).toHaveURL(/\/books\/book-3$/);
     await expect(page.getByText("9784000000010")).toBeVisible();
     await expect(page.locator("text=著者1").first()).toBeVisible();
   });
@@ -117,16 +117,16 @@ test.describe("Books UPDATE", () => {
 
   test("navigates to edit page with Edit button", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
-    await expect(page).toHaveURL(/.*books\/book-1/);
+    await expect(page).toHaveURL(/\/books\/book-1$/);
 
     await page.getByRole("link", { name: "変更" }).click();
-    await expect(page).toHaveURL(/.*books\/book-1\/edit/);
+    await expect(page).toHaveURL(/\/books\/book-1\/edit$/);
   });
 
   test("updates all fields", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await page.getByRole("link", { name: "変更" }).click();
-    await expect(page).toHaveURL(/.*books\/book-1\/edit/);
+    await expect(page).toHaveURL(/\/books\/book-1\/edit$/);
 
     // Update all fields
     await page.getByLabel("書名").fill("全フィールド更新");
@@ -160,7 +160,7 @@ test.describe("Books UPDATE", () => {
     await page.getByRole("button", { name: "Save" }).click();
 
     // Verify updates
-    await expect(page).toHaveURL(/.*books\/book-1/);
+    await expect(page).toHaveURL(/\/books\/book-1$/);
     await expect(page.getByText("更新しました")).toBeVisible();
     await expect(page.getByText("全フィールド更新")).toBeVisible();
     await expect(page.locator("text=著者1").first()).toBeVisible();
@@ -170,13 +170,13 @@ test.describe("Books UPDATE", () => {
   test("preserves values when not changed", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await page.getByRole("link", { name: "変更" }).click();
-    await expect(page).toHaveURL(/.*books\/book-1\/edit/);
+    await expect(page).toHaveURL(/\/books\/book-1\/edit$/);
 
     // Just click Save without changing anything
     await page.getByRole("button", { name: "Save" }).click();
 
     // Verify values are unchanged
-    await expect(page).toHaveURL(/.*books\/book-1/);
+    await expect(page).toHaveURL(/\/books\/book-1$/);
     await expect(page.getByText("更新しました")).toBeVisible();
     await expect(page.getByText("テスト書籍1")).toBeVisible();
     await expect(page.locator("text=著者1").first()).toBeVisible();
@@ -186,10 +186,10 @@ test.describe("Books UPDATE", () => {
   test("returns to detail page with Cancel", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await page.getByRole("link", { name: "変更" }).click();
-    await expect(page).toHaveURL(/.*books\/book-1\/edit/);
+    await expect(page).toHaveURL(/\/books\/book-1\/edit$/);
 
     await page.getByRole("link", { name: "Cancel" }).click();
-    await expect(page).toHaveURL(/.*books\/book-1/);
+    await expect(page).toHaveURL(/\/books\/book-1$/);
   });
 });
 
@@ -202,7 +202,7 @@ test.describe("Books DELETE", () => {
 
   test("opens delete confirmation dialog", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
-    await expect(page).toHaveURL(/.*books\/book-1/);
+    await expect(page).toHaveURL(/\/books\/book-1$/);
 
     await page.getByRole("button", { name: "削除" }).click();
     await expect(page.getByRole("dialog")).toBeVisible();
@@ -217,12 +217,12 @@ test.describe("Books DELETE", () => {
 
     await page.getByRole("button", { name: "キャンセル" }).click();
     await expect(page.getByRole("dialog")).not.toBeVisible();
-    await expect(page).toHaveURL(/.*books\/book-1/);
+    await expect(page).toHaveURL(/\/books\/book-1$/);
   });
 
   test("deletes a book", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
-    await expect(page).toHaveURL(/.*books\/book-1/);
+    await expect(page).toHaveURL(/\/books\/book-1$/);
 
     await page.getByRole("button", { name: "削除" }).click();
     await expect(page.getByRole("dialog")).toBeVisible();
