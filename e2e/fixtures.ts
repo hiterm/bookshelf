@@ -4,13 +4,10 @@ import { test as base } from "@playwright/test";
 import { readFileSync } from "fs";
 import { graphqlSync } from "graphql";
 import { importJWK, SignJWT } from "jose";
-import { fileURLToPath } from "url";
 import type { MockStore } from "./mockStore";
 import { createResolvers } from "./resolvers";
 import { TEST_AUTH0_CLIENT_ID, TEST_AUTH0_DOMAIN } from "./testConstants";
 import { TEST_PRIVATE_KEY_JWK } from "./testKeys";
-
-const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 const schemaString = readFileSync(
   new URL("../src/graphql/schema.graphql", import.meta.url),
