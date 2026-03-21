@@ -5,9 +5,7 @@ test.describe("Books READ", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/books");
     await page.getByRole("button", { name: "Login" }).click();
-    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
   });
 
   test("displays book list", async ({ page }) => {
@@ -49,9 +47,7 @@ test.describe("Books CREATE", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/books");
     await page.getByRole("button", { name: "Login" }).click();
-    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
   });
 
   test("opens modal with Add button", async ({ page }) => {
@@ -82,9 +78,7 @@ test.describe("Books CREATE", () => {
       .click();
 
     await expect(page.getByRole("dialog", { name: "追加" })).not.toBeVisible();
-    await expect(page.getByRole("link", { name: "新しい書籍" })).toBeVisible({
-      timeout: 10000,
-    });
+    await expect(page.getByRole("link", { name: "新しい書籍" })).toBeVisible();
 
     // Verify created book details
     await page.getByRole("link", { name: "新しい書籍" }).click();
@@ -149,9 +143,7 @@ test.describe("Books CREATE", () => {
     await expect(page.getByRole("dialog", { name: "追加" })).not.toBeVisible();
     await expect(
       page.getByRole("link", { name: "全フィールド書籍" }),
-    ).toBeVisible({
-      timeout: 10000,
-    });
+    ).toBeVisible();
 
     // Verify created book details
     await page.getByRole("link", { name: "全フィールド書籍" }).click();
@@ -164,9 +156,7 @@ test.describe("Books UPDATE", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/books");
     await page.getByRole("button", { name: "Login" }).click();
-    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
   });
 
   test("navigates to edit page with Edit button", async ({ page }) => {
@@ -262,9 +252,7 @@ test.describe("Books DELETE", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/books");
     await page.getByRole("button", { name: "Login" }).click();
-    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
   });
 
   test("opens delete confirmation dialog", async ({ page }) => {

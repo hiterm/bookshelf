@@ -5,9 +5,7 @@ test.describe("Authors READ", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Login" }).click();
-    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
     await page.goto("/authors");
   });
 
@@ -32,9 +30,7 @@ test.describe("Authors CREATE", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Login" }).click();
-    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
     await page.goto("/authors");
   });
 
@@ -51,8 +47,6 @@ test.describe("Authors CREATE", () => {
 
     await expect(
       page.locator("td").filter({ hasText: newAuthorName }),
-    ).toBeVisible({
-      timeout: 10000,
-    });
+    ).toBeVisible();
   });
 });

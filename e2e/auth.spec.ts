@@ -225,9 +225,7 @@ test.describe("Auth", () => {
     // First-time user should see "Register user" button
     await expect(
       page.getByRole("button", { name: "Register user" }),
-    ).toBeVisible({
-      timeout: 15000,
-    });
+    ).toBeVisible();
   });
 
   test("registers user and shows books", async ({ page }) => {
@@ -236,14 +234,12 @@ test.describe("Auth", () => {
 
     await expect(
       page.getByRole("button", { name: "Register user" }),
-    ).toBeVisible({ timeout: 15000 });
+    ).toBeVisible();
 
     await page.getByRole("button", { name: "Register user" }).click();
 
     // After registration, should see books
-    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
 
     // Navigation should now be visible
     await expect(page.getByRole("link", { name: "本" })).toBeVisible();
