@@ -28,7 +28,10 @@ export const createResolvers = (mockStore: MockStore) => ({
     ) => mockStore.updateBook(bookData),
     deleteBook: (_: unknown, { bookId }: { bookId: string }) => {
       const deleted = mockStore.deleteBook(bookId);
-      return deleted ? bookId : null;
+      if (!deleted) {
+        throw new Error(`Book not found: ${bookId}`);
+      }
+      return bookId;
     },
   },
   Book: {
