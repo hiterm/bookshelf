@@ -37,7 +37,7 @@
 - Answer in Japanese when the user writes in Japanese
 - Answer in English when the user writes in English
 - Think and work in **English**
-- Use Japanese for user confirmation and final reports
+- Use the same language as the user for confirmations and final reports
 
 ## Pre-commit Checklist
 
