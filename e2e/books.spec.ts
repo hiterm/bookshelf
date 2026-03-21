@@ -123,19 +123,6 @@ test.describe("Books UPDATE", () => {
     await expect(page).toHaveURL(/.*books\/book-1\/edit/);
   });
 
-  test("updates book title", async ({ page }) => {
-    await page.getByRole("link", { name: "テスト書籍1" }).click();
-    await page.getByRole("link", { name: "変更" }).click();
-    await expect(page).toHaveURL(/.*books\/book-1\/edit/);
-
-    await page.getByLabel("書名").fill("更新された書籍");
-    await page.getByRole("button", { name: "Save" }).click();
-
-    await expect(page).toHaveURL(/.*books\/book-1/);
-    await expect(page.getByText("更新しました")).toBeVisible();
-    await expect(page.getByText("更新された書籍")).toBeVisible();
-  });
-
   test("updates all fields", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await page.getByRole("link", { name: "変更" }).click();
