@@ -17,5 +17,10 @@
     "noFallthroughCasesInSwitch": true,
     "types": ["vitest/globals"]
   },
-  "include": ["src", "eslint.config.mjs"]
+  "include": [
+    "src",
+    "eslint.config.mjs",
+    "playwright.config.ts",
+    "playwright.demo.config.ts"
+  ]
 }
