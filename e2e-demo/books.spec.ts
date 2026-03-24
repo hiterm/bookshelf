@@ -5,4 +5,5 @@ test("displays book list without login in demo mode", async ({ page }) => {
 
   await expect(page.getByRole("link", { name: "本" })).toBeVisible();
   await expect(page.getByRole("link", { name: "著者" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
 });

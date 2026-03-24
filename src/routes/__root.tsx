@@ -146,8 +146,8 @@ const MainContent = memo(function MainContent(): React.JSX.Element {
               display: isDemoMode ? undefined : "none",
             }}
           >
-            This is a read-only demo app. Update operations will not be
-            reflected.
+            This is a demo app. Changes are temporary and will be lost on
+            reload.
           </Alert>
           <Outlet />
         </RegisterCheck>
