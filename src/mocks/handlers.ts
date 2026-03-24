@@ -1,0 +1,130 @@
+import { graphql, HttpResponse } from "msw";
+import { mockStore } from "./mockStore";
+
+const graphqlApi = graphql.link("/api/graphql");
+
+function resolveBookAuthors(book: { authorIds: string[] }) {
+  return book.authorIds
+    .map((id) => mockStore.getAuthor(id))
+    .filter((author): author is NonNullable<typeof author> => author !== null);
+}
+
+export const handlers = [
+  graphqlApi.query("loggedInUser", () => {
+    return HttpResponse.json({
+      data: mockStore.isUserRegistered()
+        ? { loggedInUser: { id: "test-user-id" } }
+        : { loggedInUser: null },
+    });
+  }),
+
+  graphqlApi.query("authors", () => {
+    return HttpResponse.json({
+      data: { authors: mockStore.getAllAuthors() },
+    });
+  }),
+
+  graphqlApi.query("author", ({ variables }) => {
+    const author = mockStore.getAuthor(variables.id as string);
+    return HttpResponse.json({
+      data: { author },
+    });
+  }),
+
+  graphqlApi.query("books", () => {
+    const books = mockStore.getAllBooks().map((book) => ({
+      ...book,
+      authors: resolveBookAuthors(book),
+    }));
+    return HttpResponse.json({
+      data: { books },
+    });
+  }),
+
+  graphqlApi.query("book", ({ variables }) => {
+    const book = mockStore.getBook(variables.id as string);
+    if (!book) {
+      return HttpResponse.json({
+        data: { book: null },
+      });
+    }
+    return HttpResponse.json({
+      data: {
+        book: {
+          ...book,
+          authors: resolveBookAuthors(book),
+        },
+      },
+    });
+  }),
+
+  graphqlApi.mutation("registerUser", () => {
+    mockStore.registerUser();
+    return HttpResponse.json({
+      data: { registerUser: { id: "test-user-id" } },
+    });
+  }),
+
+  graphqlApi.mutation("createAuthor", ({ variables }) => {
+    const author = mockStore.createAuthor(
+      (variables as { authorData: { name: string } }).authorData.name,
+    );
+    return HttpResponse.json({
+      data: { createAuthor: author },
+    });
+  }),
+
+  graphqlApi.mutation("createBook", ({ variables }) => {
+    const bookData = (
+      variables as {
+        bookData: Parameters<typeof mockStore.createBook>[0];
+      }
+    ).bookData;
+    const book = mockStore.createBook(bookData);
+    return HttpResponse.json({
+      data: {
+        createBook: {
+          ...book,
+          authors: resolveBookAuthors(book),
+        },
+      },
+    });
+  }),
+
+  graphqlApi.mutation("updateBook", ({ variables }) => {
+    const bookData = (
+      variables as {
+        bookData: Parameters<typeof mockStore.updateBook>[0];
+      }
+    ).bookData;
+    const book = mockStore.updateBook(bookData);
+    if (!book) {
+      return HttpResponse.json(
+        { errors: [{ message: `Book not found: ${bookData.id}` }] },
+        { status: 200 },
+      );
+    }
+    return HttpResponse.json({
+      data: {
+        updateBook: {
+          ...book,
+          authors: resolveBookAuthors(book),
+        },
+      },
+    });
+  }),
+
+  graphqlApi.mutation("deleteBook", ({ variables }) => {
+    const bookId = (variables as { bookId: string }).bookId;
+    const deleted = mockStore.deleteBook(bookId);
+    if (!deleted) {
+      return HttpResponse.json(
+        { errors: [{ message: `Book not found: ${bookId}` }] },
+        { status: 200 },
+      );
+    }
+    return HttpResponse.json({
+      data: { deleteBook: bookId },
+    });
+  }),
+];
