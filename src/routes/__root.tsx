@@ -10,7 +10,7 @@ import { createClient, defaultExchanges, Provider as UrqlProvider } from "urql";
 import { ChildrenProps } from "../compoments/ChildrenProps";
 import { HeaderContents } from "../compoments/layout/Header";
 import { NavbarContents } from "../compoments/layout/Navbar";
-import { isDemoMode } from "../config";
+import { graphqlApiUrl, isDemoMode } from "../config";
 import { SignInScreen } from "../features/auth/SignInScreen";
 import {
   useLoggedInUserQuery,
@@ -75,7 +75,7 @@ const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
   return <>{children}</>;
 };
 
-const MyUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
+const UrqlProviderWithAuth: React.FC<ChildrenProps> = ({ children }) => {
   const { getAccessTokenSilently } = useAuth0();
   const query = useQuery({
     queryKey: ["auth0AccessToken"],
@@ -87,7 +87,7 @@ const MyUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
   const client = useMemo(
     () =>
       createClient({
-        url: import.meta.env.VITE_BOOKSHELF_API,
+        url: graphqlApiUrl,
         fetchOptions: () => {
           return {
             headers: { authorization: `Bearer ${query.data ?? ""}` },
@@ -117,11 +117,11 @@ const MyUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
   return <UrqlProvider value={client}>{children}</UrqlProvider>;
 };
 
-const DemoUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
+const UrqlProviderDemo: React.FC<ChildrenProps> = ({ children }) => {
   const client = useMemo(
     () =>
       createClient({
-        url: import.meta.env.VITE_BOOKSHELF_API,
+        url: graphqlApiUrl,
         exchanges: [devtoolsExchange, ...defaultExchanges],
       }),
     [],
@@ -129,7 +129,9 @@ const DemoUrqlProvider: React.FC<ChildrenProps> = ({ children }) => {
   return <UrqlProvider value={client}>{children}</UrqlProvider>;
 };
 
-const BranchingUrqlProvider = isDemoMode ? DemoUrqlProvider : MyUrqlProvider;
+const BranchingUrqlProvider = isDemoMode
+  ? UrqlProviderDemo
+  : UrqlProviderWithAuth;
 const BranchingSignInCheck = isDemoMode ? Fragment : SignInCheck;
 
 const MainContent = memo(function MainContent(): React.JSX.Element {
