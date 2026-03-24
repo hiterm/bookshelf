@@ -8,7 +8,7 @@ export default defineConfig({
   reporter: "html",
   use: {
     baseURL: "http://localhost:4173",
-    trace: "on-first-retry",
+    trace: "off",
     screenshot: "only-on-failure",
   },
   projects: [
@@ -27,7 +27,6 @@ export default defineConfig({
       VITE_AUTH0_DOMAIN: "",
       VITE_AUTH0_CLIENT_ID: "",
       VITE_AUTH0_AUDIENCE: "",
-      VITE_BOOKSHELF_API: "https://mock-bookshelf-api.vercel.app/api/graphql",
       VITE_DEMO_MODE: "true",
     },
   },
