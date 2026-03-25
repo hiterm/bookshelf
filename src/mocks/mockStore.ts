@@ -42,11 +42,11 @@ class MockStore {
   }
 
   private seedData(): void {
-    const author1 = this.createAuthor("\u8457\u80051");
-    const author2 = this.createAuthor("\u8457\u80052");
+    const author1 = this.createAuthor("著者1");
+    const author2 = this.createAuthor("著者2");
 
     this.createBook({
-      title: "\u30c6\u30b9\u30c8\u66f8\u7c4d1",
+      title: "テスト書籍1",
       authorIds: [author1.id],
       isbn: "978-4-00-000001-0",
       read: false,
@@ -57,7 +57,7 @@ class MockStore {
     });
 
     this.createBook({
-      title: "\u30c6\u30b9\u30c8\u66f8\u7c4d2",
+      title: "テスト書籍2",
       authorIds: [author2.id],
       isbn: "978-4-00-000002-7",
       read: true,
