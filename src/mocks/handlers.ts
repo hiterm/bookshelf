@@ -58,7 +58,7 @@ export const handlers = [
   }),
 
   graphqlApi.query("book", ({ variables }) => {
-    const book = mockStore.getBook(variables.id as string);
+    const book = mockStore.getBook(variables.bookId as string);
     if (!book) {
       return HttpResponse.json({
         data: { book: null },
