@@ -94,6 +94,7 @@ const UrqlProviderWithAuth: React.FC<ChildrenProps> = ({ children }) => {
           };
         },
         exchanges: [devtoolsExchange, ...defaultExchanges],
+        requestPolicy: "cache-and-network",
       }),
     [query.data],
   );
@@ -123,6 +124,7 @@ const UrqlProviderDemo: React.FC<ChildrenProps> = ({ children }) => {
       createClient({
         url: graphqlApiUrl,
         exchanges: [devtoolsExchange, ...defaultExchanges],
+        requestPolicy: "cache-and-network",
       }),
     [],
   );

@@ -6,7 +6,8 @@ const graphqlApi = graphql.link("/api/graphql");
 function resolveBookAuthors(book: { authorIds: string[] }) {
   return book.authorIds
     .map((id) => mockStore.getAuthor(id))
-    .filter((author): author is NonNullable<typeof author> => author !== null);
+    .filter((author): author is NonNullable<typeof author> => author !== null)
+    .map((author) => ({ __typename: "Author", ...author }));
 }
 
 export const handlers = [
@@ -19,20 +20,35 @@ export const handlers = [
   }),
 
   graphqlApi.query("authors", () => {
+    const authors = mockStore.getAllAuthors().map((author) => ({
+      __typename: "Author",
+      ...author,
+    }));
     return HttpResponse.json({
-      data: { authors: mockStore.getAllAuthors() },
+      data: { authors },
     });
   }),
 
   graphqlApi.query("author", ({ variables }) => {
     const author = mockStore.getAuthor(variables.id as string);
+    if (!author) {
+      return HttpResponse.json({
+        data: { author: null },
+      });
+    }
     return HttpResponse.json({
-      data: { author },
+      data: {
+        author: {
+          __typename: "Author",
+          ...author,
+        },
+      },
     });
   }),
 
   graphqlApi.query("books", () => {
     const books = mockStore.getAllBooks().map((book) => ({
+      __typename: "Book",
       ...book,
       authors: resolveBookAuthors(book),
     }));
@@ -51,6 +67,7 @@ export const handlers = [
     return HttpResponse.json({
       data: {
         book: {
+          __typename: "Book",
           ...book,
           authors: resolveBookAuthors(book),
         },
@@ -70,7 +87,12 @@ export const handlers = [
       (variables as { authorData: { name: string } }).authorData.name,
     );
     return HttpResponse.json({
-      data: { createAuthor: author },
+      data: {
+        createAuthor: {
+          __typename: "Author",
+          ...author,
+        },
+      },
     });
   }),
 
@@ -84,6 +106,7 @@ export const handlers = [
     return HttpResponse.json({
       data: {
         createBook: {
+          __typename: "Book",
           ...book,
           authors: resolveBookAuthors(book),
         },
@@ -107,6 +130,7 @@ export const handlers = [
     return HttpResponse.json({
       data: {
         updateBook: {
+          __typename: "Book",
           ...book,
           authors: resolveBookAuthors(book),
         },
