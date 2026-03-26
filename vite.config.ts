@@ -5,16 +5,24 @@ import { existsSync, unlinkSync } from "node:fs";
 import { resolve } from "node:path";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import vitePluginChecker from "vite-plugin-checker";
 
 function excludeMockServiceWorker(): Plugin {
+  let demoMode: boolean;
+  let outDir: string;
+
   return {
     name: "exclude-mock-service-worker",
     apply: "build",
+    configResolved(config) {
+      const env = loadEnv(config.mode, process.cwd(), "");
+      demoMode = env.VITE_DEMO_MODE === "true";
+      outDir = config.build.outDir;
+    },
     closeBundle() {
-      if (process.env.VITE_DEMO_MODE !== "true") {
-        const mockServiceWorkerPath = resolve("dist/mockServiceWorker.js");
+      if (!demoMode) {
+        const mockServiceWorkerPath = resolve(outDir, "mockServiceWorker.js");
         if (existsSync(mockServiceWorkerPath)) {
           unlinkSync(mockServiceWorkerPath);
         }
