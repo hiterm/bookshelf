@@ -21,7 +21,7 @@ test("creates book and displays in list", async ({ page }) => {
   const authorInput = page.getByRole("textbox", { name: "著者" });
   await authorInput.click();
   await authorInput.fill("著者1");
-  await page.waitForTimeout(500);
+  await expect(page.getByRole("listbox")).toBeVisible();
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Enter");
 
@@ -29,15 +29,23 @@ test("creates book and displays in list", async ({ page }) => {
 
   const formatSelect = page.getByRole("textbox", { name: "形式" });
   await formatSelect.click();
-  await page.waitForTimeout(500);
+  await expect(page.getByRole("listbox")).toBeVisible();
+  await expect(page.getByRole("option").first()).toBeVisible();
+  await formatSelect.focus();
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Enter");
+  // Verify format was selected (default UNKNOWN, ArrowDown selects E_BOOK which displays as "eBook")
+  await expect(formatSelect).toHaveValue("eBook");
 
   const storeSelect = page.getByRole("textbox", { name: "ストア" });
   await storeSelect.click();
-  await page.waitForTimeout(500);
+  await expect(page.getByRole("listbox")).toBeVisible();
+  await expect(page.getByRole("option").first()).toBeVisible();
+  await storeSelect.focus();
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Enter");
+  // Verify store was selected (default UNKNOWN, ArrowDown selects KINDLE which displays as "Kindle")
+  await expect(storeSelect).toHaveValue("Kindle");
 
   await page.getByLabel("優先度").fill("90");
   await page.getByLabel("既読").check();
