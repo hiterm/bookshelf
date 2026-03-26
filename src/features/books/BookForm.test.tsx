@@ -1,12 +1,24 @@
 import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { Client, Provider } from "urql";
 import { vi } from "vitest";
-import { fromValue } from "wonka";
 import { BookFormValues, useBookForm } from "./BookForm";
+
+vi.mock("../../compoments/hooks/useAuthors", () => ({
+  useAuthors: () => ({
+    data: {
+      authors: [
+        { id: "1", name: "name1" },
+        { id: "2", name: "name2" },
+      ],
+    },
+    isLoading: false,
+    error: null,
+  }),
+}));
 
 // mock ResizeObserver
 beforeAll(() => {
@@ -52,19 +64,6 @@ const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
 
 describe("useBookForm", () => {
   test("works", async () => {
-    const mockClient = {
-      executeQuery: vi.fn(() =>
-        fromValue({
-          data: {
-            authors: [
-              { id: "1", name: "name1" },
-              { id: "2", name: "name2" },
-            ],
-          },
-        }),
-      ),
-    };
-
     // https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
     Object.defineProperty(window, "matchMedia", {
       writable: true,
@@ -80,10 +79,18 @@ describe("useBookForm", () => {
       })),
     });
 
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    });
+
     const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-      <Provider value={mockClient as unknown as Client}>
+      <QueryClientProvider client={queryClient}>
         <MantineProvider>{children}</MantineProvider>
-      </Provider>
+      </QueryClientProvider>
     );
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const mockSubmit = vi.fn((_book: BookFormValues) => {});

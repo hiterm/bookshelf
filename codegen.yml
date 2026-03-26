@@ -9,3 +9,10 @@ generates:
       - "typescript"
       - "typescript-operations"
       - "typescript-urql"
+  src/generated/graphql-request.ts:
+    config:
+      enumsAsTypes: true
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-graphql-request"

@@ -2,20 +2,15 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Alert, AppShell, Button, Center, Loader } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
-import { useQuery } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
-import { devtoolsExchange } from "@urql/devtools";
-import React, { Fragment, memo, useMemo } from "react";
-import { createClient, defaultExchanges, Provider as UrqlProvider } from "urql";
+import React, { Fragment, memo } from "react";
 import { ChildrenProps } from "../compoments/ChildrenProps";
 import { HeaderContents } from "../compoments/layout/Header";
 import { NavbarContents } from "../compoments/layout/Navbar";
-import { graphqlApiUrl, isDemoMode } from "../config";
+import { isDemoMode } from "../config";
+import { useLoggedInUser } from "../compoments/hooks/useLoggedInUser";
+import { useRegisterUser } from "../compoments/hooks/useRegisterUser";
 import { SignInScreen } from "../features/auth/SignInScreen";
-import {
-  useLoggedInUserQuery,
-  useRegisterUserMutation,
-} from "../generated/graphql";
 
 export type RouterContext = {
   auth: {
@@ -35,11 +30,8 @@ const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
-  const context = useMemo(() => ({ additionalTypenames: ["User"] }), []);
-  const [result, reexecuteQuery] = useLoggedInUserQuery({ context });
-  const { data, fetching, error } = result;
-
-  const [_registerUserResult, registerUser] = useRegisterUserMutation();
+  const { data, isLoading, error } = useLoggedInUser();
+  const registerUserMutation = useRegisterUser();
 
   if (error != null) {
     return (
@@ -49,7 +41,7 @@ const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
     );
   }
 
-  if (fetching || data == null) {
+  if (isLoading || data == null) {
     return (
       <Center>
         <Loader />
@@ -62,8 +54,7 @@ const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
       <Center>
         <Button
           onClick={async () => {
-            await registerUser({});
-            reexecuteQuery();
+            await registerUserMutation.mutateAsync();
           }}
         >
           Register user
@@ -75,85 +66,23 @@ const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
   return <>{children}</>;
 };
 
-const UrqlProviderWithAuth: React.FC<ChildrenProps> = ({ children }) => {
-  const { getAccessTokenSilently } = useAuth0();
-  const query = useQuery({
-    queryKey: ["auth0AccessToken"],
-    queryFn: () => getAccessTokenSilently(),
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-
-  const client = useMemo(
-    () =>
-      createClient({
-        url: graphqlApiUrl,
-        fetchOptions: () => {
-          return {
-            headers: { authorization: `Bearer ${query.data ?? ""}` },
-          };
-        },
-        exchanges: [devtoolsExchange, ...defaultExchanges],
-        requestPolicy: "cache-and-network",
-      }),
-    [query.data],
-  );
-
-  if (query.isFetching) {
-    return (
-      <Center>
-        <Loader />
-      </Center>
-    );
-  }
-
-  if (query.isError) {
-    return <>Error: {JSON.stringify(query.error)}</>;
-  }
-
-  if (query.data == null) {
-    return <>Cannot get access token.</>;
-  }
-
-  return <UrqlProvider value={client}>{children}</UrqlProvider>;
-};
-
-const UrqlProviderDemo: React.FC<ChildrenProps> = ({ children }) => {
-  const client = useMemo(
-    () =>
-      createClient({
-        url: graphqlApiUrl,
-        exchanges: [devtoolsExchange, ...defaultExchanges],
-        requestPolicy: "cache-and-network",
-      }),
-    [],
-  );
-  return <UrqlProvider value={client}>{children}</UrqlProvider>;
-};
-
-const BranchingUrqlProvider = isDemoMode
-  ? UrqlProviderDemo
-  : UrqlProviderWithAuth;
 const BranchingSignInCheck = isDemoMode ? Fragment : SignInCheck;
 
 const MainContent = memo(function MainContent(): React.JSX.Element {
   return (
     <BranchingSignInCheck>
-      <BranchingUrqlProvider>
-        <RegisterCheck>
-          <Alert
-            color="yellow"
-            mb="md"
-            style={{
-              display: isDemoMode ? undefined : "none",
-            }}
-          >
-            This is a demo app. Changes are temporary and will be lost on
-            reload.
-          </Alert>
-          <Outlet />
-        </RegisterCheck>
-      </BranchingUrqlProvider>
+      <RegisterCheck>
+        <Alert
+          color="yellow"
+          mb="md"
+          style={{
+            display: isDemoMode ? undefined : "none",
+          }}
+        >
+          This is a demo app. Changes are temporary and will be lost on reload.
+        </Alert>
+        <Outlet />
+      </RegisterCheck>
     </BranchingSignInCheck>
   );
 });

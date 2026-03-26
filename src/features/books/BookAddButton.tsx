@@ -2,7 +2,7 @@ import { Button, Modal } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import React, { useState } from "react";
 import { LinkButton } from "../../compoments/mantineTsr";
-import { useCreateBookMutation } from "../../generated/graphql";
+import { useCreateBook } from "../../compoments/hooks/useCreateBook";
 import { BookFormValues, useBookForm } from "./BookForm";
 
 export const BookAddButton: React.FC = () => {
@@ -16,7 +16,7 @@ export const BookAddButton: React.FC = () => {
     setOpen(false);
   };
 
-  const [_createBookResult, createBook] = useCreateBookMutation();
+  const createBookMutation = useCreateBook();
 
   const submitBook = async (value: BookFormValues) => {
     const { authors, ...rest } = value;
@@ -24,35 +24,34 @@ export const BookAddButton: React.FC = () => {
       ...rest,
       authorIds: authors.map((author) => author.id),
     };
-    const result = await createBook({ bookData });
 
-    if (result.data == null) {
+    try {
+      const result = await createBookMutation.mutateAsync(bookData);
+
+      setOpen(false);
+
       showNotification({
-        message: `Some thing is wrong. error: ${JSON.stringify(result.error)}`,
+        message: (
+          <>
+            <div>{value.title}を追加しました</div>
+            <LinkButton
+              linkOptions={{
+                to: "/books/$id",
+                params: { id: result.createBook.id },
+              }}
+            >
+              Move
+            </LinkButton>
+          </>
+        ),
+        color: "teal",
+      });
+    } catch (error) {
+      showNotification({
+        message: `Failed to create book: ${String(error)}`,
         color: "red",
       });
-      return;
     }
-    const data = result.data;
-
-    setOpen(false);
-
-    showNotification({
-      message: (
-        <>
-          <div>{value.title}を追加しました</div>
-          <LinkButton
-            linkOptions={{
-              to: "/books/$id",
-              params: { id: data.createBook.id },
-            }}
-          >
-            Move
-          </LinkButton>
-        </>
-      ),
-      color: "teal",
-    });
   };
 
   const emptyBook: BookFormValues = {

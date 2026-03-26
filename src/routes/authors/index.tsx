@@ -18,11 +18,9 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
-import {
-  useAuthorsQuery,
-  useCreateAuthorMutation,
-} from "../../generated/graphql";
+import { useState } from "react";
+import { useCreateAuthor } from "../../compoments/hooks/useCreateAuthor";
+import { useAuthors } from "../../compoments/hooks/useAuthors";
 
 export const Route = createFileRoute("/authors/")({
   component: RouteComponent,
@@ -41,12 +39,13 @@ type RegisterAuthorFormInput = {
 };
 
 const RegisterAuthorForm: React.FC = () => {
-  const [_createAuthorResult, createAuthor] = useCreateAuthorMutation();
+  const createAuthorMutation = useCreateAuthor();
   const form = useForm<RegisterAuthorFormInput>({
     initialValues: { name: "" },
   });
-  const handleSubmit = (data: RegisterAuthorFormInput) =>
-    createAuthor({ authorData: { name: data.name } });
+  const handleSubmit = (data: RegisterAuthorFormInput) => {
+    createAuthorMutation.mutate({ name: data.name });
+  };
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -59,9 +58,7 @@ const RegisterAuthorForm: React.FC = () => {
 };
 
 const AuthorIndexPage: React.FC = () => {
-  const context = useMemo(() => ({ additionalTypenames: ["Author"] }), []);
-  const [result, _reexecuteQuery] = useAuthorsQuery({ context });
-  const { data, fetching, error } = result;
+  const { data, isLoading, error } = useAuthors();
   const [globalFilter, setGlobalFilter] = useState("");
   const columnHelper = createColumnHelper<Author>();
   const columns = [
@@ -81,7 +78,7 @@ const AuthorIndexPage: React.FC = () => {
     return <>{JSON.stringify(error)}</>;
   }
 
-  if (fetching || data == null) {
+  if (isLoading || data == null) {
     return (
       <Center>
         <Loader />
