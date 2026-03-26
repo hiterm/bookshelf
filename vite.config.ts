@@ -1,10 +1,35 @@
 /// <reference types="vite/client" />
 /// <reference types="vitest" />
 
+import { existsSync, unlinkSync } from "node:fs";
+import { resolve } from "node:path";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import vitePluginChecker from "vite-plugin-checker";
+
+function excludeMockServiceWorker(): Plugin {
+  let demoMode: boolean;
+  let outDir: string;
+
+  return {
+    name: "exclude-mock-service-worker",
+    apply: "build",
+    configResolved(config) {
+      const env = loadEnv(config.mode, process.cwd(), "");
+      demoMode = env.VITE_DEMO_MODE === "true";
+      outDir = config.build.outDir;
+    },
+    closeBundle() {
+      if (!demoMode) {
+        const mockServiceWorkerPath = resolve(outDir, "mockServiceWorker.js");
+        if (existsSync(mockServiceWorkerPath)) {
+          unlinkSync(mockServiceWorkerPath);
+        }
+      }
+    },
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -18,10 +43,11 @@ export default defineConfig({
     }),
     react(),
     vitePluginChecker({ typescript: true }),
+    excludeMockServiceWorker(),
   ],
   test: {
     globals: true,
     environment: "jsdom",
-    exclude: ["**/node_modules/**", "**/e2e/**"],
+    exclude: ["**/node_modules/**", "**/e2e/**", "**/e2e-demo/**"],
   },
 });

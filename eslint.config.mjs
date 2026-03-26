@@ -12,16 +12,40 @@ export default tseslint.config(
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
   {
+    files: [
+      "src/**/*.ts",
+      "src/**/*.tsx",
+      "playwright.config.ts",
+      "playwright.demo.config.ts",
+    ],
     languageOptions: {
       parserOptions: {
-        projectService: {
-          allowDefaultProject: ["playwright.config.ts"],
-          defaultProject: "./e2e/tsconfig.json",
-        },
+        projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
   },
+
+  {
+    files: ["e2e/**/*.ts"],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+
+  {
+    files: ["e2e-demo/**/*.ts"],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+
   reactPlugin.configs.flat.recommended, // This is not a plugin object, but a shareable config object
   reactPlugin.configs.flat["jsx-runtime"], // Add this if you are using React 17+
   reactHooks.configs["recommended-latest"],

@@ -31,6 +31,11 @@
 - No comments unless explicitly requested
 - Never introduce code that exposes or logs secrets
 
+## Git Commands
+
+- Always use `git --no-pager` for git commands to avoid opening a pager
+- Example: `git --no-pager log`, `git --no-pager diff`, `git --no-pager status`
+
 ## Communication
 
 - Be concise and direct
