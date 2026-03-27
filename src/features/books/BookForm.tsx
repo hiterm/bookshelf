@@ -63,12 +63,12 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
 
   const submitForm = form.onSubmit(props.onSubmit);
 
-  if (isLoading || data == null) {
-    return { form: <Loader />, submitForm };
-  }
-
   if (error) {
     return { form: <div>{JSON.stringify(error)}</div>, submitForm };
+  }
+
+  if (isLoading || data == null) {
+    return { form: <Loader />, submitForm };
   }
 
   const formElement = (
