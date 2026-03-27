@@ -19,6 +19,7 @@ export const BookAddButton: React.FC = () => {
   const createBookMutation = useCreateBook();
 
   const submitBook = async (value: BookFormValues) => {
+    if (createBookMutation.isPending) return;
     const { authors, ...rest } = value;
     const bookData = {
       ...rest,
@@ -78,7 +79,12 @@ export const BookAddButton: React.FC = () => {
       <Modal title="追加" opened={open} onClose={handleDialogCloseClick}>
         <form onSubmit={submitForm}>
           {form}
-          <Button type="submit" mt="md">
+          <Button
+            type="submit"
+            mt="md"
+            disabled={createBookMutation.isPending}
+            loading={createBookMutation.isPending}
+          >
             追加
           </Button>
         </form>
