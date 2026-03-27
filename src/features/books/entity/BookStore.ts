@@ -1,4 +1,4 @@
-import { BookStore } from "../../../generated/graphql";
+import { BookStore } from "../../../generated/graphql-request";
 
 export const BOOK_STORE_VALUE: BookStore[] = ["UNKNOWN", "KINDLE"];
 

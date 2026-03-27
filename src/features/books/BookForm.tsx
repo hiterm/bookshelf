@@ -11,7 +11,7 @@ import { useForm } from "@mantine/form";
 import { zodResolver } from "mantine-form-zod-resolver";
 import React, { ReactElement } from "react";
 import { z } from "zod";
-import { BookFormat, BookStore } from "../../generated/graphql";
+import { BookFormat, BookStore } from "../../generated/graphql-request";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
 import { Author } from "./entity/Author";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";

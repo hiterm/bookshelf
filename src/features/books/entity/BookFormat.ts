@@ -1,4 +1,4 @@
-import { BookFormat } from "../../../generated/graphql";
+import { BookFormat } from "../../../generated/graphql-request";
 
 export const BOOK_FORMAT_VALUE: BookFormat[] = ["UNKNOWN", "E_BOOK", "PRINTED"];
 

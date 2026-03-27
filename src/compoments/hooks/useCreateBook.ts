@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { createAuthenticatedSdk } from "../../lib/graphqlClient";
-import type { CreateBookInput } from "../../generated/graphql";
+import type { CreateBookInput } from "../../generated/graphql-request";
 
 export const useCreateBook = () => {
   const { getAccessTokenSilently } = useAuth0();
