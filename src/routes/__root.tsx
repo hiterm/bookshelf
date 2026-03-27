@@ -53,7 +53,10 @@ const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
     return (
       <Center>
         <Button
+          disabled={registerUserMutation.isPending}
+          loading={registerUserMutation.isPending}
           onClick={async () => {
+            if (registerUserMutation.isPending) return;
             await registerUserMutation.mutateAsync();
           }}
         >
