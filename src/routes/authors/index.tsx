@@ -44,13 +44,19 @@ const RegisterAuthorForm: React.FC = () => {
     initialValues: { name: "" },
   });
   const handleSubmit = (data: RegisterAuthorFormInput) => {
+    if (createAuthorMutation.isPending) return;
     createAuthorMutation.mutate({ name: data.name });
   };
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <TextInput label="名前" {...form.getInputProps("name")} />
-      <Button type="submit" mt="md">
+      <Button
+        type="submit"
+        mt="md"
+        disabled={createAuthorMutation.isPending}
+        loading={createAuthorMutation.isPending}
+      >
         登録
       </Button>
     </form>
