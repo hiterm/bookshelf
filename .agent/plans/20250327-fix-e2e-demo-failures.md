@@ -14,9 +14,9 @@ Previously `npm run test:e2e:demo` (Playwright config: `playwright.demo.config.t
 
 ## Progress
 
-- [x] (2025-03-27 14:30Z) Milestone 1: Reproduce failure and collect diagnostic evidence.
-- [x] (2025-03-27 15:10Z) Milestone 2: Identify root cause from evidence and apply fix.
-- [x] (2025-03-27 15:20Z) Milestone 3: Verify all demo E2E tests pass with `--workers=4`.
+- [x] (2026-03-27 14:30Z) Milestone 1: Reproduce failure and collect diagnostic evidence.
+- [x] (2026-03-27 15:10Z) Milestone 2: Identify root cause from evidence and apply fix.
+- [x] (2026-03-27 15:20Z) Milestone 3: Verify all demo E2E tests pass with `--workers=4`.
 
 Note on worker counts: diagnostic and intermediate runs used `--workers=1` to minimise overhead and make logs easier to read. The final verification run in Milestone 3 used `--workers=4`, as required by the project's test execution rules.
 
@@ -43,15 +43,15 @@ Note on worker counts: diagnostic and intermediate runs used `--workers=1` to mi
 
 - Decision: Used `window.location.origin` to construct an absolute URL for `graphqlApiUrl` in demo mode (`src/config.ts`), changing `/api/graphql` to `` `${window.location.origin}/api/graphql` ``.
   Rationale: This is the minimal, direct fix for the root cause. `window.location.origin` is always defined in a browser SPA context; `src/config.ts` is only ever evaluated client-side. The alternative of making `graphqlApiUrl` a getter function would require updating every call site. Using an environment variable for the full URL would complicate the demo setup. The ExecPlan's Hypothesis C fix described exactly this approach.
-  Date/Author: 2025-03-27
+  Date/Author: 2026-03-27
 
 - Decision: Did NOT change `graphql.link("/api/graphql")` in `src/mocks/handlers.ts`. MSW correctly resolves relative URL paths in its matching logic using `location.href` as base; the handler was always matching correctly. The fix only needed to address the `graphql-request` side.
   Rationale: Verified by the `page.evaluate` debug test: a raw POST fetch to `/api/graphql` returned the correct mocked JSON, confirming MSW's matching was never broken.
-  Date/Author: 2025-03-27
+  Date/Author: 2026-03-27
 
 - Decision: Used a temporary `e2e-demo/debug.spec.ts` test with `page.evaluate` to directly call `fetch('/api/graphql')` from within the browser page context and inspect the response. This isolated MSW behaviour from `graphql-request` behaviour.
   Rationale: Standard Playwright `page.on('request')` and `page.route()` cannot intercept service-worker-handled requests. The only way to observe an MSW-intercepted response in the Playwright layer is via `page.evaluate`, which runs in the same browser context as the app. The debug test was deleted after root cause was confirmed.
-  Date/Author: 2025-03-27
+  Date/Author: 2026-03-27
 
 
 ## Outcomes & Retrospective
@@ -318,4 +318,4 @@ This plan introduced no new library dependencies. The existing dependencies are 
 
 ---
 
-Revision note (2025-03-27): Filled in all living-document sections (`Progress`, `Surprises & Discoveries`, `Decision Log`, `Outcomes & Retrospective`, `Concrete Steps`, `Artifacts and Notes`) to reflect the completed investigation and fix. Root cause was Hypothesis C (relative URL incompatibility with `graphql-request` v7's `new URL()` call), not the originally most-suspected Hypothesis A. The fix is `window.location.origin + "/api/graphql"` in `src/config.ts`.
+Revision note (2026-03-27): Filled in all living-document sections (`Progress`, `Surprises & Discoveries`, `Decision Log`, `Outcomes & Retrospective`, `Concrete Steps`, `Artifacts and Notes`) to reflect the completed investigation and fix. Root cause was Hypothesis C (relative URL incompatibility with `graphql-request` v7's `new URL()` call), not the originally most-suspected Hypothesis A. The fix is `window.location.origin + "/api/graphql"` in `src/config.ts`.
