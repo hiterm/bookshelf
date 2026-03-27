@@ -43,7 +43,6 @@
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
-    "@urql/devtools": "^2.0.3",
     "dayjs": "^1.11.5",
     "graphql": "^16.8.1",
     "graphql-request": "^7.4.0",
@@ -52,7 +51,6 @@
     "react-dom": "^19.1.0",
     "tanstack-table-search-params": "^0.9.0",
     "typescript": "~5.8.3",
-    "urql": "^3.0.3",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -62,7 +60,6 @@
     "@graphql-codegen/typescript": "^5.0.9",
     "@graphql-codegen/typescript-graphql-request": "^7.0.0",
     "@graphql-codegen/typescript-operations": "^5.0.9",
-    "@graphql-codegen/typescript-urql": "^5.0.0",
     "@graphql-tools/schema": "^10.0.31",
     "@graphql-tools/utils": "^11.0.0",
     "@playwright/test": "^1.58.2",
