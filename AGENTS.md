@@ -56,4 +56,6 @@ All checks must pass before committing.
 
 # ExecPlans
 
-When writing complex features or significant refactors, use an ExecPlan (as described in .agent/PLANS.md) from design to implementation.
+When writing complex features or significant refactors, use an ExecPlan (as described in `.agent/PLANS.md`) from design to implementation.
+
+Store all ExecPlan files in `.agent/plans/`. Name each file with a short kebab-case description of the task (e.g. `.agent/plans/add-auth-flow.md`).
