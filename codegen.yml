@@ -2,13 +2,6 @@ overwrite: true
 schema: "src/graphql/schema.graphql"
 documents: "src/**/*.graphql"
 generates:
-  src/generated/graphql.ts:
-    config:
-      enumsAsTypes: true
-    plugins:
-      - "typescript"
-      - "typescript-operations"
-      - "typescript-urql"
   src/generated/graphql-request.ts:
     config:
       enumsAsTypes: true
