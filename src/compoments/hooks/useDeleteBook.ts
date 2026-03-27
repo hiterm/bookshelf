@@ -11,8 +11,9 @@ export const useDeleteBook = () => {
       const sdk = await createAuthenticatedSdk(getAccessTokenSilently);
       return sdk.deleteBook({ bookId });
     },
-    onSuccess: () => {
+    onSuccess: (_, bookId) => {
       void queryClient.invalidateQueries({ queryKey: ["books"] });
+      void queryClient.invalidateQueries({ queryKey: ["book", bookId] });
     },
   });
 };
