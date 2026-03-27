@@ -12,7 +12,8 @@ export const AuthorsFilter = <TData, TValue>({
   const { data, isLoading, error } = useAuthors();
 
   if (error) {
-    return <div>{JSON.stringify(error)}</div>;
+    console.error("AuthorsFilter: failed to load authors", error);
+    return <div>An error occurred while loading authors</div>;
   }
 
   return (
