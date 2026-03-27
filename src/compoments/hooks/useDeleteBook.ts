@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
-import { createGraphQLClient } from "../../lib/graphqlClient";
-import { isDemoMode } from "../../config";
+import { createAuthenticatedSdk } from "../../lib/graphqlClient";
 
 export const useDeleteBook = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -9,12 +8,7 @@ export const useDeleteBook = () => {
 
   return useMutation({
     mutationFn: async (bookId: string) => {
-      if (isDemoMode) {
-        const sdk = createGraphQLClient();
-        return sdk.deleteBook({ bookId });
-      }
-      const token = await getAccessTokenSilently();
-      const sdk = createGraphQLClient(token);
+      const sdk = await createAuthenticatedSdk(getAccessTokenSilently);
       return sdk.deleteBook({ bookId });
     },
     onSuccess: () => {

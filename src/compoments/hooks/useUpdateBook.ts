@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
-import { createGraphQLClient } from "../../lib/graphqlClient";
-import { isDemoMode } from "../../config";
+import { createAuthenticatedSdk } from "../../lib/graphqlClient";
 import type { UpdateBookInput } from "../../generated/graphql";
 
 export const useUpdateBook = () => {
@@ -10,12 +9,7 @@ export const useUpdateBook = () => {
 
   return useMutation({
     mutationFn: async (bookData: UpdateBookInput) => {
-      if (isDemoMode) {
-        const sdk = createGraphQLClient();
-        return sdk.updateBook({ bookData });
-      }
-      const token = await getAccessTokenSilently();
-      const sdk = createGraphQLClient(token);
+      const sdk = await createAuthenticatedSdk(getAccessTokenSilently);
       return sdk.updateBook({ bookData });
     },
     onSuccess: (_, variables) => {
