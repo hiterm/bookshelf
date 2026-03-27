@@ -53,3 +53,7 @@ npm run lint       # Run ESLint and Biome checks
 ```
 
 All checks must pass before committing.
+
+# ExecPlans
+
+When writing complex features or significant refactors, use an ExecPlan (as described in .agent/PLANS.md) from design to implementation.
