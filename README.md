@@ -9,15 +9,12 @@ Web App for books management
 
 https://bookshelf-demo.vercel.app/
 
-This is a read-only demo app. Update operations will not be reflected. It uses a [mock server](https://github.com/hiterm/mock-bookshelf-api). Because the mock server doesn't have fully compatibility, other features might also not work.
+The demo app requires no sign-in. Changes are stored locally only - they are not persisted to the server and will be lost on page reload.
 
 ## Backend
 
-- [Bookshelf API](https://github.com/hiterm/bookshelf-api) v1.2.0
-
-or
-
-- [Mock server](https://github.com/hiterm/mock-bookshelf-api)
+- [Bookshelf API](https://github.com/hiterm/bookshelf-api) (for local development)
+- MSW (Mock Service Worker) (for demo - set VITE_DEMO_MODE=true)
 
 ## Dependent platforms
 
@@ -25,18 +22,30 @@ or
 
 ## How to run locally
 
+### Local development with Bookshelf API
+
 Read this: https://auth0.com/docs/quickstart/spa/react.
 
-```
+```bash
 cp .env.template .env.development
-vim .env.development  # fill your value
+vim .env.development  # fill in your values
 ```
 
-Start [Bookshelf API](https://github.com/hiterm/bookshelf-api).
+Start the development server:
 
-```
+```bash
 npm run generate
 npm start
+```
+
+This requires [Bookshelf API](https://github.com/hiterm/bookshelf-api) to be running separately.
+
+### Demo mode locally
+
+To run the demo locally (without Auth0 and using MSW):
+
+```bash
+VITE_DEMO_MODE=true npm start
 ```
 
 ## Environment variables
@@ -47,11 +56,11 @@ npm start
 | VITE_AUTH0_CLIENT_ID | Auth0 client id. See https://auth0.com/docs/quickstart/spa/react/interactive.                                                                |
 | VITE_AUTH0_AUDIENCE  | The identifier of Bookshelf API. See https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#parameters.                        |
 | VITE_BOOKSHELF_API   | An URL of Bookshelf API endpoint.                                                                                                            |
-| VITE_DEMO_MODE       | If it is 'true', sign-in will be skipped. It is intended to be used with [mock-bookshelf-api](https://github.com/hiterm/mock-bookshelf-api). |
+| VITE_DEMO_MODE       | If it is 'true', sign-in will be skipped and MSW will intercept GraphQL requests. |
 
 ## Deploy to production
 
-Commit into master.
+Commit into `main`.
 
 ## E2E Testing
 
@@ -68,3 +77,9 @@ DEBUG_E2E=true npm run test:e2e
 ```
 
 This will output GraphQL queries and responses for debugging test failures.
+
+Run demo E2E tests:
+
+```bash
+npm run test:e2e:demo
+```
