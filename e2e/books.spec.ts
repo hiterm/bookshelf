@@ -75,15 +75,21 @@ test.describe("Books CREATE", () => {
     const formatSelect = page.getByRole("textbox", { name: "形式" });
     await formatSelect.click();
     await expect(page.getByRole("listbox")).toBeVisible();
+    await expect(page.getByRole("option").first()).toBeVisible();
+    await formatSelect.focus();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
+    await expect(formatSelect).toHaveValue("eBook");
 
     // Set store (Select)
     const storeSelect = page.getByRole("textbox", { name: "ストア" });
     await storeSelect.click();
     await expect(page.getByRole("listbox")).toBeVisible();
+    await expect(page.getByRole("option").first()).toBeVisible();
+    await storeSelect.focus();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
+    await expect(storeSelect).toHaveValue("Kindle");
 
     // Set priority
     await page.getByLabel("優先度").fill("90");
@@ -140,15 +146,21 @@ test.describe("Books UPDATE", () => {
     const formatSelect = page.getByRole("textbox", { name: "形式" });
     await formatSelect.click();
     await expect(page.getByRole("listbox")).toBeVisible();
-    await page.keyboard.press("ArrowDown");
+    await expect(page.getByRole("option").first()).toBeVisible();
+    await formatSelect.focus();
+    await page.keyboard.press("ArrowUp");
     await page.keyboard.press("Enter");
+    await expect(formatSelect).toHaveValue("eBook");
 
     // Change store (Select component) - from UNKNOWN to KINDLE
     const storeSelect = page.getByRole("textbox", { name: "ストア" });
     await storeSelect.click();
     await expect(page.getByRole("listbox")).toBeVisible();
+    await expect(page.getByRole("option").first()).toBeVisible();
+    await storeSelect.focus();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
+    await expect(storeSelect).toHaveValue("Kindle");
 
     // Change priority
     await page.getByLabel("優先度").fill("75");

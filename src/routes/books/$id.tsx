@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 import { BookDetailShow } from "../../features/books/BookDetailShow";
 import { graphQlBookToBook } from "../../features/books/entity/Book";
-import { useBookQuery } from "../../generated/graphql";
+import { useBook } from "../../compoments/hooks/useBook";
 
 export const Route = createFileRoute("/books/$id")({
   component: RouteComponent,
@@ -16,14 +16,13 @@ function RouteComponent() {
 const BookDetailPage: React.FC = () => {
   const { id } = Route.useParams();
 
-  const [result, _reexecuteQuery] = useBookQuery({ variables: { bookId: id } });
-  const { data, fetching, error } = result;
+  const { data, isLoading, error } = useBook(id);
 
   if (error != null) {
     return <>{JSON.stringify(error)}</>;
   }
 
-  if (fetching || data == null) {
+  if (isLoading || data == null) {
     return (
       <Center>
         <Loader />

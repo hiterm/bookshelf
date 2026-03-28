@@ -53,3 +53,9 @@ npm run lint       # Run ESLint and Biome checks
 ```
 
 All checks must pass before committing.
+
+# ExecPlans
+
+When writing complex features or significant refactors, use an ExecPlan (as described in `.agent/PLANS.md`) from design to implementation.
+
+Store all ExecPlan files in `.agent/plans/`. Name each file with a `yyyymmdd-` prefix (the creation date) followed by a short kebab-case description of the task (e.g. `.agent/plans/20251001-add-auth-flow.md`). Always use the creation date, even for long-running tasks.

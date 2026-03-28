@@ -3,7 +3,7 @@ import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "@tanstack/react-router";
 import React from "react";
 import { LinkButton } from "../../compoments/mantineTsr";
-import { useUpdateBookMutation } from "../../generated/graphql";
+import { useUpdateBook } from "../../compoments/hooks/useUpdateBook";
 import { BookFormValues, useBookForm } from "./BookForm";
 import { Book } from "./entity/Book";
 
@@ -12,7 +12,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
 
   const navigate = useNavigate();
 
-  const [_createBookResult, updateBook] = useUpdateBookMutation();
+  const updateBookMutation = useUpdateBook();
 
   const handleSubmit = async (values: BookFormValues) => {
     const bookData = {
@@ -26,7 +26,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
       store: values.store,
       authorIds: values.authors.map((author) => author.id),
     };
-    await updateBook({ bookData });
+    await updateBookMutation.mutateAsync(bookData);
     await navigate({ to: `/books/$id`, params: { id: book.id } });
     showNotification({ message: "更新しました", color: "teal" });
   };

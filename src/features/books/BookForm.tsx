@@ -11,11 +11,8 @@ import { useForm } from "@mantine/form";
 import { zodResolver } from "mantine-form-zod-resolver";
 import React, { ReactElement } from "react";
 import { z } from "zod";
-import {
-  BookFormat,
-  BookStore,
-  useAuthorsQuery,
-} from "../../generated/graphql";
+import { BookFormat, BookStore } from "../../generated/graphql-request";
+import { useAuthors } from "../../compoments/hooks/useAuthors";
 import { Author } from "./entity/Author";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
 import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
@@ -62,18 +59,16 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
     validateInputOnBlur: true,
   });
 
-  const [queryResult, _reexecuteQuery] = useAuthorsQuery();
-
-  const data = queryResult.data;
+  const { data, isLoading, error } = useAuthors();
 
   const submitForm = form.onSubmit(props.onSubmit);
 
-  if (queryResult.fetching || data == null) {
-    return { form: <Loader />, submitForm };
+  if (error) {
+    return { form: <div>{JSON.stringify(error)}</div>, submitForm };
   }
 
-  if (queryResult.error) {
-    return { form: <div>{JSON.stringify(queryResult.error)}</div>, submitForm };
+  if (isLoading || data == null) {
+    return { form: <Loader />, submitForm };
   }
 
   const formElement = (

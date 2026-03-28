@@ -1,10 +1,10 @@
 import { Center, Loader, Paper } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
-import React, { useMemo } from "react";
+import React from "react";
 import { BookAddButton } from "../../features/books/BookAddButton";
 import { BookList } from "../../features/books/BookList";
 import { Book, graphQlBookToBook } from "../../features/books/entity/Book";
-import { useBooksQuery } from "../../generated/graphql";
+import { useBooks } from "../../compoments/hooks/useBooks";
 
 export const Route = createFileRoute("/books/")({
   component: RouteComponent,
@@ -15,15 +15,13 @@ function RouteComponent() {
 }
 
 const BookIndexPage: React.FC = () => {
-  const context = useMemo(() => ({ additionalTypenames: ["Book"] }), []);
-  const [result, _reexecuteQuery] = useBooksQuery({ context });
-  const { data, fetching, error } = result;
+  const { data, isLoading, error } = useBooks();
 
   if (error != null) {
     return <>{JSON.stringify(error)}</>;
   }
 
-  if (fetching || data == null) {
+  if (isLoading || data == null) {
     return (
       <Center>
         <Loader />

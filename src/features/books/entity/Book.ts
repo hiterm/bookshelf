@@ -3,7 +3,7 @@ import {
   BookFormat,
   BooksQuery,
   BookStore,
-} from "../../../generated/graphql";
+} from "../../../generated/graphql-request";
 
 type GraphQLBook = BooksQuery["books"][0];
 

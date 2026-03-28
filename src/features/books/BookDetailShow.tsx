@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 import React, { useState } from "react";
 import { LinkButton } from "../../compoments/mantineTsr";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
-import { useDeleteBookMutation } from "../../generated/graphql";
+import { useDeleteBook } from "../../compoments/hooks/useDeleteBook";
 import { Book } from "./entity/Book";
 import { displayBookFormat } from "./entity/BookFormat";
 import { displayBookStore } from "./entity/BookStore";
@@ -44,7 +44,7 @@ const BookDetailShowItem: React.FC<{
 const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
   const [open, setOpen] = useState(false);
 
-  const [_deleteBookResult, deleteBook] = useDeleteBookMutation();
+  const mutation = useDeleteBook();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -57,7 +57,7 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
   const navigate = useNavigate();
   const handleDelete = async () => {
     try {
-      await deleteBook({ bookId: book.id }, { additionalTypenames: ["Book"] });
+      await mutation.mutateAsync(book.id);
       await navigate({ to: "/books" });
       showNotification({
         message: `${book.title}が削除されました`,
