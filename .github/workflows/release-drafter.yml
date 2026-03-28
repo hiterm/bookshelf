@@ -27,6 +27,6 @@ jobs:
           tag=${{ steps.release_drafter.outputs.tag_name }}
           npm --no-git-tag-version version ${tag#v}
         continue-on-error: true
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: Bump version
