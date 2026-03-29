@@ -7,28 +7,13 @@ updates:
       day: friday
       time: "12:00"
 
-  # Keep minor and patch npm updates flowing automatically.
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
-    ignore:
-      - dependency-name: "*"
-        update-types:
-          - "version-update:semver-major"
+      day: friday
+      time: "12:00"
     groups:
       minor-and-patch:
-        update-types:
-          - "minor"
-          - "patch"
-
-  # Surface major npm updates separately so they are easy to notice and review.
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    ignore:
-      - dependency-name: "*"
-        update-types:
-          - "version-update:semver-minor"
-          - "version-update:semver-patch"
+        patterns:
+          - "*"
