@@ -1,5 +1,12 @@
 version: 2
 updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: friday
+      time: "12:00"
+
   # Keep minor and patch npm updates flowing automatically.
   - package-ecosystem: "npm"
     directory: "/"
