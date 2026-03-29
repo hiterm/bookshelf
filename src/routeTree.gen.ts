@@ -51,8 +51,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/signin': typeof SigninRoute
   '/books/$id': typeof BooksIdRoute
-  '/authors': typeof AuthorsIndexRoute
-  '/books': typeof BooksIndexRoute
+  '/authors/': typeof AuthorsIndexRoute
+  '/books/': typeof BooksIndexRoute
   '/books/$id/edit': typeof BooksIdEditRoute
 }
 export interface FileRoutesByTo {
@@ -78,8 +78,8 @@ export interface FileRouteTypes {
     | '/'
     | '/signin'
     | '/books/$id'
-    | '/authors'
-    | '/books'
+    | '/authors/'
+    | '/books/'
     | '/books/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/signin' | '/books/$id' | '/authors' | '/books' | '/books/$id/edit'
@@ -121,14 +121,14 @@ declare module '@tanstack/react-router' {
     '/books/': {
       id: '/books/'
       path: '/books'
-      fullPath: '/books'
+      fullPath: '/books/'
       preLoaderRoute: typeof BooksIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/authors/': {
       id: '/authors/'
       path: '/authors'
-      fullPath: '/authors'
+      fullPath: '/authors/'
       preLoaderRoute: typeof AuthorsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
