@@ -10,9 +10,7 @@ export type StringFilterProps<TData, TValue> = {
 export const StringFilter = <TData, TValue>({
   column,
 }: StringFilterProps<TData, TValue>) => {
-  const [value, setValue] = useState<string>(
-    (column.getFilterValue() ?? "") as string,
-  );
+  const [value, setValue] = useState((column.getFilterValue() ?? "") as string);
 
   useDebouncedEffect(
     () => {
