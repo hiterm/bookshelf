@@ -1,15 +1,27 @@
 version: 2
 updates:
-  - package-ecosystem: github-actions
-    directory: /
+  # Keep minor and patch npm updates flowing automatically.
+  - package-ecosystem: "npm"
+    directory: "/"
     schedule:
-      interval: weekly
-      day: friday
-      time: "12:00"
+      interval: "weekly"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
 
-  - package-ecosystem: npm
-    directory: /
+  # Surface major npm updates separately so they are easy to notice and review.
+  - package-ecosystem: "npm"
+    directory: "/"
     schedule:
-      interval: weekly
-      day: friday
-      time: "12:00"
+      interval: "weekly"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
