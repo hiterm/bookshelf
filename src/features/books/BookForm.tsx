@@ -42,14 +42,14 @@ const bookFormSchema = z.object({
 type BookFormProps = {
   onSubmit: (
     values: BookFormValues,
-    event: React.FormEvent<HTMLFormElement> | undefined,
+    event: React.SyntheticEvent<HTMLFormElement> | undefined,
   ) => void;
   initialValues: BookFormValues;
 };
 
 type BookFormReturn = {
   form: ReactElement;
-  submitForm: React.FormEventHandler<HTMLFormElement>;
+  submitForm: React.EventHandler<React.SyntheticEvent<HTMLFormElement>>;
 };
 
 export const useBookForm = (props: BookFormProps): BookFormReturn => {
