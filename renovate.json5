@@ -18,6 +18,18 @@
       "matchUpdateTypes": ["patch"],
       "matchCurrentVersion": "/^0\\./",
       "groupName": "{{manager}} non-major"
+    },
+    {
+      // Keep Node.js on major version only (e.g. "24"), do not pin to exact patch versions.
+      // Renovate's pinAllExceptPeerDependencies would otherwise convert "24" -> "24.x.y"
+      // for both:
+      // - GitHub Actions (setup-node / actions/node-versions)
+      // - devcontainer features (node-version datasource)
+      // This rule disables only "pin" updates for Node, while still allowing major updates (e.g. 24 -> 25).
+      "matchDepNames": ["node"],
+      "matchDatasources": ["github-releases", "node-version"],
+      "matchUpdateTypes": ["pin"],
+      "enabled": false
     }
   ],
   "reviewers": ["hiterm"],
