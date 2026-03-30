@@ -25,6 +25,11 @@ jobs:
           tag=${{ steps.release_drafter.outputs.tag_name }}
           npm --no-git-tag-version version ${tag#v}
         continue-on-error: true
-      - uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
         with:
-          commit_message: Bump version
+          commit-message: Bump version to ${{ steps.release_drafter.outputs.tag_name }}
+          branch: chore/bump-version
+          title: "chore: bump version to ${{ steps.release_drafter.outputs.tag_name }}"
+          body: |
+            Automated version bump from Release Drafter
