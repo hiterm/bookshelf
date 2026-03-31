@@ -48,7 +48,7 @@ export default tseslint.config(
 
   reactPlugin.configs.flat.recommended, // This is not a plugin object, but a shareable config object
   reactPlugin.configs.flat["jsx-runtime"], // Add this if you are using React 17+
-  reactHooks.configs["recommended-latest"],
+  reactHooks.configs.flat.recommended,
   {
     settings: {
       react: {
@@ -96,6 +96,9 @@ export default tseslint.config(
         },
       ],
 
+      // This project does not use React Compiler, so disable the compiler
+      // compatibility warning for third-party libraries (e.g. TanStack Table).
+      "react-hooks/incompatible-library": "off",
       "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
       "no-plusplus": [
         "error",
