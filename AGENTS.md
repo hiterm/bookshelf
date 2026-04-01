@@ -35,6 +35,7 @@
 
 - Always use `git --no-pager` for git commands to avoid opening a pager
 - Example: `git --no-pager log`, `git --no-pager diff`, `git --no-pager status`
+- Never work directly on the `main` branch — always create a feature branch
 
 ## Communication
 
@@ -47,6 +48,7 @@
 Before committing changes, always run the following commands to ensure code quality:
 
 ```bash
+npm run generate   # Regenerate GraphQL types from .graphql files
 npm run test       # Run unit tests
 npm run typecheck  # Run TypeScript type checking
 npm run lint       # Run ESLint and Biome checks
