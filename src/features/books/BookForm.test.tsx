@@ -62,50 +62,46 @@ const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
   );
 };
 
+const mockMatchMedia = () => {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(), // deprecated
+      removeListener: vi.fn(), // deprecated
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+};
+
+const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider>{children}</MantineProvider>
+    </QueryClientProvider>
+  );
+  return wrapper;
+};
+
 describe("useBookForm", () => {
-  test("works", async () => {
+  test("submits with entered title", async () => {
     // https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
-    Object.defineProperty(window, "matchMedia", {
-      writable: true,
-      value: vi.fn().mockImplementation((query: string) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: vi.fn(), // deprecated
-        removeListener: vi.fn(), // deprecated
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      })),
-    });
+    mockMatchMedia();
 
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: {
-          retry: false,
-        },
-      },
-    });
-
-    const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-      <QueryClientProvider client={queryClient}>
-        <MantineProvider>{children}</MantineProvider>
-      </QueryClientProvider>
-    );
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const mockSubmit = vi.fn((_book: BookFormValues) => {});
-
+    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
     const { getByRole, findByRole } = render(
       <TestForm onSubmit={mockSubmit} />,
-      {
-        wrapper: wrapper,
-      },
+      { wrapper: createWrapper() },
     );
 
-    // TODO: 著者など他のフィールドもテストする
-    const titleInput = await findByRole("textbox", {
-      name: "書名",
-    });
+    const titleInput = await findByRole("textbox", { name: "書名" });
     const user = userEvent.setup();
     await user.type(titleInput, "valid title");
 
@@ -116,5 +112,64 @@ describe("useBookForm", () => {
       ...emptyBook,
       title: "valid title",
     });
+  });
+
+  test("renders all form fields", async () => {
+    mockMatchMedia();
+
+    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
+    const { findByRole } = render(<TestForm onSubmit={mockSubmit} />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(await findByRole("textbox", { name: "書名" })).toBeInTheDocument();
+    expect(await findByRole("textbox", { name: "ISBN" })).toBeInTheDocument();
+    expect(await findByRole("checkbox", { name: "既読" })).toBeInTheDocument();
+    expect(await findByRole("checkbox", { name: "所有" })).toBeInTheDocument();
+  });
+
+  test("submits with read checkbox checked", async () => {
+    mockMatchMedia();
+
+    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
+    const { getByRole, findByRole } = render(
+      <TestForm onSubmit={mockSubmit} />,
+      { wrapper: createWrapper() },
+    );
+
+    const user = userEvent.setup();
+    const titleInput = await findByRole("textbox", { name: "書名" });
+    await user.type(titleInput, "valid title");
+
+    const readCheckbox = await findByRole("checkbox", { name: "既読" });
+    await user.click(readCheckbox);
+
+    await userEvent.click(getByRole("button", { name: "送信" }));
+
+    expect(mockSubmit).toHaveBeenCalledTimes(1);
+    expect(mockSubmit.mock.calls[0][0]).toEqual({
+      ...emptyBook,
+      title: "valid title",
+      read: true,
+    });
+  });
+
+  test("submits with empty ISBN (ISBN is optional)", async () => {
+    mockMatchMedia();
+
+    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
+    const { getByRole, findByRole } = render(
+      <TestForm onSubmit={mockSubmit} />,
+      { wrapper: createWrapper() },
+    );
+
+    const user = userEvent.setup();
+    const titleInput = await findByRole("textbox", { name: "書名" });
+    await user.type(titleInput, "valid title");
+
+    await userEvent.click(getByRole("button", { name: "送信" }));
+
+    expect(mockSubmit).toHaveBeenCalledTimes(1);
+    expect(mockSubmit.mock.calls[0][0].isbn).toBe("");
   });
 });
