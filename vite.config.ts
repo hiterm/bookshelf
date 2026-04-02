@@ -49,5 +49,17 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     exclude: ["**/node_modules/**", "**/e2e/**", "**/e2e-demo/**"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html", "lcov"],
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: [
+        "**/node_modules/**",
+        "**/e2e/**",
+        "**/e2e-demo/**",
+        "src/routeTree.gen.ts",
+        "src/lib/graphqlClient.ts",
+      ],
+    },
   },
 });
