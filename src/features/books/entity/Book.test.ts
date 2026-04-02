@@ -25,6 +25,12 @@ describe("graphQlBookToBook", () => {
     expect(book.updatedAt).toEqual(new Date(1000 * 2000));
   });
 
+  test("does not mutate the input", () => {
+    const input = { ...baseGraphQLBook };
+    graphQlBookToBook(input);
+    expect(input).toEqual(baseGraphQLBook);
+  });
+
   test("preserves other fields unchanged", () => {
     const book = graphQlBookToBook(baseGraphQLBook);
     expect(book.id).toBe("book-1");

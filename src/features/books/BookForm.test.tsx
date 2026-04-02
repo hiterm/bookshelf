@@ -105,9 +105,9 @@ describe("useBookForm", () => {
     const user = userEvent.setup();
     await user.type(titleInput, "valid title");
 
-    await userEvent.click(getByRole("button", { name: "送信" }));
+    await user.click(getByRole("button", { name: "送信" }));
 
-    expect(mockSubmit.mock.calls.length).toBe(1);
+    expect(mockSubmit).toHaveBeenCalledTimes(1);
     expect(mockSubmit.mock.calls[0][0]).toEqual({
       ...emptyBook,
       title: "valid title",
@@ -144,7 +144,7 @@ describe("useBookForm", () => {
     const readCheckbox = await findByRole("checkbox", { name: "既読" });
     await user.click(readCheckbox);
 
-    await userEvent.click(getByRole("button", { name: "送信" }));
+    await user.click(getByRole("button", { name: "送信" }));
 
     expect(mockSubmit).toHaveBeenCalledTimes(1);
     expect(mockSubmit.mock.calls[0][0]).toEqual({
@@ -167,7 +167,7 @@ describe("useBookForm", () => {
     const titleInput = await findByRole("textbox", { name: "書名" });
     await user.type(titleInput, "valid title");
 
-    await userEvent.click(getByRole("button", { name: "送信" }));
+    await user.click(getByRole("button", { name: "送信" }));
 
     expect(mockSubmit).toHaveBeenCalledTimes(1);
     expect(mockSubmit.mock.calls[0][0].isbn).toBe("");
