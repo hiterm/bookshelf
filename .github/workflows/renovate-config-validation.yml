@@ -1,0 +1,26 @@
+name: Renovate Config Validation
+
+on:
+  push:
+    paths:
+      - renovate.json5
+  pull_request:
+    paths:
+      - renovate.json5
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Renovate Config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Show Renovate version
+        run: npx --yes --package renovate@latest --min-release-age=3 renovate --version
+      - name: Validate Renovate Config
+        run: npx --yes --package renovate@latest --min-release-age=3 renovate-config-validator
