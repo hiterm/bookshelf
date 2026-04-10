@@ -297,7 +297,9 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
     ).not.toBeVisible();
 
     // Reset
-    await page.getByRole("button", { name: "Reset filter", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Reset filter", exact: true })
+      .click();
 
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
     await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
@@ -364,7 +366,9 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
     ).not.toBeVisible();
 
     // Reset
-    await page.getByRole("button", { name: "Reset filter", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Reset filter", exact: true })
+      .click();
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
 
     // URL should have no columnFilters param
