@@ -66,6 +66,28 @@ export class MockStore {
       format: "E_BOOK",
       store: "KINDLE",
     });
+
+    this.createBook({
+      title: "テスト書籍3",
+      authorIds: [author1.id],
+      isbn: "978-4-00-000003-4",
+      read: false,
+      owned: false,
+      priority: 30,
+      format: "UNKNOWN",
+      store: "UNKNOWN",
+    });
+
+    this.createBook({
+      title: "テスト書籍4",
+      authorIds: [author2.id],
+      isbn: "978-4-00-000004-1",
+      read: true,
+      owned: false,
+      priority: 10,
+      format: "E_BOOK",
+      store: "KINDLE",
+    });
   }
 
   createAuthor(name: string): Author {
