@@ -215,6 +215,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
     const next =
       typeof updater === "function" ? updater(columnFilters) : updater;
     setColumnFilters(next);
+    if (JSON.stringify(next) === JSON.stringify(columnFilters)) return;
     void navigate({
       search: (prev) => ({ ...prev, columnFilters: next, pageIndex: 0 }),
       replace: true,
