@@ -108,7 +108,7 @@ test.describe("Books CREATE", () => {
 
     // Verify created book details
     await page.getByRole("link", { name: "新しい書籍" }).click();
-    await expect(page).toHaveURL(/\/books\/book-3$/);
+    await expect(page).toHaveURL(/\/books\/book-5$/);
     await expect(page.getByText("9784000000010")).toBeVisible();
     await expect(page.locator("text=著者1").first()).toBeVisible();
   });
@@ -202,6 +202,183 @@ test.describe("Books UPDATE", () => {
 
     await page.getByRole("link", { name: "Cancel" }).click();
     await expect(page).toHaveURL(/\/books\/book-1$/);
+  });
+});
+
+test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/books");
+    await page.getByRole("button", { name: "Login" }).click();
+    // Wait for all 4 seed books to be visible
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍3" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍4" })).toBeVisible();
+  });
+
+  // --- Filter tests ---
+
+  test("read filter: true shows only read books", async ({ page }) => {
+    const readFilter = page.getByTestId("filter-read");
+    await readFilter.getByRole("combobox").click();
+    await page.getByRole("option", { name: "true" }).click();
+
+    await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍4" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍1" }),
+    ).not.toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍3" }),
+    ).not.toBeVisible();
+  });
+
+  test("owned filter: true shows only owned books", async ({ page }) => {
+    const ownedFilter = page.getByTestId("filter-owned");
+    await ownedFilter.getByRole("combobox").click();
+    await page.getByRole("option", { name: "true" }).click();
+
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍3" }),
+    ).not.toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍4" }),
+    ).not.toBeVisible();
+  });
+
+  test("format filter: Printed shows only printed books", async ({ page }) => {
+    const formatFilter = page.getByTestId("filter-format");
+    await formatFilter.getByRole("combobox").click();
+    await page.getByRole("option", { name: "Printed" }).click();
+
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍2" }),
+    ).not.toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍3" }),
+    ).not.toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍4" }),
+    ).not.toBeVisible();
+  });
+
+  test("preset filter: Unread owned shows only book1 sorted by priority desc", async ({
+    page,
+  }) => {
+    await page.getByRole("button", { name: "Preset filters" }).click();
+    await page
+      .getByRole("menuitem", { name: "Unread owned, order by priority" })
+      .click();
+
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍2" }),
+    ).not.toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍3" }),
+    ).not.toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍4" }),
+    ).not.toBeVisible();
+  });
+
+  test("reset filter: clears all filters and shows all books", async ({
+    page,
+  }) => {
+    // Apply a filter first
+    const readFilter = page.getByTestId("filter-read");
+    await readFilter.getByRole("combobox").click();
+    await page.getByRole("option", { name: "true" }).click();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍1" }),
+    ).not.toBeVisible();
+
+    // Reset
+    await page.getByRole("button", { name: "Reset filter" }).click();
+
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍3" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍4" })).toBeVisible();
+  });
+
+  // --- URL persistence tests (verify state survives page reload) ---
+
+  test("filter persists on page reload", async ({ page }) => {
+    // Apply read=true filter
+    const readFilter = page.getByTestId("filter-read");
+    await readFilter.getByRole("combobox").click();
+    await page.getByRole("option", { name: "true" }).click();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍1" }),
+    ).not.toBeVisible();
+
+    // Reload page — filter must survive via URL params
+    await page.reload();
+    await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍4" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍1" }),
+    ).not.toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍3" }),
+    ).not.toBeVisible();
+  });
+
+  test("sort persists on page reload", async ({ page }) => {
+    // Click priority header to sort descending
+    await page
+      .getByRole("columnheader", { name: "優先度" })
+      .locator("span")
+      .first()
+      .click();
+
+    // Verify sort applied: book2 (priority=80) should appear before book4 (priority=10)
+    const rows = page.getByRole("row");
+    const book2Row = rows.filter({ hasText: "テスト書籍2" });
+    const book4Row = rows.filter({ hasText: "テスト書籍4" });
+    await expect(book2Row).toBeVisible();
+    await expect(book4Row).toBeVisible();
+
+    // Reload page — sort must survive via URL params
+    await page.reload();
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+
+    // Verify sort still applied after reload: priority desc means book2(80) before book4(10)
+    const rowsAfterReload = await page
+      .getByRole("row")
+      .filter({ hasText: /テスト書籍[1-4]/ })
+      .all();
+    expect(rowsAfterReload.length).toBe(4);
+    const texts = await Promise.all(
+      rowsAfterReload.map((r) => r.textContent()),
+    );
+    const book2Index = texts.findIndex((t) => t?.includes("テスト書籍2"));
+    const book1Index = texts.findIndex((t) => t?.includes("テスト書籍1"));
+    // book2 (priority=80) should come before book1 (priority=50)
+    expect(book2Index).toBeLessThan(book1Index);
+  });
+
+  test("reset clears filter URL params", async ({ page }) => {
+    // Apply a filter so URL gets params
+    const readFilter = page.getByTestId("filter-read");
+    await readFilter.getByRole("combobox").click();
+    await page.getByRole("option", { name: "true" }).click();
+    await expect(
+      page.getByRole("link", { name: "テスト書籍1" }),
+    ).not.toBeVisible();
+
+    // Reset
+    await page.getByRole("button", { name: "Reset filter" }).click();
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+
+    // URL should have no columnFilters param
+    const url = new URL(page.url());
+    expect(url.searchParams.has("columnFilters")).toBe(false);
+    expect(url.searchParams.has("sorting")).toBe(false);
   });
 });
 

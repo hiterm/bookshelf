@@ -1,7 +1,14 @@
 import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
@@ -51,7 +58,7 @@ vi.mock("@mantine/core", async (importOriginal) => {
       value,
     }: {
       onChange?: (value: string | null) => void;
-      data: Array<{ value: string; label: string } | string>;
+      data: ({ value: string; label: string } | string)[];
       value?: string | null;
     }) => (
       <select
@@ -76,7 +83,7 @@ vi.mock("@mantine/core", async (importOriginal) => {
       disabled,
     }: {
       onChange?: (value: string[]) => void;
-      data: Array<{ value: string; label: string }>;
+      data: { value: string; label: string }[];
       value?: string[];
       disabled?: boolean;
       searchable?: boolean;
@@ -105,9 +112,9 @@ vi.mock("@mantine/core", async (importOriginal) => {
 
 beforeAll(() => {
   global.ResizeObserver = class ResizeObserver {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
+    observe = vi.fn();
+    unobserve = vi.fn();
+    disconnect = vi.fn();
   };
 
   HTMLElement.prototype.scrollIntoView = vi.fn();
@@ -202,7 +209,9 @@ const renderBookList = () =>
 /** Change the native <select> rendered inside the mocked Select component. */
 const changeSelect = (testId: string, value: string) => {
   const container = screen.getByTestId(testId);
-  const select = container.querySelector("select")!;
+  const select = container.querySelector("select");
+  if (!select)
+    throw new Error(`No <select> found inside [data-testid="${testId}"]`);
   fireEvent.change(select, { target: { value } });
 };
 
@@ -225,12 +234,12 @@ describe("BookList filters", () => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    const titleInput = within(
-      screen.getByTestId("filter-title"),
-    ).getByRole("textbox");
+    const titleInput = within(screen.getByTestId("filter-title")).getByRole(
+      "textbox",
+    );
     fireEvent.change(titleInput, { target: { value: "書籍1" } });
 
-    await act(async () => {
+    act(() => {
       vi.advanceTimersByTime(1100);
     });
 
@@ -250,12 +259,12 @@ describe("BookList filters", () => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    const isbnInput = within(
-      screen.getByTestId("filter-isbn"),
-    ).getByRole("textbox");
+    const isbnInput = within(screen.getByTestId("filter-isbn")).getByRole(
+      "textbox",
+    );
     fireEvent.change(isbnInput, { target: { value: "000002" } });
 
-    await act(async () => {
+    act(() => {
       vi.advanceTimersByTime(1100);
     });
 
@@ -377,7 +386,8 @@ describe("BookList filters", () => {
     });
 
     const authorsContainer = screen.getByTestId("filter-authors");
-    const authorsSelect = authorsContainer.querySelector("select")!;
+    const authorsSelect = authorsContainer.querySelector("select");
+    if (!authorsSelect) throw new Error("No <select> found in filter-authors");
     await userEvent.selectOptions(authorsSelect, ["author-1"]);
 
     await waitFor(() => {
@@ -392,10 +402,13 @@ describe("BookList filters", () => {
 describe("BookList sorting", () => {
   // The sort onClick is on the inner Group div, not the <th>.
   // Clicking the text element itself bubbles up to the Group handler.
-  const getHeaderText = (name: string) =>
-    screen
+  const getHeaderText = (name: string) => {
+    const el = screen
       .getAllByText(name)
-      .find((el) => el.closest("thead") !== null) as HTMLElement;
+      .find((e) => e.closest("thead") !== null);
+    if (!el) throw new Error(`Header text "${name}" not found in thead`);
+    return el;
+  };
 
   test("sort priority descending puts highest priority first", async () => {
     const user = userEvent.setup();
@@ -490,12 +503,12 @@ describe("BookList preset and reset", () => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    const titleInput = within(
-      screen.getByTestId("filter-title"),
-    ).getByRole("textbox");
+    const titleInput = within(screen.getByTestId("filter-title")).getByRole(
+      "textbox",
+    );
     fireEvent.change(titleInput, { target: { value: "書籍1" } });
 
-    await act(async () => {
+    act(() => {
       vi.advanceTimersByTime(1100);
     });
 
@@ -521,12 +534,12 @@ describe("BookList preset and reset", () => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    const titleInput = within(
-      screen.getByTestId("filter-title"),
-    ).getByRole("textbox");
+    const titleInput = within(screen.getByTestId("filter-title")).getByRole(
+      "textbox",
+    );
     fireEvent.change(titleInput, { target: { value: "書籍1" } });
 
-    await act(async () => {
+    act(() => {
       vi.advanceTimersByTime(1100);
     });
 

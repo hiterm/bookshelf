@@ -179,28 +179,27 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
   const navigate = routeApi.useNavigate();
   const search = routeApi.useSearch();
 
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+  const [columnFilters, setColumnFilters] = useState(
     (search.columnFilters ?? []) as ColumnFiltersState,
   );
-  const [sorting, setSorting] = useState<SortingState>(
+  const [sorting, setSorting] = useState(
     (search.sorting ?? []) as SortingState,
   );
-  const [pagination, setPagination] = useState<PaginationState>({
+  const [pagination, setPagination] = useState({
     pageIndex: search.pageIndex ?? 0,
     pageSize: search.pageSize ?? 20,
   });
 
   // Re-sync local state when URL changes externally (browser back/forward)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     setColumnFilters((search.columnFilters ?? []) as ColumnFiltersState);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(search.columnFilters)]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     setSorting((search.sorting ?? []) as SortingState);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(search.sorting)]);
 
   useEffect(() => {
@@ -232,8 +231,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
   };
 
   const handlePaginationChange: OnChangeFn<PaginationState> = (updater) => {
-    const next =
-      typeof updater === "function" ? updater(pagination) : updater;
+    const next = typeof updater === "function" ? updater(pagination) : updater;
     setPagination(next);
     void navigate({
       search: (prev) => ({
