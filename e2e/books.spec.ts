@@ -329,25 +329,17 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
   });
 
   test("sort persists on page reload", async ({ page }) => {
-    // Click priority header to sort descending
-    await page
-      .getByRole("columnheader", { name: "優先度" })
-      .locator("span")
-      .first()
-      .click();
+    // Click priority header once — TanStack Table first click = ascending (lowest first)
+    await page.getByRole("columnheader", { name: "優先度" }).click();
 
-    // Verify sort applied: book2 (priority=80) should appear before book4 (priority=10)
-    const rows = page.getByRole("row");
-    const book2Row = rows.filter({ hasText: "テスト書籍2" });
-    const book4Row = rows.filter({ hasText: "テスト書籍4" });
-    await expect(book2Row).toBeVisible();
-    await expect(book4Row).toBeVisible();
+    // Verify sort applied: book4 (priority=10) should be visible (it's the lowest)
+    await expect(page.getByRole("link", { name: "テスト書籍4" })).toBeVisible();
 
     // Reload page — sort must survive via URL params
     await page.reload();
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
 
-    // Verify sort still applied after reload: priority desc means book2(80) before book4(10)
+    // Verify sort still applied after reload: priority asc means book4(10) before book1(50)
     const rowsAfterReload = await page
       .getByRole("row")
       .filter({ hasText: /テスト書籍[1-4]/ })
@@ -356,10 +348,10 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
     const texts = await Promise.all(
       rowsAfterReload.map((r) => r.textContent()),
     );
-    const book2Index = texts.findIndex((t) => t?.includes("テスト書籍2"));
+    const book4Index = texts.findIndex((t) => t?.includes("テスト書籍4"));
     const book1Index = texts.findIndex((t) => t?.includes("テスト書籍1"));
-    // book2 (priority=80) should come before book1 (priority=50)
-    expect(book2Index).toBeLessThan(book1Index);
+    // book4 (priority=10) should come before book1 (priority=50) in ascending sort
+    expect(book4Index).toBeLessThan(book1Index);
   });
 
   test("reset clears filter URL params", async ({ page }) => {
