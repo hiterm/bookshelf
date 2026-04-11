@@ -216,6 +216,10 @@ const changeSelect = (testId: string, value: string) => {
 };
 
 describe("BookList filters", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   test("shows all books initially", async () => {
     renderBookList();
     await waitFor(() => {
@@ -468,6 +472,10 @@ describe("BookList sorting", () => {
 });
 
 describe("BookList preset and reset", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   test("preset filter shows only unread owned books", async () => {
     renderBookList();
 

@@ -357,7 +357,7 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
   });
 
   test("reset clears filter URL params", async ({ page }) => {
-    // Apply a filter so URL gets params
+    // Apply a filter so columnFilters appears in URL
     const readFilter = page.getByTestId("filter-read");
     await readFilter.getByRole("textbox").click();
     await page.getByRole("option", { name: "true" }).click();
@@ -365,13 +365,17 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
       page.getByRole("link", { name: "テスト書籍1" }),
     ).not.toBeVisible();
 
+    // Apply a sort so sorting appears in URL
+    await page.getByRole("columnheader", { name: "優先度" }).click();
+    await expect(page).toHaveURL(/sorting/);
+
     // Reset
     await page
       .getByRole("button", { name: "Reset filter", exact: true })
       .click();
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
 
-    // URL should have no columnFilters param
+    // URL should have neither columnFilters nor sorting param
     const url = new URL(page.url());
     expect(url.searchParams.has("columnFilters")).toBe(false);
     expect(url.searchParams.has("sorting")).toBe(false);

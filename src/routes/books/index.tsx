@@ -21,8 +21,8 @@ export const Route = createFileRoute("/books/")({
   validateSearch: z.object({
     columnFilters: z.array(columnFilterSchema).optional(),
     sorting: z.array(sortingItemSchema).optional(),
-    pageIndex: z.number().optional(),
-    pageSize: z.number().optional(),
+    pageIndex: z.number().nonnegative().optional(),
+    pageSize: z.number().nonnegative().optional(),
   }),
   component: RouteComponent,
 });
