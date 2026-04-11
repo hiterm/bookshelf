@@ -190,12 +190,6 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
     pageSize: search.pageSize ?? 20,
   });
 
-  // Re-sync local state when URL changes externally (browser back/forward).
-  // TanStack Router returns a new array reference on every render even when the
-  // content is identical, so reference equality would cause infinite updates.
-  // JSON.stringify is used for value-based comparison instead.
-  // The filter values are always JSON-serializable primitives (string, boolean,
-  // number, string[]), so JSON.stringify behaves deterministically here.
   const serializedColumnFilters = JSON.stringify(search.columnFilters ?? []);
   const serializedSorting = JSON.stringify(search.sorting ?? []);
 

@@ -309,6 +309,7 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
     await expect(
       page.getByRole("link", { name: "テスト書籍1" }),
     ).not.toBeVisible();
+    await expect(page).toHaveURL(/columnFilters/);
 
     await page.reload();
     await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
@@ -323,7 +324,7 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
 
   test("sort persists on page reload", async ({ page }) => {
     await page.getByRole("columnheader", { name: "優先度" }).click();
-    await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
+    await expect(page).toHaveURL(/sorting/);
 
     await page.reload();
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
