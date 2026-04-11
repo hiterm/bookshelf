@@ -326,6 +326,14 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
     await page.getByRole("columnheader", { name: "優先度" }).click();
     await expect(page).toHaveURL(/sorting/);
 
+    const rowsBeforeReload = await page
+      .getByRole("row")
+      .filter({ hasText: /テスト書籍[1-4]/ })
+      .all();
+    const textsBeforeReload = await Promise.all(
+      rowsBeforeReload.map((r) => r.textContent()),
+    );
+
     await page.reload();
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
 
@@ -333,13 +341,11 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
       .getByRole("row")
       .filter({ hasText: /テスト書籍[1-4]/ })
       .all();
-    expect(rowsAfterReload.length).toBe(4);
-    const texts = await Promise.all(
+    const textsAfterReload = await Promise.all(
       rowsAfterReload.map((r) => r.textContent()),
     );
-    const book2Index = texts.findIndex((t) => t?.includes("テスト書籍2"));
-    const book4Index = texts.findIndex((t) => t?.includes("テスト書籍4"));
-    expect(book2Index).toBeLessThan(book4Index);
+
+    expect(textsAfterReload).toEqual(textsBeforeReload);
   });
 
   test("reset clears filter URL params", async ({ page }) => {
