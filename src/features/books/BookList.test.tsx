@@ -46,70 +46,6 @@ vi.mock("../../compoments/mantineTsr", () => ({
   ),
 }));
 
-// Replace Mantine's Select / MultiSelect with native HTML elements to avoid
-// Floating UI positioning issues in jsdom.
-vi.mock("@mantine/core", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@mantine/core")>();
-  return {
-    ...actual,
-    Select: ({
-      onChange,
-      data,
-      value,
-    }: {
-      onChange?: (value: string | null) => void;
-      data: ({ value: string; label: string } | string)[];
-      value?: string | null;
-    }) => (
-      <select
-        value={value ?? ""}
-        onChange={(e) => onChange?.(e.target.value || null)}
-      >
-        {data.map((item) => {
-          const v = typeof item === "string" ? item : item.value;
-          const l = typeof item === "string" ? item : item.label;
-          return (
-            <option key={v} value={v}>
-              {l}
-            </option>
-          );
-        })}
-      </select>
-    ),
-    MultiSelect: ({
-      onChange,
-      data,
-      value,
-      disabled,
-    }: {
-      onChange?: (value: string[]) => void;
-      data: { value: string; label: string }[];
-      value?: string[];
-      disabled?: boolean;
-      searchable?: boolean;
-      rightSection?: React.ReactNode;
-    }) => (
-      <select
-        multiple
-        disabled={disabled}
-        value={value ?? []}
-        onChange={(e) => {
-          const selected = Array.from(e.target.selectedOptions).map(
-            (o) => o.value,
-          );
-          onChange?.(selected);
-        }}
-      >
-        {data.map((item) => (
-          <option key={item.value} value={item.value}>
-            {item.label}
-          </option>
-        ))}
-      </select>
-    ),
-  };
-});
-
 beforeAll(() => {
   global.ResizeObserver = class ResizeObserver {
     observe = vi.fn();
@@ -197,7 +133,7 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   });
   const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <MantineProvider>{children}</MantineProvider>
+      <MantineProvider env="test">{children}</MantineProvider>
     </QueryClientProvider>
   );
   return wrapper;
@@ -205,15 +141,6 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
 
 const renderBookList = () =>
   render(<BookList list={testBooks} />, { wrapper: createWrapper() });
-
-/** Change the native <select> rendered inside the mocked Select component. */
-const changeSelect = (testId: string, value: string) => {
-  const container = screen.getByTestId(testId);
-  const select = container.querySelector("select");
-  if (!select)
-    throw new Error(`No <select> found inside [data-testid="${testId}"]`);
-  fireEvent.change(select, { target: { value } });
-};
 
 describe("BookList filters", () => {
   afterEach(() => {
@@ -287,7 +214,10 @@ describe("BookList filters", () => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    changeSelect("filter-read", "true");
+    await userEvent.click(
+      within(screen.getByTestId("filter-read")).getByRole("textbox"),
+    );
+    await userEvent.click(screen.getByRole("option", { name: "true" }));
 
     await waitFor(() => {
       expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
@@ -304,7 +234,10 @@ describe("BookList filters", () => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    changeSelect("filter-read", "false");
+    await userEvent.click(
+      within(screen.getByTestId("filter-read")).getByRole("textbox"),
+    );
+    await userEvent.click(screen.getByRole("option", { name: "false" }));
 
     await waitFor(() => {
       expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
@@ -321,7 +254,10 @@ describe("BookList filters", () => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    changeSelect("filter-owned", "true");
+    await userEvent.click(
+      within(screen.getByTestId("filter-owned")).getByRole("textbox"),
+    );
+    await userEvent.click(screen.getByRole("option", { name: "true" }));
 
     await waitFor(() => {
       expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
@@ -338,7 +274,10 @@ describe("BookList filters", () => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    changeSelect("filter-format", "PRINTED");
+    await userEvent.click(
+      within(screen.getByTestId("filter-format")).getByRole("textbox"),
+    );
+    await userEvent.click(screen.getByRole("option", { name: "Printed" }));
 
     await waitFor(() => {
       expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
@@ -355,7 +294,10 @@ describe("BookList filters", () => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    changeSelect("filter-format", "E_BOOK");
+    await userEvent.click(
+      within(screen.getByTestId("filter-format")).getByRole("textbox"),
+    );
+    await userEvent.click(screen.getByRole("option", { name: "eBook" }));
 
     await waitFor(() => {
       expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
@@ -372,7 +314,10 @@ describe("BookList filters", () => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    changeSelect("filter-store", "KINDLE");
+    await userEvent.click(
+      within(screen.getByTestId("filter-store")).getByRole("textbox"),
+    );
+    await userEvent.click(screen.getByRole("option", { name: "Kindle" }));
 
     await waitFor(() => {
       expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
@@ -389,10 +334,10 @@ describe("BookList filters", () => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    const authorsContainer = screen.getByTestId("filter-authors");
-    const authorsSelect = authorsContainer.querySelector("select");
-    if (!authorsSelect) throw new Error("No <select> found in filter-authors");
-    await userEvent.selectOptions(authorsSelect, ["author-1"]);
+    await userEvent.click(
+      within(screen.getByTestId("filter-authors")).getByRole("textbox"),
+    );
+    await userEvent.click(screen.getByRole("option", { name: "著者1" }));
 
     await waitFor(() => {
       expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
