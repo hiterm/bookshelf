@@ -196,16 +196,16 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
   // JSON.stringify is used for value-based comparison instead.
   // The filter values are always JSON-serializable primitives (string, boolean,
   // number, string[]), so JSON.stringify behaves deterministically here.
+  const serializedColumnFilters = JSON.stringify(search.columnFilters ?? []);
+  const serializedSorting = JSON.stringify(search.sorting ?? []);
 
   useEffect(() => {
-    setColumnFilters((search.columnFilters ?? []) as ColumnFiltersState);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(search.columnFilters)]);
+    setColumnFilters(JSON.parse(serializedColumnFilters) as ColumnFiltersState);
+  }, [serializedColumnFilters]);
 
   useEffect(() => {
-    setSorting((search.sorting ?? []) as SortingState);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(search.sorting)]);
+    setSorting(JSON.parse(serializedSorting) as SortingState);
+  }, [serializedSorting]);
 
   useEffect(() => {
     setPagination({

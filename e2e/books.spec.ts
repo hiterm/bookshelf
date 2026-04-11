@@ -209,14 +209,11 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/books");
     await page.getByRole("button", { name: "Login" }).click();
-    // Wait for all 4 seed books to be visible
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
     await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
     await expect(page.getByRole("link", { name: "テスト書籍3" })).toBeVisible();
     await expect(page.getByRole("link", { name: "テスト書籍4" })).toBeVisible();
   });
-
-  // --- Filter tests ---
 
   test("read filter: true shows only read books", async ({ page }) => {
     const readFilter = page.getByTestId("filter-read");
@@ -288,7 +285,6 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
   test("reset filter: clears all filters and shows all books", async ({
     page,
   }) => {
-    // Apply a filter first
     const readFilter = page.getByTestId("filter-read");
     await readFilter.getByRole("textbox").click();
     await page.getByRole("option", { name: "true" }).click();
@@ -296,7 +292,6 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
       page.getByRole("link", { name: "テスト書籍1" }),
     ).not.toBeVisible();
 
-    // Reset
     await page
       .getByRole("button", { name: "Reset filter", exact: true })
       .click();
@@ -307,10 +302,7 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
     await expect(page.getByRole("link", { name: "テスト書籍4" })).toBeVisible();
   });
 
-  // --- URL persistence tests (verify state survives page reload) ---
-
   test("filter persists on page reload", async ({ page }) => {
-    // Apply read=true filter
     const readFilter = page.getByTestId("filter-read");
     await readFilter.getByRole("textbox").click();
     await page.getByRole("option", { name: "true" }).click();
@@ -318,7 +310,6 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
       page.getByRole("link", { name: "テスト書籍1" }),
     ).not.toBeVisible();
 
-    // Reload page — filter must survive via URL params
     await page.reload();
     await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
     await expect(page.getByRole("link", { name: "テスト書籍4" })).toBeVisible();
@@ -331,17 +322,12 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
   });
 
   test("sort persists on page reload", async ({ page }) => {
-    // Click priority header once — for numeric columns TanStack Table first click = descending
     await page.getByRole("columnheader", { name: "優先度" }).click();
-
-    // Verify sort applied: book2 (priority=80) should appear before book4 (priority=10)
     await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
 
-    // Reload page — sort must survive via URL params
     await page.reload();
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
 
-    // Verify sort still applied after reload: priority desc means book2(80) before book4(10)
     const rowsAfterReload = await page
       .getByRole("row")
       .filter({ hasText: /テスト書籍[1-4]/ })
@@ -352,12 +338,10 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
     );
     const book2Index = texts.findIndex((t) => t?.includes("テスト書籍2"));
     const book4Index = texts.findIndex((t) => t?.includes("テスト書籍4"));
-    // book2 (priority=80) should come before book4 (priority=10) in descending sort
     expect(book2Index).toBeLessThan(book4Index);
   });
 
   test("reset clears filter URL params", async ({ page }) => {
-    // Apply a filter so columnFilters appears in URL
     const readFilter = page.getByTestId("filter-read");
     await readFilter.getByRole("textbox").click();
     await page.getByRole("option", { name: "true" }).click();
@@ -365,17 +349,14 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
       page.getByRole("link", { name: "テスト書籍1" }),
     ).not.toBeVisible();
 
-    // Apply a sort so sorting appears in URL
     await page.getByRole("columnheader", { name: "優先度" }).click();
     await expect(page).toHaveURL(/sorting/);
 
-    // Reset
     await page
       .getByRole("button", { name: "Reset filter", exact: true })
       .click();
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
 
-    // URL should have neither columnFilters nor sorting param
     const url = new URL(page.url());
     expect(url.searchParams.has("columnFilters")).toBe(false);
     expect(url.searchParams.has("sorting")).toBe(false);

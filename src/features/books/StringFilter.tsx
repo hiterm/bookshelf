@@ -23,9 +23,7 @@ export const StringFilter = <TData, TValue>({
 
   const filterValue = column.getFilterValue();
   useEffect(() => {
-    if (filterValue === undefined) {
-      setValue("");
-    }
+    setValue((filterValue as string | undefined) ?? "");
   }, [filterValue]);
 
   return (
