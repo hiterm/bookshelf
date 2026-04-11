@@ -72,6 +72,8 @@ const authorsFilter: FilterFn<Book> = (
 
 const formatDate = (date: Date) => dayjs(date).format("YYYY/MM/DD HH:mm Z");
 
+const DEFAULT_PAGE_SIZE = 20;
+
 const columnHelper = createColumnHelper<Book>();
 
 const columns = [
@@ -187,24 +189,28 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
   );
   const [pagination, setPagination] = useState({
     pageIndex: search.pageIndex ?? 0,
-    pageSize: search.pageSize ?? 20,
+    pageSize: search.pageSize ?? DEFAULT_PAGE_SIZE,
   });
 
   const serializedColumnFilters = JSON.stringify(search.columnFilters ?? []);
   const serializedSorting = JSON.stringify(search.sorting ?? []);
 
   useEffect(() => {
-    setColumnFilters(JSON.parse(serializedColumnFilters) as ColumnFiltersState);
+    setColumnFilters((search.columnFilters ?? []) as ColumnFiltersState);
+    // serializedColumnFilters is the stable dep; search.columnFilters is the current value.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serializedColumnFilters]);
 
   useEffect(() => {
-    setSorting(JSON.parse(serializedSorting) as SortingState);
+    setSorting((search.sorting ?? []) as SortingState);
+    // serializedSorting is the stable dep; search.sorting is the current value.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serializedSorting]);
 
   useEffect(() => {
     setPagination({
       pageIndex: search.pageIndex ?? 0,
-      pageSize: search.pageSize ?? 20,
+      pageSize: search.pageSize ?? DEFAULT_PAGE_SIZE,
     });
   }, [search.pageIndex, search.pageSize]);
 
@@ -224,6 +230,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
   const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
     const next = typeof updater === "function" ? updater(sorting) : updater;
     setSorting(next);
+    if (JSON.stringify(next) === JSON.stringify(sorting)) return;
     void navigate({
       search: (prev) => ({ ...prev, sorting: next }),
       replace: true,
@@ -316,7 +323,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
           onClick={() => {
             setColumnFilters([]);
             setSorting([]);
-            setPagination({ pageIndex: 0, pageSize: 20 });
+            setPagination({ pageIndex: 0, pageSize: DEFAULT_PAGE_SIZE });
             void navigate({ search: {}, replace: true });
           }}
           color="red"
