@@ -234,6 +234,11 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
   const handlePaginationChange: OnChangeFn<PaginationState> = (updater) => {
     const next = typeof updater === "function" ? updater(pagination) : updater;
     setPagination(next);
+    if (
+      next.pageIndex === pagination.pageIndex &&
+      next.pageSize === pagination.pageSize
+    )
+      return;
     void navigate({
       search: (prev) => ({
         ...prev,
