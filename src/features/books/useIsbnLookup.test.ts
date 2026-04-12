@@ -4,13 +4,15 @@ import { useIsbnLookup } from "./useIsbnLookup";
 
 const DC_NS = "http://purl.org/dc/elements/1.1/";
 
-const makeTextResponse = (text: string) =>
+const makeTextResponse = (text: string, ok = true) =>
   Promise.resolve({
+    ok,
     text: () => Promise.resolve(text),
   } as Response);
 
-const makeJsonResponse = (body: unknown) =>
+const makeJsonResponse = (body: unknown, ok = true) =>
   Promise.resolve({
+    ok,
     json: () => Promise.resolve(body),
   } as Response);
 
@@ -136,6 +138,23 @@ describe("useIsbnLookup", () => {
     );
   });
 
+  test("transitions to error on HTTP error response", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockReturnValue(makeTextResponse("", false)),
+    );
+
+    const { result } = renderHook(() => useIsbnLookup());
+
+    await act(async () => {
+      await result.current.lookup("9784065362433");
+    });
+
+    await waitFor(() => {
+      expect(result.current.state.status).toBe("error");
+    });
+  });
+
   test("transitions to error when both APIs return not found", async () => {
     vi.stubGlobal(
       "fetch",
@@ -171,5 +190,38 @@ describe("useIsbnLookup", () => {
     await waitFor(() => {
       expect(result.current.state.status).toBe("error");
     });
+  });
+
+  test("discards stale response when a newer lookup is in flight", async () => {
+    let resolveFirst!: (value: Response) => void;
+    const firstResponse = new Promise<Response>(
+      (resolve) => (resolveFirst = resolve),
+    );
+
+    const mockFetch = vi
+      .fn()
+      .mockReturnValueOnce(firstResponse)
+      .mockReturnValueOnce(makeTextResponse(ndlXml("新しい書籍", ["著者B"])));
+    vi.stubGlobal("fetch", mockFetch);
+
+    const { result } = renderHook(() => useIsbnLookup());
+
+    act(() => {
+      void result.current.lookup("9784000000001");
+    });
+
+    await act(async () => {
+      await result.current.lookup("9784000000002");
+    });
+
+    resolveFirst(await makeTextResponse(ndlXml("古い書籍", ["著者A"])));
+
+    await waitFor(() => {
+      expect(result.current.state.status).toBe("success");
+    });
+
+    if (result.current.state.status === "success") {
+      expect(result.current.state.result.title).toBe("新しい書籍");
+    }
   });
 });

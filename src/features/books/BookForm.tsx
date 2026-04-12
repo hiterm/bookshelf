@@ -81,6 +81,10 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
         form.setFieldValue("authors", matched);
       }
     }
+    // form.setFieldValue is a stable callback (Mantine useForm guarantees this).
+    // data is omitted intentionally: it is stable once loaded (React Query
+    // caches it), and including it would re-apply a stale lookup result
+    // whenever the authors list refreshes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isbnLookupState]);
 

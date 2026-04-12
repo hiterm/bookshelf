@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 type IsbnLookupResult = {
   title: string;
@@ -29,6 +29,9 @@ const tryNdl = async (isbn: string): Promise<IsbnLookupResult | null> => {
   const response = await fetch(
     `https://ndlsearch.ndl.go.jp/api/opensearch?isbn=${isbn}`,
   );
+  if (!response.ok) {
+    throw new Error(`NDL API error: ${String(response.status)}`);
+  }
   const xmlText = await response.text();
   const parser = new DOMParser();
   const xml = parser.parseFromString(xmlText, "text/xml");
@@ -53,6 +56,9 @@ const tryGoogleBooks = async (
   const response = await fetch(
     `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`,
   );
+  if (!response.ok) {
+    throw new Error(`Google Books API error: ${String(response.status)}`);
+  }
   const data = (await response.json()) as GoogleBooksResponse;
   if (!data.items || data.items.length === 0) return null;
   const volumeInfo = data.items[0].volumeInfo;
@@ -64,19 +70,24 @@ const tryGoogleBooks = async (
 
 export const useIsbnLookup = (): UseIsbnLookupReturn => {
   const [state, setState] = useState<IsbnLookupState>({ status: "idle" });
+  const latestRequestIdRef = useRef(0);
 
   const lookup = async (isbn: string): Promise<void> => {
     const normalized = isbn.replace(/-/g, "");
+    latestRequestIdRef.current += 1;
+    const requestId = latestRequestIdRef.current;
     setState({ status: "loading" });
     try {
       const result =
         (await tryNdl(normalized)) ?? (await tryGoogleBooks(normalized));
+      if (requestId !== latestRequestIdRef.current) return;
       if (result == null) {
         setState({ status: "error", message: "書籍が見つかりませんでした" });
         return;
       }
       setState({ status: "success", result });
     } catch {
+      if (requestId !== latestRequestIdRef.current) return;
       setState({ status: "error", message: "取得に失敗しました" });
     }
   };
