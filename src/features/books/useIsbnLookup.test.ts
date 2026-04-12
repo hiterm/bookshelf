@@ -2,20 +2,39 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import { useIsbnLookup } from "./useIsbnLookup";
 
-const makeResponse = (body: unknown) =>
+const DC_NS = "http://purl.org/dc/elements/1.1/";
+
+const makeTextResponse = (text: string) =>
+  Promise.resolve({
+    text: () => Promise.resolve(text),
+  } as Response);
+
+const makeJsonResponse = (body: unknown) =>
   Promise.resolve({
     json: () => Promise.resolve(body),
   } as Response);
 
-const openBdFound = (title: string, author: string) =>
-  makeResponse([{ summary: { title, author } }]);
+const ndlXml = (title: string, creators: string[]) =>
+  `<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:dc="${DC_NS}">
+  <channel>
+    <item>
+      <title>${title}</title>
+      ${creators.map((c) => `<dc:creator>${c}</dc:creator>`).join("")}
+    </item>
+  </channel>
+</rss>`;
 
-const openBdNotFound = () => makeResponse([null]);
+const ndlEmptyXml = () =>
+  `<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:dc="${DC_NS}">
+  <channel></channel>
+</rss>`;
 
 const googleBooksFound = (title: string, authors: string[]) =>
-  makeResponse({ items: [{ volumeInfo: { title, authors } }] });
+  makeJsonResponse({ items: [{ volumeInfo: { title, authors } }] });
 
-const googleBooksNotFound = () => makeResponse({});
+const googleBooksNotFound = () => makeJsonResponse({});
 
 beforeEach(() => {
   vi.stubGlobal("fetch", vi.fn());
@@ -31,10 +50,10 @@ describe("useIsbnLookup", () => {
     expect(result.current.state.status).toBe("idle");
   });
 
-  test("calls OpenBD URL with normalized ISBN", async () => {
+  test("calls NDL URL with normalized ISBN", async () => {
     const mockFetch = vi
       .fn()
-      .mockReturnValue(openBdFound("Test Book", "Author One"));
+      .mockReturnValue(makeTextResponse(ndlXml("テスト書籍", ["著者一"])));
     vi.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useIsbnLookup());
@@ -44,14 +63,18 @@ describe("useIsbnLookup", () => {
     });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      "https://api.openbd.jp/v1/get?isbn=9784065362433",
+      "https://ndlsearch.ndl.go.jp/api/opensearch?isbn=9784065362433",
     );
   });
 
-  test("returns title and authorNames from OpenBD on success", async () => {
+  test("returns title and authorNames from NDL on success", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockReturnValue(openBdFound("テスト書籍", "著者一／著者二")),
+      vi
+        .fn()
+        .mockReturnValue(
+          makeTextResponse(ndlXml("テスト書籍", ["著者一", "著者二"])),
+        ),
     );
 
     const { result } = renderHook(() => useIsbnLookup());
@@ -70,28 +93,10 @@ describe("useIsbnLookup", () => {
     }
   });
 
-  test("parses single author without separator", async () => {
+  test("returns empty authorNames when no dc:creator elements", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockReturnValue(openBdFound("テスト書籍", "著者一")),
-    );
-
-    const { result } = renderHook(() => useIsbnLookup());
-
-    await act(async () => {
-      await result.current.lookup("9784065362433");
-    });
-
-    expect(result.current.state.status).toBe("success");
-    if (result.current.state.status === "success") {
-      expect(result.current.state.result.authorNames).toEqual(["著者一"]);
-    }
-  });
-
-  test("returns empty authorNames when author field is empty", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockReturnValue(openBdFound("タイトル", "")),
+      vi.fn().mockReturnValue(makeTextResponse(ndlXml("タイトルのみ", []))),
     );
 
     const { result } = renderHook(() => useIsbnLookup());
@@ -106,10 +111,10 @@ describe("useIsbnLookup", () => {
     }
   });
 
-  test("falls back to Google Books when OpenBD returns null", async () => {
+  test("falls back to Google Books when NDL returns no items", async () => {
     const mockFetch = vi
       .fn()
-      .mockReturnValueOnce(openBdNotFound())
+      .mockReturnValueOnce(makeTextResponse(ndlEmptyXml()))
       .mockReturnValueOnce(googleBooksFound("English Book", ["John Doe"]));
     vi.stubGlobal("fetch", mockFetch);
 
@@ -136,7 +141,7 @@ describe("useIsbnLookup", () => {
       "fetch",
       vi
         .fn()
-        .mockReturnValueOnce(openBdNotFound())
+        .mockReturnValueOnce(makeTextResponse(ndlEmptyXml()))
         .mockReturnValueOnce(googleBooksNotFound()),
     );
 

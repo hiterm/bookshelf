@@ -11,13 +11,6 @@ type IsbnLookupState =
   | { status: "success"; result: IsbnLookupResult }
   | { status: "error"; message: string };
 
-type OpenBdBook = {
-  summary: {
-    title: string;
-    author: string;
-  };
-} | null;
-
 type GoogleBooksResponse = {
   items?: {
     volumeInfo: {
@@ -32,23 +25,26 @@ type UseIsbnLookupReturn = {
   lookup: (isbn: string) => Promise<void>;
 };
 
-const parseOpenBdAuthors = (author: string): string[] =>
-  author
-    .split(/[／/]/)
-    .map((a) => a.trim())
+const tryNdl = async (isbn: string): Promise<IsbnLookupResult | null> => {
+  const response = await fetch(
+    `https://ndlsearch.ndl.go.jp/api/opensearch?isbn=${isbn}`,
+  );
+  const xmlText = await response.text();
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(xmlText, "text/xml");
+  const items = xml.querySelectorAll("item");
+  if (items.length === 0) return null;
+  const item = items[0];
+  const title = item.querySelector("title")?.textContent ?? "";
+  if (!title) return null;
+  const creatorElements = item.getElementsByTagNameNS(
+    "http://purl.org/dc/elements/1.1/",
+    "creator",
+  );
+  const authorNames = Array.from(creatorElements)
+    .map((el) => el.textContent)
     .filter(Boolean);
-
-const tryOpenBd = async (isbn: string): Promise<IsbnLookupResult | null> => {
-  const response = await fetch(`https://api.openbd.jp/v1/get?isbn=${isbn}`);
-  const data = (await response.json()) as OpenBdBook[];
-  const book = data[0];
-  if (book == null) return null;
-  return {
-    title: book.summary.title,
-    authorNames: book.summary.author
-      ? parseOpenBdAuthors(book.summary.author)
-      : [],
-  };
+  return { title, authorNames };
 };
 
 const tryGoogleBooks = async (
@@ -74,7 +70,7 @@ export const useIsbnLookup = (): UseIsbnLookupReturn => {
     setState({ status: "loading" });
     try {
       const result =
-        (await tryOpenBd(normalized)) ?? (await tryGoogleBooks(normalized));
+        (await tryNdl(normalized)) ?? (await tryGoogleBooks(normalized));
       if (result == null) {
         setState({ status: "error", message: "書籍が見つかりませんでした" });
         return;
