@@ -46,6 +46,14 @@
 - Think and work in **English**
 - Use the same language as the user for confirmations and final reports
 
+## Testing Mantine Components
+
+When writing tests for Mantine components, refer to these docs as needed:
+
+- Jest/Vitest setup: https://github.com/mantinedev/mantine/blob/master/apps/mantine.dev/src/pages/guides/jest.mdx
+- Testing Select/MultiSelect (combobox): https://github.com/mantinedev/mantine/blob/master/apps/help.mantine.dev/src/pages/q/combobox-testing.mdx
+- Testing Modal/Drawer/Popover (portals): https://github.com/mantinedev/mantine/blob/master/apps/help.mantine.dev/src/pages/q/portals-testing.mdx
+
 ## Pre-commit Checklist
 
 Before committing changes, always run the following commands to ensure code quality:

@@ -13,18 +13,21 @@ type FilterProps<TData, TValue> = {
 export const Filter = <TData, TValue>({
   column,
 }: FilterProps<TData, TValue>): React.JSX.Element => {
-  switch (column.columnDef.meta?.filterType) {
-    case "string":
-      return <StringFilter column={column} />;
-    case "boolean":
-      return <BooleanFilter column={column} />;
-    case "format":
-      return <FormatFilter column={column} />;
-    case "store":
-      return <StoreFilter column={column} />;
-    case "authors":
-      return <AuthorsFilter column={column} />;
-    default:
-      return <></>;
-  }
+  const inner = (() => {
+    switch (column.columnDef.meta?.filterType) {
+      case "string":
+        return <StringFilter column={column} />;
+      case "boolean":
+        return <BooleanFilter column={column} />;
+      case "format":
+        return <FormatFilter column={column} />;
+      case "store":
+        return <StoreFilter column={column} />;
+      case "authors":
+        return <AuthorsFilter column={column} />;
+      default:
+        return <></>;
+    }
+  })();
+  return <div data-testid={`filter-${column.id}`}>{inner}</div>;
 };

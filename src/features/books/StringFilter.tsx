@@ -1,6 +1,6 @@
 import { TextInput } from "@mantine/core";
 import { Column } from "@tanstack/react-table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDebouncedEffect } from "../../compoments/hooks/useDebouncedEffect";
 
 export type StringFilterProps<TData, TValue> = {
@@ -20,6 +20,11 @@ export const StringFilter = <TData, TValue>({
     [value],
     1000,
   );
+
+  const filterValue = column.getFilterValue();
+  useEffect(() => {
+    setValue((filterValue as string | undefined) ?? "");
+  }, [filterValue]);
 
   return (
     <TextInput
