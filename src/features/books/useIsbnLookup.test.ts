@@ -155,6 +155,21 @@ describe("useIsbnLookup", () => {
     });
   });
 
+  test("transitions to loading immediately when lookup starts", () => {
+    // The Promise intentionally never resolves so the hook stays in loading state.
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    const pending = new Promise<Response>(() => {});
+    vi.stubGlobal("fetch", vi.fn().mockReturnValue(pending));
+
+    const { result } = renderHook(() => useIsbnLookup());
+
+    act(() => {
+      void result.current.lookup("9784065362433");
+    });
+
+    expect(result.current.state.status).toBe("loading");
+  });
+
   test("transitions to error when both APIs return not found", async () => {
     vi.stubGlobal(
       "fetch",
@@ -173,6 +188,9 @@ describe("useIsbnLookup", () => {
     await waitFor(() => {
       expect(result.current.state.status).toBe("error");
     });
+    if (result.current.state.status === "error") {
+      expect(result.current.state.message).toBe("書籍が見つかりませんでした");
+    }
   });
 
   test("transitions to error on network failure", async () => {
@@ -190,6 +208,9 @@ describe("useIsbnLookup", () => {
     await waitFor(() => {
       expect(result.current.state.status).toBe("error");
     });
+    if (result.current.state.status === "error") {
+      expect(result.current.state.message).toBe("取得に失敗しました");
+    }
   });
 
   test("discards stale response when a newer lookup is in flight", async () => {
