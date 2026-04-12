@@ -1,21 +1,26 @@
 import {
+  ActionIcon,
   Checkbox,
+  Group,
   Loader,
   MultiSelect,
   NumberInput,
   Select,
   Stack,
+  Text,
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { zodResolver } from "mantine-form-zod-resolver";
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect } from "react";
 import { z } from "zod";
+import { IconSearch } from "@tabler/icons-react";
 import { BookFormat, BookStore } from "../../generated/graphql-request";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
 import { Author } from "./entity/Author";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
 import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
+import { useIsbnLookup } from "./useIsbnLookup";
 
 export type BookFormValues = {
   title: string;
@@ -45,6 +50,7 @@ type BookFormProps = {
     event: React.SyntheticEvent<HTMLFormElement> | undefined,
   ) => void;
   initialValues: BookFormValues;
+  enableIsbnLookup?: boolean;
 };
 
 type BookFormReturn = {
@@ -60,6 +66,23 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
   });
 
   const { data, isLoading, error } = useAuthors();
+  const { state: isbnLookupState, lookup: lookupIsbn } = useIsbnLookup();
+
+  useEffect(() => {
+    if (isbnLookupState.status !== "success") return;
+    form.setFieldValue("title", isbnLookupState.result.title);
+    if (data != null) {
+      const matched = isbnLookupState.result.authorNames
+        .map((name) =>
+          data.authors.find((a) => a.name.toLowerCase() === name.toLowerCase()),
+        )
+        .filter((a): a is Author => a !== undefined);
+      if (matched.length > 0) {
+        form.setFieldValue("authors", matched);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isbnLookupState]);
 
   const submitForm = form.onSubmit(props.onSubmit);
 
@@ -70,6 +93,37 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
   if (isLoading || data == null) {
     return { form: <Loader />, submitForm };
   }
+
+  const isbnField = props.enableIsbnLookup ? (
+    <Stack gap={0}>
+      <Group align="flex-end" gap="xs">
+        <TextInput
+          label="ISBN"
+          style={{ flex: 1 }}
+          {...form.getInputProps("isbn")}
+        />
+        <ActionIcon
+          onClick={() => {
+            void lookupIsbn(form.values.isbn);
+          }}
+          loading={isbnLookupState.status === "loading"}
+          disabled={!form.values.isbn}
+          size="lg"
+          variant="default"
+          aria-label="ISBNから自動入力"
+        >
+          <IconSearch size={16} />
+        </ActionIcon>
+      </Group>
+      {isbnLookupState.status === "error" && (
+        <Text size="xs" c="red" mt={4}>
+          {isbnLookupState.message}
+        </Text>
+      )}
+    </Stack>
+  ) : (
+    <TextInput label="ISBN" {...form.getInputProps("isbn")} />
+  );
 
   const formElement = (
     <Stack>
@@ -110,7 +164,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
         }))}
       />
       <NumberInput label="優先度" {...form.getInputProps("priority")} />
-      <TextInput label="ISBN" {...form.getInputProps("isbn")} />
+      {isbnField}
       <Checkbox
         label="既読"
         {...form.getInputProps("read", { type: "checkbox" })}
