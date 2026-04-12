@@ -22,7 +22,7 @@ type GoogleBooksResponse = {
 
 type UseIsbnLookupReturn = {
   state: IsbnLookupState;
-  lookup: (isbn: string) => Promise<void>;
+  lookup: (isbn: string) => Promise<IsbnLookupResult | null>;
 };
 
 const tryNdl = async (isbn: string): Promise<IsbnLookupResult | null> => {
@@ -72,7 +72,7 @@ export const useIsbnLookup = (): UseIsbnLookupReturn => {
   const [state, setState] = useState<IsbnLookupState>({ status: "idle" });
   const latestRequestIdRef = useRef(0);
 
-  const lookup = async (isbn: string): Promise<void> => {
+  const lookup = async (isbn: string): Promise<IsbnLookupResult | null> => {
     const normalized = isbn.replace(/-/g, "");
     latestRequestIdRef.current += 1;
     const requestId = latestRequestIdRef.current;
@@ -80,15 +80,17 @@ export const useIsbnLookup = (): UseIsbnLookupReturn => {
     try {
       const result =
         (await tryNdl(normalized)) ?? (await tryGoogleBooks(normalized));
-      if (requestId !== latestRequestIdRef.current) return;
+      if (requestId !== latestRequestIdRef.current) return null;
       if (result == null) {
         setState({ status: "error", message: "書籍が見つかりませんでした" });
-        return;
+        return null;
       }
       setState({ status: "success", result });
+      return result;
     } catch {
-      if (requestId !== latestRequestIdRef.current) return;
+      if (requestId !== latestRequestIdRef.current) return null;
       setState({ status: "error", message: "取得に失敗しました" });
+      return null;
     }
   };
 

@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { zodResolver } from "mantine-form-zod-resolver";
-import React, { ReactElement, useEffect } from "react";
+import React, { ReactElement } from "react";
 import { z } from "zod";
 import { IconSearch } from "@tabler/icons-react";
 import { BookFormat, BookStore } from "../../generated/graphql-request";
@@ -72,25 +72,19 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
   const { data, isLoading, error } = useAuthors();
   const { state: isbnLookupState, lookup: lookupIsbn } = useIsbnLookup();
 
-  useEffect(() => {
-    if (isbnLookupState.status !== "success") return;
-    form.setFieldValue("title", isbnLookupState.result.title);
-    if (data != null) {
-      const matched = isbnLookupState.result.authorNames
-        .map((name) =>
-          data.authors.find((a) => a.name.toLowerCase() === name.toLowerCase()),
-        )
-        .filter((a): a is Author => a !== undefined);
-      if (matched.length > 0) {
-        form.setFieldValue("authors", matched);
-      }
+  const handleIsbnLookup = async () => {
+    const result = await lookupIsbn(normalizeIsbn(form.values.isbn));
+    if (result == null || data == null) return;
+    form.setFieldValue("title", result.title);
+    const matched = result.authorNames
+      .map((name) =>
+        data.authors.find((a) => a.name.toLowerCase() === name.toLowerCase()),
+      )
+      .filter((a): a is Author => a !== undefined);
+    if (matched.length > 0) {
+      form.setFieldValue("authors", matched);
     }
-    // form.setFieldValue is a stable callback (Mantine useForm guarantees this).
-    // data is omitted intentionally: it is stable once loaded (React Query
-    // caches it), and including it would re-apply a stale lookup result
-    // whenever the authors list refreshes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isbnLookupState]);
+  };
 
   const submitForm = form.onSubmit(props.onSubmit);
 
@@ -112,7 +106,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
         />
         <ActionIcon
           onClick={() => {
-            void lookupIsbn(normalizeIsbn(form.values.isbn));
+            void handleIsbnLookup();
           }}
           loading={isbnLookupState.status === "loading"}
           disabled={!isValidIsbn13(form.values.isbn)}
