@@ -153,6 +153,9 @@ describe("useIsbnLookup", () => {
     await waitFor(() => {
       expect(result.current.state.status).toBe("error");
     });
+    if (result.current.state.status === "error") {
+      expect(result.current.state.message).toBe("取得に失敗しました");
+    }
   });
 
   test("transitions to loading immediately when lookup starts", () => {

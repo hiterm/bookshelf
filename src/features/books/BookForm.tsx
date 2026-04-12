@@ -58,6 +58,10 @@ type BookFormReturn = {
   submitForm: React.EventHandler<React.SyntheticEvent<HTMLFormElement>>;
 };
 
+const normalizeIsbn = (isbn: string): string => isbn.replace(/-/g, "");
+const isValidIsbn13 = (isbn: string): boolean =>
+  /^\d{13}$/.test(normalizeIsbn(isbn));
+
 export const useBookForm = (props: BookFormProps): BookFormReturn => {
   const form = useForm({
     initialValues: props.initialValues,
@@ -108,10 +112,10 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
         />
         <ActionIcon
           onClick={() => {
-            void lookupIsbn(form.values.isbn);
+            void lookupIsbn(normalizeIsbn(form.values.isbn));
           }}
           loading={isbnLookupState.status === "loading"}
-          disabled={!form.values.isbn}
+          disabled={!isValidIsbn13(form.values.isbn)}
           size="lg"
           variant="default"
           aria-label="自動入力"
@@ -120,7 +124,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
         </ActionIcon>
       </Group>
       {isbnLookupState.status === "error" && (
-        <Text size="xs" c="red" mt={4}>
+        <Text size="xs" c="red" mt={4} role="alert">
           {isbnLookupState.message}
         </Text>
       )}
