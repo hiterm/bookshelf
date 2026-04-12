@@ -1,5 +1,14 @@
-import { expect } from "@playwright/test";
+import { type Page, expect } from "@playwright/test";
 import { test } from "./fixtures";
+
+const selectFilterOption = async (
+  page: Page,
+  testId: string,
+  optionName: string,
+) => {
+  await page.getByTestId(testId).getByRole("textbox").click();
+  await page.getByRole("option", { name: optionName }).click();
+};
 
 test.describe("Books READ", () => {
   test.beforeEach(async ({ page }) => {
@@ -216,9 +225,7 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
   });
 
   test("read filter: true shows only read books", async ({ page }) => {
-    const readFilter = page.getByTestId("filter-read");
-    await readFilter.getByRole("textbox").click();
-    await page.getByRole("option", { name: "true" }).click();
+    await selectFilterOption(page, "filter-read", "true");
 
     await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
     await expect(page.getByRole("link", { name: "テスト書籍4" })).toBeVisible();
@@ -231,9 +238,7 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
   });
 
   test("owned filter: true shows only owned books", async ({ page }) => {
-    const ownedFilter = page.getByTestId("filter-owned");
-    await ownedFilter.getByRole("textbox").click();
-    await page.getByRole("option", { name: "true" }).click();
+    await selectFilterOption(page, "filter-owned", "true");
 
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
     await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
@@ -246,9 +251,7 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
   });
 
   test("format filter: Printed shows only printed books", async ({ page }) => {
-    const formatFilter = page.getByTestId("filter-format");
-    await formatFilter.getByRole("textbox").click();
-    await page.getByRole("option", { name: "Printed" }).click();
+    await selectFilterOption(page, "filter-format", "Printed");
 
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
     await expect(
@@ -285,9 +288,7 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
   test("reset filter: clears all filters and shows all books", async ({
     page,
   }) => {
-    const readFilter = page.getByTestId("filter-read");
-    await readFilter.getByRole("textbox").click();
-    await page.getByRole("option", { name: "true" }).click();
+    await selectFilterOption(page, "filter-read", "true");
     await expect(
       page.getByRole("link", { name: "テスト書籍1" }),
     ).not.toBeVisible();
@@ -303,9 +304,7 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
   });
 
   test("filter persists on page reload", async ({ page }) => {
-    const readFilter = page.getByTestId("filter-read");
-    await readFilter.getByRole("textbox").click();
-    await page.getByRole("option", { name: "true" }).click();
+    await selectFilterOption(page, "filter-read", "true");
     await expect(
       page.getByRole("link", { name: "テスト書籍1" }),
     ).not.toBeVisible();
@@ -349,9 +348,7 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
   });
 
   test("reset clears filter URL params", async ({ page }) => {
-    const readFilter = page.getByTestId("filter-read");
-    await readFilter.getByRole("textbox").click();
-    await page.getByRole("option", { name: "true" }).click();
+    await selectFilterOption(page, "filter-read", "true");
     await expect(
       page.getByRole("link", { name: "テスト書籍1" }),
     ).not.toBeVisible();
@@ -363,10 +360,8 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
       .getByRole("button", { name: "Reset filter", exact: true })
       .click();
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
-
-    const url = new URL(page.url());
-    expect(url.searchParams.has("columnFilters")).toBe(false);
-    expect(url.searchParams.has("sorting")).toBe(false);
+    await expect(page).not.toHaveURL(/columnFilters/);
+    await expect(page).not.toHaveURL(/sorting/);
   });
 });
 
