@@ -110,7 +110,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
           disabled={!form.values.isbn}
           size="lg"
           variant="default"
-          aria-label="ISBNから自動入力"
+          aria-label="自動入力"
         >
           <IconSearch size={16} />
         </ActionIcon>
