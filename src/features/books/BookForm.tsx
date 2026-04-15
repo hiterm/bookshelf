@@ -76,11 +76,18 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
     const result = await lookupIsbn(normalizeIsbn(form.values.isbn));
     if (result == null || data == null) return;
     form.setFieldValue("title", result.title);
-    const matched = result.authorNames
-      .map((name) =>
-        data.authors.find((a) => a.name.toLowerCase() === name.toLowerCase()),
-      )
-      .filter((a): a is Author => a !== undefined);
+    const matched = Array.from(
+      new Map(
+        result.authorNames
+          .map((name) =>
+            data.authors.find(
+              (a) => a.name.toLowerCase() === name.toLowerCase(),
+            ),
+          )
+          .filter((a): a is Author => a !== undefined)
+          .map((a) => [a.id, a]),
+      ).values(),
+    );
     if (matched.length > 0) {
       form.setFieldValue("authors", matched);
     }
