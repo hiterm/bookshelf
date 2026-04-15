@@ -21,6 +21,7 @@ import { Author } from "./entity/Author";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
 import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
 import { useIsbnLookup } from "./useIsbnLookup";
+import { normalizeIsbn, isValidIsbn13 } from "./isbnUtils";
 
 export type BookFormValues = {
   title: string;
@@ -58,10 +59,6 @@ type BookFormReturn = {
   submitForm: React.EventHandler<React.SyntheticEvent<HTMLFormElement>>;
 };
 
-const normalizeIsbn = (isbn: string): string => isbn.replace(/-/g, "");
-const isValidIsbn13 = (isbn: string): boolean =>
-  /^\d{13}$/.test(normalizeIsbn(isbn));
-
 export const useBookForm = (props: BookFormProps): BookFormReturn => {
   const form = useForm({
     initialValues: props.initialValues,
@@ -81,7 +78,8 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
         result.authorNames
           .map((name) =>
             data.authors.find(
-              (a) => a.name.toLowerCase() === name.toLowerCase(),
+              (a) =>
+                a.name.trim().toLowerCase() === name.trim().toLowerCase(),
             ),
           )
           .filter((a): a is Author => a !== undefined)

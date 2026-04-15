@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { normalizeIsbn } from "./isbnUtils";
 
 type IsbnLookupResult = {
   title: string;
@@ -43,8 +44,8 @@ const tryNdl = async (isbn: string): Promise<IsbnLookupResult | null> => {
     "creator",
   );
   const authorNames = Array.from(creatorElements)
-    .map((el) => el.textContent)
-    .filter(Boolean);
+    .map((el) => el.textContent?.trim())
+    .filter((name): name is string => Boolean(name));
   return { title, authorNames };
 };
 
@@ -71,7 +72,7 @@ export const useIsbnLookup = (): UseIsbnLookupReturn => {
   const latestRequestIdRef = useRef(0);
 
   const lookup = async (isbn: string): Promise<IsbnLookupResult | null> => {
-    const normalized = isbn.replace(/-/g, "");
+    const normalized = normalizeIsbn(isbn);
     latestRequestIdRef.current += 1;
     const requestId = latestRequestIdRef.current;
     setState({ status: "loading" });
