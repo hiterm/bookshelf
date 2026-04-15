@@ -44,8 +44,8 @@ const tryNdl = async (isbn: string): Promise<IsbnLookupResult | null> => {
     "creator",
   );
   const authorNames = Array.from(creatorElements)
-    .map((el) => el.textContent?.trim())
-    .filter((name): name is string => Boolean(name));
+    .map((el) => el.textContent.trim())
+    .filter(Boolean);
   return { title, authorNames };
 };
 
