@@ -83,3 +83,13 @@ Run demo E2E tests:
 ```bash
 npm run test:e2e:demo
 ```
+
+## NDL Proxy
+
+The book registration form's ISBN auto-fill fetches metadata from the National Diet Library (NDL) OpenSearch API. NDL does not send CORS headers, so browsers block direct cross-origin requests to `https://ndlsearch.ndl.go.jp`.
+
+To work around this, the hook calls the relative path `/ndl-proxy/api/opensearch?isbn=...`, which each environment forwards to `https://ndlsearch.ndl.go.jp/api/opensearch?isbn=...`:
+
+- **Development** (`npm start`): Vite dev server proxy configured in `vite.config.ts` under `server.proxy`.
+- **E2E tests** (`npm run test:e2e`): Vite preview server proxy configured in `vite.config.ts` under `preview.proxy`.
+- **Production** (Vercel): Rewrite rule in `vercel.json` forwards `/ndl-proxy/:path*` to `https://ndlsearch.ndl.go.jp/:path*`.

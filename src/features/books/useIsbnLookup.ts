@@ -26,9 +26,7 @@ type UseIsbnLookupReturn = {
 };
 
 const tryNdl = async (isbn: string): Promise<IsbnLookupResult | null> => {
-  const response = await fetch(
-    `https://ndlsearch.ndl.go.jp/api/opensearch?isbn=${isbn}`,
-  );
+  const response = await fetch(`/ndl-proxy/api/opensearch?isbn=${isbn}`);
   if (!response.ok) {
     throw new Error(`NDL API error: ${String(response.status)}`);
   }

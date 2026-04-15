@@ -65,7 +65,7 @@ describe("useIsbnLookup", () => {
     });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      "https://ndlsearch.ndl.go.jp/api/opensearch?isbn=9784065362433",
+      "/ndl-proxy/api/opensearch?isbn=9784065362433",
     );
   });
 
