@@ -78,8 +78,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
         result.authorNames
           .map((name) =>
             data.authors.find(
-              (a) =>
-                a.name.trim().toLowerCase() === name.trim().toLowerCase(),
+              (a) => a.name.trim().toLowerCase() === name.trim().toLowerCase(),
             ),
           )
           .filter((a): a is Author => a !== undefined)
