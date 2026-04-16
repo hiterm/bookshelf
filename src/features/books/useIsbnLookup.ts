@@ -72,13 +72,13 @@ export const useIsbnLookup = (): UseIsbnLookupReturn => {
   const latestRequestIdRef = useRef(0);
 
   const lookup = async (isbn: string): Promise<IsbnLookupResult | null> => {
+    latestRequestIdRef.current += 1;
+    const requestId = latestRequestIdRef.current;
     if (!isValidIsbn13(isbn)) {
       setState({ status: "error", message: "ISBNが不正です" });
       return null;
     }
     const normalized = normalizeIsbn(isbn);
-    latestRequestIdRef.current += 1;
-    const requestId = latestRequestIdRef.current;
     setState({ status: "loading" });
     try {
       const result =
