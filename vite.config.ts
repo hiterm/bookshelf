@@ -31,10 +31,24 @@ function excludeMockServiceWorker(): Plugin {
   };
 }
 
+const NDL_PROXY_CONFIG = {
+  "/ndl-proxy": {
+    target: "https://ndlsearch.ndl.go.jp",
+    changeOrigin: true,
+    rewrite: (path: string) => path.replace(/^\/ndl-proxy/, ""),
+  },
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
-  server: { port: 3000 },
-  preview: { port: 4173 },
+  server: {
+    port: 3000,
+    proxy: NDL_PROXY_CONFIG,
+  },
+  preview: {
+    port: 4173,
+    proxy: NDL_PROXY_CONFIG,
+  },
   plugins: [
     // Please make sure that '@tanstack/router-plugin' is passed before '@vitejs/plugin-react'
     tanstackRouter({

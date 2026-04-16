@@ -1,3 +1,9 @@
 {
-  "rewrites": [{ "source": "/:path*", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/ndl-proxy/:path*",
+      "destination": "https://ndlsearch.ndl.go.jp/:path*"
+    },
+    { "source": "/:path*", "destination": "/index.html" }
+  ]
 }

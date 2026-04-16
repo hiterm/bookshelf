@@ -70,6 +70,7 @@ export const BookAddButton: React.FC = () => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     onSubmit: submitBook,
     initialValues: emptyBook,
+    enableIsbnLookup: true,
   });
 
   return (
