@@ -10,18 +10,19 @@ After this change, the creation and update forms will be separate React componen
 
 ## Progress
 
-- [ ] Create `src/features/books/BookFormFields.tsx` — shared fields component
-- [ ] Create `src/features/books/BookCreateForm.tsx` — creation-specific form component
-- [ ] Create `src/features/books/BookUpdateForm.tsx` — update-specific form component
-- [ ] Update `src/features/books/BookAddButton.tsx` to use `BookCreateForm`
-- [ ] Update `src/features/books/BookDetailEdit.tsx` to use `BookUpdateForm`
-- [ ] Update `src/features/books/BookForm.test.tsx` to test the new components
-- [ ] Delete `src/features/books/BookForm.tsx` (the old shared hook file)
-- [ ] Run pre-commit checklist and verify all checks pass
+- [x] Create `src/features/books/BookFormFields.tsx` — shared fields component
+- [x] Create `src/features/books/BookCreateForm.tsx` — creation-specific form component
+- [x] Create `src/features/books/BookUpdateForm.tsx` — update-specific form component
+- [x] Update `src/features/books/BookAddButton.tsx` to use `BookCreateForm`
+- [x] Update `src/features/books/BookDetailEdit.tsx` to use `BookUpdateForm`
+- [x] Update `src/features/books/BookForm.test.tsx` to test the new components
+- [x] Delete `src/features/books/BookForm.tsx` (the old shared hook file)
+- [x] Run pre-commit checklist and verify all checks pass
 
 ## Surprises & Discoveries
 
-(none yet)
+- `BookDetailEdit` passed `book` (type `Book`) directly to `useBookForm`'s `initialValues` without an explicit cast. After the split, `useForm` infers its generic from `initialValues`, so an explicit type annotation `useForm<BookFormValues>` is needed to avoid a mismatch between `UseFormReturnType<Book>` and `UseFormReturnType<BookFormValues>`.
+- `BookCreateForm` needs `useAuthors` in addition to `useIsbnLookup` because `handleIsbnLookup` must match author names against the full author list. Both `BookCreateForm` and `BookFormFields` call `useAuthors`; React Query deduplicates the network request.
 
 ## Decision Log
 
@@ -43,7 +44,7 @@ After this change, the creation and update forms will be separate React componen
 
 ## Outcomes & Retrospective
 
-(not yet written)
+All acceptance criteria met. `npm run test`, `npm run typecheck`, and `npm run lint` all pass. The old `useBookForm` hook pattern (returning JSX from a hook) is replaced with plain React components. `BookAddButton` and `BookDetailEdit` each own their `useForm` instance, which makes the data flow explicit and the components independently composable.
 
 ## Context and Orientation
 

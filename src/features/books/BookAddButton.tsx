@@ -1,9 +1,12 @@
 import { Button, Modal } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
+import { zodResolver } from "mantine-form-zod-resolver";
 import React, { useState } from "react";
 import { LinkButton } from "../../compoments/mantineTsr";
 import { useCreateBook } from "../../compoments/hooks/useCreateBook";
-import { BookFormValues, useBookForm } from "./BookForm";
+import { BookCreateForm } from "./BookCreateForm";
+import { bookFormSchema, BookFormValues } from "./BookFormFields";
 
 export const BookAddButton: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -66,11 +69,10 @@ export const BookAddButton: React.FC = () => {
     store: "UNKNOWN",
   };
 
-  const { form, submitForm } = useBookForm({
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    onSubmit: submitBook,
+  const form = useForm({
     initialValues: emptyBook,
-    enableIsbnLookup: true,
+    validate: zodResolver(bookFormSchema),
+    validateInputOnBlur: true,
   });
 
   return (
@@ -78,8 +80,10 @@ export const BookAddButton: React.FC = () => {
       <Button onClick={handleDialogOpenClick}>追加</Button>
 
       <Modal title="追加" opened={open} onClose={handleDialogCloseClick}>
-        <form onSubmit={submitForm}>
-          {form}
+        <form
+          onSubmit={form.onSubmit((values, _event) => void submitBook(values))}
+        >
+          <BookCreateForm form={form} />
           <Button
             type="submit"
             mt="md"
