@@ -21,7 +21,6 @@ import { Author } from "./entity/Author";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
 import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
 import { useIsbnLookup } from "./useIsbnLookup";
-import { normalizeIsbn, isValidIsbn13 } from "./isbnUtils";
 
 export type BookFormValues = {
   title: string;
@@ -70,7 +69,7 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
   const { state: isbnLookupState, lookup: lookupIsbn } = useIsbnLookup();
 
   const handleIsbnLookup = async () => {
-    const result = await lookupIsbn(normalizeIsbn(form.values.isbn));
+    const result = await lookupIsbn(form.values.isbn);
     if (result == null || data == null) return;
     form.setFieldValue("title", result.title);
     const matched = Array.from(
@@ -113,7 +112,6 @@ export const useBookForm = (props: BookFormProps): BookFormReturn => {
             void handleIsbnLookup();
           }}
           loading={isbnLookupState.status === "loading"}
-          disabled={!isValidIsbn13(form.values.isbn)}
           size="lg"
           variant="default"
           aria-label="自動入力"

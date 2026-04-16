@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { normalizeIsbn } from "./isbnUtils";
+import { normalizeIsbn, isValidIsbn13 } from "./isbnUtils";
 
 type IsbnLookupResult = {
   title: string;
@@ -72,6 +72,10 @@ export const useIsbnLookup = (): UseIsbnLookupReturn => {
   const latestRequestIdRef = useRef(0);
 
   const lookup = async (isbn: string): Promise<IsbnLookupResult | null> => {
+    if (!isValidIsbn13(isbn)) {
+      setState({ status: "error", message: "ISBNが不正です" });
+      return null;
+    }
     const normalized = normalizeIsbn(isbn);
     latestRequestIdRef.current += 1;
     const requestId = latestRequestIdRef.current;
