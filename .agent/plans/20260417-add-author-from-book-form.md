@@ -17,7 +17,9 @@ To see it working: open a book's edit page (`/books/:id/edit`) or the book-add m
 ## Progress
 
 - [x] (2026-04-17) Create feature branch `feature/add-author-from-book-form`
-- [ ] Replace `MultiSelect` author field in `BookForm.tsx` with a Combobox-based creatable component
+- [x] (2026-04-17) Rebase onto main (BookForm split refactor merged)
+- [ ] Replace `MultiSelect` author field in `BookUpdateForm.tsx` with a Combobox-based creatable component
+- [ ] Replace `MultiSelect` author field in `BookCreateForm.tsx` with a Combobox-based creatable component
 - [ ] Create `src/features/books/resolvePendingAuthors.ts`
 - [ ] Update `BookDetailEdit.tsx` to resolve pending authors before calling `updateBook`
 - [ ] Update `BookAddButton.tsx` to resolve pending authors before calling `createBook`
@@ -28,7 +30,7 @@ To see it working: open a book's edit page (`/books/:id/edit`) or the book-add m
 
 ## Surprises & Discoveries
 
-(none yet)
+- (2026-04-17) After rebasing, `BookForm.tsx` (the old custom hook `useBookForm`) no longer exists. It was split into two pure UI components: `BookCreateForm.tsx` and `BookUpdateForm.tsx`. Both receive a `form: UseFormReturnType<BookFormValues>` prop. The Combobox replacement must be applied to both files independently.
 
 
 ## Decision Log
@@ -45,6 +47,14 @@ To see it working: open a book's edit page (`/books/:id/edit`) or the book-add m
   Rationale: This piggybacks on the existing `Author` type without schema changes. The `__pending__:` prefix is unique enough to distinguish from real UUIDs. The prefix is stripped and replaced with the real ID in `resolvePendingAuthors` at submit time.
   Date/Author: 2026-04-17
 
+- Decision: Apply the Combobox replacement to both `BookCreateForm.tsx` and `BookUpdateForm.tsx` independently (not a shared component).
+  Rationale: The two forms already differ (BookCreateForm has ISBN lookup, BookUpdateForm does not). Extracting a shared creatable-author component adds indirection; keeping them separate is consistent with the split refactor on main.
+  Date/Author: 2026-04-17
+
+- Decision: Use type narrowing (`typeof form.errors.authors === 'string' ? form.errors.authors : undefined`) instead of `as string | undefined`.
+  Rationale: CLAUDE.md now prohibits `as` type assertions (added in the refactor-form PR merged to main).
+  Date/Author: 2026-04-17
+
 
 ## Outcomes & Retrospective
 
@@ -57,11 +67,13 @@ This is a React + TypeScript frontend project. The UI library is Mantine 8 (`@ma
 
 Key files:
 
-- `src/features/books/BookForm.tsx` — A custom hook `useBookForm` that renders the entire book form as a `ReactElement` and returns it together with a `submitForm` handler. The author field is currently a Mantine `MultiSelect`. This is the file where the creatable author field will be implemented.
+- `src/features/books/BookUpdateForm.tsx` — Pure UI component for the book edit form. Receives `form: UseFormReturnType<BookFormValues>`. The author field is currently a Mantine `MultiSelect`. Used by `BookDetailEdit.tsx`.
 
-- `src/features/books/BookDetailEdit.tsx` — The book edit page component. Uses `useBookForm` and calls `useUpdateBook` on submit. This must be updated to resolve pending authors before calling `updateBook`.
+- `src/features/books/BookCreateForm.tsx` — Pure UI component for the book creation form. Receives `form: UseFormReturnType<BookFormValues>`. Also contains ISBN lookup logic. The author field is currently a Mantine `MultiSelect`. Used by `BookAddButton.tsx`.
 
-- `src/features/books/BookAddButton.tsx` — The book creation modal component. Uses `useBookForm` and calls `useCreateBook` on submit. This must also be updated to resolve pending authors.
+- `src/features/books/BookDetailEdit.tsx` — The book edit page component. Manages `useForm` state and calls `useUpdateBook` on submit. Must be updated to resolve pending authors before calling `updateBook`.
+
+- `src/features/books/BookAddButton.tsx` — The book creation modal component. Manages `useForm` state and calls `useCreateBook` on submit. Must also be updated to resolve pending authors.
 
 - `src/compoments/hooks/useCreateAuthor.ts` — A React Query mutation hook that calls the `createAuthor` GraphQL mutation and invalidates the `["authors"]` query cache. Returns `{ mutateAsync, isPending, ... }`. The `mutateAsync` function takes `{ name: string }` and returns `{ createAuthor: { id: string } }`.
 
@@ -69,7 +81,7 @@ Key files:
 
 - `src/features/books/entity/Author.ts` — The `Author` type: `{ id: string; name: string }`.
 
-- `src/features/books/BookForm.test.tsx` — Vitest unit tests for `useBookForm`. Currently mocks `useAuthors`. Will need to also mock `useCreateAuthor` once it is imported by `BookForm.tsx`.
+- `src/features/books/BookForm.test.tsx` — Vitest unit tests for `BookUpdateForm`. Currently mocks `useAuthors`. Will need to also mock `useCreateAuthor` once the Combobox component imports it (it does not; see Step 1 note).
 
 The Mantine Combobox API (relevant to this plan):
 
@@ -100,25 +112,21 @@ The Mantine Combobox API (relevant to this plan):
 
 ## Plan of Work
 
-### Step 1 — Replace the author field in `BookForm.tsx`
+The Combobox replacement logic is identical in both `BookUpdateForm.tsx` and `BookCreateForm.tsx`. Steps 1 and 2 below describe the change; apply it to each file.
 
-File: `src/features/books/BookForm.tsx`
+### Step 1 — Replace the author field in `BookUpdateForm.tsx`
 
-Add the following imports (merge with existing import from `@mantine/core`):
+File: `src/features/books/BookUpdateForm.tsx`
+
+Add the following to the imports from `@mantine/core` (merge with the existing import):
 
     CheckIcon, Combobox, Group, Pill, PillsInput, useCombobox
 
-Add to the React import: `useState`.
+Add `useState` to the React import (currently `import React from 'react'` — change to `import React, { useState } from 'react'`).
 
-Add a new import at the top:
+Remove `MultiSelect` from the `@mantine/core` import (it is no longer used).
 
-    import { useCreateAuthor } from '../../compoments/hooks/useCreateAuthor';
-
-Note: `useCreateAuthor` is imported here only so that `BookForm.test.tsx` can mock it without changing anything else. `BookForm.tsx` does NOT call it; the pending author resolution happens in `BookDetailEdit` and `BookAddButton`.
-
-Wait — actually `BookForm.tsx` does NOT need to import `useCreateAuthor` at all. Pending authors are represented as `{ id: '__pending__:<name>', name }` in the form state, and the actual creation is done by the callers. `BookForm.tsx` only needs `useState` and the Combobox imports.
-
-Inside `useBookForm`, after the existing `useAuthors` call, add:
+Inside `BookUpdateForm`, after the `useAuthors` call, add:
 
     const [authorSearch, setAuthorSearch] = useState('');
 
@@ -162,14 +170,18 @@ Inside `useBookForm`, after the existing `useAuthors` call, add:
       );
     };
 
-Replace the `<MultiSelect ... />` JSX block (currently lines 135–153) with:
+Replace the `<MultiSelect ... />` JSX block with:
 
     <Combobox store={combobox} onOptionSubmit={handleAuthorSelect}>
       <Combobox.DropdownTarget>
         <PillsInput
           label="著者"
           onClick={() => combobox.openDropdown()}
-          error={form.errors.authors as string | undefined}
+          error={
+            typeof form.errors.authors === 'string'
+              ? form.errors.authors
+              : undefined
+          }
         >
           <Pill.Group>
             {form.values.authors.map((author) => (
@@ -239,9 +251,22 @@ Replace the `<MultiSelect ... />` JSX block (currently lines 135–153) with:
       </Combobox.Dropdown>
     </Combobox>
 
-Remove `MultiSelect` from the `@mantine/core` import line (it is no longer used). Keep all other existing imports.
+Note: `form.errors.authors` uses `typeof` narrowing (not `as`) to satisfy CLAUDE.md's prohibition on `as` type assertions.
 
-The `bookFormSchema` Zod schema already validates `authors` as `z.array(z.object({ id: z.string(), name: z.string() })).nonempty()`. The `__pending__:` prefix is a plain string so validation passes unchanged.
+The `bookFormSchema` Zod schema validates `authors` as `z.array(z.object({ id: z.string(), name: z.string() })).min(1)`. The `__pending__:` prefix is a plain string so validation passes unchanged.
+
+
+### Step 2 — Replace the author field in `BookCreateForm.tsx`
+
+File: `src/features/books/BookCreateForm.tsx`
+
+Apply the exact same Combobox replacement as Step 1. The only difference is that `BookCreateForm` also contains ISBN lookup logic — leave that unchanged. The `useState` for `authorSearch` is in addition to any existing state (there is none in this component currently).
+
+Merge the new Mantine imports (`CheckIcon, Combobox, Group, Pill, PillsInput, useCombobox`) with the existing import from `@mantine/core`. Note that `Group` is already imported in `BookCreateForm.tsx` — do not duplicate it. Remove `MultiSelect` from the import.
+
+Add `useState` to the React import (currently `import React from 'react'`).
+
+The handler functions and JSX are identical to Step 1.
 
 
 ### Step 3 — Create `resolvePendingAuthors.ts`
@@ -279,7 +304,7 @@ Add imports:
     import { useCreateAuthor } from '../../compoments/hooks/useCreateAuthor';
     import { resolvePendingAuthors } from './resolvePendingAuthors';
 
-Inside the `BookDetailEdit` component, after the existing hook calls, add:
+Inside `BookDetailEdit`, after the `updateBookMutation` hook call, add:
 
     const createAuthorMutation = useCreateAuthor();
 
@@ -369,9 +394,9 @@ Replace the `submitBook` function body with:
 
 ### Step 6 — Update `BookForm.test.tsx`
 
-The test file mocks `useAuthors` but not `useCreateAuthor`. Since `BookForm.tsx` no longer imports `useCreateAuthor`, no additional mock is needed for that hook in `BookForm.test.tsx`.
+The test file (`src/features/books/BookForm.test.tsx`) currently tests `BookUpdateForm` and mocks `useAuthors`. Since `BookUpdateForm.tsx` does not import `useCreateAuthor` (pending author resolution happens in `BookDetailEdit.tsx`), no additional mock is needed.
 
-However, the existing test "renders all form fields" checks for `著者` by role. After the change, the author field is no longer a `MultiSelect` but a `PillsInput`. Verify the test still finds the label "著者" — Mantine's `PillsInput` renders a `<label>著者</label>` which should be discoverable via `findByLabelText` or similar. If any test breaks, fix it to query the field in a way consistent with the new Combobox-based component.
+After Step 1, the author field in `BookUpdateForm` changes from `MultiSelect` to a `PillsInput`-based Combobox. The existing tests do not query the author field directly (they query by "書名", "ISBN", checkboxes, and the submit button). Verify all existing tests still pass. If any test breaks due to the `MultiSelect` → `PillsInput` change, update the query to use `findByRole` or `findByLabelText` consistent with the new component.
 
 The test for `combobox` (portals) in Mantine may require `userEvent` interactions; refer to `CLAUDE.md` for Mantine testing docs links if needed.
 
@@ -386,7 +411,8 @@ From the repository root, run:
 
 Fix any errors. Then commit:
 
-    git add src/features/books/BookForm.tsx \
+    git add src/features/books/BookUpdateForm.tsx \
+            src/features/books/BookCreateForm.tsx \
             src/features/books/resolvePendingAuthors.ts \
             src/features/books/BookDetailEdit.tsx \
             src/features/books/BookAddButton.tsx \
@@ -398,7 +424,7 @@ Fix any errors. Then commit:
 
 All commands run from `/home/hiterm/ghq/github.com/hiterm/bookshelf`.
 
-    git switch -c feature/add-author-from-book-form
+Branch already exists: `feature/add-author-from-book-form` (rebased onto main).
 
 Edit files as described in Plan of Work above.
 
@@ -503,9 +529,11 @@ In `src/compoments/hooks/useCreateAuthor.ts` (unchanged), the existing hook retu
       // ...other React Query mutation fields
     }
 
-New Mantine imports used in `BookForm.tsx`:
+New Mantine imports used in both form components:
 
     CheckIcon, Combobox, Group, Pill, PillsInput, useCombobox  — from '@mantine/core'
     useState  — from 'react'
 
-`MultiSelect` is removed from `BookForm.tsx` imports after this change.
+Note: `Group` is already imported in `BookCreateForm.tsx`; do not duplicate it.
+
+`MultiSelect` is removed from both form component imports after this change.
