@@ -72,12 +72,20 @@ export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
     return <Loader />;
   }
 
-  const exactAuthorMatch = data.authors.some((a) => a.name === authorSearch);
+  const normalizedSearch = authorSearch.trim().toLowerCase();
+  const exactAuthorMatch =
+    normalizedSearch.length > 0 &&
+    (data.authors.some((a) => a.name.toLowerCase() === normalizedSearch) ||
+      form.values.authors.some(
+        (a) =>
+          a.id.startsWith("__pending__:") &&
+          a.name.toLowerCase() === normalizedSearch,
+      ));
 
   const handleAuthorSelect = (val: string) => {
     setAuthorSearch("");
     if (val === "$create") {
-      const name = authorSearch;
+      const name = authorSearch.trim();
       form.setFieldValue("authors", [
         ...form.values.authors,
         { id: `__pending__:${name}`, name },

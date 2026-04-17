@@ -21,13 +21,25 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   const createAuthorMutation = useCreateAuthor();
 
   const handleSubmit = async (values: BookFormValues) => {
-    const resolvedAuthors = await resolvePendingAuthors(
-      values.authors,
-      async (name) => {
-        const result = await createAuthorMutation.mutateAsync({ name });
-        return result.createAuthor.id;
-      },
-    );
+    let resolvedAuthors: Awaited<ReturnType<typeof resolvePendingAuthors>>;
+    try {
+      resolvedAuthors = await resolvePendingAuthors(
+        values.authors,
+        async (name) => {
+          const result = await createAuthorMutation.mutateAsync({ name });
+          return result.createAuthor.id;
+        },
+      );
+    } catch (error) {
+      showNotification({
+        message: `Failed to create author: ${String(error)}`,
+        color: "red",
+      });
+      return;
+    }
+
+    form.setFieldValue("authors", resolvedAuthors);
+
     const bookData = {
       id: book.id,
       title: values.title,
@@ -39,9 +51,17 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
       store: values.store,
       authorIds: resolvedAuthors.map((a) => a.id),
     };
-    await updateBookMutation.mutateAsync(bookData);
-    await navigate({ to: `/books/$id`, params: { id: book.id } });
-    showNotification({ message: "更新しました", color: "teal" });
+
+    try {
+      await updateBookMutation.mutateAsync(bookData);
+      await navigate({ to: `/books/$id`, params: { id: book.id } });
+      showNotification({ message: "更新しました", color: "teal" });
+    } catch (error) {
+      showNotification({
+        message: `Failed to update book: ${String(error)}`,
+        color: "red",
+      });
+    }
   };
 
   const form = useForm<BookFormValues>({

@@ -26,13 +26,26 @@ export const BookAddButton: React.FC = () => {
 
   const submitBook = async (value: BookFormValues) => {
     if (createBookMutation.isPending) return;
-    const resolvedAuthors = await resolvePendingAuthors(
-      value.authors,
-      async (name) => {
-        const result = await createAuthorMutation.mutateAsync({ name });
-        return result.createAuthor.id;
-      },
-    );
+
+    let resolvedAuthors: Awaited<ReturnType<typeof resolvePendingAuthors>>;
+    try {
+      resolvedAuthors = await resolvePendingAuthors(
+        value.authors,
+        async (name) => {
+          const result = await createAuthorMutation.mutateAsync({ name });
+          return result.createAuthor.id;
+        },
+      );
+    } catch (error) {
+      showNotification({
+        message: `Failed to create author: ${String(error)}`,
+        color: "red",
+      });
+      return;
+    }
+
+    form.setFieldValue("authors", resolvedAuthors);
+
     const { authors: _authors, ...rest } = value;
     const bookData = {
       ...rest,
