@@ -18,14 +18,14 @@ To see it working: open a book's edit page (`/books/:id/edit`) or the book-add m
 
 - [x] (2026-04-17) Create feature branch `feature/add-author-from-book-form`
 - [x] (2026-04-17) Rebase onto main (BookForm split refactor merged)
-- [ ] Replace `MultiSelect` author field in `BookUpdateForm.tsx` with a Combobox-based creatable component
-- [ ] Replace `MultiSelect` author field in `BookCreateForm.tsx` with a Combobox-based creatable component
-- [ ] Create `src/features/books/resolvePendingAuthors.ts`
-- [ ] Update `BookDetailEdit.tsx` to resolve pending authors before calling `updateBook`
-- [ ] Update `BookAddButton.tsx` to resolve pending authors before calling `createBook`
-- [ ] Update `BookForm.test.tsx` (mock `useCreateAuthor` if needed; verify existing tests pass)
-- [ ] Run `npm run test && npm run typecheck && npm run lint` and fix any issues
-- [ ] Commit
+- [x] (2026-04-17) Replace `MultiSelect` author field in `BookUpdateForm.tsx` with a Combobox-based creatable component
+- [x] (2026-04-17) Replace `MultiSelect` author field in `BookCreateForm.tsx` with a Combobox-based creatable component
+- [x] (2026-04-17) Create `src/features/books/resolvePendingAuthors.ts`
+- [x] (2026-04-17) Update `BookDetailEdit.tsx` to resolve pending authors before calling `updateBook`
+- [x] (2026-04-17) Update `BookAddButton.tsx` to resolve pending authors before calling `createBook`
+- [x] (2026-04-17) Update `BookForm.test.tsx` (mock `useCreateAuthor` if needed; verify existing tests pass)
+- [x] (2026-04-17) Run `npm run test && npm run typecheck && npm run lint` and fix any issues
+- [x] (2026-04-17) Commit
 
 
 ## Surprises & Discoveries
@@ -58,7 +58,7 @@ To see it working: open a book's edit page (`/books/:id/edit`) or the book-add m
 
 ## Outcomes & Retrospective
 
-(not yet completed)
+Completed 2026-04-17. All 5 files modified as planned; `resolvePendingAuthors.ts` created. No test changes were needed — existing tests passed without mocking `useCreateAuthor` (pending author resolution is in `BookDetailEdit`/`BookAddButton`, not the form components). Two rounds of linter fixes were needed: ESLint required braces on void-returning arrow functions, and Biome then reformatted those to multi-line style.
 
 
 ## Context and Orientation
