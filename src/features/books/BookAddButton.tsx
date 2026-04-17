@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { LinkButton } from "../../compoments/mantineTsr";
 import { useCreateBook } from "../../compoments/hooks/useCreateBook";
 import { BookCreateForm } from "./BookCreateForm";
-import { bookFormSchema, BookFormValues } from "./BookFormFields";
+import { bookFormSchema, BookFormValues } from "./bookFormSchema";
 
 export const BookAddButton: React.FC = () => {
   const [open, setOpen] = useState(false);

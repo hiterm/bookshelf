@@ -7,11 +7,8 @@ import userEvent from "@testing-library/user-event";
 import { zodResolver } from "mantine-form-zod-resolver";
 import React from "react";
 import { vi } from "vitest";
-import {
-  bookFormSchema,
-  BookFormFields,
-  BookFormValues,
-} from "./BookFormFields";
+import { bookFormSchema, BookFormValues } from "./bookFormSchema";
+import { BookUpdateForm } from "./BookUpdateForm";
 
 vi.mock("../../compoments/hooks/useAuthors", () => ({
   useAuthors: () => ({
@@ -63,7 +60,7 @@ const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
 
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
-      <BookFormFields form={form} />
+      <BookUpdateForm form={form} />
       <button type="submit">送信</button>
     </form>
   );
@@ -97,7 +94,7 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   return wrapper;
 };
 
-describe("BookFormFields", () => {
+describe("BookUpdateForm", () => {
   test("submits with entered title", async () => {
     // https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
     mockMatchMedia();

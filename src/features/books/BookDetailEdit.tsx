@@ -6,7 +6,7 @@ import { zodResolver } from "mantine-form-zod-resolver";
 import React from "react";
 import { LinkButton } from "../../compoments/mantineTsr";
 import { useUpdateBook } from "../../compoments/hooks/useUpdateBook";
-import { bookFormSchema, BookFormValues } from "./BookFormFields";
+import { bookFormSchema, BookFormValues } from "./bookFormSchema";
 import { BookUpdateForm } from "./BookUpdateForm";
 import { Book } from "./entity/Book";
 

@@ -1,10 +1,23 @@
-import { ActionIcon, Group, Stack, Text, TextInput } from "@mantine/core";
+import {
+  ActionIcon,
+  Checkbox,
+  Group,
+  Loader,
+  MultiSelect,
+  NumberInput,
+  Select,
+  Stack,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
-import React from "react";
 import { IconSearch } from "@tabler/icons-react";
+import React from "react";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
+import { BookFormValues } from "./bookFormSchema";
+import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
+import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
 import { Author } from "./entity/Author";
-import { BookFormFields, BookFormValues } from "./BookFormFields";
 import { useIsbnLookup } from "./useIsbnLookup";
 
 type BookCreateFormProps = {
@@ -12,7 +25,7 @@ type BookCreateFormProps = {
 };
 
 export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
-  const { data } = useAuthors();
+  const { data, isLoading, error } = useAuthors();
   const { state: isbnLookupState, lookup: lookupIsbn } = useIsbnLookup();
 
   const handleIsbnLookup = async () => {
@@ -36,33 +49,86 @@ export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
     }
   };
 
-  const isbnGroup = (
-    <Stack gap={0}>
-      <Group align="flex-end" gap="xs">
-        <TextInput
-          label="ISBN"
-          style={{ flex: 1 }}
-          {...form.getInputProps("isbn")}
-        />
-        <ActionIcon
-          onClick={() => {
-            void handleIsbnLookup();
-          }}
-          loading={isbnLookupState.status === "loading"}
-          size="lg"
-          variant="default"
-          aria-label="自動入力"
-        >
-          <IconSearch size={16} />
-        </ActionIcon>
-      </Group>
-      {isbnLookupState.status === "error" && (
-        <Text size="xs" c="red" mt={4} role="alert">
-          {isbnLookupState.message}
-        </Text>
-      )}
+  if (error) {
+    return <div>{JSON.stringify(error)}</div>;
+  }
+
+  if (isLoading || data == null) {
+    return <Loader />;
+  }
+
+  return (
+    <Stack>
+      <TextInput label="書名" {...form.getInputProps("title")} />
+      <MultiSelect
+        label="著者"
+        data={data.authors.map((author) => ({
+          value: author.id,
+          label: author.name,
+        }))}
+        searchable
+        {...form.getInputProps("authors")}
+        value={form.values.authors.map((author) => author.id)}
+        onChange={(authorIds) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          form.getInputProps("authors").onChange(
+            authorIds.map((authorId) => ({
+              id: authorId,
+              name: data.authors.find((author) => author.id === authorId)?.name,
+            })),
+          );
+        }}
+      />
+      <Select
+        label="形式"
+        {...form.getInputProps("format")}
+        data={BOOK_FORMAT_VALUE.map((format) => ({
+          value: format,
+          label: displayBookFormat(format),
+        }))}
+      />
+      <Select
+        label="ストア"
+        {...form.getInputProps("store")}
+        data={BOOK_STORE_VALUE.map((store) => ({
+          value: store,
+          label: displayBookStore(store),
+        }))}
+      />
+      <NumberInput label="優先度" {...form.getInputProps("priority")} />
+      <Stack gap={0}>
+        <Group align="flex-end" gap="xs">
+          <TextInput
+            label="ISBN"
+            style={{ flex: 1 }}
+            {...form.getInputProps("isbn")}
+          />
+          <ActionIcon
+            onClick={() => {
+              void handleIsbnLookup();
+            }}
+            loading={isbnLookupState.status === "loading"}
+            size="lg"
+            variant="default"
+            aria-label="自動入力"
+          >
+            <IconSearch size={16} />
+          </ActionIcon>
+        </Group>
+        {isbnLookupState.status === "error" && (
+          <Text size="xs" c="red" mt={4} role="alert">
+            {isbnLookupState.message}
+          </Text>
+        )}
+      </Stack>
+      <Checkbox
+        label="既読"
+        {...form.getInputProps("read", { type: "checkbox" })}
+      />
+      <Checkbox
+        label="所有"
+        {...form.getInputProps("owned", { type: "checkbox" })}
+      />
     </Stack>
   );
-
-  return <BookFormFields form={form} extraFields={isbnGroup} />;
 };
