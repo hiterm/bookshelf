@@ -5,8 +5,10 @@ import { useNavigate } from "@tanstack/react-router";
 import { zodResolver } from "mantine-form-zod-resolver";
 import React from "react";
 import { LinkButton } from "../../compoments/mantineTsr";
+import { useCreateAuthor } from "../../compoments/hooks/useCreateAuthor";
 import { useUpdateBook } from "../../compoments/hooks/useUpdateBook";
 import { bookFormSchema, BookFormValues } from "./bookFormSchema";
+import { resolvePendingAuthors } from "./resolvePendingAuthors";
 import { BookUpdateForm } from "./BookUpdateForm";
 import { Book } from "./entity/Book";
 
@@ -16,8 +18,16 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
   const navigate = useNavigate();
 
   const updateBookMutation = useUpdateBook();
+  const createAuthorMutation = useCreateAuthor();
 
   const handleSubmit = async (values: BookFormValues) => {
+    const resolvedAuthors = await resolvePendingAuthors(
+      values.authors,
+      async (name) => {
+        const result = await createAuthorMutation.mutateAsync({ name });
+        return result.createAuthor.id;
+      },
+    );
     const bookData = {
       id: book.id,
       title: values.title,
@@ -27,7 +37,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
       priority: values.priority,
       format: values.format,
       store: values.store,
-      authorIds: values.authors.map((author) => author.id),
+      authorIds: resolvedAuthors.map((a) => a.id),
     };
     await updateBookMutation.mutateAsync(bookData);
     await navigate({ to: `/books/$id`, params: { id: book.id } });
