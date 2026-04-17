@@ -1,11 +1,14 @@
 import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { zodResolver } from "mantine-form-zod-resolver";
 import React from "react";
 import { vi } from "vitest";
-import { BookFormValues, useBookForm } from "./BookForm";
+import { bookFormSchema, BookFormValues } from "./bookFormSchema";
+import { BookUpdateForm } from "./BookUpdateForm";
 
 vi.mock("../../compoments/hooks/useAuthors", () => ({
   useAuthors: () => ({
@@ -49,14 +52,15 @@ const emptyBook: BookFormValues = {
 type TestFormProps = { onSubmit: (values: BookFormValues) => void };
 
 const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
-  const { form, submitForm } = useBookForm({
+  const form = useForm({
     initialValues: emptyBook,
-    onSubmit: onSubmit,
+    validate: zodResolver(bookFormSchema),
+    validateInputOnBlur: true,
   });
 
   return (
-    <form onSubmit={submitForm}>
-      {form}
+    <form onSubmit={form.onSubmit(onSubmit)}>
+      <BookUpdateForm form={form} />
       <button type="submit">送信</button>
     </form>
   );
@@ -90,7 +94,7 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   return wrapper;
 };
 
-describe("useBookForm", () => {
+describe("BookUpdateForm", () => {
   test("submits with entered title", async () => {
     // https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
     mockMatchMedia();

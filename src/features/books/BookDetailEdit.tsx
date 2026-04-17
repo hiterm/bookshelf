@@ -1,10 +1,13 @@
 import { Box, Button, Group } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "@tanstack/react-router";
+import { zodResolver } from "mantine-form-zod-resolver";
 import React from "react";
 import { LinkButton } from "../../compoments/mantineTsr";
 import { useUpdateBook } from "../../compoments/hooks/useUpdateBook";
-import { BookFormValues, useBookForm } from "./BookForm";
+import { bookFormSchema, BookFormValues } from "./bookFormSchema";
+import { BookUpdateForm } from "./BookUpdateForm";
 import { Book } from "./entity/Book";
 
 export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
@@ -31,16 +34,20 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
     showNotification({ message: "更新しました", color: "teal" });
   };
 
-  const { form, submitForm } = useBookForm({
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    onSubmit: handleSubmit,
+  const form = useForm<BookFormValues>({
     initialValues: book,
+    validate: zodResolver(bookFormSchema),
+    validateInputOnBlur: true,
   });
 
   return (
     <Box style={{ display: "flex", justifyContent: "center" }}>
-      <Box component="form" onSubmit={submitForm} style={{ minWidth: 400 }}>
-        {form}
+      <Box
+        component="form"
+        onSubmit={form.onSubmit((values, _event) => void handleSubmit(values))}
+        style={{ minWidth: 400 }}
+      >
+        <BookUpdateForm form={form} />
         <Group mt="md">
           <Button type="submit">Save</Button>
           <LinkButton
