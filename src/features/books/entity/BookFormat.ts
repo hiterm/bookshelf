@@ -1,6 +1,10 @@
 import { BookFormat } from "../../../generated/graphql-request";
 
-export const BOOK_FORMAT_VALUE: BookFormat[] = ["UNKNOWN", "E_BOOK", "PRINTED"];
+export const BOOK_FORMAT_VALUE = [
+  "UNKNOWN",
+  "E_BOOK",
+  "PRINTED",
+] as const satisfies readonly BookFormat[];
 
 export const displayBookFormat = (format: BookFormat): string => {
   switch (format) {

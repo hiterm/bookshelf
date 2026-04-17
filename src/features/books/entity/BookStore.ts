@@ -1,6 +1,9 @@
 import { BookStore } from "../../../generated/graphql-request";
 
-export const BOOK_STORE_VALUE: BookStore[] = ["UNKNOWN", "KINDLE"];
+export const BOOK_STORE_VALUE = [
+  "UNKNOWN",
+  "KINDLE",
+] as const satisfies readonly BookStore[];
 
 export const displayBookStore = (store: BookStore): string => {
   switch (store) {

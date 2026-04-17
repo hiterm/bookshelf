@@ -50,7 +50,8 @@ export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
   };
 
   if (error) {
-    return <div>{JSON.stringify(error)}</div>;
+    console.error(error);
+    return <div>著者の読み込みに失敗しました。</div>;
   }
 
   if (isLoading || data == null) {
