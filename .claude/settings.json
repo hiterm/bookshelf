@@ -2,7 +2,7 @@
   "permissions": {
     "allow": [
       "Bash(npm run generate)",
-      "Bash(npm run test)",
+      "Bash(npm run test*)",
       "Bash(npm run typecheck)",
       "Bash(npm run lint)",
       "Bash(git add *)",
