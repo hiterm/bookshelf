@@ -12,18 +12,20 @@ To see it working: open the app, click "本を追加", click "書籍を検索", 
 
 ## Progress
 
-- [ ] Create `src/features/books/useBookSearch.ts` (new search hook)
-- [ ] Create `src/features/books/useBookSearch.test.ts` (unit tests for the hook)
-- [ ] Create `src/features/books/BookSearchDialog.tsx` (search dialog component)
-- [ ] Create `src/features/books/BookSearchDialog.test.tsx` (unit tests for dialog)
-- [ ] Modify `src/features/books/BookCreateForm.tsx` (add "書籍を検索" button, integrate dialog)
-- [ ] Delete `src/features/books/useIsbnLookup.ts`
-- [ ] Delete `src/features/books/useIsbnLookup.test.ts`
-- [ ] Run all checks: `npm run generate && npm run test && npm run typecheck && npm run lint`
+- [x] Create `src/features/books/useBookSearch.ts` (new search hook)
+- [x] Create `src/features/books/useBookSearch.test.ts` (unit tests for the hook)
+- [x] Create `src/features/books/BookSearchDialog.tsx` (search dialog component)
+- [x] Create `src/features/books/BookSearchDialog.test.tsx` (unit tests for dialog)
+- [x] Modify `src/features/books/BookCreateForm.tsx` (add "書籍を検索" button, integrate dialog)
+- [x] Delete `src/features/books/useIsbnLookup.ts`
+- [x] Delete `src/features/books/useIsbnLookup.test.ts`
+- [x] Run all checks: `npm run generate && npm run test && npm run typecheck && npm run lint`
 
 ## Surprises & Discoveries
 
-(none yet)
+- ESLint's `no-unnecessary-condition` treats `Element.textContent` as always `string` (not `string | null`) in this project's TS config, requiring removal of `?? ""` guards on textContent.
+- `HTMLCollectionOf<Element>[0]` is typed as `Element` (non-nullable), so `.at(0)` must be used to get `Element | undefined`.
+- `SegmentedControl.onChange` yields `string`, requiring a type guard (`v === "googleBooks" || v === "ndl"`) instead of `as BookSearchBackend`.
 
 ## Decision Log
 
@@ -61,7 +63,12 @@ To see it working: open the app, click "本を追加", click "書籍を検索", 
 
 ## Outcomes & Retrospective
 
-(to be filled after completion)
+All steps completed successfully. 3 commits on `book-search` branch.
+
+Notable surprises:
+- ESLint's `no-unnecessary-condition` rule treated `Element.textContent` as always `string` (not `string | null`), requiring removal of `?? ""` guards and `?.` optional chains on textContent.
+- `HTMLCollectionOf<Element>[0]` is typed as `Element` (not `Element | undefined`), so `.at(0)` was used instead to get the proper `Element | undefined` type for the publisher element.
+- `SegmentedControl.onChange` gives `string`, requiring a type guard instead of `as BookSearchBackend` (per the no-`as`-assertions rule).
 
 ## Context and Orientation
 
