@@ -63,9 +63,9 @@ export const BookDetailModal = ({
             />
           )}
           <Stack gap="xs" style={{ flex: 1 }}>
-            {(detail?.series || detail?.volume) && (
+            {(detail?.series ?? detail?.volume) && (
               <Text size="sm">
-                {[detail?.series, detail?.volume].filter(Boolean).join(" ")}
+                {[detail.series, detail.volume].filter(Boolean).join(" ")}
               </Text>
             )}
             {searchResult.subtitle && (
