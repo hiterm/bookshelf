@@ -76,20 +76,31 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
           error={error}
         >
           <Pill.Group>
-            {value.map((author) => (
-              <Pill
-                key={author.id}
-                withRemoveButton
-                removeButtonProps={{
-                  "aria-label": `Remove author ${author.name}`,
-                }}
-                onRemove={() => {
-                  handleAuthorRemove(author.id);
-                }}
-              >
-                {author.name}
-              </Pill>
-            ))}
+            {value.map((author) => {
+              const isPending = author.id.startsWith("__pending__:");
+              return (
+                <Pill
+                  key={author.id}
+                  withRemoveButton
+                  removeButtonProps={{
+                    "aria-label": `Remove author ${author.name}`,
+                  }}
+                  onRemove={() => {
+                    handleAuthorRemove(author.id);
+                  }}
+                  style={
+                    isPending
+                      ? {
+                          backgroundColor: "var(--mantine-color-blue-1)",
+                          color: "var(--mantine-color-blue-8)",
+                        }
+                      : undefined
+                  }
+                >
+                  {isPending ? `+ ${author.name}` : author.name}
+                </Pill>
+              );
+            })}
             <Combobox.EventsTarget>
               <PillsInput.Field
                 onFocus={() => {
