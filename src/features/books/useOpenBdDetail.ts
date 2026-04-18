@@ -3,9 +3,13 @@ import { useCallback, useState } from "react";
 export type OpenBdDetail = {
   coverImageUrl?: string;
   description?: string;
+  tableOfContents?: string;
   format?: string;
   pageCount?: number;
   publishedDate?: string;
+  series?: string;
+  volume?: string;
+  genre?: string;
 };
 
 export type OpenBdState =
@@ -21,6 +25,8 @@ type OpenBdSummary = {
   publisher?: string;
   pubdate?: string;
   cover?: string;
+  series?: string;
+  volume?: string;
 };
 
 type OpenBdTextContent = {
@@ -43,9 +49,14 @@ type OpenBdOnix = {
   };
 };
 
+type OpenBdHanmoto = {
+  genrename?: string;
+};
+
 type OpenBdEntry = {
   summary?: OpenBdSummary;
   onix?: OpenBdOnix;
+  hanmoto?: OpenBdHanmoto;
 } | null;
 
 const PRODUCT_FORM_DETAIL_LABELS: Record<string, string> = {
@@ -56,6 +67,22 @@ const PRODUCT_FORM_DETAIL_LABELS: Record<string, string> = {
   B405: "B5判",
   B406: "A4判",
   B407: "B6判",
+  B408: "菊判",
+  B409: "AB判",
+  B410: "B4判",
+  B501: "ポケット判",
+  B502: "変形判",
+};
+
+const findTextContent = (
+  textContents: OpenBdTextContent[],
+  ...types: string[]
+): string | undefined => {
+  for (const type of types) {
+    const entry = textContents.find((t) => t.TextType === type);
+    if (entry?.Text) return entry.Text;
+  }
+  return undefined;
 };
 
 const parseOpenBdEntry = (entry: OpenBdEntry): OpenBdDetail => {
@@ -63,10 +90,13 @@ const parseOpenBdEntry = (entry: OpenBdEntry): OpenBdDetail => {
 
   const coverImageUrl = entry.summary?.cover ?? undefined;
   const publishedDate = entry.summary?.pubdate ?? undefined;
+  const series = entry.summary?.series ?? undefined;
+  const volume = entry.summary?.volume ?? undefined;
+  const genre = entry.hanmoto?.genrename ?? undefined;
 
   const textContents = entry.onix?.CollateralDetail?.TextContent ?? [];
-  const descriptionEntry = textContents.find((t) => t.TextType === "03");
-  const description = descriptionEntry?.Text ?? undefined;
+  const description = findTextContent(textContents, "03", "02");
+  const tableOfContents = findTextContent(textContents, "04");
 
   const extents = entry.onix?.DescriptiveDetail?.Extent ?? [];
   const pageExtent = extents.find((e) => e.ExtentType === "11");
@@ -79,7 +109,17 @@ const parseOpenBdEntry = (entry: OpenBdEntry): OpenBdDetail => {
     entry.onix?.DescriptiveDetail?.ProductFormDetail ?? "";
   const format = PRODUCT_FORM_DETAIL_LABELS[productFormDetail] ?? undefined;
 
-  return { coverImageUrl, description, format, pageCount, publishedDate };
+  return {
+    coverImageUrl,
+    description,
+    tableOfContents,
+    format,
+    pageCount,
+    publishedDate,
+    series,
+    volume,
+    genre,
+  };
 };
 
 export const useOpenBdDetail = (): {

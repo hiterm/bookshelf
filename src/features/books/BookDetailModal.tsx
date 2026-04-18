@@ -63,6 +63,11 @@ export const BookDetailModal = ({
             />
           )}
           <Stack gap="xs" style={{ flex: 1 }}>
+            {(detail?.series || detail?.volume) && (
+              <Text size="sm">
+                {[detail.series, detail.volume].filter(Boolean).join(" ")}
+              </Text>
+            )}
             {searchResult.subtitle && (
               <Text size="sm" c="dimmed">
                 {searchResult.subtitle}
@@ -78,6 +83,7 @@ export const BookDetailModal = ({
                 .filter(Boolean)
                 .join("  ")}
             </Text>
+            {detail?.genre && <Text size="sm">ジャンル: {detail.genre}</Text>}
             {detail?.format && <Text size="sm">判型: {detail.format}</Text>}
             {detail?.pageCount && (
               <Text size="sm">{detail.pageCount}ページ</Text>
@@ -88,6 +94,16 @@ export const BookDetailModal = ({
           <Text size="sm" style={{ whiteSpace: "pre-wrap" }}>
             {detail.description}
           </Text>
+        )}
+        {detail?.tableOfContents && (
+          <Stack gap={4}>
+            <Text size="sm" fw={700}>
+              目次
+            </Text>
+            <Text size="sm" style={{ whiteSpace: "pre-wrap" }}>
+              {detail.tableOfContents}
+            </Text>
+          </Stack>
         )}
         {state.status === "error" && (
           <Stack gap="xs">
