@@ -3,6 +3,7 @@ import { vi } from "vitest";
 import { useBookSearch } from "./useBookSearch";
 
 const DC_NS = "http://purl.org/dc/elements/1.1/";
+const XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
 
 const makeTextResponse = (text: string, ok = true) =>
   Promise.resolve({
@@ -18,12 +19,12 @@ const makeJsonResponse = (body: unknown, ok = true) =>
 
 const ndlXml = (title: string, creators: string[], isbn = "", publisher = "") =>
   `<?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:dc="${DC_NS}">
+<rss xmlns:dc="${DC_NS}" xmlns:xsi="${XSI_NS}">
   <channel>
     <item>
       <title>${title}</title>
       ${creators.map((c) => `<dc:creator>${c}</dc:creator>`).join("")}
-      ${isbn ? `<dc:identifier>ISBN:${isbn}</dc:identifier>` : ""}
+      ${isbn ? `<dc:identifier xsi:type="dcndl:ISBN">${isbn}</dc:identifier>` : ""}
       ${publisher ? `<dc:publisher>${publisher}</dc:publisher>` : ""}
     </item>
   </channel>

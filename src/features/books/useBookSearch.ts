@@ -26,6 +26,7 @@ export type BookSearchState =
   | { status: "error"; message: string };
 
 const DC_NS = "http://purl.org/dc/elements/1.1/";
+const XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
 
 const searchGoogleBooks = async (
   query: BookSearchQuery,
@@ -109,10 +110,10 @@ const searchNdl = async (
         .filter(Boolean);
       const identifierEl = Array.from(
         item.getElementsByTagNameNS(DC_NS, "identifier"),
-      ).find((el) => el.textContent.startsWith("ISBN:"));
+      ).find((el) => el.getAttributeNS(XSI_NS, "type") === "dcndl:ISBN");
       const isbn =
         identifierEl != null
-          ? identifierEl.textContent.replace("ISBN:", "")
+          ? identifierEl.textContent.trim().replace(/-/g, "")
           : "";
       const publisherEl = Array.from(
         item.getElementsByTagNameNS(DC_NS, "publisher"),
