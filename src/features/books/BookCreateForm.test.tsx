@@ -23,12 +23,10 @@ vi.mock("../../compoments/hooks/useAuthors", () => ({
   }),
 }));
 
-const mockLookup = vi.fn();
-
-vi.mock("./useIsbnLookup", () => ({
-  useIsbnLookup: () => ({
+vi.mock("./useBookSearch", () => ({
+  useBookSearch: () => ({
     state: { status: "idle" },
-    lookup: mockLookup,
+    search: vi.fn(),
   }),
 }));
 
@@ -112,7 +110,7 @@ describe("BookCreateForm", () => {
     expect(await findByRole("checkbox", { name: "既読" })).toBeInTheDocument();
     expect(await findByRole("checkbox", { name: "所有" })).toBeInTheDocument();
     expect(
-      await findByRole("button", { name: "自動入力" }),
+      await findByRole("button", { name: "書籍を検索" }),
     ).toBeInTheDocument();
   });
 
@@ -136,28 +134,5 @@ describe("BookCreateForm", () => {
       ...emptyBook,
       title: "valid title",
     });
-  });
-
-  test("ISBN auto-fill fills title on success", async () => {
-    mockMatchMedia();
-    mockLookup.mockResolvedValueOnce({
-      title: "looked up title",
-      authorNames: [],
-    });
-
-    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
-    const { getByRole, findByRole } = render(
-      <TestForm onSubmit={mockSubmit} />,
-      { wrapper: createWrapper() },
-    );
-
-    const user = userEvent.setup();
-    const isbnInput = await findByRole("textbox", { name: "ISBN" });
-    await user.type(isbnInput, "9784167158064");
-
-    await user.click(getByRole("button", { name: "自動入力" }));
-
-    const titleInput = await findByRole("textbox", { name: "書名" });
-    expect(titleInput).toHaveValue("looked up title");
   });
 });

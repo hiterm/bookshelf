@@ -1,24 +1,20 @@
 import {
-  ActionIcon,
+  Button,
   Checkbox,
-  Group,
   Loader,
   NumberInput,
   Select,
   Stack,
-  Text,
   TextInput,
 } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
-import { IconSearch } from "@tabler/icons-react";
-import React from "react";
+import React, { useState } from "react";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
 import { AuthorsCombobox } from "./AuthorsCombobox";
+import { BookSearchDialog } from "./BookSearchDialog";
 import { BookFormValues } from "./bookFormSchema";
-import { Author } from "./entity/Author";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
 import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
-import { useIsbnLookup } from "./useIsbnLookup";
 
 type BookCreateFormProps = {
   form: UseFormReturnType<BookFormValues>;
@@ -26,28 +22,7 @@ type BookCreateFormProps = {
 
 export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
   const { data, isLoading, error } = useAuthors();
-  const { state: isbnLookupState, lookup: lookupIsbn } = useIsbnLookup();
-
-  const handleIsbnLookup = async () => {
-    const result = await lookupIsbn(form.values.isbn);
-    if (result == null || data == null) return;
-    form.setFieldValue("title", result.title);
-    const matched = Array.from(
-      new Map(
-        result.authorNames
-          .map((name) =>
-            data.authors.find(
-              (a) => a.name.trim().toLowerCase() === name.trim().toLowerCase(),
-            ),
-          )
-          .filter((a): a is Author => a !== undefined)
-          .map((a) => [a.id, a]),
-      ).values(),
-    );
-    if (matched.length > 0) {
-      form.setFieldValue("authors", matched);
-    }
-  };
+  const [searchOpened, setSearchOpened] = useState(false);
 
   if (error) {
     console.error(error);
@@ -60,6 +35,38 @@ export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
 
   return (
     <Stack>
+      <Button
+        variant="default"
+        onClick={() => {
+          setSearchOpened(true);
+        }}
+      >
+        書籍を検索
+      </Button>
+      <BookSearchDialog
+        opened={searchOpened}
+        onClose={() => {
+          setSearchOpened(false);
+        }}
+        onSelect={(result) => {
+          form.setFieldValue("title", result.title);
+          form.setFieldValue("isbn", result.isbn);
+          const normalize = (s: string) => s.replace(/\s+/g, "").toLowerCase();
+          const resolvedAuthors = result.authorNames.map((name) => {
+            const existing = data.authors.find(
+              (a) =>
+                a.name.trim().toLowerCase() === name.trim().toLowerCase() ||
+                normalize(a.name) === normalize(name),
+            );
+            return existing ?? { id: `__pending__:${name}`, name };
+          });
+          const uniqueAuthors = Array.from(
+            new Map(resolvedAuthors.map((a) => [a.id, a])).values(),
+          );
+          form.setFieldValue("authors", uniqueAuthors);
+          setSearchOpened(false);
+        }}
+      />
       <TextInput label="書名" {...form.getInputProps("title")} />
       <AuthorsCombobox
         authors={data.authors}
@@ -90,31 +97,7 @@ export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
         }))}
       />
       <NumberInput label="優先度" {...form.getInputProps("priority")} />
-      <Stack gap={0}>
-        <Group align="flex-end" gap="xs">
-          <TextInput
-            label="ISBN"
-            style={{ flex: 1 }}
-            {...form.getInputProps("isbn")}
-          />
-          <ActionIcon
-            onClick={() => {
-              void handleIsbnLookup();
-            }}
-            loading={isbnLookupState.status === "loading"}
-            size="lg"
-            variant="default"
-            aria-label="自動入力"
-          >
-            <IconSearch size={16} />
-          </ActionIcon>
-        </Group>
-        {isbnLookupState.status === "error" && (
-          <Text size="xs" c="red" mt={4} role="alert">
-            {isbnLookupState.message}
-          </Text>
-        )}
-      </Stack>
+      <TextInput label="ISBN" {...form.getInputProps("isbn")} />
       <Checkbox
         label="既読"
         {...form.getInputProps("read", { type: "checkbox" })}
