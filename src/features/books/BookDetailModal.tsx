@@ -90,9 +90,14 @@ export const BookDetailModal = ({
           </Text>
         )}
         {state.status === "error" && (
-          <Text size="sm" c="dimmed">
-            詳細情報を取得できませんでした
-          </Text>
+          <Stack gap="xs">
+            <Text size="sm" c="dimmed">
+              詳細情報を取得できませんでした
+            </Text>
+            <Text size="xs" c="red" style={{ wordBreak: "break-all" }}>
+              {state.debugInfo}
+            </Text>
+          </Stack>
         )}
         <Group justify="flex-end">
           <Button onClick={handleSelect}>この本で選択</Button>

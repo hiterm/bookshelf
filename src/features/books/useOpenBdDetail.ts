@@ -12,7 +12,7 @@ export type OpenBdState =
   | { status: "idle" }
   | { status: "loading" }
   | { status: "success"; detail: OpenBdDetail }
-  | { status: "error" };
+  | { status: "error"; debugInfo: string };
 
 type OpenBdSummary = {
   isbn?: string;
@@ -91,20 +91,36 @@ export const useOpenBdDetail = (): {
 
   const fetch = useCallback(async (isbn: string): Promise<void> => {
     setState({ status: "loading" });
+    const url = `/openbd-proxy/v1/get?isbn=${encodeURIComponent(isbn)}`;
     try {
-      const response = await window.fetch(
-        `/openbd-proxy/v1/get?isbn=${encodeURIComponent(isbn)}`,
-      );
+      const response = await window.fetch(url);
       if (!response.ok) {
-        setState({ status: "error" });
+        const body = await response.text().catch(() => "(body unreadable)");
+        setState({
+          status: "error",
+          debugInfo: `[DEBUG] url=${url} status=${String(response.status)} body=${body.slice(0, 300)}`,
+        });
         return;
       }
-      const data = (await response.json()) as OpenBdEntry[];
+      const text = await response.text();
+      let data: OpenBdEntry[];
+      try {
+        data = JSON.parse(text) as OpenBdEntry[];
+      } catch (parseErr) {
+        setState({
+          status: "error",
+          debugInfo: `[DEBUG] url=${url} JSON parse error: ${String(parseErr)} body=${text.slice(0, 300)}`,
+        });
+        return;
+      }
       const entry = data[0] ?? null;
       const detail = parseOpenBdEntry(entry);
       setState({ status: "success", detail });
-    } catch {
-      setState({ status: "error" });
+    } catch (err) {
+      setState({
+        status: "error",
+        debugInfo: `[DEBUG] url=${url} fetch error: ${String(err)}`,
+      });
     }
   }, []);
 
