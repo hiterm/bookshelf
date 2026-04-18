@@ -4,6 +4,8 @@ import {
   Group,
   Pill,
   PillsInput,
+  Popover,
+  TextInput,
   useCombobox,
 } from "@mantine/core";
 import React, { useState } from "react";
@@ -23,6 +25,8 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
   error,
 }) => {
   const [authorSearch, setAuthorSearch] = useState("");
+  const [editingAuthorId, setEditingAuthorId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState("");
 
   const combobox = useCombobox({
     onDropdownClose: () => {
@@ -65,6 +69,27 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
     onChange(value.filter((a) => a.id !== id));
   };
 
+  const handlePendingAuthorEdit = (author: Author) => {
+    setEditingAuthorId(author.id);
+    setEditingName(author.name);
+  };
+
+  const commitPendingAuthorEdit = () => {
+    if (editingAuthorId == null) return;
+    const newName = editingName.trim();
+    if (newName) {
+      onChange(
+        value.map((a) =>
+          a.id === editingAuthorId
+            ? { id: `__pending__:${newName}`, name: newName }
+            : a,
+        ),
+      );
+    }
+    setEditingAuthorId(null);
+    setEditingName("");
+  };
+
   return (
     <Combobox store={combobox} onOptionSubmit={handleAuthorSelect}>
       <Combobox.DropdownTarget>
@@ -78,7 +103,7 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
           <Pill.Group>
             {value.map((author) => {
               const isPending = author.id.startsWith("__pending__:");
-              return (
+              const pill = (
                 <Pill
                   key={author.id}
                   withRemoveButton
@@ -88,17 +113,60 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
                   onRemove={() => {
                     handleAuthorRemove(author.id);
                   }}
+                  onClick={
+                    isPending
+                      ? () => {
+                          handlePendingAuthorEdit(author);
+                        }
+                      : undefined
+                  }
                   style={
                     isPending
                       ? {
                           backgroundColor: "var(--mantine-color-blue-1)",
                           color: "var(--mantine-color-blue-8)",
+                          cursor: "pointer",
                         }
                       : undefined
                   }
                 >
                   {isPending ? `+ ${author.name}` : author.name}
                 </Pill>
+              );
+              if (!isPending) return pill;
+              return (
+                <Popover
+                  key={author.id}
+                  opened={editingAuthorId === author.id}
+                  onClose={() => {
+                    setEditingAuthorId(null);
+                    setEditingName("");
+                  }}
+                  withArrow
+                >
+                  <Popover.Target>{pill}</Popover.Target>
+                  <Popover.Dropdown>
+                    <TextInput
+                      value={editingName}
+                      onChange={(e) => {
+                        setEditingName(e.currentTarget.value);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          commitPendingAuthorEdit();
+                        }
+                        if (e.key === "Escape") {
+                          setEditingAuthorId(null);
+                          setEditingName("");
+                        }
+                      }}
+                      onBlur={commitPendingAuthorEdit}
+                      size="xs"
+                      autoFocus
+                    />
+                  </Popover.Dropdown>
+                </Popover>
               );
             })}
             <Combobox.EventsTarget>
