@@ -4,6 +4,10 @@
       "source": "/ndl-proxy/:path*",
       "destination": "https://ndlsearch.ndl.go.jp/:path*"
     },
+    {
+      "source": "/openbd-proxy/:path*",
+      "destination": "https://api.openbd.jp/:path*"
+    },
     { "source": "/:path*", "destination": "/index.html" }
   ]
 }
