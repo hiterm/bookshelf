@@ -3,7 +3,6 @@ import {
   Checkbox,
   Group,
   Loader,
-  MultiSelect,
   NumberInput,
   Select,
   Stack,
@@ -14,10 +13,11 @@ import { UseFormReturnType } from "@mantine/form";
 import { IconSearch } from "@tabler/icons-react";
 import React from "react";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
+import { AuthorsCombobox } from "./AuthorsCombobox";
 import { BookFormValues } from "./bookFormSchema";
+import { Author } from "./entity/Author";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
 import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
-import { Author } from "./entity/Author";
 import { useIsbnLookup } from "./useIsbnLookup";
 
 type BookCreateFormProps = {
@@ -61,24 +61,17 @@ export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
   return (
     <Stack>
       <TextInput label="書名" {...form.getInputProps("title")} />
-      <MultiSelect
-        label="著者"
-        data={data.authors.map((author) => ({
-          value: author.id,
-          label: author.name,
-        }))}
-        searchable
-        {...form.getInputProps("authors")}
-        value={form.values.authors.map((author) => author.id)}
-        onChange={(authorIds) => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          form.getInputProps("authors").onChange(
-            authorIds.map((authorId) => ({
-              id: authorId,
-              name: data.authors.find((author) => author.id === authorId)?.name,
-            })),
-          );
+      <AuthorsCombobox
+        authors={data.authors}
+        value={form.values.authors}
+        onChange={(v) => {
+          form.setFieldValue("authors", v);
         }}
+        error={
+          typeof form.errors.authors === "string"
+            ? form.errors.authors
+            : undefined
+        }
       />
       <Select
         label="形式"

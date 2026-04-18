@@ -4,9 +4,11 @@ import { showNotification } from "@mantine/notifications";
 import { zodResolver } from "mantine-form-zod-resolver";
 import React, { useState } from "react";
 import { LinkButton } from "../../compoments/mantineTsr";
+import { useCreateAuthor } from "../../compoments/hooks/useCreateAuthor";
 import { useCreateBook } from "../../compoments/hooks/useCreateBook";
 import { BookCreateForm } from "./BookCreateForm";
 import { bookFormSchema, BookFormValues } from "./bookFormSchema";
+import { resolvePendingAuthors } from "./resolvePendingAuthors";
 
 export const BookAddButton: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -20,13 +22,34 @@ export const BookAddButton: React.FC = () => {
   };
 
   const createBookMutation = useCreateBook();
+  const createAuthorMutation = useCreateAuthor();
 
   const submitBook = async (value: BookFormValues) => {
     if (createBookMutation.isPending) return;
-    const { authors, ...rest } = value;
+
+    let resolvedAuthors: Awaited<ReturnType<typeof resolvePendingAuthors>>;
+    try {
+      resolvedAuthors = await resolvePendingAuthors(
+        value.authors,
+        async (name) => {
+          const result = await createAuthorMutation.mutateAsync({ name });
+          return result.createAuthor.id;
+        },
+      );
+    } catch (error) {
+      showNotification({
+        message: `Failed to create author: ${String(error)}`,
+        color: "red",
+      });
+      return;
+    }
+
+    form.setFieldValue("authors", resolvedAuthors);
+
+    const { authors: _authors, ...rest } = value;
     const bookData = {
       ...rest,
-      authorIds: authors.map((author) => author.id),
+      authorIds: resolvedAuthors.map((a) => a.id),
     };
 
     try {

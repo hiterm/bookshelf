@@ -48,6 +48,10 @@
 - Think and work in **English**
 - Use the same language as the user for confirmations and final reports
 
+## Testing Policy
+
+- When implementing a new feature, always implement tests for it.
+
 ## Testing Mantine Components
 
 When writing tests for Mantine components, refer to these docs as needed:
