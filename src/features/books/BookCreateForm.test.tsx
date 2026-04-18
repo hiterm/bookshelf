@@ -110,7 +110,7 @@ describe("BookCreateForm", () => {
     expect(await findByRole("checkbox", { name: "既読" })).toBeInTheDocument();
     expect(await findByRole("checkbox", { name: "所有" })).toBeInTheDocument();
     expect(
-      await findByRole("button", { name: "書籍を検索" }),
+      await findByRole("button", { name: "検索して自動入力" }),
     ).toBeInTheDocument();
   });
 

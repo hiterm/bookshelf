@@ -1,12 +1,14 @@
 import {
   Button,
   Checkbox,
+  Group,
   Loader,
   NumberInput,
   Select,
   Stack,
   TextInput,
 } from "@mantine/core";
+import { IconSearch } from "@tabler/icons-react";
 import { UseFormReturnType } from "@mantine/form";
 import React, { useState } from "react";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
@@ -35,14 +37,17 @@ export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
 
   return (
     <Stack>
-      <Button
-        variant="default"
-        onClick={() => {
-          setSearchOpened(true);
-        }}
-      >
-        書籍を検索
-      </Button>
+      <Group>
+        <Button
+          variant="light"
+          leftSection={<IconSearch size={16} />}
+          onClick={() => {
+            setSearchOpened(true);
+          }}
+        >
+          検索して自動入力
+        </Button>
+      </Group>
       <BookSearchDialog
         opened={searchOpened}
         onClose={() => {
