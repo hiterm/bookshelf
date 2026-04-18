@@ -13,17 +13,14 @@ const defaultAuthors: Author[] = [
 ];
 
 beforeAll(() => {
+  // Test stub; methods are intentionally no-ops.
+  /* eslint-disable @typescript-eslint/no-empty-function */
   global.ResizeObserver = class ResizeObserver {
-    observe() {
-      // do nothing
-    }
-    unobserve() {
-      // do nothing
-    }
-    disconnect() {
-      // do nothing
-    }
+    observe() {}
+    unobserve() {}
+    disconnect() {}
   };
+  /* eslint-enable @typescript-eslint/no-empty-function */
   HTMLElement.prototype.scrollIntoView = vi.fn();
 });
 

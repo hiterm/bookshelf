@@ -80,6 +80,9 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
               <Pill
                 key={author.id}
                 withRemoveButton
+                removeButtonProps={{
+                  "aria-label": `Remove author ${author.name}`,
+                }}
                 onRemove={() => {
                   handleAuthorRemove(author.id);
                 }}
