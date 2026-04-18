@@ -11,9 +11,12 @@ export type BookSearchBackend = "googleBooks" | "ndl";
 
 export type BookSearchResult = {
   title: string;
+  subtitle?: string;
   authorNames: string[];
   isbn: string;
   publisher: string;
+  publishedDate?: string;
+  coverImageUrl?: string;
 };
 
 export type BookSearchState =
@@ -44,9 +47,12 @@ const searchGoogleBooks = async (
     items?: {
       volumeInfo: {
         title?: string;
+        subtitle?: string;
         authors?: string[];
         publisher?: string;
+        publishedDate?: string;
         industryIdentifiers?: { type: string; identifier: string }[];
+        imageLinks?: { thumbnail?: string; smallThumbnail?: string };
       };
     }[];
   };
@@ -59,9 +65,12 @@ const searchGoogleBooks = async (
       );
       return {
         title: item.volumeInfo.title ?? "",
+        subtitle: item.volumeInfo.subtitle,
         authorNames: item.volumeInfo.authors ?? [],
         isbn: isbn13?.identifier ?? "",
         publisher: item.volumeInfo.publisher ?? "",
+        publishedDate: item.volumeInfo.publishedDate,
+        coverImageUrl: item.volumeInfo.imageLinks?.thumbnail,
       };
     })
     .filter((r) => r.title !== "");
@@ -91,7 +100,12 @@ const searchNdl = async (
       const authorNames = Array.from(
         item.getElementsByTagNameNS(DC_NS, "creator"),
       )
-        .map((el) => el.textContent.trim())
+        .map((el) =>
+          el.textContent
+            .trim()
+            .replace(/,\s*\d{4}-\d{0,4}$/, "")
+            .trim(),
+        )
         .filter(Boolean);
       const identifierEl = Array.from(
         item.getElementsByTagNameNS(DC_NS, "identifier"),
@@ -105,7 +119,12 @@ const searchNdl = async (
       ).at(0);
       const publisher =
         publisherEl != null ? publisherEl.textContent.trim() : "";
-      return { title, authorNames, isbn, publisher };
+      const dateEl = Array.from(item.getElementsByTagNameNS(DC_NS, "date")).at(
+        0,
+      );
+      const publishedDate =
+        dateEl != null ? dateEl.textContent.trim() : undefined;
+      return { title, authorNames, isbn, publisher, publishedDate };
     })
     .filter((r) => r.title !== "");
 };
