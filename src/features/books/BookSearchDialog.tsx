@@ -1,5 +1,7 @@
 import {
   Button,
+  Group,
+  Image,
   Loader,
   Modal,
   Paper,
@@ -10,6 +12,7 @@ import {
   UnstyledButton,
 } from "@mantine/core";
 import { useState } from "react";
+import { BookDetailModal } from "./BookDetailModal";
 import {
   BookSearchBackend,
   BookSearchResult,
@@ -32,6 +35,9 @@ export const BookSearchDialog = ({
   const [authorName, setAuthorName] = useState("");
   const [publisher, setPublisher] = useState("");
   const [isbn, setIsbn] = useState("");
+  const [detailResult, setDetailResult] = useState<BookSearchResult | null>(
+    null,
+  );
   const { state, search } = useBookSearch();
 
   const isAllEmpty = !title && !authorName && !publisher && !isbn;
@@ -102,17 +108,66 @@ export const BookSearchDialog = ({
                 }}
               >
                 <Paper p="xs" withBorder>
-                  <Text fw={700}>{result.title}</Text>
-                  <Text>{result.authorNames.join("、")}</Text>
-                  <Text size="sm" c="dimmed">
-                    {result.publisher} {result.isbn}
-                  </Text>
+                  <Group align="flex-start" wrap="nowrap">
+                    {result.coverImageUrl && (
+                      <Image
+                        src={result.coverImageUrl}
+                        width={50}
+                        height={70}
+                        fit="contain"
+                        style={{ flexShrink: 0 }}
+                      />
+                    )}
+                    <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
+                      <Text fw={700} lineClamp={2}>
+                        {result.title}
+                      </Text>
+                      {result.subtitle && (
+                        <Text size="sm" lineClamp={1}>
+                          {result.subtitle}
+                        </Text>
+                      )}
+                      <Text size="sm">{result.authorNames.join("、")}</Text>
+                      <Group justify="space-between" align="center">
+                        <Text size="sm" c="dimmed">
+                          {[result.publisher, result.publishedDate, result.isbn]
+                            .filter(Boolean)
+                            .join("  ")}
+                        </Text>
+                        <Button
+                          variant="subtle"
+                          size="xs"
+                          disabled={!result.isbn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDetailResult(result);
+                          }}
+                        >
+                          詳細
+                        </Button>
+                      </Group>
+                    </Stack>
+                  </Group>
                 </Paper>
               </UnstyledButton>
             ))}
           </Stack>
         )}
       </Stack>
+      {detailResult && (
+        <BookDetailModal
+          opened
+          onClose={() => {
+            setDetailResult(null);
+          }}
+          searchResult={detailResult}
+          onSelect={(result) => {
+            onSelect(result);
+            setDetailResult(null);
+            onClose();
+          }}
+        />
+      )}
     </Modal>
   );
 };
