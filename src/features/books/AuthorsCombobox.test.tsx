@@ -173,7 +173,7 @@ describe("AuthorsCombobox", () => {
   test("removes a pill via remove button", async () => {
     mockMatchMedia();
     const onChange = vi.fn();
-    render(
+    const { container } = render(
       <TestCombobox
         onChange={onChange}
         initial={[{ id: "1", name: "name1" }]}
@@ -183,11 +183,11 @@ describe("AuthorsCombobox", () => {
     const user = userEvent.setup({
       advanceTimers: vi.advanceTimersByTime.bind(vi),
     });
-    // The Pill remove button is aria-hidden; find it via the PillGroup container
-    const input = screen.getByRole("textbox", { name: "著者" });
-    const pillGroup = input.parentElement;
-    const removeButton = pillGroup?.querySelector("button");
-    if (!removeButton) throw new Error("No remove button found in pill group");
+    // Mantine renders the Pill remove button with aria-hidden; query by aria-label attribute.
+    const removeButton = container.querySelector(
+      '[aria-label="Remove author name1"]',
+    );
+    if (!removeButton) throw new Error("Remove button not found");
     await user.click(removeButton);
 
     expect(onChange).toHaveBeenLastCalledWith([]);
