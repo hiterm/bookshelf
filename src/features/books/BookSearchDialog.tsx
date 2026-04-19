@@ -30,7 +30,7 @@ export const BookSearchDialog = ({
   onClose,
   onSelect,
 }: BookSearchDialogProps) => {
-  const [backend, setBackend] = useState<BookSearchBackend>("googleBooks");
+  const [backend, setBackend] = useState<BookSearchBackend>("ndl");
   const [title, setTitle] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [publisher, setPublisher] = useState("");
@@ -57,8 +57,8 @@ export const BookSearchDialog = ({
             }
           }}
           data={[
-            { value: "googleBooks", label: "Google Books" },
             { value: "ndl", label: "NDL（国立国会図書館）" },
+            { value: "googleBooks", label: "Google Books" },
           ]}
         />
         <TextInput
