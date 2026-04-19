@@ -102,6 +102,7 @@ export const BookSearchDialog = ({
             {state.results.map((result, index) => (
               <UnstyledButton
                 key={index}
+                style={{ cursor: "pointer" }}
                 onClick={() => {
                   onSelect(result);
                   onClose();
@@ -146,17 +147,30 @@ export const BookSearchDialog = ({
                             .filter(Boolean)
                             .join("  ")}
                         </Text>
-                        <Button
-                          variant="subtle"
-                          size="xs"
-                          disabled={!result.isbn}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDetailResult(result);
-                          }}
-                        >
-                          詳細
-                        </Button>
+                        <Group gap="xs">
+                          <Button
+                            variant="outline"
+                            size="xs"
+                            disabled={!result.isbn}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDetailResult(result);
+                            }}
+                          >
+                            詳細
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="xs"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSelect(result);
+                              onClose();
+                            }}
+                          >
+                            選択
+                          </Button>
+                        </Group>
                       </Group>
                     </Stack>
                   </Group>
