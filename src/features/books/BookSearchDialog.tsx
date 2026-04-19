@@ -112,8 +112,8 @@ export const BookSearchDialog = ({
                     {result.coverImageUrl && (
                       <Image
                         src={result.coverImageUrl}
-                        width={50}
-                        height={70}
+                        w={50}
+                        h={70}
                         fit="contain"
                         style={{ flexShrink: 0 }}
                       />
