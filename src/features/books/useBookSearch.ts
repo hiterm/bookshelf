@@ -81,6 +81,7 @@ const searchNdl = async (
   query: BookSearchQuery,
 ): Promise<BookSearchResult[]> => {
   const params = new URLSearchParams();
+  params.set("mediaType", "1");
   if (query.title) params.set("title", query.title);
   if (query.authorName) params.set("creator", query.authorName);
   if (query.publisher) params.set("publisher", query.publisher);
