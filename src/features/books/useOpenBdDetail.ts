@@ -15,7 +15,7 @@ export type OpenBdDetail = {
 export type OpenBdState =
   | { status: "idle" }
   | { status: "loading" }
-  | { status: "success"; detail: OpenBdDetail }
+  | { status: "success"; detail: OpenBdDetail; rawData: unknown }
   | { status: "error"; debugInfo: string };
 
 type OpenBdSummary = {
@@ -155,7 +155,7 @@ export const useOpenBdDetail = (): {
       }
       const entry = data[0] ?? null;
       const detail = parseOpenBdEntry(entry);
-      setState({ status: "success", detail });
+      setState({ status: "success", detail, rawData: data });
     } catch (err) {
       setState({
         status: "error",

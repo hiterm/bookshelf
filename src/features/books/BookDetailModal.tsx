@@ -115,6 +115,29 @@ export const BookDetailModal = ({
             </Text>
           </Stack>
         )}
+        <Stack
+          gap={4}
+          style={{ background: "#f0f0f0", padding: 8, borderRadius: 4 }}
+        >
+          <Text size="xs" c="dimmed" fw={700}>
+            [DEBUG]
+          </Text>
+          <Text size="xs" style={{ wordBreak: "break-all" }}>
+            status: {state.status}
+          </Text>
+          <Text size="xs" style={{ wordBreak: "break-all" }}>
+            isbn: &quot;{searchResult.isbn}&quot; (length:{" "}
+            {searchResult.isbn.length})
+          </Text>
+          {state.status === "success" && (
+            <Text
+              size="xs"
+              style={{ wordBreak: "break-all", whiteSpace: "pre-wrap" }}
+            >
+              rawData: {JSON.stringify(state.rawData, null, 2)}
+            </Text>
+          )}
+        </Stack>
         <Group justify="flex-end">
           <Button onClick={handleSelect}>この本で選択</Button>
         </Group>
