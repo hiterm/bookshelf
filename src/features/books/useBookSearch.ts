@@ -47,6 +47,7 @@ type OpenBdEnrichEntry = {
   summary?: {
     isbn?: string;
     cover?: string;
+    title?: string;
     series?: string;
     volume?: string;
   };
@@ -74,12 +75,14 @@ const enrichWithOpenBd = async (
     const entry = byIsbn.get(r.isbn);
     if (!entry) return r;
     const cover = entry.summary?.cover;
+    const rawTitle = entry.summary?.title;
     const rawSeries = entry.summary?.series;
     const rawVolume = entry.summary?.volume;
     const productFormDetail =
       entry.onix?.DescriptiveDetail?.ProductFormDetail ?? "";
     return {
       ...r,
+      title: rawTitle != null && rawTitle !== "" ? rawTitle : r.title,
       coverImageUrl: r.coverImageUrl ?? (cover !== "" ? cover : undefined),
       openBdFormat: PRODUCT_FORM_DETAIL_LABELS[productFormDetail],
       series: rawSeries !== "" ? rawSeries : undefined,
