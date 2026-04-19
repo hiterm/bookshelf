@@ -128,6 +128,18 @@ export const BookSearchDialog = ({
                         </Text>
                       )}
                       <Text size="sm">{result.authorNames.join("、")}</Text>
+                      {(result.series ?? result.volume) && (
+                        <Text size="sm" c="dimmed">
+                          {[result.series, result.volume]
+                            .filter(Boolean)
+                            .join(" ")}
+                        </Text>
+                      )}
+                      {result.openBdFormat && (
+                        <Text size="sm" c="dimmed">
+                          {result.openBdFormat}
+                        </Text>
+                      )}
                       <Group justify="space-between" align="center">
                         <Text size="sm" c="dimmed">
                           {[result.publisher, result.publishedDate, result.isbn]

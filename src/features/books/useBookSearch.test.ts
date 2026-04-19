@@ -217,6 +217,124 @@ describe("useBookSearch", () => {
     }
   });
 
+  test("OpenBD enrichment fills coverImageUrl for NDL results without cover", async () => {
+    const mockFetch = vi
+      .fn()
+      .mockReturnValueOnce(
+        makeTextResponse(
+          ndlXml("テスト本", ["著者A"], "9784065362433", "出版社"),
+        ),
+      )
+      .mockReturnValueOnce(
+        makeJsonResponse([
+          {
+            summary: {
+              isbn: "9784065362433",
+              cover: "https://cover.example.com/img.jpg",
+              series: "",
+              volume: "",
+            },
+            onix: { DescriptiveDetail: { ProductFormDetail: "B401" } },
+          },
+        ]),
+      );
+    vi.stubGlobal("fetch", mockFetch);
+
+    const { result } = renderHook(() => useBookSearch());
+
+    await act(async () => {
+      await result.current.search({ title: "テスト" }, "ndl");
+    });
+
+    expect(result.current.state.status).toBe("success");
+    if (result.current.state.status === "success") {
+      expect(result.current.state.results[0].coverImageUrl).toBe(
+        "https://cover.example.com/img.jpg",
+      );
+      expect(result.current.state.results[0].openBdFormat).toBe("文庫判");
+    }
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining("/openbd-proxy/v1/get?isbn=9784065362433"),
+    );
+  });
+
+  test("OpenBD enrichment fills series and volume when present", async () => {
+    const mockFetch = vi
+      .fn()
+      .mockReturnValueOnce(
+        makeTextResponse(
+          ndlXml("テスト本", ["著者A"], "9784065362433", "出版社"),
+        ),
+      )
+      .mockReturnValueOnce(
+        makeJsonResponse([
+          {
+            summary: {
+              isbn: "9784065362433",
+              cover: "",
+              series: "テストシリーズ",
+              volume: "3",
+            },
+            onix: { DescriptiveDetail: { ProductFormDetail: "" } },
+          },
+        ]),
+      );
+    vi.stubGlobal("fetch", mockFetch);
+
+    const { result } = renderHook(() => useBookSearch());
+
+    await act(async () => {
+      await result.current.search({ title: "テスト" }, "ndl");
+    });
+
+    expect(result.current.state.status).toBe("success");
+    if (result.current.state.status === "success") {
+      expect(result.current.state.results[0].series).toBe("テストシリーズ");
+      expect(result.current.state.results[0].volume).toBe("3");
+    }
+  });
+
+  test("OpenBD HTTP error does not fail search — returns unenriched results", async () => {
+    const mockFetch = vi
+      .fn()
+      .mockReturnValueOnce(
+        makeTextResponse(
+          ndlXml("テスト本", ["著者A"], "9784065362433", "出版社"),
+        ),
+      )
+      .mockReturnValueOnce(makeJsonResponse({}, false));
+    vi.stubGlobal("fetch", mockFetch);
+
+    const { result } = renderHook(() => useBookSearch());
+
+    await act(async () => {
+      await result.current.search({ title: "テスト" }, "ndl");
+    });
+
+    expect(result.current.state.status).toBe("success");
+    if (result.current.state.status === "success") {
+      expect(result.current.state.results[0].title).toBe("テスト本");
+      expect(result.current.state.results[0].coverImageUrl).toBeUndefined();
+    }
+  });
+
+  test("OpenBD not called when all results have no ISBN", async () => {
+    const mockFetch = vi
+      .fn()
+      .mockReturnValueOnce(
+        makeTextResponse(ndlXml("ISBNなし本", ["著者A"], "", "出版社")),
+      );
+    vi.stubGlobal("fetch", mockFetch);
+
+    const { result } = renderHook(() => useBookSearch());
+
+    await act(async () => {
+      await result.current.search({ title: "テスト" }, "ndl");
+    });
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+
   test("stale response is discarded when a newer search completes first", async () => {
     let resolveFirst!: (value: Response) => void;
     const firstResponse = new Promise<Response>(

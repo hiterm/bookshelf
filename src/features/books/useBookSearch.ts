@@ -17,6 +17,9 @@ export type BookSearchResult = {
   publisher: string;
   publishedDate?: string;
   coverImageUrl?: string;
+  openBdFormat?: string;
+  series?: string;
+  volume?: string;
 };
 
 export type BookSearchState =
@@ -24,6 +27,66 @@ export type BookSearchState =
   | { status: "loading" }
   | { status: "success"; results: BookSearchResult[] }
   | { status: "error"; message: string };
+
+const PRODUCT_FORM_DETAIL_LABELS: Record<string, string> = {
+  B401: "文庫判",
+  B402: "新書判",
+  B403: "四六判",
+  B404: "A5判",
+  B405: "B5判",
+  B406: "A4判",
+  B407: "B6判",
+  B408: "菊判",
+  B409: "AB判",
+  B410: "B4判",
+  B501: "ポケット判",
+  B502: "変形判",
+};
+
+type OpenBdEnrichEntry = {
+  summary?: {
+    isbn?: string;
+    cover?: string;
+    series?: string;
+    volume?: string;
+  };
+  onix?: {
+    DescriptiveDetail?: { ProductFormDetail?: string };
+  };
+} | null;
+
+const enrichWithOpenBd = async (
+  results: BookSearchResult[],
+): Promise<BookSearchResult[]> => {
+  const isbns = results.map((r) => r.isbn).filter(Boolean);
+  if (isbns.length === 0) return results;
+
+  const response = await fetch(`/openbd-proxy/v1/get?isbn=${isbns.join(",")}`);
+  if (!response.ok) return results;
+
+  const data = (await response.json()) as OpenBdEnrichEntry[];
+  const byIsbn = new Map<string, OpenBdEnrichEntry>();
+  for (const entry of data) {
+    if (entry?.summary?.isbn) byIsbn.set(entry.summary.isbn, entry);
+  }
+
+  return results.map((r) => {
+    const entry = byIsbn.get(r.isbn);
+    if (!entry) return r;
+    const cover = entry.summary?.cover;
+    const rawSeries = entry.summary?.series;
+    const rawVolume = entry.summary?.volume;
+    const productFormDetail =
+      entry.onix?.DescriptiveDetail?.ProductFormDetail ?? "";
+    return {
+      ...r,
+      coverImageUrl: r.coverImageUrl ?? (cover !== "" ? cover : undefined),
+      openBdFormat: PRODUCT_FORM_DETAIL_LABELS[productFormDetail],
+      series: rawSeries !== "" ? rawSeries : undefined,
+      volume: rawVolume !== "" ? rawVolume : undefined,
+    };
+  });
+};
 
 const DC_NS = "http://purl.org/dc/elements/1.1/";
 const XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
@@ -163,7 +226,14 @@ export const useBookSearch = (): {
           ? await searchGoogleBooks(query)
           : await searchNdl(query);
       if (requestId !== latestRequestIdRef.current) return;
-      setState({ status: "success", results });
+      let enriched = results;
+      try {
+        enriched = await enrichWithOpenBd(results);
+      } catch {
+        // silently use unenriched results
+      }
+      if (requestId !== latestRequestIdRef.current) return;
+      setState({ status: "success", results: enriched });
     } catch {
       if (requestId !== latestRequestIdRef.current) return;
       setState({ status: "error", message: "取得に失敗しました" });
