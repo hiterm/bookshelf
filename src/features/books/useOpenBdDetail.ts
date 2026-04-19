@@ -88,10 +88,14 @@ const findTextContent = (
 const parseOpenBdEntry = (entry: OpenBdEntry): OpenBdDetail => {
   if (entry == null) return {};
 
-  const coverImageUrl = entry.summary?.cover ?? undefined;
-  const publishedDate = entry.summary?.pubdate ?? undefined;
-  const series = entry.summary?.series ?? undefined;
-  const volume = entry.summary?.volume ?? undefined;
+  const cover = entry.summary?.cover;
+  const coverImageUrl = cover !== "" ? cover : undefined;
+  const pubdate = entry.summary?.pubdate;
+  const publishedDate = pubdate !== "" ? pubdate : undefined;
+  const rawSeries = entry.summary?.series;
+  const series = rawSeries !== "" ? rawSeries : undefined;
+  const rawVolume = entry.summary?.volume;
+  const volume = rawVolume !== "" ? rawVolume : undefined;
   const genre = entry.hanmoto?.genrename ?? undefined;
 
   const textContents = entry.onix?.CollateralDetail?.TextContent ?? [];
