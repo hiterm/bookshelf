@@ -8,14 +8,14 @@ import {
   Text,
 } from "@mantine/core";
 import { useEffect } from "react";
-import { BookSearchResult } from "./useBookSearch";
+import { BookLookupResult } from "./useBookLookup";
 import { useOpenBdDetail } from "./useOpenBdDetail";
 
 type BookDetailModalProps = {
   opened: boolean;
   onClose: () => void;
-  searchResult: BookSearchResult;
-  onSelect: (result: BookSearchResult) => void;
+  searchResult: BookLookupResult;
+  onSelect: (result: BookLookupResult) => void;
 };
 
 export const BookDetailModal = ({

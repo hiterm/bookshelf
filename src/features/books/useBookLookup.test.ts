@@ -1,6 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-import { useBookSearch } from "./useBookSearch";
+import { useBookLookup } from "./useBookLookup";
 
 const DC_NS = "http://purl.org/dc/elements/1.1/";
 const XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
@@ -58,9 +58,9 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("useBookSearch", () => {
+describe("useBookLookup", () => {
   test("initial state is idle", () => {
-    const { result } = renderHook(() => useBookSearch());
+    const { result } = renderHook(() => useBookLookup());
     expect(result.current.state.status).toBe("idle");
   });
 
@@ -68,7 +68,7 @@ describe("useBookSearch", () => {
     const mockFetch = vi.fn();
     vi.stubGlobal("fetch", mockFetch);
 
-    const { result } = renderHook(() => useBookSearch());
+    const { result } = renderHook(() => useBookLookup());
 
     await act(async () => {
       await result.current.search({}, "googleBooks");
@@ -84,7 +84,7 @@ describe("useBookSearch", () => {
       .mockReturnValue(googleBooksResponse("Rustプログラミング", ["著者A"]));
     vi.stubGlobal("fetch", mockFetch);
 
-    const { result } = renderHook(() => useBookSearch());
+    const { result } = renderHook(() => useBookLookup());
 
     await act(async () => {
       await result.current.search({ title: "Rust" }, "googleBooks");
@@ -106,7 +106,7 @@ describe("useBookSearch", () => {
       .mockReturnValue(googleBooksResponse("Some Book", ["Author"]));
     vi.stubGlobal("fetch", mockFetch);
 
-    const { result } = renderHook(() => useBookSearch());
+    const { result } = renderHook(() => useBookLookup());
 
     await act(async () => {
       await result.current.search({ isbn: "978-4-06-536243-3" }, "googleBooks");
@@ -120,7 +120,7 @@ describe("useBookSearch", () => {
   test("Google Books returning no items yields success with empty results", async () => {
     vi.stubGlobal("fetch", vi.fn().mockReturnValue(makeJsonResponse({})));
 
-    const { result } = renderHook(() => useBookSearch());
+    const { result } = renderHook(() => useBookLookup());
 
     await act(async () => {
       await result.current.search({ title: "unknown" }, "googleBooks");
@@ -142,7 +142,7 @@ describe("useBookSearch", () => {
       );
     vi.stubGlobal("fetch", mockFetch);
 
-    const { result } = renderHook(() => useBookSearch());
+    const { result } = renderHook(() => useBookLookup());
 
     await act(async () => {
       await result.current.search({ title: "プログラミング" }, "ndl");
@@ -166,7 +166,7 @@ describe("useBookSearch", () => {
       .mockReturnValue(makeTextResponse(ndlXml("テスト", [])));
     vi.stubGlobal("fetch", mockFetch);
 
-    const { result } = renderHook(() => useBookSearch());
+    const { result } = renderHook(() => useBookLookup());
 
     await act(async () => {
       await result.current.search({ isbn: "978-4-06-536243-3" }, "ndl");
@@ -183,7 +183,7 @@ describe("useBookSearch", () => {
       vi.fn().mockReturnValue(makeJsonResponse({}, false)),
     );
 
-    const { result } = renderHook(() => useBookSearch());
+    const { result } = renderHook(() => useBookLookup());
 
     await act(async () => {
       await result.current.search({ title: "test" }, "googleBooks");
@@ -203,7 +203,7 @@ describe("useBookSearch", () => {
       vi.fn().mockReturnValue(Promise.reject(new Error("network error"))),
     );
 
-    const { result } = renderHook(() => useBookSearch());
+    const { result } = renderHook(() => useBookLookup());
 
     await act(async () => {
       await result.current.search({ title: "test" }, "googleBooks");
@@ -240,7 +240,7 @@ describe("useBookSearch", () => {
       );
     vi.stubGlobal("fetch", mockFetch);
 
-    const { result } = renderHook(() => useBookSearch());
+    const { result } = renderHook(() => useBookLookup());
 
     await act(async () => {
       await result.current.search({ title: "テスト" }, "ndl");
@@ -281,7 +281,7 @@ describe("useBookSearch", () => {
       );
     vi.stubGlobal("fetch", mockFetch);
 
-    const { result } = renderHook(() => useBookSearch());
+    const { result } = renderHook(() => useBookLookup());
 
     await act(async () => {
       await result.current.search({ title: "テスト" }, "ndl");
@@ -305,7 +305,7 @@ describe("useBookSearch", () => {
       .mockReturnValueOnce(makeJsonResponse({}, false));
     vi.stubGlobal("fetch", mockFetch);
 
-    const { result } = renderHook(() => useBookSearch());
+    const { result } = renderHook(() => useBookLookup());
 
     await act(async () => {
       await result.current.search({ title: "テスト" }, "ndl");
@@ -326,7 +326,7 @@ describe("useBookSearch", () => {
       );
     vi.stubGlobal("fetch", mockFetch);
 
-    const { result } = renderHook(() => useBookSearch());
+    const { result } = renderHook(() => useBookLookup());
 
     await act(async () => {
       await result.current.search({ title: "テスト" }, "ndl");
@@ -349,7 +349,7 @@ describe("useBookSearch", () => {
       );
     vi.stubGlobal("fetch", mockFetch);
 
-    const { result } = renderHook(() => useBookSearch());
+    const { result } = renderHook(() => useBookLookup());
 
     act(() => {
       void result.current.search({ title: "first" }, "googleBooks");

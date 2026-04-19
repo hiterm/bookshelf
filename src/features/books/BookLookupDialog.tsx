@@ -14,31 +14,31 @@ import {
 import { useState } from "react";
 import { BookDetailModal } from "./BookDetailModal";
 import {
-  BookSearchBackend,
-  BookSearchResult,
-  useBookSearch,
-} from "./useBookSearch";
+  BookLookupBackend,
+  BookLookupResult,
+  useBookLookup,
+} from "./useBookLookup";
 
-type BookSearchDialogProps = {
+type BookLookupDialogProps = {
   opened: boolean;
   onClose: () => void;
-  onSelect: (result: BookSearchResult) => void;
+  onSelect: (result: BookLookupResult) => void;
 };
 
-export const BookSearchDialog = ({
+export const BookLookupDialog = ({
   opened,
   onClose,
   onSelect,
-}: BookSearchDialogProps) => {
-  const [backend, setBackend] = useState<BookSearchBackend>("ndl");
+}: BookLookupDialogProps) => {
+  const [backend, setBackend] = useState<BookLookupBackend>("ndl");
   const [title, setTitle] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [publisher, setPublisher] = useState("");
   const [isbn, setIsbn] = useState("");
-  const [detailResult, setDetailResult] = useState<BookSearchResult | null>(
+  const [detailResult, setDetailResult] = useState<BookLookupResult | null>(
     null,
   );
-  const { state, search } = useBookSearch();
+  const { state, search } = useBookLookup();
 
   const isAllEmpty = !title && !authorName && !publisher && !isbn;
 

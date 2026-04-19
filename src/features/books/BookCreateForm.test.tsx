@@ -23,8 +23,8 @@ vi.mock("../../compoments/hooks/useAuthors", () => ({
   }),
 }));
 
-vi.mock("./useBookSearch", () => ({
-  useBookSearch: () => ({
+vi.mock("./useBookLookup", () => ({
+  useBookLookup: () => ({
     state: { status: "idle" },
     search: vi.fn(),
   }),

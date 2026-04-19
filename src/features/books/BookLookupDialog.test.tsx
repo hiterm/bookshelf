@@ -3,14 +3,14 @@ import { MantineProvider } from "@mantine/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
-import { BookSearchDialog } from "./BookSearchDialog";
-import { BookSearchResult, BookSearchState } from "./useBookSearch";
+import { BookLookupDialog } from "./BookLookupDialog";
+import { BookLookupResult, BookLookupState } from "./useBookLookup";
 
 const mockSearch = vi.fn();
-let mockState: BookSearchState = { status: "idle" };
+let mockState: BookLookupState = { status: "idle" };
 
-vi.mock("./useBookSearch", () => ({
-  useBookSearch: () => ({
+vi.mock("./useBookLookup", () => ({
+  useBookLookup: () => ({
     state: mockState,
     search: mockSearch,
   }),
@@ -46,12 +46,12 @@ const mockMatchMedia = () => {
 const renderDialog = (props: {
   opened?: boolean;
   onClose?: () => void;
-  onSelect?: (result: BookSearchResult) => void;
+  onSelect?: (result: BookLookupResult) => void;
 }) => {
   mockMatchMedia();
   return render(
     <MantineProvider>
-      <BookSearchDialog
+      <BookLookupDialog
         opened={props.opened ?? true}
         onClose={props.onClose ?? vi.fn()}
         onSelect={props.onSelect ?? vi.fn()}
@@ -65,7 +65,7 @@ beforeEach(() => {
   mockSearch.mockReset();
 });
 
-describe("BookSearchDialog", () => {
+describe("BookLookupDialog", () => {
   test("renders four TextInputs and a SegmentedControl when open", async () => {
     renderDialog({});
 
@@ -97,7 +97,7 @@ describe("BookSearchDialog", () => {
 
   test("clicking 検索 with a title value triggers search and shows results", async () => {
     const user = userEvent.setup();
-    const sampleResult: BookSearchResult = {
+    const sampleResult: BookLookupResult = {
       title: "Rustプログラミング",
       authorNames: ["著者A"],
       isbn: "9784065362433",
@@ -117,7 +117,7 @@ describe("BookSearchDialog", () => {
 
     rerender(
       <MantineProvider>
-        <BookSearchDialog opened={true} onClose={vi.fn()} onSelect={vi.fn()} />
+        <BookLookupDialog opened={true} onClose={vi.fn()} onSelect={vi.fn()} />
       </MantineProvider>,
     );
 
@@ -126,8 +126,8 @@ describe("BookSearchDialog", () => {
     });
   });
 
-  test("clicking a result calls onSelect with correct BookSearchResult", async () => {
-    const sampleResult: BookSearchResult = {
+  test("clicking a result calls onSelect with correct BookLookupResult", async () => {
+    const sampleResult: BookLookupResult = {
       title: "テスト書籍",
       authorNames: ["著者X"],
       isbn: "9784000000001",

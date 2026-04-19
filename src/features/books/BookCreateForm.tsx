@@ -13,7 +13,7 @@ import { UseFormReturnType } from "@mantine/form";
 import React, { useState } from "react";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
 import { AuthorsCombobox } from "./AuthorsCombobox";
-import { BookSearchDialog } from "./BookSearchDialog";
+import { BookLookupDialog } from "./BookLookupDialog";
 import { BookFormValues } from "./bookFormSchema";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";
 import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
@@ -48,7 +48,7 @@ export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
           検索して自動入力
         </Button>
       </Group>
-      <BookSearchDialog
+      <BookLookupDialog
         opened={searchOpened}
         onClose={() => {
           setSearchOpened(false);

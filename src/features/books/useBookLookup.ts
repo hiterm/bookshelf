@@ -1,15 +1,15 @@
 import { useRef, useState } from "react";
 
-export type BookSearchQuery = {
+export type BookLookupQuery = {
   isbn?: string;
   title?: string;
   authorName?: string;
   publisher?: string;
 };
 
-export type BookSearchBackend = "googleBooks" | "ndl";
+export type BookLookupBackend = "googleBooks" | "ndl";
 
-export type BookSearchResult = {
+export type BookLookupResult = {
   title: string;
   subtitle?: string;
   authorNames: string[];
@@ -22,10 +22,10 @@ export type BookSearchResult = {
   volume?: string;
 };
 
-export type BookSearchState =
+export type BookLookupState =
   | { status: "idle" }
   | { status: "loading" }
-  | { status: "success"; results: BookSearchResult[] }
+  | { status: "success"; results: BookLookupResult[] }
   | { status: "error"; message: string };
 
 const PRODUCT_FORM_DETAIL_LABELS: Record<string, string> = {
@@ -57,8 +57,8 @@ type OpenBdEnrichEntry = {
 } | null;
 
 const enrichWithOpenBd = async (
-  results: BookSearchResult[],
-): Promise<BookSearchResult[]> => {
+  results: BookLookupResult[],
+): Promise<BookLookupResult[]> => {
   const isbns = results.map((r) => r.isbn).filter(Boolean);
   if (isbns.length === 0) return results;
 
@@ -95,8 +95,8 @@ const DC_NS = "http://purl.org/dc/elements/1.1/";
 const XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
 
 const searchGoogleBooks = async (
-  query: BookSearchQuery,
-): Promise<BookSearchResult[]> => {
+  query: BookLookupQuery,
+): Promise<BookLookupResult[]> => {
   const parts: string[] = [];
   if (query.title) parts.push(`intitle:${query.title}`);
   if (query.authorName) parts.push(`inauthor:${query.authorName}`);
@@ -144,8 +144,8 @@ const searchGoogleBooks = async (
 };
 
 const searchNdl = async (
-  query: BookSearchQuery,
-): Promise<BookSearchResult[]> => {
+  query: BookLookupQuery,
+): Promise<BookLookupResult[]> => {
   const params = new URLSearchParams();
   params.set("mediaType", "1");
   if (query.title) params.set("title", query.title);
@@ -201,16 +201,16 @@ const searchNdl = async (
     .map(({ categories: _categories, ...rest }) => rest);
 };
 
-export const useBookSearch = (): {
-  state: BookSearchState;
-  search: (query: BookSearchQuery, backend: BookSearchBackend) => Promise<void>;
+export const useBookLookup = (): {
+  state: BookLookupState;
+  search: (query: BookLookupQuery, backend: BookLookupBackend) => Promise<void>;
 } => {
-  const [state, setState] = useState<BookSearchState>({ status: "idle" });
+  const [state, setState] = useState<BookLookupState>({ status: "idle" });
   const latestRequestIdRef = useRef(0);
 
   const search = async (
-    query: BookSearchQuery,
-    backend: BookSearchBackend,
+    query: BookLookupQuery,
+    backend: BookLookupBackend,
   ): Promise<void> => {
     const isEmpty =
       !query.isbn && !query.title && !query.authorName && !query.publisher;
