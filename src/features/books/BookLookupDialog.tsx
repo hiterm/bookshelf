@@ -141,12 +141,21 @@ export const BookLookupDialog = ({
                           {result.openBdFormat}
                         </Text>
                       )}
-                      <Group justify="space-between" align="center">
-                        <Text size="sm" c="dimmed">
-                          {[result.publisher, result.publishedDate, result.isbn]
-                            .filter(Boolean)
-                            .join("  ")}
-                        </Text>
+                      <Group justify="space-between" align="flex-end">
+                        <Stack gap={0}>
+                          {(result.publisher ?? result.publishedDate) && (
+                            <Text size="sm" c="dimmed">
+                              {[result.publisher, result.publishedDate]
+                                .filter(Boolean)
+                                .join(" ")}
+                            </Text>
+                          )}
+                          {result.isbn && (
+                            <Text size="sm" c="dimmed">
+                              ISBN: {result.isbn}
+                            </Text>
+                          )}
+                        </Stack>
                         <Group gap="xs">
                           <Button
                             variant="outline"
