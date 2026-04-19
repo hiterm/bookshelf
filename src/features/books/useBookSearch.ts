@@ -126,9 +126,13 @@ const searchNdl = async (
       );
       const publishedDate =
         dateEl != null ? dateEl.textContent.trim() : undefined;
-      return { title, authorNames, isbn, publisher, publishedDate };
+      const categories = Array.from(item.querySelectorAll("category")).map(
+        (el) => el.textContent.trim(),
+      );
+      return { title, authorNames, isbn, publisher, publishedDate, categories };
     })
-    .filter((r) => r.title !== "");
+    .filter((r) => r.title !== "" && r.categories.includes("図書"))
+    .map(({ categories: _categories, ...rest }) => rest);
 };
 
 export const useBookSearch = (): {

@@ -23,6 +23,7 @@ const ndlXml = (title: string, creators: string[], isbn = "", publisher = "") =>
   <channel>
     <item>
       <title>${title}</title>
+      <category>図書</category>
       ${creators.map((c) => `<dc:creator>${c}</dc:creator>`).join("")}
       ${isbn ? `<dc:identifier xsi:type="dcndl:ISBN">${isbn}</dc:identifier>` : ""}
       ${publisher ? `<dc:publisher>${publisher}</dc:publisher>` : ""}
