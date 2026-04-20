@@ -184,7 +184,7 @@ const searchNdl = async (
       const identifierEl =
         identifierEls.find(
           (el) => el.textContent.trim().replace(/-/g, "").length === 13,
-        ) ?? identifierEls[0];
+        ) ?? identifierEls.at(0);
       const isbn =
         identifierEl != null
           ? identifierEl.textContent.trim().replace(/-/g, "")

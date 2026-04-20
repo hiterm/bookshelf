@@ -143,7 +143,7 @@ export const BookLookupDialog = ({
                       )}
                       <Group justify="space-between" align="flex-end">
                         <Stack gap={0}>
-                          {(result.publisher ?? result.publishedDate) && (
+                          {(result.publisher || result.publishedDate) && (
                             <Text size="sm" c="dimmed">
                               {[result.publisher, result.publishedDate]
                                 .filter(Boolean)

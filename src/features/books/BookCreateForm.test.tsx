@@ -124,9 +124,7 @@ describe("BookCreateForm", () => {
     await user.click(screen.getByRole("button", { name: "送信" }));
 
     expect(mockSubmit).not.toHaveBeenCalled();
-    expect(
-      screen.getByText(/too small/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/too small/i)).toBeInTheDocument();
   });
 
   test("submits with entered title", async () => {
