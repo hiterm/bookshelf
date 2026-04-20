@@ -6,16 +6,15 @@ const DC_NS = "http://purl.org/dc/elements/1.1/";
 const XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
 
 const makeTextResponse = (text: string, ok = true) =>
-  Promise.resolve({
-    ok,
-    text: () => Promise.resolve(text),
-  } as Response);
+  Promise.resolve(new Response(text, { status: ok ? 200 : 500 }));
 
 const makeJsonResponse = (body: unknown, ok = true) =>
-  Promise.resolve({
-    ok,
-    json: () => Promise.resolve(body),
-  } as Response);
+  Promise.resolve(
+    new Response(JSON.stringify(body), {
+      status: ok ? 200 : 500,
+      headers: { "Content-Type": "application/json" },
+    }),
+  );
 
 const ndlXml = (title: string, creators: string[], isbn = "", publisher = "") =>
   `<?xml version="1.0" encoding="UTF-8"?>

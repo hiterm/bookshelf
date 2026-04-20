@@ -57,6 +57,7 @@ export const BookDetailModal = ({
           {coverImageUrl && (
             <Image
               src={coverImageUrl}
+              alt={searchResult.title}
               width={120}
               fit="contain"
               style={{ flexShrink: 0 }}
@@ -106,14 +107,9 @@ export const BookDetailModal = ({
           </Stack>
         )}
         {state.status === "error" && (
-          <Stack gap="xs">
-            <Text size="sm" c="dimmed">
-              詳細情報を取得できませんでした
-            </Text>
-            <Text size="xs" c="red" style={{ wordBreak: "break-all" }}>
-              {state.debugInfo}
-            </Text>
-          </Stack>
+          <Text size="sm" c="dimmed">
+            {state.message}
+          </Text>
         )}
         <Group justify="flex-end">
           <Button onClick={handleSelect}>この本で選択</Button>

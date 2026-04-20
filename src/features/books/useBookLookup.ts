@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { z } from "zod";
 
 export type BookLookupQuery = {
   isbn?: string;
@@ -43,33 +44,62 @@ const PRODUCT_FORM_DETAIL_LABELS: Record<string, string> = {
   B502: "変形判",
 };
 
-type OpenBdEnrichEntry = {
-  summary?: {
-    isbn?: string;
-    cover?: string;
-    title?: string;
-    series?: string;
-    volume?: string;
-  };
-  onix?: {
-    DescriptiveDetail?: { ProductFormDetail?: string };
-  };
-} | null;
+const openBdEnrichEntrySchema = z.union([
+  z.object({
+    summary: z
+      .object({
+        isbn: z.string().optional(),
+        cover: z.string().optional(),
+        title: z.string().optional(),
+        series: z.string().optional(),
+        volume: z.string().optional(),
+      })
+      .optional(),
+    onix: z
+      .object({
+        DescriptiveDetail: z
+          .object({ ProductFormDetail: z.string().optional() })
+          .optional(),
+      })
+      .optional(),
+  }),
+  z.null(),
+]);
+
+const openBdResponseSchema = z.array(openBdEnrichEntrySchema);
+
+type OpenBdEnrichEntry = z.infer<typeof openBdEnrichEntrySchema>;
 
 const enrichWithOpenBd = async (
   results: BookLookupResult[],
 ): Promise<BookLookupResult[]> => {
   const isbns = results.map((r) => r.isbn).filter(Boolean);
   if (isbns.length === 0) return results;
+  const uniqueIsbns = Array.from(new Set(isbns));
 
-  const response = await fetch(`/openbd-proxy/v1/get?isbn=${isbns.join(",")}`);
-  if (!response.ok) return results;
+  let data: z.infer<typeof openBdResponseSchema>;
+  try {
+    const response = await fetch(
+      `/openbd-proxy/v1/get?isbn=${uniqueIsbns.join(",")}`,
+    );
+    if (!response.ok) {
+      console.warn(
+        `OpenBD enrichment failed: status=${String(response.status)}`,
+        { isbns: uniqueIsbns },
+      );
+      return results;
+    }
+    const rawData: unknown = await response.json();
+    data = openBdResponseSchema.parse(rawData);
+  } catch (err) {
+    console.warn("OpenBD enrichment error:", err, { isbns: uniqueIsbns });
+    return results;
+  }
 
-  const data = (await response.json()) as OpenBdEnrichEntry[];
   const byRequestIsbn = new Map<string, OpenBdEnrichEntry>();
-  for (let i = 0; i < isbns.length; i++) {
+  for (let i = 0; i < uniqueIsbns.length; i++) {
     const entry = data[i];
-    if (entry) byRequestIsbn.set(isbns[i], entry);
+    if (entry) byRequestIsbn.set(uniqueIsbns[i], entry);
   }
 
   return results.map((r) => {
@@ -94,6 +124,31 @@ const enrichWithOpenBd = async (
   });
 };
 
+const googleBooksResponseSchema = z.object({
+  items: z
+    .array(
+      z.object({
+        volumeInfo: z.object({
+          title: z.string().optional(),
+          subtitle: z.string().optional(),
+          authors: z.array(z.string()).optional(),
+          publisher: z.string().optional(),
+          publishedDate: z.string().optional(),
+          industryIdentifiers: z
+            .array(z.object({ type: z.string(), identifier: z.string() }))
+            .optional(),
+          imageLinks: z
+            .object({
+              thumbnail: z.string().optional(),
+              smallThumbnail: z.string().optional(),
+            })
+            .optional(),
+        }),
+      }),
+    )
+    .optional(),
+});
+
 const DC_NS = "http://purl.org/dc/elements/1.1/";
 const XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
 
@@ -113,19 +168,8 @@ const searchGoogleBooks = async (
   if (!response.ok) {
     throw new Error(`Google Books API error: ${String(response.status)}`);
   }
-  const data = (await response.json()) as {
-    items?: {
-      volumeInfo: {
-        title?: string;
-        subtitle?: string;
-        authors?: string[];
-        publisher?: string;
-        publishedDate?: string;
-        industryIdentifiers?: { type: string; identifier: string }[];
-        imageLinks?: { thumbnail?: string; smallThumbnail?: string };
-      };
-    }[];
-  };
+  const rawData: unknown = await response.json();
+  const data = googleBooksResponseSchema.parse(rawData);
   if (!data.items) return [];
 
   return data.items
@@ -239,9 +283,9 @@ export const useBookLookup = (): {
       let enriched = results;
       try {
         enriched = await enrichWithOpenBd(results);
-      } catch {
-        // silently use unenriched results
-      }
+        // enrichment errors are already logged and handled inside enrichWithOpenBd
+        // eslint-disable-next-line no-empty
+      } catch {}
       if (requestId !== latestRequestIdRef.current) return;
       setState({ status: "success", results: enriched });
     } catch {

@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Group,
   Image,
@@ -9,7 +10,6 @@ import {
   Stack,
   Text,
   TextInput,
-  UnstyledButton,
 } from "@mantine/core";
 import { useState } from "react";
 import { BookDetailModal } from "./BookDetailModal";
@@ -40,10 +40,23 @@ export const BookLookupDialog = ({
   );
   const { state, search } = useBookLookup();
 
-  const isAllEmpty = !title && !authorName && !publisher && !isbn;
+  const trimmedTitle = title.trim();
+  const trimmedAuthorName = authorName.trim();
+  const trimmedPublisher = publisher.trim();
+  const trimmedIsbn = isbn.trim();
+  const isAllEmpty =
+    !trimmedTitle && !trimmedAuthorName && !trimmedPublisher && !trimmedIsbn;
 
   const handleSearch = () => {
-    void search({ title, authorName, publisher, isbn }, backend);
+    void search(
+      {
+        title: trimmedTitle,
+        authorName: trimmedAuthorName,
+        publisher: trimmedPublisher,
+        isbn: trimmedIsbn,
+      },
+      backend,
+    );
   };
 
   return (
@@ -100,12 +113,22 @@ export const BookLookupDialog = ({
         {state.status === "success" && state.results.length > 0 && (
           <Stack style={{ maxHeight: 400, overflowY: "auto" }}>
             {state.results.map((result, index) => (
-              <UnstyledButton
+              <Box
                 key={index}
+                component="div"
                 style={{ cursor: "pointer" }}
+                role="button"
+                tabIndex={0}
                 onClick={() => {
                   onSelect(result);
                   onClose();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSelect(result);
+                    onClose();
+                  }
                 }}
               >
                 <Paper p="xs" withBorder>
@@ -184,7 +207,7 @@ export const BookLookupDialog = ({
                     </Stack>
                   </Group>
                 </Paper>
-              </UnstyledButton>
+              </Box>
             ))}
           </Stack>
         )}

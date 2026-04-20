@@ -115,8 +115,21 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
                   }}
                   onClick={
                     isPending
-                      ? () => {
+                      ? (e) => {
+                          e.stopPropagation();
                           handlePendingAuthorEdit(author);
+                        }
+                      : undefined
+                  }
+                  role={isPending ? "button" : undefined}
+                  tabIndex={isPending ? 0 : undefined}
+                  onKeyDown={
+                    isPending
+                      ? (e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handlePendingAuthorEdit(author);
+                          }
                         }
                       : undefined
                   }

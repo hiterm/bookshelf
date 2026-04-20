@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 export type OpenBdDetail = {
   coverImageUrl?: string;
@@ -16,7 +16,7 @@ export type OpenBdState =
   | { status: "idle" }
   | { status: "loading" }
   | { status: "success"; detail: OpenBdDetail; rawData: unknown }
-  | { status: "error"; debugInfo: string };
+  | { status: "error"; message: string };
 
 type OpenBdSummary = {
   isbn?: string;
@@ -132,43 +132,68 @@ export const useOpenBdDetail = (): {
   reset: () => void;
 } => {
   const [state, setState] = useState<OpenBdState>({ status: "idle" });
+  const requestIdRef = useRef(0);
 
   const fetch = useCallback(async (isbn: string): Promise<void> => {
+    requestIdRef.current += 1;
+    const currentRequest = requestIdRef.current;
     setState({ status: "loading" });
     const url = `/openbd-proxy/v1/get?isbn=${encodeURIComponent(isbn)}`;
     try {
       const response = await window.fetch(url);
       if (!response.ok) {
-        const body = await response.text().catch(() => "(body unreadable)");
+        console.debug(
+          `[DEBUG] url=${url} status=${String(response.status)}`,
+          await response.text().catch(() => "(body unreadable)"),
+        );
+        if (currentRequest !== requestIdRef.current) return;
         setState({
           status: "error",
-          debugInfo: `[DEBUG] url=${url} status=${String(response.status)} body=${body.slice(0, 300)}`,
+          message: "詳細情報を取得できませんでした",
         });
         return;
       }
       const text = await response.text();
-      let data: OpenBdEntry[];
+      let parsed: unknown;
       try {
-        data = JSON.parse(text) as OpenBdEntry[];
+        parsed = JSON.parse(text);
       } catch (parseErr) {
+        console.debug(
+          `[DEBUG] url=${url} JSON parse error: ${String(parseErr)} body=${text.slice(0, 300)}`,
+        );
+        if (currentRequest !== requestIdRef.current) return;
         setState({
           status: "error",
-          debugInfo: `[DEBUG] url=${url} JSON parse error: ${String(parseErr)} body=${text.slice(0, 300)}`,
+          message: "詳細情報を取得できませんでした",
         });
         return;
       }
+      if (
+        !Array.isArray(parsed) ||
+        !parsed.every((e) => e === null || typeof e === "object")
+      ) {
+        console.debug(`[DEBUG] url=${url} unexpected response shape`, parsed);
+        if (currentRequest !== requestIdRef.current) return;
+        setState({
+          status: "error",
+          message: "詳細情報を取得できませんでした",
+        });
+        return;
+      }
+      const data = parsed as OpenBdEntry[];
       const entry = data[0] ?? null;
       const detail = parseOpenBdEntry(entry);
+      if (currentRequest !== requestIdRef.current) return;
       setState({ status: "success", detail, rawData: data });
     } catch (err) {
-      setState({
-        status: "error",
-        debugInfo: `[DEBUG] url=${url} fetch error: ${String(err)}`,
-      });
+      console.debug(`[DEBUG] url=${url} fetch error: ${String(err)}`);
+      if (currentRequest !== requestIdRef.current) return;
+      setState({ status: "error", message: "詳細情報を取得できませんでした" });
     }
   }, []);
 
   const reset = useCallback(() => {
+    requestIdRef.current += 1;
     setState({ status: "idle" });
   }, []);
 
