@@ -58,7 +58,7 @@ export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
           form.setFieldValue("isbn", result.isbn);
           const normalize = (s: string) => s.replace(/\s+/g, "").toLowerCase();
           const resolvedAuthors = result.authorNames
-            .map((name) => name.trim())
+            .map((name) => name.trim().replace(/\s+/g, " "))
             .filter((name) => name !== "")
             .map((name) => {
               const existing = data.authors.find(
@@ -66,7 +66,7 @@ export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
                   a.name.trim().toLowerCase() === name.toLowerCase() ||
                   normalize(a.name) === normalize(name),
               );
-              return existing ?? { id: `__pending__:${name}`, name };
+              return existing ?? { id: `__pending__:${normalize(name)}`, name };
             });
           const uniqueAuthors = Array.from(
             new Map(resolvedAuthors.map((a) => [a.id, a])).values(),
