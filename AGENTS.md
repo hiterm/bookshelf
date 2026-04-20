@@ -28,7 +28,6 @@
 
 - Follow existing conventions in the codebase
 - Use existing libraries and utilities
-- No comments unless explicitly requested
 - Never introduce code that exposes or logs secrets
 - When ignoring a linter or security tool finding, always add a comment
   explaining why it is safe to ignore. Place the comment on the line immediately
