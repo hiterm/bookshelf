@@ -66,14 +66,16 @@ const enrichWithOpenBd = async (
   if (!response.ok) return results;
 
   const data = (await response.json()) as OpenBdEnrichEntry[];
-  const byIsbn = new Map<string, OpenBdEnrichEntry>();
-  for (const entry of data) {
-    if (entry?.summary?.isbn) byIsbn.set(entry.summary.isbn, entry);
+  const byRequestIsbn = new Map<string, OpenBdEnrichEntry>();
+  for (let i = 0; i < isbns.length; i++) {
+    const entry = data[i];
+    if (entry) byRequestIsbn.set(isbns[i], entry);
   }
 
   return results.map((r) => {
-    const entry = byIsbn.get(r.isbn);
+    const entry = byRequestIsbn.get(r.isbn);
     if (!entry) return r;
+    const isbn13 = entry.summary?.isbn;
     const cover = entry.summary?.cover;
     const rawTitle = entry.summary?.title;
     const rawSeries = entry.summary?.series;
@@ -82,6 +84,7 @@ const enrichWithOpenBd = async (
       entry.onix?.DescriptiveDetail?.ProductFormDetail ?? "";
     return {
       ...r,
+      isbn: isbn13 ?? r.isbn,
       title: rawTitle != null && rawTitle !== "" ? rawTitle : r.title,
       coverImageUrl: r.coverImageUrl ?? (cover !== "" ? cover : undefined),
       openBdFormat: PRODUCT_FORM_DETAIL_LABELS[productFormDetail],
@@ -175,9 +178,13 @@ const searchNdl = async (
             .trim(),
         )
         .filter(Boolean);
-      const identifierEl = Array.from(
+      const identifierEls = Array.from(
         item.getElementsByTagNameNS(DC_NS, "identifier"),
-      ).find((el) => el.getAttributeNS(XSI_NS, "type") === "dcndl:ISBN");
+      ).filter((el) => el.getAttributeNS(XSI_NS, "type") === "dcndl:ISBN");
+      const identifierEl =
+        identifierEls.find(
+          (el) => el.textContent.trim().replace(/-/g, "").length === 13,
+        ) ?? identifierEls[0];
       const isbn =
         identifierEl != null
           ? identifierEl.textContent.trim().replace(/-/g, "")
