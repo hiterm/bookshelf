@@ -2,9 +2,9 @@ import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { zodResolver } from "mantine-form-zod-resolver";
+import { zod4Resolver } from "mantine-form-zod-resolver";
 import React from "react";
 import { vi } from "vitest";
 import { BookCreateForm } from "./BookCreateForm";
@@ -57,7 +57,7 @@ type TestFormProps = { onSubmit: (values: BookFormValues) => void };
 const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
   const form = useForm({
     initialValues: emptyBook,
-    validate: zodResolver(bookFormSchema),
+    validate: zod4Resolver(bookFormSchema),
   });
 
   return (
@@ -111,6 +111,21 @@ describe("BookCreateForm", () => {
     expect(await findByRole("checkbox", { name: "所有" })).toBeInTheDocument();
     expect(
       await findByRole("button", { name: "検索して自動入力" }),
+    ).toBeInTheDocument();
+  });
+
+  test("shows title error when submitted empty", async () => {
+    mockMatchMedia();
+
+    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
+    render(<TestForm onSubmit={mockSubmit} />, { wrapper: createWrapper() });
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "送信" }));
+
+    expect(mockSubmit).not.toHaveBeenCalled();
+    expect(
+      screen.getByText(/too small/i),
     ).toBeInTheDocument();
   });
 

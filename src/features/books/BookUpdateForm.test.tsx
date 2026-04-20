@@ -4,7 +4,7 @@ import { useForm } from "@mantine/form";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { zodResolver } from "mantine-form-zod-resolver";
+import { zod4Resolver } from "mantine-form-zod-resolver";
 import React from "react";
 import { vi } from "vitest";
 import { bookFormSchema, BookFormValues } from "./bookFormSchema";
@@ -54,7 +54,7 @@ type TestFormProps = { onSubmit: (values: BookFormValues) => void };
 const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
   const form = useForm({
     initialValues: emptyBook,
-    validate: zodResolver(bookFormSchema),
+    validate: zod4Resolver(bookFormSchema),
     validateInputOnBlur: true,
   });
 

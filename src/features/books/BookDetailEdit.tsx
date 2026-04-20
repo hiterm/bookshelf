@@ -2,7 +2,7 @@ import { Box, Button, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "@tanstack/react-router";
-import { zodResolver } from "mantine-form-zod-resolver";
+import { zod4Resolver } from "mantine-form-zod-resolver";
 import React from "react";
 import { LinkButton } from "../../compoments/mantineTsr";
 import { useCreateAuthor } from "../../compoments/hooks/useCreateAuthor";
@@ -66,7 +66,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
 
   const form = useForm<BookFormValues>({
     initialValues: book,
-    validate: zodResolver(bookFormSchema),
+    validate: zod4Resolver(bookFormSchema),
     validateInputOnBlur: true,
   });
 
