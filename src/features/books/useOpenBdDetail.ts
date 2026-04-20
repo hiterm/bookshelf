@@ -85,6 +85,12 @@ const findTextContent = (
   return undefined;
 };
 
+export function isOpenBdEntries(x: unknown): x is OpenBdEntry[] {
+  return (
+    Array.isArray(x) && x.every((e) => e === null || typeof e === "object")
+  );
+}
+
 const parseOpenBdEntry = (entry: OpenBdEntry): OpenBdDetail => {
   if (entry == null) return {};
 
@@ -168,10 +174,7 @@ export const useOpenBdDetail = (): {
         });
         return;
       }
-      if (
-        !Array.isArray(parsed) ||
-        !parsed.every((e) => e === null || typeof e === "object")
-      ) {
+      if (!isOpenBdEntries(parsed)) {
         console.debug(`[DEBUG] url=${url} unexpected response shape`, parsed);
         if (currentRequest !== requestIdRef.current) return;
         setState({
@@ -180,7 +183,7 @@ export const useOpenBdDetail = (): {
         });
         return;
       }
-      const data = parsed as OpenBdEntry[];
+      const data = parsed;
       const entry = data[0] ?? null;
       const detail = parseOpenBdEntry(entry);
       if (currentRequest !== requestIdRef.current) return;

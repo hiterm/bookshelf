@@ -266,6 +266,7 @@ export const useBookLookup = (): {
     const isEmpty =
       !query.isbn && !query.title && !query.authorName && !query.publisher;
     if (isEmpty) {
+      latestRequestIdRef.current += 1;
       setState({ status: "idle" });
       return;
     }

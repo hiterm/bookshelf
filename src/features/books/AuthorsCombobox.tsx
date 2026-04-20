@@ -8,7 +8,7 @@ import {
   TextInput,
   useCombobox,
 } from "@mantine/core";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Author } from "./entity/Author";
 
 type AuthorsComboboxProps = {
@@ -27,6 +27,7 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
   const [authorSearch, setAuthorSearch] = useState("");
   const [editingAuthorId, setEditingAuthorId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
+  const skipCommitOnBlurRef = useRef(false);
 
   const combobox = useCombobox({
     onDropdownClose: () => {
@@ -116,6 +117,11 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
                   onClick={
                     isPending
                       ? (e) => {
+                          if (
+                            e.target instanceof Element &&
+                            e.target.closest('[aria-label^="Remove author"]')
+                          )
+                            return;
                           e.stopPropagation();
                           handlePendingAuthorEdit(author);
                         }
@@ -126,6 +132,11 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
                   onKeyDown={
                     isPending
                       ? (e) => {
+                          if (
+                            e.target instanceof Element &&
+                            e.target.closest('[aria-label^="Remove author"]')
+                          )
+                            return;
                           if (e.key === "Enter" || e.key === " ") {
                             e.preventDefault();
                             handlePendingAuthorEdit(author);
@@ -164,17 +175,25 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
                       onChange={(e) => {
                         setEditingName(e.currentTarget.value);
                       }}
+                      aria-label="Edit author name"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
                           commitPendingAuthorEdit();
                         }
                         if (e.key === "Escape") {
+                          skipCommitOnBlurRef.current = true;
                           setEditingAuthorId(null);
                           setEditingName("");
                         }
                       }}
-                      onBlur={commitPendingAuthorEdit}
+                      onBlur={() => {
+                        if (skipCommitOnBlurRef.current) {
+                          skipCommitOnBlurRef.current = false;
+                          return;
+                        }
+                        commitPendingAuthorEdit();
+                      }}
                       size="xs"
                       autoFocus
                     />

@@ -124,6 +124,7 @@ export const BookLookupDialog = ({
                   onClose();
                 }}
                 onKeyDown={(e) => {
+                  if (e.target !== e.currentTarget) return;
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     onSelect(result);
@@ -140,6 +141,11 @@ export const BookLookupDialog = ({
                         h={70}
                         fit="contain"
                         style={{ flexShrink: 0 }}
+                        alt={
+                          result.title
+                            ? `Cover of ${result.title}`
+                            : "Book cover"
+                        }
                       />
                     )}
                     <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>

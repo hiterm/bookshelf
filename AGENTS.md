@@ -61,7 +61,7 @@ When writing tests for Mantine components, refer to these docs as needed:
 
 ### Pre-commit (mandatory, no exceptions)
 
-Before every `git commit`, run all of the following and fix any
+Before every `git commit`, run the following and fix any
 failures before proceeding:
 
 ```bash
