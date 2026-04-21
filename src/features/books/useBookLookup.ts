@@ -110,16 +110,18 @@ const enrichWithOpenBd = async (
     const rawTitle = entry.summary?.title;
     const rawSeries = entry.summary?.series;
     const rawVolume = entry.summary?.volume;
-    const productFormDetail =
-      entry.onix?.DescriptiveDetail?.ProductFormDetail ?? "";
+    const productFormDetail = entry.onix?.DescriptiveDetail?.ProductFormDetail;
     return {
       ...r,
-      isbn: isbn13 ?? r.isbn,
+      isbn: isbn13 != null && isbn13 !== "" ? isbn13 : r.isbn,
       title: rawTitle != null && rawTitle !== "" ? rawTitle : r.title,
       coverImageUrl: r.coverImageUrl ?? (cover !== "" ? cover : undefined),
-      openBdFormat: PRODUCT_FORM_DETAIL_LABELS[productFormDetail],
-      series: rawSeries !== "" ? rawSeries : undefined,
-      volume: rawVolume !== "" ? rawVolume : undefined,
+      openBdFormat:
+        productFormDetail != null
+          ? PRODUCT_FORM_DETAIL_LABELS[productFormDetail]
+          : r.openBdFormat,
+      series: rawSeries != null && rawSeries !== "" ? rawSeries : r.series,
+      volume: rawVolume != null && rawVolume !== "" ? rawVolume : r.volume,
     };
   });
 };

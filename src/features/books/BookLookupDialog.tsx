@@ -114,23 +114,10 @@ export const BookLookupDialog = ({
           <Stack style={{ maxHeight: 400, overflowY: "auto" }}>
             {state.results.map((result, index) => (
               <Box
-                key={index}
+                key={
+                  result.isbn || `${backend}-${String(index)}-${result.title}`
+                }
                 component="div"
-                style={{ cursor: "pointer" }}
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  onSelect(result);
-                  onClose();
-                }}
-                onKeyDown={(e) => {
-                  if (e.target !== e.currentTarget) return;
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    onSelect(result);
-                    onClose();
-                  }
-                }}
               >
                 <Paper p="xs" withBorder>
                   <Group align="flex-start" wrap="nowrap">

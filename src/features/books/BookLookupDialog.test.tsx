@@ -141,7 +141,8 @@ describe("BookLookupDialog", () => {
 
     renderDialog({ onSelect, onClose });
 
-    await user.click(await screen.findByText("テスト書籍"));
+    await screen.findByText("テスト書籍");
+    await user.click(screen.getByRole("button", { name: "選択" }));
 
     expect(onSelect).toHaveBeenCalledWith(sampleResult);
     expect(onClose).toHaveBeenCalled();

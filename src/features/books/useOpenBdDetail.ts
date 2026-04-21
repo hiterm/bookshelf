@@ -87,7 +87,11 @@ const findTextContent = (
 
 export function isOpenBdEntries(x: unknown): x is OpenBdEntry[] {
   return (
-    Array.isArray(x) && x.every((e) => e === null || typeof e === "object")
+    Array.isArray(x) &&
+    x.every(
+      (e) =>
+        e === null || Object.prototype.toString.call(e) === "[object Object]",
+    )
   );
 }
 
@@ -102,7 +106,7 @@ const parseOpenBdEntry = (entry: OpenBdEntry): OpenBdDetail => {
   const series = rawSeries !== "" ? rawSeries : undefined;
   const rawVolume = entry.summary?.volume;
   const volume = rawVolume !== "" ? rawVolume : undefined;
-  const genre = entry.hanmoto?.genrename ?? undefined;
+  const genre = entry.hanmoto?.genrename;
 
   const textContents = entry.onix?.CollateralDetail?.TextContent ?? [];
   const description = findTextContent(textContents, "03", "02");
@@ -110,14 +114,21 @@ const parseOpenBdEntry = (entry: OpenBdEntry): OpenBdDetail => {
 
   const extents = entry.onix?.DescriptiveDetail?.Extent ?? [];
   const pageExtent = extents.find((e) => e.ExtentType === "11");
-  const pageCount =
+  const rawPageCount =
     pageExtent?.ExtentValue != null
       ? Number(pageExtent.ExtentValue)
+      : undefined;
+  const pageCount =
+    rawPageCount !== undefined &&
+    Number.isFinite(rawPageCount) &&
+    Number.isInteger(rawPageCount) &&
+    rawPageCount > 0
+      ? rawPageCount
       : undefined;
 
   const productFormDetail =
     entry.onix?.DescriptiveDetail?.ProductFormDetail ?? "";
-  const format = PRODUCT_FORM_DETAIL_LABELS[productFormDetail] ?? undefined;
+  const format = PRODUCT_FORM_DETAIL_LABELS[productFormDetail];
 
   return {
     coverImageUrl,

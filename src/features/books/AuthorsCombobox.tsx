@@ -86,6 +86,8 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
             : a,
         ),
       );
+    } else {
+      onChange(value.filter((a) => a.id !== editingAuthorId));
     }
     setEditingAuthorId(null);
     setEditingName("");
@@ -104,60 +106,24 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
           <Pill.Group>
             {value.map((author) => {
               const isPending = author.id.startsWith("__pending__:");
-              const pill = (
-                <Pill
-                  key={author.id}
-                  withRemoveButton
-                  removeButtonProps={{
-                    "aria-label": `Remove author ${author.name}`,
-                  }}
-                  onRemove={() => {
-                    handleAuthorRemove(author.id);
-                  }}
-                  onClick={
-                    isPending
-                      ? (e) => {
-                          if (
-                            e.target instanceof Element &&
-                            e.target.closest('[aria-label^="Remove author"]')
-                          )
-                            return;
-                          e.stopPropagation();
-                          handlePendingAuthorEdit(author);
-                        }
-                      : undefined
-                  }
-                  role={isPending ? "button" : undefined}
-                  tabIndex={isPending ? 0 : undefined}
-                  onKeyDown={
-                    isPending
-                      ? (e) => {
-                          if (
-                            e.target instanceof Element &&
-                            e.target.closest('[aria-label^="Remove author"]')
-                          )
-                            return;
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            handlePendingAuthorEdit(author);
-                          }
-                        }
-                      : undefined
-                  }
-                  style={
-                    isPending
-                      ? {
-                          backgroundColor: "var(--mantine-color-blue-1)",
-                          color: "var(--mantine-color-blue-8)",
-                          cursor: "pointer",
-                        }
-                      : undefined
-                  }
-                >
-                  {isPending ? `+ ${author.name}` : author.name}
-                </Pill>
-              );
-              if (!isPending) return pill;
+
+              if (!isPending) {
+                return (
+                  <Pill
+                    key={author.id}
+                    withRemoveButton
+                    removeButtonProps={{
+                      "aria-label": `Remove author ${author.name}`,
+                    }}
+                    onRemove={() => {
+                      handleAuthorRemove(author.id);
+                    }}
+                  >
+                    {author.name}
+                  </Pill>
+                );
+              }
+
               return (
                 <Popover
                   key={author.id}
@@ -168,7 +134,40 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
                   }}
                   withArrow
                 >
-                  <Popover.Target>{pill}</Popover.Target>
+                  <Popover.Target>
+                    <Pill
+                      withRemoveButton
+                      removeButtonProps={{
+                        "aria-label": `Remove author ${author.name}`,
+                      }}
+                      onRemove={() => {
+                        handleAuthorRemove(author.id);
+                      }}
+                      style={{
+                        backgroundColor: "var(--mantine-color-blue-1)",
+                        color: "var(--mantine-color-blue-8)",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        aria-label={`Edit author ${author.name}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePendingAuthorEdit(author);
+                        }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: 0,
+                          color: "inherit",
+                          font: "inherit",
+                        }}
+                      >
+                        + {author.name}
+                      </button>
+                    </Pill>
+                  </Popover.Target>
                   <Popover.Dropdown>
                     <TextInput
                       value={editingName}
