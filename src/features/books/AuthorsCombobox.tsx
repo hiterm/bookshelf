@@ -4,9 +4,11 @@ import {
   Group,
   Pill,
   PillsInput,
+  Popover,
+  TextInput,
   useCombobox,
 } from "@mantine/core";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Author } from "./entity/Author";
 
 type AuthorsComboboxProps = {
@@ -23,6 +25,9 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
   error,
 }) => {
   const [authorSearch, setAuthorSearch] = useState("");
+  const [editingAuthorId, setEditingAuthorId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState("");
+  const skipCommitOnBlurRef = useRef(false);
 
   const combobox = useCombobox({
     onDropdownClose: () => {
@@ -65,6 +70,29 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
     onChange(value.filter((a) => a.id !== id));
   };
 
+  const handlePendingAuthorEdit = (author: Author) => {
+    setEditingAuthorId(author.id);
+    setEditingName(author.name);
+  };
+
+  const commitPendingAuthorEdit = () => {
+    if (editingAuthorId == null) return;
+    const newName = editingName.trim();
+    if (newName) {
+      onChange(
+        value.map((a) =>
+          a.id === editingAuthorId
+            ? { id: `__pending__:${newName}`, name: newName }
+            : a,
+        ),
+      );
+    } else {
+      onChange(value.filter((a) => a.id !== editingAuthorId));
+    }
+    setEditingAuthorId(null);
+    setEditingName("");
+  };
+
   return (
     <Combobox store={combobox} onOptionSubmit={handleAuthorSelect}>
       <Combobox.DropdownTarget>
@@ -76,20 +104,102 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
           error={error}
         >
           <Pill.Group>
-            {value.map((author) => (
-              <Pill
-                key={author.id}
-                withRemoveButton
-                removeButtonProps={{
-                  "aria-label": `Remove author ${author.name}`,
-                }}
-                onRemove={() => {
-                  handleAuthorRemove(author.id);
-                }}
-              >
-                {author.name}
-              </Pill>
-            ))}
+            {value.map((author) => {
+              const isPending = author.id.startsWith("__pending__:");
+
+              if (!isPending) {
+                return (
+                  <Pill
+                    key={author.id}
+                    withRemoveButton
+                    removeButtonProps={{
+                      "aria-label": `Remove author ${author.name}`,
+                    }}
+                    onRemove={() => {
+                      handleAuthorRemove(author.id);
+                    }}
+                  >
+                    {author.name}
+                  </Pill>
+                );
+              }
+
+              return (
+                <Popover
+                  key={author.id}
+                  opened={editingAuthorId === author.id}
+                  onClose={() => {
+                    setEditingAuthorId(null);
+                    setEditingName("");
+                  }}
+                  withArrow
+                >
+                  <Popover.Target>
+                    <Pill
+                      withRemoveButton
+                      removeButtonProps={{
+                        "aria-label": `Remove author ${author.name}`,
+                      }}
+                      onRemove={() => {
+                        handleAuthorRemove(author.id);
+                      }}
+                      style={{
+                        backgroundColor: "var(--mantine-color-blue-1)",
+                        color: "var(--mantine-color-blue-8)",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        aria-label={`Edit author ${author.name}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePendingAuthorEdit(author);
+                        }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: 0,
+                          color: "inherit",
+                          font: "inherit",
+                        }}
+                      >
+                        + {author.name}
+                      </button>
+                    </Pill>
+                  </Popover.Target>
+                  <Popover.Dropdown>
+                    <TextInput
+                      value={editingName}
+                      onChange={(e) => {
+                        setEditingName(e.currentTarget.value);
+                      }}
+                      aria-label="Edit author name"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          commitPendingAuthorEdit();
+                        }
+                        if (e.key === "Escape") {
+                          skipCommitOnBlurRef.current = true;
+                          setEditingAuthorId(null);
+                          setEditingName("");
+                        }
+                      }}
+                      onBlur={() => {
+                        if (skipCommitOnBlurRef.current) {
+                          skipCommitOnBlurRef.current = false;
+                          return;
+                        }
+                        commitPendingAuthorEdit();
+                      }}
+                      size="xs"
+                      autoFocus
+                    />
+                  </Popover.Dropdown>
+                </Popover>
+              );
+            })}
             <Combobox.EventsTarget>
               <PillsInput.Field
                 onFocus={() => {

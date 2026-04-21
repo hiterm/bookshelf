@@ -28,7 +28,6 @@
 
 - Follow existing conventions in the codebase
 - Use existing libraries and utilities
-- No comments unless explicitly requested
 - Never introduce code that exposes or logs secrets
 - When ignoring a linter or security tool finding, always add a comment
   explaining why it is safe to ignore. Place the comment on the line immediately
@@ -60,9 +59,10 @@ When writing tests for Mantine components, refer to these docs as needed:
 - Testing Select/MultiSelect (combobox): https://github.com/mantinedev/mantine/blob/master/apps/help.mantine.dev/src/pages/q/combobox-testing.mdx
 - Testing Modal/Drawer/Popover (portals): https://github.com/mantinedev/mantine/blob/master/apps/help.mantine.dev/src/pages/q/portals-testing.mdx
 
-## Pre-commit Checklist
+### Pre-commit (mandatory, no exceptions)
 
-Before committing changes, always run the following commands to ensure code quality:
+Before every `git commit`, run the following and fix any
+failures before proceeding:
 
 ```bash
 npm run generate   # Regenerate GraphQL types from .graphql files
@@ -71,7 +71,9 @@ npm run typecheck  # Run TypeScript type checking
 npm run lint       # Run ESLint and Biome checks
 ```
 
-All checks must pass before committing.
+Never skip these unless the user explicitly instructs you to, or
+the changes are documentation-only (in which case only `npm run lint`
+is required).
 
 # ExecPlans
 
