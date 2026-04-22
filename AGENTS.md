@@ -77,7 +77,7 @@ Before every `git commit`, run the following and fix any
 failures before proceeding:
 
 ```bash
-npm run generate   # Regenerate GraphQL types and MSW worker
+npm run generate   # Regenerate GraphQL types, MSW worker, and route tree
 npm run test       # Run unit tests
 npm run typecheck  # Run TypeScript type checking
 npm run lint       # Run ESLint and Biome checks

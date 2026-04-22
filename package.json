@@ -12,7 +12,7 @@
     "lint": "concurrently --group 'eslint_d --max-warnings=0 .' 'biome check --assist-enabled false .'",
     "lint:fix": "eslint_d --fix . && biome format . --write",
     "typecheck": "tsc --noEmit && tsc --noEmit -p e2e/tsconfig.json && tsc --noEmit -p e2e-demo/tsconfig.json",
-    "generate": "graphql-codegen --config codegen.yml && msw init",
+    "generate": "graphql-codegen --config codegen.yml && msw init && tsr generate",
     "test:e2e": "playwright test",
     "test:e2e:demo": "playwright test --config=playwright.demo.config.ts",
     "test:e2e:ui": "playwright test --ui"
@@ -62,6 +62,7 @@
     "@graphql-tools/schema": "10.0.32",
     "@graphql-tools/utils": "11.0.1",
     "@playwright/test": "1.59.1",
+    "@tanstack/router-cli": "^1.166.33",
     "@tanstack/router-plugin": "1.167.22",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.2",
