@@ -1,5 +1,7 @@
 # Agent Guidelines
 
+> **Note:** `CLAUDE.md` is a symlink to this file (`AGENTS.md`). Edit `AGENTS.md` directly.
+
 ## Commit Rules
 
 ### Language
@@ -75,7 +77,7 @@ Before every `git commit`, run the following and fix any
 failures before proceeding:
 
 ```bash
-npm run generate   # Regenerate GraphQL types from .graphql files
+npm run generate   # Regenerate GraphQL types, MSW worker, and route tree
 npm run test       # Run unit tests
 npm run typecheck  # Run TypeScript type checking
 npm run lint       # Run ESLint and Biome checks
