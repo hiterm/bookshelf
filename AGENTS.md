@@ -1,5 +1,7 @@
 # Agent Guidelines
 
+> **Note:** `CLAUDE.md` is a symlink to this file (`AGENTS.md`). Edit `AGENTS.md` directly.
+
 ## Commit Rules
 
 ### Language
