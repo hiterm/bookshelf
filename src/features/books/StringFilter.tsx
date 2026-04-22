@@ -23,6 +23,10 @@ export const StringFilter = <TData, TValue>({
 
   const filterValue = column.getFilterValue();
   useEffect(() => {
+    // TanStack Table v8 requires syncing local state with externally-driven
+    // filter resets (e.g. "clear all filters"). No infinite loop risk as
+    // filterValue changes are externally driven. Expect improvement in v9.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setValue((filterValue as string | undefined) ?? "");
   }, [filterValue]);
 
