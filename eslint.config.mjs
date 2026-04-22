@@ -46,6 +46,16 @@ export default tseslint.config(
     },
   },
 
+  {
+    files: ["e2e-integration/**/*.ts", "playwright.integration.config.ts"],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+
   reactPlugin.configs.flat.recommended, // This is not a plugin object, but a shareable config object
   reactPlugin.configs.flat["jsx-runtime"], // Add this if you are using React 17+
   reactHooks.configs.flat.recommended,
@@ -122,6 +132,7 @@ export default tseslint.config(
       "vite.config.ts",
       "eslint.config.mjs",
       "public/mockServiceWorker.js",
+      "e2e-integration/jwks-server.mjs",
     ],
   },
   eslintConfigPrettier,
