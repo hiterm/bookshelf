@@ -11,11 +11,12 @@
     "test:watch": "vitest",
     "lint": "concurrently --group 'eslint_d --max-warnings=0 .' 'biome check --assist-enabled false .'",
     "lint:fix": "eslint_d --fix . && biome format . --write",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p e2e/tsconfig.json && tsc --noEmit -p e2e-demo/tsconfig.json",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p e2e/tsconfig.json && tsc --noEmit -p e2e-demo/tsconfig.json && tsc --noEmit -p e2e-integration/tsconfig.json",
     "generate": "bash scripts/fetch-schema.sh && graphql-codegen --config codegen.yml && msw init && tsr generate",
     "test:e2e": "playwright test",
     "test:e2e:demo": "playwright test --config=playwright.demo.config.ts",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "test:integration": "playwright test --config=playwright.integration.config.ts"
   },
   "browserslist": {
     "production": [
