@@ -42,6 +42,7 @@ yarn-error.log*
 
 # graphql-codegen
 /src/generated
+/src/graphql/schema.graphql
 
 # tanstack-router
 /src/routeTree.gen.ts

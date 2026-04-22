@@ -32,5 +32,14 @@
       "enabled": false
     }
   ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["bookshelf-api\\.version"],
+      "matchStrings": ["(?<currentValue>.+)"],
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "hiterm/bookshelf-api"
+    }
+  ],
   "reviewers": ["hiterm"],
 }
