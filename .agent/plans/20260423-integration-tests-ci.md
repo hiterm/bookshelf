@@ -341,40 +341,53 @@ Add a new job `test-integration` after the existing jobs. The job must:
 
 All commands are run from the repository root (`/home/hiterm/ghq/github.com/hiterm/bookshelf`) unless stated otherwise.
 
+Each step ends with a commit. Run `npm run generate && npm run test && npm run typecheck && npm run lint` before every commit and fix failures first.
+
 **Step 1 — Create feature branch**
 
     git checkout -b feat/integration-tests-ci
 
-**Step 2 — Copy integration test private key**
+**Step 2 — Copy fixture files and commit**
 
     cp /home/hiterm/ghq/github.com/hiterm/bookshelf-api/testdata/test_private_key.pem \
        e2e-integration/integrationTestPrivateKey.pem
     cp /home/hiterm/ghq/github.com/hiterm/bookshelf-api/testdata/test_jwks.json \
        e2e-integration/test_jwks.json
+    git add e2e-integration/integrationTestPrivateKey.pem e2e-integration/test_jwks.json
+    git commit -m "Add integration test key and JWKS fixtures"
 
-**Step 2b — Write e2e-integration/jwks-server.mjs** (see Plan of Work — Milestone 1 above for full spec)
+**Step 3 — Write e2e-integration/jwks-server.mjs and commit** (see Plan of Work — Milestone 1 above for full spec)
 
-**Step 3 — Write e2e-integration/fixtures.ts** (see Plan of Work above for full spec)
+    git add e2e-integration/jwks-server.mjs
+    git commit -m "Add Node.js JWKS server for integration tests"
 
-**Step 4 — Write e2e-integration/auth.spec.ts and e2e-integration/books.spec.ts**
+**Step 4 — Write e2e-integration/fixtures.ts and commit** (see Plan of Work above for full spec)
 
-**Step 5 — Write playwright.integration.config.ts**
+    git add e2e-integration/fixtures.ts
+    git commit -m "Add Playwright fixtures for integration tests"
 
-**Step 6 — Edit package.json** to add `"test:integration"` script
+**Step 5 — Write e2e-integration/auth.spec.ts and commit**
 
-**Step 7 — Edit .github/workflows/ci.yml** to add `test-integration` job
+    git add e2e-integration/auth.spec.ts
+    git commit -m "Add auth integration spec"
 
-**Step 8 — Pre-commit checks**
+**Step 6 — Write e2e-integration/books.spec.ts and commit**
 
-    npm run generate
-    npm run test
-    npm run typecheck
-    npm run lint
+    git add e2e-integration/books.spec.ts
+    git commit -m "Add books CRUD integration spec"
 
-**Step 9 — Commit and push**
+**Step 7 — Write playwright.integration.config.ts, edit package.json, and commit**
 
-    git add e2e-integration/ playwright.integration.config.ts package.json .github/workflows/ci.yml
-    git commit -m "Add integration tests against real bookshelf-api"
+    git add playwright.integration.config.ts package.json
+    git commit -m "Add Playwright integration config and npm script"
+
+**Step 8 — Edit .github/workflows/ci.yml and commit**
+
+    git add .github/workflows/ci.yml
+    git commit -m "Add test-integration CI job"
+
+**Step 9 — Push and open PR**
+
     git push -u origin feat/integration-tests-ci
 
 **Step 10 — Open PR and observe CI**
