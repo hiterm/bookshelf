@@ -35,11 +35,21 @@
 - **Do not use `as` type assertions** (e.g. `foo as SomeType`). Use proper
   type narrowing or type guards instead. `as const` is allowed.
 
+## Branching (REQUIRED FIRST STEP)
+
+Before doing ANY work, check the current branch. If on `main`, create a
+feature branch first:
+
+```bash
+git checkout -b <type>/<short-description>
+```
+
+Never commit directly to `main`.
+
 ## Git Commands
 
 - Always use `git --no-pager` for git commands to avoid opening a pager
 - Example: `git --no-pager log`, `git --no-pager diff`, `git --no-pager status`
-- Never work directly on the `main` branch — always create a feature branch
 
 ## Communication
 
