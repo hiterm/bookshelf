@@ -106,7 +106,7 @@ jobs:
           cat /tmp/jwks.log; exit 1
       - name: Start bookshelf-api
         run: |
-          docker run --rm -d \
+          docker run -d \
             --name bookshelf-api \
             --network host \
             -e DATABASE_URL=postgres://bookshelf:password@localhost:5432/bookshelf \
