@@ -69,8 +69,8 @@ export default defineConfig({
     environment: "jsdom",
     exclude: [
       "**/node_modules/**",
-      "**/e2e/**",
-      "**/e2e-demo/**",
+      "**/e2e-mock-api/**",
+      "**/e2e-demo-mode/**",
       "**/e2e-integration/**",
     ],
   },
