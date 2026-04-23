@@ -65,7 +65,7 @@ jobs:
       - run: npm ci
       - run: npm run generate
       - id: api-version
-        run: echo "version=$(cat bookshelf-api.version | tr -d '[:space:]')" >> $GITHUB_OUTPUT
+        run: echo "version=$(tr -d '[:space:]' < bookshelf-api.version)" >> "$GITHUB_OUTPUT"
       - name: Start PostgreSQL
         run: |
           docker run -d \
