@@ -77,8 +77,8 @@ export const test = base.extend<Record<never, never>>({
 window.parent.postMessage({
   type: 'authorization_response',
   response: {
-    code: '${mockCode}',
-    state: '${state}'
+    code: ${JSON.stringify(mockCode)},
+    state: ${JSON.stringify(state)}
   }
 }, '*');
 </script>
@@ -120,12 +120,7 @@ window.parent.postMessage({
         const parts = code.split("::");
         const nonce =
           parts.length >= 2
-            ? new TextDecoder().decode(
-                Uint8Array.from(
-                  atob(parts[1].replace(/-/g, "+").replace(/_/g, "/")),
-                  (c) => c.charCodeAt(0),
-                ),
-              )
+            ? Buffer.from(parts[1], "base64url").toString("utf-8")
             : "";
 
         const idToken = await buildIdToken(nonce, userId);

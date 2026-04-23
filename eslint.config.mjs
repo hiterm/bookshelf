@@ -132,6 +132,7 @@ export default tseslint.config(
       "vite.config.ts",
       "eslint.config.mjs",
       "public/mockServiceWorker.js",
+      // Plain JS file with no TypeScript type information; typed linting rules cannot apply.
       "e2e-integration/jwks-server.mjs",
     ],
   },

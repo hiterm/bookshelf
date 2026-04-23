@@ -1,7 +1,11 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 API_VERSION=$(tr -d '[:space:]' < bookshelf-api.version)
+if [ -z "$API_VERSION" ]; then
+  echo "Error: bookshelf-api.version is empty" >&2
+  exit 1
+fi
 export API_VERSION
 
 docker compose -f docker-compose.integration.yml up -d

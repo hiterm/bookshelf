@@ -1,11 +1,11 @@
-import { expect } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 import { test } from "./fixtures";
 
 const BOOK_TITLE = "統合テスト書籍";
 const AUTHOR_NAME = "統合テスト著者";
 const UPDATED_TITLE = "更新された統合テスト書籍";
 
-async function loginAndRegister(page: import("@playwright/test").Page) {
+async function loginAndRegister(page: Page) {
   await page.goto("/books");
   await page.getByRole("button", { name: "Login" }).click();
   await expect(
@@ -31,7 +31,9 @@ test.describe
       // Navigate to books and create a book
       await page.goto("/books");
       await page.getByRole("button", { name: "追加" }).click();
-      await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
+      await expect(
+        page.getByRole("dialog", { name: "書籍追加" }),
+      ).toBeVisible();
 
       await page.getByLabel("書名").fill(BOOK_TITLE);
 
@@ -48,14 +50,14 @@ test.describe
         .click();
 
       await expect(
-        page.getByRole("dialog", { name: "追加" }),
+        page.getByRole("dialog", { name: "書籍追加" }),
       ).not.toBeVisible();
       await expect(page.getByRole("link", { name: BOOK_TITLE })).toBeVisible();
 
       // Navigate to detail page
       await page.getByRole("link", { name: BOOK_TITLE }).click();
       await expect(page).toHaveURL(/\/books\/.+$/);
-      await expect(page.getByText(BOOK_TITLE)).toBeVisible();
+      await expect(page.getByText(BOOK_TITLE, { exact: true })).toBeVisible();
 
       // Update the book
       await page.getByRole("link", { name: "変更" }).click();
