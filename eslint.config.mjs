@@ -27,7 +27,7 @@ export default tseslint.config(
   },
 
   {
-    files: ["e2e/**/*.ts"],
+    files: ["e2e-mock-api/**/*.ts"],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -37,7 +37,7 @@ export default tseslint.config(
   },
 
   {
-    files: ["e2e-demo/**/*.ts"],
+    files: ["e2e-demo-mode/**/*.ts"],
     languageOptions: {
       parserOptions: {
         projectService: true,

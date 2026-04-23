@@ -64,24 +64,24 @@ Commit into `main`.
 
 ## E2E Testing
 
-Run E2E tests:
+Run E2E tests (MSW mock API):
 
 ```bash
-npm run test:e2e
+npm run test:e2e:mock-api
 ```
 
 Enable debug logging:
 
 ```bash
-DEBUG_E2E=true npm run test:e2e
+DEBUG_E2E=true npm run test:e2e:mock-api
 ```
 
 This will output GraphQL queries and responses for debugging test failures.
 
-Run demo E2E tests:
+Run demo mode E2E tests:
 
 ```bash
-npm run test:e2e:demo
+npm run test:e2e:demo-mode
 ```
 
 ## Integration Testing
@@ -119,5 +119,5 @@ The book registration form's ISBN auto-fill fetches metadata from the National D
 To work around this, the hook calls the relative path `/ndl-proxy/api/opensearch?isbn=...`, which each environment forwards to `https://ndlsearch.ndl.go.jp/api/opensearch?isbn=...`:
 
 - **Development** (`npm start`): Vite dev server proxy configured in `vite.config.ts` under `server.proxy`.
-- **E2E tests** (`npm run test:e2e`): Vite preview server proxy configured in `vite.config.ts` under `preview.proxy`.
+- **E2E tests** (`npm run test:e2e:mock-api`): Vite preview server proxy configured in `vite.config.ts` under `preview.proxy`.
 - **Production** (Vercel): Rewrite rule in `vercel.json` forwards `/ndl-proxy/:path*` to `https://ndlsearch.ndl.go.jp/:path*`.

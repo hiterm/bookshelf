@@ -1,8 +1,11 @@
 import { defineConfig, devices } from "@playwright/test";
-import { TEST_AUTH0_CLIENT_ID, TEST_AUTH0_DOMAIN } from "./e2e/testConstants";
+import {
+  TEST_AUTH0_CLIENT_ID,
+  TEST_AUTH0_DOMAIN,
+} from "./e2e-mock-api/testConstants";
 
 export default defineConfig({
-  testDir: "./e2e",
+  testDir: "./e2e-mock-api",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

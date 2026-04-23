@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
-import { TEST_AUTH0_CLIENT_ID, TEST_AUTH0_DOMAIN } from "./e2e/testConstants";
+import {
+  TEST_AUTH0_CLIENT_ID,
+  TEST_AUTH0_DOMAIN,
+} from "./e2e-mock-api/testConstants";
 
 export default defineConfig({
   testDir: "./e2e-integration",

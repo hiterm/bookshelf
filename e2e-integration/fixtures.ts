@@ -4,8 +4,11 @@ import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
 import { importJWK, importPKCS8, SignJWT } from "jose";
-import { TEST_AUTH0_CLIENT_ID, TEST_AUTH0_DOMAIN } from "../e2e/testConstants";
-import { TEST_PRIVATE_KEY_JWK } from "../e2e/testKeys";
+import {
+  TEST_AUTH0_CLIENT_ID,
+  TEST_AUTH0_DOMAIN,
+} from "../e2e-mock-api/testConstants";
+import { TEST_PRIVATE_KEY_JWK } from "../e2e-mock-api/testKeys";
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const INTEGRATION_PRIVATE_KEY_PEM = readFileSync(
