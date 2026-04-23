@@ -1,45 +1,53 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:best-practices",
-    ":pinAllExceptPeerDependencies",
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:best-practices',
+    ':pinAllExceptPeerDependencies',
   ],
-  "packageRules": [
+  packageRules: [
     {
-      // Group minor/patch updates by manager (e.g. npm, github-actions).
-      // Excludes 0.x.y since minor bumps may contain breaking changes.
-      "matchUpdateTypes": ["minor", "patch"],
-      "matchCurrentVersion": "!/^0\\./",
-      "groupName": "{{manager}} non-major"
+      matchUpdateTypes: [
+        'minor',
+        'patch',
+      ],
+      matchCurrentVersion: '!/^0\\./',
+      groupName: '{{manager}} non-major',
     },
     {
-      // Group patch-only updates for 0.x.y packages by manager.
-      // Minor and major are left as individual PRs due to potential breaking changes.
-      "matchUpdateTypes": ["patch"],
-      "matchCurrentVersion": "/^0\\./",
-      "groupName": "{{manager}} non-major"
+      matchUpdateTypes: [
+        'patch',
+      ],
+      matchCurrentVersion: '/^0\\./',
+      groupName: '{{manager}} non-major',
     },
     {
-      // Keep Node.js on major version only (e.g. "24"), do not pin to exact patch versions.
-      // Renovate's pinAllExceptPeerDependencies would otherwise convert "24" -> "24.x.y"
-      // for both:
-      // - GitHub Actions (setup-node / actions/node-versions)
-      // - devcontainer features (node-version datasource)
-      // This rule disables only "pin" updates for Node, while still allowing major updates (e.g. 24 -> 25).
-      "matchDepNames": ["node"],
-      "matchDatasources": ["github-releases", "node-version"],
-      "matchUpdateTypes": ["pin"],
-      "enabled": false
-    }
+      matchDepNames: [
+        'node',
+      ],
+      matchDatasources: [
+        'github-releases',
+        'node-version',
+      ],
+      matchUpdateTypes: [
+        'pin',
+      ],
+      enabled: false,
+    },
   ],
-  "customManagers": [
+  customManagers: [
     {
-      "customType": "regex",
-      "fileMatch": ["bookshelf-api\\.version"],
-      "matchStrings": ["(?<currentValue>.+)"],
-      "datasourceTemplate": "github-tags",
-      "depNameTemplate": "hiterm/bookshelf-api"
-    }
+      customType: 'regex',
+      managerFilePatterns: [
+        '/bookshelf-api\\.version/',
+      ],
+      matchStrings: [
+        '(?<currentValue>.+)',
+      ],
+      datasourceTemplate: 'github-tags',
+      depNameTemplate: 'hiterm/bookshelf-api',
+    },
   ],
-  "reviewers": ["hiterm"],
+  reviewers: [
+    'hiterm',
+  ],
 }
