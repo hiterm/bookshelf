@@ -82,18 +82,6 @@ jobs:
             sleep 1
           done
           docker logs postgres; exit 1
-      - name: Check out bookshelf-api for migrations
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          repository: hiterm/bookshelf-api
-          ref: ${{ steps.api-version.outputs.version }}
-          path: bookshelf-api
-          persist-credentials: false
-      - name: Run database migrations
-        run: |
-          for f in bookshelf-api/migrations/*.sql; do
-            docker exec -i postgres psql -U bookshelf -d bookshelf < "$f"
-          done
       - name: Start JWKS server
         run: |
           node e2e-integration/jwks-server.mjs > /tmp/jwks.log 2>&1 &
@@ -105,6 +93,8 @@ jobs:
           done
           cat /tmp/jwks.log; exit 1
       - name: Start bookshelf-api
+        env:
+          API_VERSION: ${{ steps.api-version.outputs.version }}
         run: |
           docker run -d \
             --name bookshelf-api \
@@ -114,8 +104,7 @@ jobs:
             -e ALLOWED_ORIGINS=http://localhost:4173 \
             -e JWT_AUDIENCE=test-audience \
             -e JWT_DOMAIN=test-issuer.local \
-            -e JWKS_URL=http://localhost:9999/.well-known/jwks.json \
-            ghcr.io/hiterm/bookshelf-api:${{ steps.api-version.outputs.version }}
+            ghcr.io/hiterm/bookshelf-api:"$API_VERSION"
           for _ in {1..60}; do
             if curl -fs http://localhost:8080/health > /dev/null; then
               echo "API ready"; exit 0
