@@ -115,3 +115,82 @@ jobs:
           docker logs bookshelf-api; exit 1
       - run: npx playwright install --with-deps chromium
       - run: npm run test:integration
+
+  test-integration-api-main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: hiterm/bookshelf-api
+          ref: main
+          path: bookshelf-api-src
+          persist-credentials: false
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: "24"
+          cache: "npm"
+      - name: Read Rust toolchain version
+        id: rust-version
+        run: |
+          version=$(grep 'channel' bookshelf-api-src/rust-toolchain.toml | sed 's/.*= *"\(.*\)"/\1/')
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      # superfluous-actions: needed to install the Rust version pinned in bookshelf-api's rust-toolchain.toml
+      - uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable # zizmor: ignore[superfluous-actions]
+        with:
+          toolchain: ${{ steps.rust-version.outputs.version }}
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+        with:
+          workspaces: bookshelf-api-src
+      - run: npm ci
+      - run: npm run generate
+      - name: Build bookshelf-api
+        run: cargo build --locked --release
+        working-directory: bookshelf-api-src
+      - name: Start PostgreSQL
+        run: |
+          docker run -d \
+            --name postgres \
+            --network host \
+            -e POSTGRES_USER=bookshelf \
+            -e POSTGRES_PASSWORD=password \
+            -e POSTGRES_DB=bookshelf \
+            postgres:15
+          for _ in {1..30}; do
+            if docker exec postgres pg_isready -U bookshelf; then
+              echo "PostgreSQL ready"; exit 0
+            fi
+            sleep 1
+          done
+          docker logs postgres; exit 1
+      - name: Start JWKS server
+        run: |
+          node e2e-integration/jwks-server.mjs > /tmp/jwks.log 2>&1 &
+          for _ in {1..30}; do
+            if curl -fs http://localhost:9999/.well-known/jwks.json > /dev/null; then
+              echo "JWKS server ready"; exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/jwks.log; exit 1
+      - name: Start bookshelf-api
+        env:
+          DATABASE_URL: postgres://bookshelf:password@localhost:5432/bookshelf
+          PORT: "8080"
+          ALLOWED_ORIGINS: http://localhost:4173
+          JWT_AUDIENCE: test-audience
+          JWT_DOMAIN: test-issuer.local
+          JWKS_URL: http://localhost:9999/.well-known/jwks.json
+        run: |
+          ./bookshelf-api-src/target/release/bookshelf-api > /tmp/api.log 2>&1 &
+          for _ in {1..60}; do
+            if curl -fs http://localhost:8080/health > /dev/null; then
+              echo "API ready"; exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/api.log; exit 1
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:integration
