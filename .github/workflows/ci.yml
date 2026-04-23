@@ -104,6 +104,7 @@ jobs:
             -e ALLOWED_ORIGINS=http://localhost:4173 \
             -e JWT_AUDIENCE=test-audience \
             -e JWT_DOMAIN=test-issuer.local \
+            -e JWKS_URL=http://localhost:9999/.well-known/jwks.json \
             ghcr.io/hiterm/bookshelf-api:"$API_VERSION"
           for _ in {1..60}; do
             if curl -fs http://localhost:8080/health > /dev/null; then

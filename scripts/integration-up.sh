@@ -2,47 +2,11 @@
 set -e
 
 API_VERSION=$(tr -d '[:space:]' < bookshelf-api.version)
+export API_VERSION
 
-echo "Starting PostgreSQL..."
-docker run -d \
-  --name bookshelf-integration-postgres \
-  --network host \
-  -e POSTGRES_USER=bookshelf \
-  -e POSTGRES_PASSWORD=password \
-  -e POSTGRES_DB=bookshelf \
-  postgres:15
+docker compose -f docker-compose.integration.yml up -d
 
-for _ in $(seq 1 30); do
-  if docker exec bookshelf-integration-postgres pg_isready -U bookshelf 2>/dev/null; then
-    echo "PostgreSQL ready"
-    break
-  fi
-  sleep 1
-done
-
-echo "Starting JWKS server..."
-node e2e-integration/jwks-server.mjs > /tmp/jwks.log 2>&1 &
-echo $! > /tmp/jwks-server.pid
-
-for _ in $(seq 1 30); do
-  if curl -fs http://localhost:9999/.well-known/jwks.json > /dev/null 2>&1; then
-    echo "JWKS server ready"
-    break
-  fi
-  sleep 1
-done
-
-echo "Starting bookshelf-api $API_VERSION..."
-docker run -d \
-  --name bookshelf-integration-api \
-  --network host \
-  -e DATABASE_URL=postgres://bookshelf:password@localhost:5432/bookshelf \
-  -e PORT=8080 \
-  -e ALLOWED_ORIGINS=http://localhost:4173 \
-  -e JWT_AUDIENCE=test-audience \
-  -e JWT_DOMAIN=test-issuer.local \
-  "ghcr.io/hiterm/bookshelf-api:$API_VERSION"
-
+echo "Waiting for bookshelf-api..."
 for _ in $(seq 1 60); do
   if curl -fs http://localhost:8080/health > /dev/null 2>&1; then
     echo "bookshelf-api ready"
@@ -54,5 +18,5 @@ for _ in $(seq 1 60); do
 done
 
 echo "bookshelf-api failed to start:"
-docker logs bookshelf-integration-api
+docker compose -f docker-compose.integration.yml logs bookshelf-api
 exit 1

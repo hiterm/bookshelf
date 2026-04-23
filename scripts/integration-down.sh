@@ -1,11 +1,5 @@
 #!/bin/bash
+API_VERSION=$(tr -d '[:space:]' < bookshelf-api.version)
+export API_VERSION
 
-if [ -f /tmp/jwks-server.pid ]; then
-  kill "$(cat /tmp/jwks-server.pid)" 2>/dev/null || true
-  rm /tmp/jwks-server.pid
-fi
-
-docker rm -f bookshelf-integration-api 2>/dev/null || true
-docker rm -f bookshelf-integration-postgres 2>/dev/null || true
-
-echo "Integration services stopped"
+docker compose -f docker-compose.integration.yml down
