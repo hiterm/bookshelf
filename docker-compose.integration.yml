@@ -13,7 +13,7 @@ services:
       retries: 30
 
   jwks-server:
-    image: node:24-alpine
+    image: node:24.15.0-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f
     network_mode: host
     working_dir: /app
     volumes:
