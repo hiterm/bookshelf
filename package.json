@@ -16,7 +16,9 @@
     "test:e2e": "playwright test",
     "test:e2e:demo": "playwright test --config=playwright.demo.config.ts",
     "test:e2e:ui": "playwright test --ui",
-    "test:integration": "playwright test --config=playwright.integration.config.ts"
+    "test:integration": "playwright test --config=playwright.integration.config.ts",
+    "integration:up": "bash scripts/integration-up.sh",
+    "integration:down": "bash scripts/integration-down.sh"
   },
   "browserslist": {
     "production": [
