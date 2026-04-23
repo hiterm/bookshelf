@@ -84,6 +84,34 @@ Run demo E2E tests:
 npm run test:e2e:demo
 ```
 
+## Integration Testing
+
+Integration tests run Playwright against a real bookshelf-api server backed by PostgreSQL. Only Auth0 is mocked.
+
+### Prerequisites
+
+Docker must be installed and running.
+
+### Run integration tests
+
+Start the required services (PostgreSQL, JWKS server, bookshelf-api):
+
+```bash
+npm run integration:up
+```
+
+Run the tests:
+
+```bash
+npm run test:integration
+```
+
+Stop all services when done:
+
+```bash
+npm run integration:down
+```
+
 ## NDL Proxy
 
 The book registration form's ISBN auto-fill fetches metadata from the National Diet Library (NDL) OpenSearch API. NDL does not send CORS headers, so browsers block direct cross-origin requests to `https://ndlsearch.ndl.go.jp`.

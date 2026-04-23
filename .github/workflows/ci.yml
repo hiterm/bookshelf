@@ -51,3 +51,67 @@ jobs:
       - run: npm run generate
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e:demo
+
+  test-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: "24"
+          cache: "npm"
+      - run: npm ci
+      - run: npm run generate
+      - id: api-version
+        run: echo "version=$(tr -d '[:space:]' < bookshelf-api.version)" >> "$GITHUB_OUTPUT"
+      - name: Start PostgreSQL
+        run: |
+          docker run -d \
+            --name postgres \
+            --network host \
+            -e POSTGRES_USER=bookshelf \
+            -e POSTGRES_PASSWORD=password \
+            -e POSTGRES_DB=bookshelf \
+            postgres:15
+          for _ in {1..30}; do
+            if docker exec postgres pg_isready -U bookshelf; then
+              echo "PostgreSQL ready"; exit 0
+            fi
+            sleep 1
+          done
+          docker logs postgres; exit 1
+      - name: Start JWKS server
+        run: |
+          node e2e-integration/jwks-server.mjs > /tmp/jwks.log 2>&1 &
+          for _ in {1..30}; do
+            if curl -fs http://localhost:9999/.well-known/jwks.json > /dev/null; then
+              echo "JWKS server ready"; exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/jwks.log; exit 1
+      - name: Start bookshelf-api
+        env:
+          API_VERSION: ${{ steps.api-version.outputs.version }}
+        run: |
+          docker run -d \
+            --name bookshelf-api \
+            --network host \
+            -e DATABASE_URL=postgres://bookshelf:password@localhost:5432/bookshelf \
+            -e PORT=8080 \
+            -e ALLOWED_ORIGINS=http://localhost:4173 \
+            -e JWT_AUDIENCE=test-audience \
+            -e JWT_DOMAIN=test-issuer.local \
+            -e JWKS_URL=http://localhost:9999/.well-known/jwks.json \
+            ghcr.io/hiterm/bookshelf-api:"$API_VERSION"
+          for _ in {1..60}; do
+            if curl -fs http://localhost:8080/health > /dev/null; then
+              echo "API ready"; exit 0
+            fi
+            sleep 1
+          done
+          docker logs bookshelf-api; exit 1
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:integration

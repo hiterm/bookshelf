@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:15
+    network_mode: host
+    environment:
+      POSTGRES_USER: bookshelf
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: bookshelf
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "bookshelf"]
+      interval: 1s
+      timeout: 5s
+      retries: 30
+
+  jwks-server:
+    image: node:24-alpine
+    network_mode: host
+    working_dir: /app
+    volumes:
+      - ./e2e-integration:/app:ro
+    command: node jwks-server.mjs
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "--spider",
+          "http://localhost:9999/.well-known/jwks.json",
+        ]
+      interval: 1s
+      timeout: 5s
+      retries: 30
+
+  bookshelf-api:
+    image: ghcr.io/hiterm/bookshelf-api:${API_VERSION:?API_VERSION must be set}
+    network_mode: host
+    environment:
+      DATABASE_URL: postgres://bookshelf:password@localhost:5432/bookshelf
+      PORT: "8080"
+      ALLOWED_ORIGINS: http://localhost:4173
+      JWT_AUDIENCE: test-audience
+      JWT_DOMAIN: test-issuer.local
+      JWKS_URL: http://localhost:9999/.well-known/jwks.json
+    depends_on:
+      postgres:
+        condition: service_healthy
+      jwks-server:
+        condition: service_healthy
