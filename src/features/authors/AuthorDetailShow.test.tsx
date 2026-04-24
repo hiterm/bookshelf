@@ -41,11 +41,9 @@ vi.mock("../../compoments/mantineTsr", () => ({
     children: React.ReactNode;
     linkOptions: { to: string; params?: Record<string, string> };
   } & React.ComponentProps<"button">) => (
-    <a href={linkOptions.to}>
-      <button type="button" {...props}>
-        {children}
-      </button>
-    </a>
+    <button type="button" data-to={linkOptions.to} {...props}>
+      {children}
+    </button>
   ),
 }));
 
@@ -92,7 +90,9 @@ describe("AuthorDetailShow", () => {
     render(<AuthorDetailShow author={testAuthor} />, {
       wrapper: createWrapper(),
     });
-    expect(screen.getByText("テスト著者")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "テスト著者" }),
+    ).toBeInTheDocument();
   });
 
   test("renders edit and delete buttons", () => {

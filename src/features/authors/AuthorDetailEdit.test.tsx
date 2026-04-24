@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -41,11 +42,9 @@ vi.mock("../../compoments/mantineTsr", () => ({
     children: React.ReactNode;
     linkOptions: { to: string; params?: Record<string, string> };
   } & React.ComponentProps<"button">) => (
-    <a href={linkOptions.to}>
-      <button type="button" {...props}>
-        {children}
-      </button>
-    </a>
+    <button type="button" data-to={linkOptions.to} {...props}>
+      {children}
+    </button>
   ),
 }));
 
@@ -86,6 +85,7 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
 describe("AuthorDetailEdit", () => {
   beforeEach(() => {
     mockMutateAsync.mockClear();
+    vi.mocked(showNotification).mockClear();
   });
 
   test("renders name input with initial value", () => {
@@ -126,9 +126,28 @@ describe("AuthorDetailEdit", () => {
     });
     const input = screen.getByRole("textbox", { name: "名前" });
     await userEvent.clear(input);
-    await userEvent.tab();
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
     await waitFor(() => {
       expect(mockMutateAsync).not.toHaveBeenCalled();
+    });
+    expect(
+      await screen.findByText("Please enter a valid name"),
+    ).toBeInTheDocument();
+  });
+
+  test("shows error notification when update fails", async () => {
+    mockMutateAsync.mockRejectedValueOnce(new Error("Network error"));
+    render(<AuthorDetailEdit author={testAuthor} />, {
+      wrapper: createWrapper(),
+    });
+    const input = screen.getByRole("textbox", { name: "名前" });
+    await userEvent.clear(input);
+    await userEvent.type(input, "更新された著者");
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => {
+      const call = vi.mocked(showNotification).mock.calls[0][0];
+      expect(call.color).toBe("red");
+      expect(call.message).toContain("Network error");
     });
   });
 });
