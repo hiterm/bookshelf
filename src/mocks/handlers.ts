@@ -30,7 +30,7 @@ export const handlers = [
   }),
 
   graphqlApi.query("author", ({ variables }) => {
-    const author = mockStore.getAuthor(variables.id as string);
+    const author = mockStore.getAuthor(variables.authorId as string);
     if (!author) {
       return HttpResponse.json({
         data: { author: null },
