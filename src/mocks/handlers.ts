@@ -96,6 +96,41 @@ export const handlers = [
     });
   }),
 
+  graphqlApi.mutation("updateAuthor", ({ variables }) => {
+    const { id, name } = (
+      variables as { authorData: { id: string; name: string } }
+    ).authorData;
+    const author = mockStore.updateAuthor(id, name);
+    if (!author) {
+      return HttpResponse.json(
+        { errors: [{ message: `Author not found: ${id}` }] },
+        { status: 200 },
+      );
+    }
+    return HttpResponse.json({
+      data: {
+        updateAuthor: {
+          __typename: "Author",
+          ...author,
+        },
+      },
+    });
+  }),
+
+  graphqlApi.mutation("deleteAuthor", ({ variables }) => {
+    const authorId = (variables as { authorId: string }).authorId;
+    const deleted = mockStore.deleteAuthor(authorId);
+    if (!deleted) {
+      return HttpResponse.json(
+        { errors: [{ message: `Author not found: ${authorId}` }] },
+        { status: 200 },
+      );
+    }
+    return HttpResponse.json({
+      data: { deleteAuthor: authorId },
+    });
+  }),
+
   graphqlApi.mutation("createBook", ({ variables }) => {
     const bookData = (
       variables as {

@@ -1,0 +1,6 @@
+mutation updateAuthor($authorData: UpdateAuthorInput!) {
+  updateAuthor(authorData: $authorData) {
+    id
+    name
+  }
+}

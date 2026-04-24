@@ -106,6 +106,18 @@ export class MockStore {
     return Array.from(this.authors.values());
   }
 
+  updateAuthor(id: string, name: string): Author | null {
+    const author = this.authors.get(id);
+    if (!author) return null;
+    const updated: Author = { id, name };
+    this.authors.set(id, updated);
+    return updated;
+  }
+
+  deleteAuthor(id: string): boolean {
+    return this.authors.delete(id);
+  }
+
   createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">): Book {
     const id = `book-${String(this.nextBookId)}`;
     this.nextBookId += 1;
