@@ -21,6 +21,7 @@ import {
 import { useState } from "react";
 import { useCreateAuthor } from "../../compoments/hooks/useCreateAuthor";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
+import { Link } from "../../compoments/mantineTsr";
 
 export const Route = createFileRoute("/authors/")({
   component: RouteComponent,
@@ -31,6 +32,7 @@ function RouteComponent() {
 }
 
 type Author = {
+  id: string;
   name: string;
 };
 
@@ -68,7 +70,14 @@ const AuthorIndexPage: React.FC = () => {
   const [globalFilter, setGlobalFilter] = useState("");
   const columnHelper = createColumnHelper<Author>();
   const columns = [
-    columnHelper.accessor("name", { header: "名前" }),
+    columnHelper.accessor("name", {
+      header: "名前",
+      cell: ({ row }) => (
+        <Link to="/authors/$id" params={{ id: row.original.id }}>
+          {row.getValue("name")}
+        </Link>
+      ),
+    }),
   ] as ColumnDef<Author>[];
   const table = useReactTable({
     data: data?.authors ?? [], // その場しのぎ

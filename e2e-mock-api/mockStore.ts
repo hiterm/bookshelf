@@ -106,6 +106,31 @@ export class MockStore {
     return Array.from(this.authors.values());
   }
 
+  updateAuthor(id: string, name: string): Author | null {
+    const author = this.authors.get(id);
+    if (!author) return null;
+    const updated: Author = { id, name };
+    this.authors.set(id, updated);
+    return updated;
+  }
+
+  deleteAuthor(id: string): boolean {
+    const deleted = this.authors.delete(id);
+    if (deleted) {
+      this.books.forEach((book, bookId) => {
+        if (book.authorIds.includes(id)) {
+          this.books.set(bookId, {
+            ...book,
+            authorIds: book.authorIds.filter(
+              (authorId: string) => authorId !== id,
+            ),
+          });
+        }
+      });
+    }
+    return deleted;
+  }
+
   createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">): Book {
     const id = `book-${String(this.nextBookId)}`;
     this.nextBookId += 1;

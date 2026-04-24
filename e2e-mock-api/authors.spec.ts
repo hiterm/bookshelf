@@ -24,6 +24,12 @@ test.describe("Authors READ", () => {
       page.locator("td").filter({ hasText: "著者2" }),
     ).not.toBeVisible();
   });
+
+  test("navigates to author detail page", async ({ page }) => {
+    await page.getByRole("link", { name: "著者1" }).click();
+    await expect(page).toHaveURL(/\/authors\/[^/]+$/);
+    await expect(page.getByRole("heading", { name: "著者1" })).toBeVisible();
+  });
 });
 
 test.describe("Authors CREATE", () => {
@@ -48,5 +54,77 @@ test.describe("Authors CREATE", () => {
     await expect(
       page.locator("td").filter({ hasText: newAuthorName }),
     ).toBeVisible();
+  });
+});
+
+test.describe("Authors UPDATE", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "Login" }).click();
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+    await page.goto("/authors");
+  });
+
+  test("navigates to edit page from detail page", async ({ page }) => {
+    await page.getByRole("link", { name: "著者1" }).click();
+    await expect(page).toHaveURL(/\/authors\/[^/]+$/);
+
+    await page.getByRole("link", { name: "変更" }).click();
+    await expect(page).toHaveURL(/\/authors\/.+\/edit$/);
+    await expect(page.getByRole("textbox", { name: "名前" })).toHaveValue(
+      "著者1",
+    );
+  });
+
+  test("updates author name", async ({ page }) => {
+    await page.getByRole("link", { name: "著者1" }).click();
+    await page.getByRole("link", { name: "変更" }).click();
+    await expect(page).toHaveURL(/\/authors\/.+\/edit$/);
+
+    const nameInput = page.getByRole("textbox", { name: "名前" });
+    await nameInput.fill("更新された著者");
+    await page.getByRole("button", { name: "Save" }).click();
+
+    await expect(page).toHaveURL(/\/authors\/[^/]+$/);
+    await expect(page.getByText("更新しました")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "更新された著者" }),
+    ).toBeVisible();
+  });
+});
+
+test.describe("Authors DELETE", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "Login" }).click();
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+    await page.goto("/authors");
+  });
+
+  test("deletes an author after confirmation", async ({ page }) => {
+    await page.getByRole("link", { name: "著者1" }).click();
+    await expect(page).toHaveURL(/\/authors\/[^/]+$/);
+
+    await page.getByRole("button", { name: "削除" }).click();
+    await expect(page.getByText("削除確認")).toBeVisible();
+
+    await page.getByRole("button", { name: "削除する" }).click();
+
+    await expect(page).toHaveURL(/\/authors$/);
+    await expect(
+      page.locator("td").filter({ hasText: "著者1" }),
+    ).not.toBeVisible();
+  });
+
+  test("cancel delete keeps author", async ({ page }) => {
+    await page.getByRole("link", { name: "著者1" }).click();
+    await expect(page).toHaveURL(/\/authors\/[^/]+$/);
+
+    await page.getByRole("button", { name: "削除" }).click();
+    await expect(page.getByText("削除確認")).toBeVisible();
+
+    await page.getByRole("button", { name: "キャンセル" }).click();
+    await expect(page.getByText("削除確認")).not.toBeVisible();
+    await expect(page.getByRole("heading", { name: "著者1" })).toBeVisible();
   });
 });

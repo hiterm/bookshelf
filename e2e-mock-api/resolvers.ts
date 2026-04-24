@@ -18,6 +18,23 @@ export const createResolvers = (mockStore: MockStore) => ({
       _: unknown,
       { authorData }: { authorData: { name: string } },
     ) => mockStore.createAuthor(authorData.name),
+    updateAuthor: (
+      _: unknown,
+      { authorData }: { authorData: { id: string; name: string } },
+    ) => {
+      const updated = mockStore.updateAuthor(authorData.id, authorData.name);
+      if (!updated) {
+        throw new Error(`Author not found: ${authorData.id}`);
+      }
+      return updated;
+    },
+    deleteAuthor: (_: unknown, { authorId }: { authorId: string }) => {
+      const deleted = mockStore.deleteAuthor(authorId);
+      if (!deleted) {
+        throw new Error(`Author not found: ${authorId}`);
+      }
+      return authorId;
+    },
     createBook: (
       _: unknown,
       { bookData }: { bookData: Parameters<typeof mockStore.createBook>[0] },

@@ -63,6 +63,24 @@ Never commit directly to `main`.
 
 - When implementing a new feature, always implement tests for it.
 
+## E2E Test Isolation
+
+This project has two E2E test suites with different isolation mechanisms:
+
+**`e2e-mock-api`** — MockStore lives in the **Node.js (Playwright) process**.
+Each test gets a fresh `MockStore` instance via the `mockStore` Playwright
+fixture (`e2e-mock-api/fixtures.ts`), which has default `"test"` scope.
+`page.route()` handlers capture the per-test store via closure.
+Browser context isolation is not the primary mechanism here.
+
+**`e2e-demo-mode`** — MockStore lives in the **browser service worker**
+(`src/mocks/mockStore.ts`) as a module-level singleton
+(`export const mockStore = new MockStore()`).
+There is no explicit reset between tests. Isolation comes from Playwright's
+default behavior of creating a new `BrowserContext` per test: each context
+registers a fresh service worker, which reloads the module and re-initializes
+the singleton.
+
 ## Testing Mantine Components
 
 When writing tests for Mantine components, refer to these docs as needed:
