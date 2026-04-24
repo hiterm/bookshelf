@@ -87,7 +87,9 @@ test.describe("Authors UPDATE", () => {
 
     await expect(page).toHaveURL(/\/authors\/[^/]+$/);
     await expect(page.getByText("更新しました")).toBeVisible();
-    await expect(page.getByText("更新された著者")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "更新された著者" }),
+    ).toBeVisible();
   });
 });
 

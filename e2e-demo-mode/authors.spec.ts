@@ -52,7 +52,9 @@ test.describe("author mutations", () => {
     await page.getByRole("button", { name: "Save" }).click();
 
     await expect(page).toHaveURL(/\/authors\/[^/]+$/);
-    await expect(page.getByText("デモ更新著者")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "デモ更新著者" }),
+    ).toBeVisible();
   });
 
   test("deletes author after confirmation", async ({ page }) => {

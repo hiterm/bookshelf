@@ -32,7 +32,9 @@ test.describe
       // Navigate to detail page
       await page.getByRole("link", { name: AUTHOR_NAME }).click();
       await expect(page).toHaveURL(/\/authors\/.+$/);
-      await expect(page.getByText(AUTHOR_NAME)).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: AUTHOR_NAME }),
+      ).toBeVisible();
 
       // Update the author
       await page.getByRole("link", { name: "変更" }).click();
@@ -45,7 +47,9 @@ test.describe
 
       await expect(page).toHaveURL(/\/authors\/.+$/);
       await expect(page.getByText("更新しました")).toBeVisible();
-      await expect(page.getByText(UPDATED_AUTHOR_NAME)).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: UPDATED_AUTHOR_NAME }),
+      ).toBeVisible();
 
       // Delete the author
       await page.getByRole("button", { name: "削除" }).click();
