@@ -96,13 +96,13 @@ failures before proceeding:
 
 ```bash
 npm run generate   # Regenerate GraphQL types, MSW worker, and route tree
+npm run lint:fix   # Auto-fix ESLint and Biome format issues
 npm run test       # Run unit tests
 npm run typecheck  # Run TypeScript type checking
-npm run lint       # Run ESLint and Biome checks
 ```
 
 Never skip these unless the user explicitly instructs you to, or
-the changes are documentation-only (in which case only `npm run lint`
+the changes are documentation-only (in which case only `npm run lint:fix`
 is required).
 
 # ExecPlans
