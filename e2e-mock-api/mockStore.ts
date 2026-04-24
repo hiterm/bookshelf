@@ -115,7 +115,20 @@ export class MockStore {
   }
 
   deleteAuthor(id: string): boolean {
-    return this.authors.delete(id);
+    const deleted = this.authors.delete(id);
+    if (deleted) {
+      this.books.forEach((book, bookId) => {
+        if (book.authorIds.includes(id)) {
+          this.books.set(bookId, {
+            ...book,
+            authorIds: book.authorIds.filter(
+              (authorId: string) => authorId !== id,
+            ),
+          });
+        }
+      });
+    }
+    return deleted;
   }
 
   createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">): Book {
