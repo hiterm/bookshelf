@@ -69,7 +69,7 @@ test.describe("Authors UPDATE", () => {
     await page.getByRole("link", { name: "著者1" }).click();
     await expect(page).toHaveURL(/\/authors\/.+$/);
 
-    await page.getByRole("button", { name: "変更" }).click();
+    await page.getByRole("link", { name: "変更" }).click();
     await expect(page).toHaveURL(/\/authors\/.+\/edit$/);
     await expect(page.getByRole("textbox", { name: "名前" })).toHaveValue(
       "著者1",
@@ -78,7 +78,7 @@ test.describe("Authors UPDATE", () => {
 
   test("updates author name", async ({ page }) => {
     await page.getByRole("link", { name: "著者1" }).click();
-    await page.getByRole("button", { name: "変更" }).click();
+    await page.getByRole("link", { name: "変更" }).click();
     await expect(page).toHaveURL(/\/authors\/.+\/edit$/);
 
     const nameInput = page.getByRole("textbox", { name: "名前" });

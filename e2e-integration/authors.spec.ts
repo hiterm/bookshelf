@@ -35,7 +35,7 @@ test.describe
       await expect(page.getByText(AUTHOR_NAME)).toBeVisible();
 
       // Update the author
-      await page.getByRole("button", { name: "変更" }).click();
+      await page.getByRole("link", { name: "変更" }).click();
       await expect(page).toHaveURL(/\/authors\/.+\/edit$/);
 
       const nameInput = page.getByRole("textbox", { name: "名前" });

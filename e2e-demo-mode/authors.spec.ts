@@ -32,7 +32,7 @@ test("updates author name", async ({ page }) => {
   await page.goto("/authors");
 
   await page.getByRole("link", { name: "著者1" }).click();
-  await page.getByRole("button", { name: "変更" }).click();
+  await page.getByRole("link", { name: "変更" }).click();
   await expect(page).toHaveURL(/\/authors\/.+\/edit$/);
 
   const nameInput = page.getByRole("textbox", { name: "名前" });
