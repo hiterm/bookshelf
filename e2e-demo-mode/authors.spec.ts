@@ -24,39 +24,49 @@ test("navigates to author detail page", async ({ page }) => {
   await page.goto("/authors");
 
   await page.getByRole("link", { name: "著者1" }).click();
-  await expect(page).toHaveURL(/\/authors\/.+$/);
-  await expect(page.getByText("著者1")).toBeVisible();
+  await expect(page).toHaveURL(/\/authors\/[^/]+$/);
+  await expect(page.getByRole("heading", { name: "著者1" })).toBeVisible();
 });
 
-test("updates author name", async ({ page }) => {
-  await page.goto("/authors");
+test.describe("author mutations", () => {
+  let testAuthorName: string;
 
-  await page.getByRole("link", { name: "著者1" }).click();
-  await page.getByRole("link", { name: "変更" }).click();
-  await expect(page).toHaveURL(/\/authors\/.+\/edit$/);
+  test.beforeEach(async ({ page }) => {
+    testAuthorName = `テスト著者-${String(Date.now())}`;
+    await page.goto("/authors");
+    await page.getByLabel("名前").fill(testAuthorName);
+    await page.getByRole("button", { name: "登録" }).click();
+    await expect(
+      page.locator("td").filter({ hasText: testAuthorName }),
+    ).toBeVisible();
+  });
 
-  const nameInput = page.getByRole("textbox", { name: "名前" });
-  await expect(nameInput).toHaveValue("著者1");
-  await nameInput.fill("デモ更新著者");
-  await page.getByRole("button", { name: "Save" }).click();
+  test("updates author name", async ({ page }) => {
+    await page.getByRole("link", { name: testAuthorName }).click();
+    await page.getByRole("link", { name: "変更" }).click();
+    await expect(page).toHaveURL(/\/authors\/[^/]+\/edit$/);
 
-  await expect(page).toHaveURL(/\/authors\/.+$/);
-  await expect(page.getByText("デモ更新著者")).toBeVisible();
-});
+    const nameInput = page.getByRole("textbox", { name: "名前" });
+    await expect(nameInput).toHaveValue(testAuthorName);
+    await nameInput.fill("デモ更新著者");
+    await page.getByRole("button", { name: "Save" }).click();
 
-test("deletes author after confirmation", async ({ page }) => {
-  await page.goto("/authors");
+    await expect(page).toHaveURL(/\/authors\/[^/]+$/);
+    await expect(page.getByText("デモ更新著者")).toBeVisible();
+  });
 
-  await page.getByRole("link", { name: "著者1" }).click();
-  await expect(page).toHaveURL(/\/authors\/.+$/);
+  test("deletes author after confirmation", async ({ page }) => {
+    await page.getByRole("link", { name: testAuthorName }).click();
+    await expect(page).toHaveURL(/\/authors\/[^/]+$/);
 
-  await page.getByRole("button", { name: "削除" }).click();
-  await expect(page.getByText("削除確認")).toBeVisible();
+    await page.getByRole("button", { name: "削除" }).click();
+    await expect(page.getByText("削除確認")).toBeVisible();
 
-  await page.getByRole("button", { name: "削除する" }).click();
+    await page.getByRole("button", { name: "削除する" }).click();
 
-  await expect(page).toHaveURL(/\/authors$/);
-  await expect(
-    page.locator("td").filter({ hasText: "著者1" }),
-  ).not.toBeVisible();
+    await expect(page).toHaveURL(/\/authors$/);
+    await expect(
+      page.locator("td").filter({ hasText: testAuthorName }),
+    ).not.toBeVisible();
+  });
 });

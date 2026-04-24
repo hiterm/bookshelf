@@ -27,8 +27,8 @@ test.describe("Authors READ", () => {
 
   test("navigates to author detail page", async ({ page }) => {
     await page.getByRole("link", { name: "著者1" }).click();
-    await expect(page).toHaveURL(/\/authors\/.+$/);
-    await expect(page.getByText("著者1")).toBeVisible();
+    await expect(page).toHaveURL(/\/authors\/[^/]+$/);
+    await expect(page.getByRole("heading", { name: "著者1" })).toBeVisible();
   });
 });
 
@@ -67,7 +67,7 @@ test.describe("Authors UPDATE", () => {
 
   test("navigates to edit page from detail page", async ({ page }) => {
     await page.getByRole("link", { name: "著者1" }).click();
-    await expect(page).toHaveURL(/\/authors\/.+$/);
+    await expect(page).toHaveURL(/\/authors\/[^/]+$/);
 
     await page.getByRole("link", { name: "変更" }).click();
     await expect(page).toHaveURL(/\/authors\/.+\/edit$/);
@@ -85,7 +85,7 @@ test.describe("Authors UPDATE", () => {
     await nameInput.fill("更新された著者");
     await page.getByRole("button", { name: "Save" }).click();
 
-    await expect(page).toHaveURL(/\/authors\/.+$/);
+    await expect(page).toHaveURL(/\/authors\/[^/]+$/);
     await expect(page.getByText("更新しました")).toBeVisible();
     await expect(page.getByText("更新された著者")).toBeVisible();
   });
@@ -101,7 +101,7 @@ test.describe("Authors DELETE", () => {
 
   test("deletes an author after confirmation", async ({ page }) => {
     await page.getByRole("link", { name: "著者1" }).click();
-    await expect(page).toHaveURL(/\/authors\/.+$/);
+    await expect(page).toHaveURL(/\/authors\/[^/]+$/);
 
     await page.getByRole("button", { name: "削除" }).click();
     await expect(page.getByText("削除確認")).toBeVisible();
@@ -116,13 +116,13 @@ test.describe("Authors DELETE", () => {
 
   test("cancel delete keeps author", async ({ page }) => {
     await page.getByRole("link", { name: "著者1" }).click();
-    await expect(page).toHaveURL(/\/authors\/.+$/);
+    await expect(page).toHaveURL(/\/authors\/[^/]+$/);
 
     await page.getByRole("button", { name: "削除" }).click();
     await expect(page.getByText("削除確認")).toBeVisible();
 
     await page.getByRole("button", { name: "キャンセル" }).click();
     await expect(page.getByText("削除確認")).not.toBeVisible();
-    await expect(page.getByText("著者1")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "著者1" })).toBeVisible();
   });
 });

@@ -55,6 +55,6 @@ test.describe
       await expect(page).toHaveURL(/\/authors$/);
       await expect(
         page.locator("td").filter({ hasText: UPDATED_AUTHOR_NAME }),
-      ).not.toBeVisible();
+      ).toHaveCount(0);
     });
   });
