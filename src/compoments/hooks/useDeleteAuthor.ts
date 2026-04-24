@@ -14,6 +14,8 @@ export const useDeleteAuthor = () => {
     onSuccess: (_, authorId) => {
       void queryClient.invalidateQueries({ queryKey: ["authors"] });
       void queryClient.invalidateQueries({ queryKey: ["author", authorId] });
+      void queryClient.invalidateQueries({ queryKey: ["books"] });
+      void queryClient.invalidateQueries({ queryKey: ["book"] });
     },
   });
 };

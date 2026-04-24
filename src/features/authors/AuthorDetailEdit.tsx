@@ -32,8 +32,10 @@ export const AuthorDetailEdit: React.FC<{ author: Author }> = ({ author }) => {
       await navigate({ to: "/authors/$id", params: { id: author.id } });
       showNotification({ message: "更新しました", color: "teal" });
     } catch (error) {
+      const message =
+        error instanceof Error ? error.message : JSON.stringify(error);
       showNotification({
-        message: `更新に失敗しました: ${String(error)}`,
+        message: `更新に失敗しました: ${message}`,
         color: "red",
       });
     }

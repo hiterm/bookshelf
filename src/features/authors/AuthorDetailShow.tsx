@@ -1,4 +1,13 @@
-import { Box, Button, Center, Group, Modal, Text, Title } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Center,
+  Group,
+  Modal,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { IconArrowBack } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
@@ -26,7 +35,7 @@ const DeleteButton: React.FC<{ author: Author }> = ({ author }) => {
       });
     } catch (error) {
       showNotification({
-        message: `削除に失敗しました: ${String(error)}`,
+        message: `削除に失敗しました: ${error instanceof Error ? error.message : String(error)}`,
         color: "red",
       });
     }
@@ -89,10 +98,13 @@ export const AuthorDetailShow: React.FC<{ author: Author }> = ({ author }) => {
       >
         Back
       </LinkButton>
-      <Box m={20}>
-        <Text fw="bold">名前</Text>
-        <Text>{author.name}</Text>
-      </Box>
+      <Stack m={20} gap="xs">
+        <Title order={1}>{author.name}</Title>
+        <Box>
+          <Text fw="bold">名前</Text>
+          <Text>{author.name}</Text>
+        </Box>
+      </Stack>
       <Group m={20}>
         <LinkButton
           color="blue"
