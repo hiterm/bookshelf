@@ -295,7 +295,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
                     label={
                       typeof column.columnDef.header === "string"
                         ? column.columnDef.header
-                        : undefined
+                        : column.id
                     }
                     checked={column.getIsVisible()}
                     onChange={column.getToggleVisibilityHandler()}

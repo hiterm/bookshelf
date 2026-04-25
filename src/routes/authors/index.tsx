@@ -22,6 +22,7 @@ import { useState } from "react";
 import { useCreateAuthor } from "../../compoments/hooks/useCreateAuthor";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
 import { Link } from "../../compoments/mantineTsr";
+import type { Author } from "../../features/books/entity/Author";
 
 export const Route = createFileRoute("/authors/")({
   component: RouteComponent,
@@ -30,11 +31,6 @@ export const Route = createFileRoute("/authors/")({
 function RouteComponent() {
   return <AuthorIndexPage />;
 }
-
-type Author = {
-  id: string;
-  name: string;
-};
 
 type RegisterAuthorFormInput = {
   name: string;

@@ -193,7 +193,7 @@ window.parent.postMessage({
       try {
         const graphqlRequestSchema = z.object({
           query: z.string(),
-          variables: z.record(z.string(), z.unknown()).nullish(),
+          variables: z.record(z.string(), z.unknown()).optional(),
         });
         const body = graphqlRequestSchema.parse(route.request().postDataJSON());
         log("GraphQL query:", body.query.substring(0, 50));
