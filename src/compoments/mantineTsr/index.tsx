@@ -70,7 +70,9 @@ export function LinkButton(props: LinkButtonProps): React.ReactNode {
   return (
     <Button
       {...buttonProps}
-      renderRoot={(props) => <Link {...linkOptions} {...props} />}
+      renderRoot={({ leftSection: _l, rightSection: _r, ...rootProps }) => (
+        <Link {...linkOptions} {...rootProps} />
+      )}
     />
   );
 }

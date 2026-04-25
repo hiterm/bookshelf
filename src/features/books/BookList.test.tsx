@@ -170,7 +170,7 @@ describe("BookList filters", () => {
     );
     fireEvent.change(titleInput, { target: { value: "書籍1" } });
 
-    act(() => {
+    await act(async () => {
       vi.advanceTimersByTime(1100);
     });
 
@@ -195,7 +195,7 @@ describe("BookList filters", () => {
     );
     fireEvent.change(isbnInput, { target: { value: "000002" } });
 
-    act(() => {
+    await act(async () => {
       vi.advanceTimersByTime(1100);
     });
 
@@ -461,7 +461,7 @@ describe("BookList preset and reset", () => {
     );
     fireEvent.change(titleInput, { target: { value: "書籍1" } });
 
-    act(() => {
+    await act(async () => {
       vi.advanceTimersByTime(1100);
     });
 
@@ -492,7 +492,7 @@ describe("BookList preset and reset", () => {
     );
     fireEvent.change(titleInput, { target: { value: "書籍1" } });
 
-    act(() => {
+    await act(async () => {
       vi.advanceTimersByTime(1100);
     });
 

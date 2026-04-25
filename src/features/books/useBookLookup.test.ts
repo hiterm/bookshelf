@@ -80,7 +80,8 @@ describe("useBookLookup", () => {
   test("Google Books search with title builds intitle: query and returns results", async () => {
     const mockFetch = vi
       .fn()
-      .mockReturnValue(googleBooksResponse("Rustプログラミング", ["著者A"]));
+      .mockReturnValueOnce(googleBooksResponse("Rustプログラミング", ["著者A"]))
+      .mockReturnValueOnce(makeJsonResponse([]));
     vi.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useBookLookup());
@@ -102,7 +103,8 @@ describe("useBookLookup", () => {
   test("Google Books search with ISBN strips hyphens and builds isbn: query", async () => {
     const mockFetch = vi
       .fn()
-      .mockReturnValue(googleBooksResponse("Some Book", ["Author"]));
+      .mockReturnValueOnce(googleBooksResponse("Some Book", ["Author"]))
+      .mockReturnValueOnce(makeJsonResponse([]));
     vi.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useBookLookup());
@@ -134,11 +136,12 @@ describe("useBookLookup", () => {
   test("NDL search with title sends title param and parses XML correctly", async () => {
     const mockFetch = vi
       .fn()
-      .mockReturnValue(
+      .mockReturnValueOnce(
         makeTextResponse(
           ndlXml("プログラミングRust", ["Jim Blandy"], "9784065362433"),
         ),
-      );
+      )
+      .mockReturnValueOnce(makeJsonResponse([]));
     vi.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useBookLookup());
@@ -345,7 +348,8 @@ describe("useBookLookup", () => {
       .mockReturnValueOnce(firstResponse)
       .mockReturnValueOnce(
         googleBooksResponse("新しい書籍", ["著者B"], "9784000000002"),
-      );
+      )
+      .mockReturnValueOnce(makeJsonResponse([]));
     vi.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useBookLookup());
