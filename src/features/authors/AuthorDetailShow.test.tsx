@@ -36,10 +36,14 @@ vi.mock("../../compoments/mantineTsr", () => ({
   LinkButton: ({
     children,
     linkOptions,
+    leftSection: _leftSection,
+    rightSection: _rightSection,
     ...props
   }: {
     children: React.ReactNode;
     linkOptions: { to: string; params?: Record<string, string> };
+    leftSection?: React.ReactNode;
+    rightSection?: React.ReactNode;
   } & React.ComponentProps<"button">) => (
     <button type="button" data-to={linkOptions.to} {...props}>
       {children}
