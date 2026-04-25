@@ -34,8 +34,6 @@
 - When ignoring a linter or security tool finding, always add a comment
   explaining why it is safe to ignore. Place the comment on the line immediately
   before the ignore directive.
-- **Do not use `as` type assertions** (e.g. `foo as SomeType`). Use proper
-  type narrowing or type guards instead. `as const` is allowed.
 
 ## Branching (REQUIRED FIRST STEP)
 

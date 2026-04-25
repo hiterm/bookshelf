@@ -10,6 +10,10 @@ export const AuthorsFilter = <TData, TValue>({
   column,
 }: AuthorsFilterProps<TData, TValue>): React.JSX.Element => {
   const { data, isLoading, error } = useAuthors();
+  const filterValue = column.getFilterValue();
+  const selectedIds = Array.isArray(filterValue)
+    ? filterValue.filter((x): x is string => typeof x === "string")
+    : [];
 
   if (error) {
     console.error("AuthorsFilter: failed to load authors", error);
@@ -25,7 +29,7 @@ export const AuthorsFilter = <TData, TValue>({
         })) ?? []
       }
       searchable
-      value={(column.getFilterValue() ?? []) as string[]}
+      value={selectedIds}
       onChange={(authorIds) => {
         column.setFilterValue(authorIds);
       }}

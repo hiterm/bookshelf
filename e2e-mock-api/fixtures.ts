@@ -4,6 +4,7 @@ import { test as base } from "@playwright/test";
 import { readFileSync } from "fs";
 import { graphqlSync } from "graphql";
 import { importJWK, SignJWT } from "jose";
+import { z } from "zod";
 import type { MockStore } from "./mockStore";
 import { createResolvers } from "./resolvers";
 import { TEST_AUTH0_CLIENT_ID, TEST_AUTH0_DOMAIN } from "./testConstants";
@@ -190,10 +191,11 @@ window.parent.postMessage({
     await page.route("http://localhost:4000/graphql", async (route) => {
       log("GraphQL route hit");
       try {
-        const body = route.request().postDataJSON() as {
-          query: string;
-          variables: Record<string, unknown>;
-        };
+        const graphqlRequestSchema = z.object({
+          query: z.string(),
+          variables: z.record(z.string(), z.unknown()).optional(),
+        });
+        const body = graphqlRequestSchema.parse(route.request().postDataJSON());
         log("GraphQL query:", body.query.substring(0, 50));
         const { query, variables } = body;
 
