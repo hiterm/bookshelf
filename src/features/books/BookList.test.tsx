@@ -170,8 +170,9 @@ describe("BookList filters", () => {
     );
     fireEvent.change(titleInput, { target: { value: "書籍1" } });
 
-    act(() => {
+    await act(async () => {
       vi.advanceTimersByTime(1100);
+      await Promise.resolve();
     });
 
     expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
@@ -195,8 +196,9 @@ describe("BookList filters", () => {
     );
     fireEvent.change(isbnInput, { target: { value: "000002" } });
 
-    act(() => {
+    await act(async () => {
       vi.advanceTimersByTime(1100);
+      await Promise.resolve();
     });
 
     expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
@@ -461,8 +463,9 @@ describe("BookList preset and reset", () => {
     );
     fireEvent.change(titleInput, { target: { value: "書籍1" } });
 
-    act(() => {
+    await act(async () => {
       vi.advanceTimersByTime(1100);
+      await Promise.resolve();
     });
 
     expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
@@ -492,8 +495,9 @@ describe("BookList preset and reset", () => {
     );
     fireEvent.change(titleInput, { target: { value: "書籍1" } });
 
-    act(() => {
+    await act(async () => {
       vi.advanceTimersByTime(1100);
+      await Promise.resolve();
     });
 
     expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
