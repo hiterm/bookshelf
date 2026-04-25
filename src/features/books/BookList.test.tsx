@@ -172,6 +172,7 @@ describe("BookList filters", () => {
 
     await act(async () => {
       vi.advanceTimersByTime(1100);
+      await Promise.resolve();
     });
 
     expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
@@ -197,6 +198,7 @@ describe("BookList filters", () => {
 
     await act(async () => {
       vi.advanceTimersByTime(1100);
+      await Promise.resolve();
     });
 
     expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
@@ -463,6 +465,7 @@ describe("BookList preset and reset", () => {
 
     await act(async () => {
       vi.advanceTimersByTime(1100);
+      await Promise.resolve();
     });
 
     expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
@@ -494,6 +497,7 @@ describe("BookList preset and reset", () => {
 
     await act(async () => {
       vi.advanceTimersByTime(1100);
+      await Promise.resolve();
     });
 
     expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
