@@ -69,7 +69,7 @@ const AuthorIndexPage: React.FC = () => {
   const { data, isLoading, error } = useAuthors();
   const [globalFilter, setGlobalFilter] = useState("");
   const columnHelper = createColumnHelper<Author>();
-  const columns = [
+  const columns: ColumnDef<Author>[] = [
     columnHelper.accessor("name", {
       header: "名前",
       cell: ({ row }) => (
@@ -78,7 +78,7 @@ const AuthorIndexPage: React.FC = () => {
         </Link>
       ),
     }),
-  ] as ColumnDef<Author>[];
+  ];
   const table = useReactTable({
     data: data?.authors ?? [], // その場しのぎ
     columns,

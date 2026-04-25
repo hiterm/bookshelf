@@ -10,7 +10,10 @@ export type StringFilterProps<TData, TValue> = {
 export const StringFilter = <TData, TValue>({
   column,
 }: StringFilterProps<TData, TValue>) => {
-  const [value, setValue] = useState((column.getFilterValue() ?? "") as string);
+  const initial = column.getFilterValue();
+  const [value, setValue] = useState(
+    typeof initial === "string" ? initial : "",
+  );
 
   useDebouncedEffect(
     () => {
@@ -27,7 +30,7 @@ export const StringFilter = <TData, TValue>({
     // filter resets (e.g. "clear all filters"). No infinite loop risk as
     // filterValue changes are externally driven. Expect improvement in v9.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setValue((filterValue as string | undefined) ?? "");
+    setValue(typeof filterValue === "string" ? filterValue : "");
   }, [filterValue]);
 
   return (

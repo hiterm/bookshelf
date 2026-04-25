@@ -109,6 +109,7 @@ export default tseslint.config(
       // This project does not use React Compiler, so disable the compiler
       // compatibility warning for third-party libraries (e.g. TanStack Table).
       "react-hooks/incompatible-library": "off",
+      "@typescript-eslint/no-unsafe-type-assertion": "error",
       "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
       "no-plusplus": [
         "error",

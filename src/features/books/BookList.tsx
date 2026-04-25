@@ -37,10 +37,10 @@ import {
   IconSortDescending,
 } from "@tabler/icons-react";
 import { getRouteApi } from "@tanstack/react-router";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "../../compoments/mantineTsr";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
-import { Author } from "./entity/Author";
+import { authorSchema } from "./entity/Author";
 import { Book } from "./entity/Book";
 import { displayBookFormat } from "./entity/BookFormat";
 import { displayBookStore } from "./entity/BookStore";
@@ -65,9 +65,12 @@ const authorsFilter: FilterFn<Book> = (
     return true;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const value = row.getValue(columnId) as Author[];
-  return value.some((author) => filterValue.includes(author.id));
+  const value = row.getValue(columnId);
+  if (!Array.isArray(value)) return false;
+  return value.some((item) => {
+    const parsed = authorSchema.safeParse(item);
+    return parsed.success && filterValue.includes(parsed.data.id);
+  });
 };
 
 const formatDate = (date: Date) => dayjs(date).format("YYYY/MM/DD HH:mm Z");
@@ -76,7 +79,7 @@ const DEFAULT_PAGE_SIZE = 20;
 
 const columnHelper = createColumnHelper<Book>();
 
-const columns = [
+const columns: ColumnDef<Book>[] = [
   columnHelper.accessor("title", {
     header: "書名",
     cell: (info) => (
@@ -145,7 +148,7 @@ const columns = [
       <Box style={{ whiteSpace: "nowrap" }}>{formatDate(info.getValue())}</Box>
     ),
   }),
-] as ColumnDef<Book>[];
+];
 
 type BookListProps = { list: Book[] };
 
@@ -181,12 +184,10 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
   const navigate = routeApi.useNavigate();
   const search = routeApi.useSearch();
 
-  const [columnFilters, setColumnFilters] = useState(
-    (search.columnFilters ?? []) as ColumnFiltersState,
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+    search.columnFilters ?? [],
   );
-  const [sorting, setSorting] = useState(
-    (search.sorting ?? []) as SortingState,
-  );
+  const [sorting, setSorting] = useState<SortingState>(search.sorting ?? []);
   const [pagination, setPagination] = useState({
     pageIndex: search.pageIndex ?? 0,
     pageSize: search.pageSize ?? DEFAULT_PAGE_SIZE,
@@ -196,13 +197,13 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
   const serializedSorting = JSON.stringify(search.sorting ?? []);
 
   useEffect(() => {
-    setColumnFilters((search.columnFilters ?? []) as ColumnFiltersState);
+    setColumnFilters(search.columnFilters ?? []);
     // serializedColumnFilters is the stable dep; search.columnFilters is the current value.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serializedColumnFilters]);
 
   useEffect(() => {
-    setSorting((search.sorting ?? []) as SortingState);
+    setSorting(search.sorting ?? []);
     // serializedSorting is the stable dep; search.sorting is the current value.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serializedSorting]);
@@ -291,7 +292,11 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
                 return (
                   <Checkbox
                     key={column.id}
-                    label={column.columnDef.header as ReactNode}
+                    label={
+                      typeof column.columnDef.header === "string"
+                        ? column.columnDef.header
+                        : undefined
+                    }
                     checked={column.getIsVisible()}
                     onChange={column.getToggleVisibilityHandler()}
                   />

@@ -9,6 +9,7 @@ export type FormatFilterProps<TData, TValue> = {
 export const FormatFilter = <TData, TValue>({
   column,
 }: FormatFilterProps<TData, TValue>): React.JSX.Element => {
+  const filterValue = column.getFilterValue();
   return (
     <Select
       data={[
@@ -18,7 +19,7 @@ export const FormatFilter = <TData, TValue>({
           label: displayBookFormat(format),
         })),
       ]}
-      value={(column.getFilterValue() as string | undefined) ?? ""}
+      value={typeof filterValue === "string" ? filterValue : ""}
       onChange={(value) => {
         column.setFilterValue(value);
       }}

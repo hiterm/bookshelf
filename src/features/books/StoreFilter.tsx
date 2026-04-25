@@ -7,6 +7,7 @@ export type StoreFilterProps<TData, TValue> = { column: Column<TData, TValue> };
 export const StoreFilter = <TData, TValue>({
   column,
 }: StoreFilterProps<TData, TValue>): React.JSX.Element => {
+  const filterValue = column.getFilterValue();
   return (
     <Select
       data={[
@@ -16,7 +17,7 @@ export const StoreFilter = <TData, TValue>({
           label: displayBookStore(format),
         })),
       ]}
-      value={(column.getFilterValue() as string | undefined) ?? ""}
+      value={typeof filterValue === "string" ? filterValue : ""}
       onChange={(value) => {
         column.setFilterValue(value);
       }}
