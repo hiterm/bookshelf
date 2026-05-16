@@ -19,6 +19,9 @@
 - [x] 3.3 Add `graphqlApi.query("bookEvents", ...)` handler
 - [x] 3.4 Add `graphqlApi.query("authorEvents", ...)` handler
 - [x] 3.5 Verify demo mode renders history correctly with mock data
+
+## 4. Display Book & Author History
+
 - [x] 4.1 Create `src/features/books/BookHistory.tsx` component to display book event history
 - [x] 4.2 Integrate `BookHistory` into `src/routes/books/$id.tsx` below `BookDetailShow`
 - [x] 4.3 Create `src/features/authors/AuthorHistory.tsx` component to display author event history
