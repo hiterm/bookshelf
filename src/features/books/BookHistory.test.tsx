@@ -22,6 +22,12 @@ beforeAll(() => {
       dispatchEvent: vi.fn(),
     })),
   });
+
+  global.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
 });
 
 vi.mock("../../compoments/hooks/useBookEvents", () => ({
@@ -90,8 +96,10 @@ describe("BookHistory", () => {
     expect(screen.getByText("CREATE")).toBeInTheDocument();
     expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     expect(screen.getByText("著者1")).toBeInTheDocument();
+    expect(screen.getByText("978-4-00-000001-0")).toBeInTheDocument();
     expect(screen.getByText("PRINTED")).toBeInTheDocument();
     expect(screen.getByText("UNKNOWN")).toBeInTheDocument();
+    expect(screen.getByText("50")).toBeInTheDocument();
   });
 
   test("renders nothing when no events exist", () => {

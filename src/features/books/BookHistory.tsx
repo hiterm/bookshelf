@@ -1,7 +1,8 @@
-import { Table, Text, Title } from "@mantine/core";
+import { ScrollArea, Table, Text, Title } from "@mantine/core";
 import dayjs from "dayjs";
 import React from "react";
 import { useBookEvents } from "../../compoments/hooks/useBookEvents";
+import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { Author } from "../../generated/graphql-request";
 
 type BookHistoryProps = {
@@ -38,32 +39,50 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
       <Title order={2} mt="xl" mb="md">
         History
       </Title>
-      <Table>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Operation</Table.Th>
-            <Table.Th>Date</Table.Th>
-            <Table.Th>Title</Table.Th>
-            <Table.Th>Authors</Table.Th>
-            <Table.Th>Format</Table.Th>
-            <Table.Th>Store</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {data.bookEvents.map((event) => (
-            <Table.Tr key={event.eventId}>
-              <Table.Td>{event.operation}</Table.Td>
-              <Table.Td>
-                {dayjs(event.changedAt * 1000).format("YYYY/MM/DD HH:mm:ss")}
-              </Table.Td>
-              <Table.Td>{event.title}</Table.Td>
-              <Table.Td>{resolveAuthorNames(event.authorIds)}</Table.Td>
-              <Table.Td>{event.format}</Table.Td>
-              <Table.Td>{event.store}</Table.Td>
+      <ScrollArea>
+        <Table withColumnBorders>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Operation</Table.Th>
+              <Table.Th>Date</Table.Th>
+              <Table.Th>Title</Table.Th>
+              <Table.Th>Authors</Table.Th>
+              <Table.Th>ISBN</Table.Th>
+              <Table.Th>Format</Table.Th>
+              <Table.Th>Store</Table.Th>
+              <Table.Th>Read</Table.Th>
+              <Table.Th>Owned</Table.Th>
+              <Table.Th>Priority</Table.Th>
             </Table.Tr>
-          ))}
-        </Table.Tbody>
-      </Table>
+          </Table.Thead>
+          <Table.Tbody>
+            {data.bookEvents.map((event) => (
+              <Table.Tr key={event.eventId}>
+                <Table.Td>{event.operation}</Table.Td>
+                <Table.Td>
+                  {dayjs(event.changedAt * 1000).format("YYYY/MM/DD HH:mm:ss")}
+                </Table.Td>
+                <Table.Td>{event.title}</Table.Td>
+                <Table.Td>{resolveAuthorNames(event.authorIds)}</Table.Td>
+                <Table.Td>{event.isbn}</Table.Td>
+                <Table.Td>{event.format}</Table.Td>
+                <Table.Td>{event.store}</Table.Td>
+                <Table.Td>
+                  {event.read != null ? (
+                    <ShowBoolean flag={event.read} />
+                  ) : null}
+                </Table.Td>
+                <Table.Td>
+                  {event.owned != null ? (
+                    <ShowBoolean flag={event.owned} />
+                  ) : null}
+                </Table.Td>
+                <Table.Td>{event.priority ?? null}</Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </ScrollArea>
     </div>
   );
 };
