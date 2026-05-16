@@ -18,6 +18,113 @@ function resolveBookAuthors(book: { authorIds: string[] }) {
     .map((author) => ({ __typename: "Author", ...author }));
 }
 
+function getBookEvents(bookId: string) {
+  if (bookId === "book-1") {
+    return [
+      {
+        __typename: "BookEventEntry" as const,
+        eventId: "book-event-2",
+        eventSetId: "event-set-2",
+        operation: "UPDATE",
+        bookId: "book-1",
+        title: "テスト書籍1（更新）",
+        authorIds: ["author-1"],
+        isbn: "978-4-00-000001-0",
+        read: true,
+        owned: true,
+        priority: 60,
+        format: "PRINTED",
+        store: "UNKNOWN",
+        bookCreatedAt: 1609459200,
+        bookUpdatedAt: 1609545600,
+        changedAt: 1609545600,
+        extra: null,
+      },
+      {
+        __typename: "BookEventEntry" as const,
+        eventId: "book-event-1",
+        eventSetId: "event-set-1",
+        operation: "CREATE",
+        bookId: "book-1",
+        title: "テスト書籍1",
+        authorIds: ["author-1"],
+        isbn: "978-4-00-000001-0",
+        read: false,
+        owned: true,
+        priority: 50,
+        format: "PRINTED",
+        store: "UNKNOWN",
+        bookCreatedAt: 1609459200,
+        bookUpdatedAt: 1609459200,
+        changedAt: 1609459200,
+        extra: null,
+      },
+    ];
+  }
+  if (bookId === "book-2") {
+    return [
+      {
+        __typename: "BookEventEntry" as const,
+        eventId: "book-event-3",
+        eventSetId: "event-set-3",
+        operation: "CREATE",
+        bookId: "book-2",
+        title: "テスト書籍2",
+        authorIds: ["author-2"],
+        isbn: "978-4-00-000002-7",
+        read: true,
+        owned: true,
+        priority: 80,
+        format: "E_BOOK",
+        store: "KINDLE",
+        bookCreatedAt: 1609632000,
+        bookUpdatedAt: 1609632000,
+        changedAt: 1609632000,
+        extra: null,
+      },
+    ];
+  }
+  return [];
+}
+
+function getAuthorEvents(authorId: string) {
+  if (authorId === "author-1") {
+    return [
+      {
+        __typename: "AuthorEventEntry" as const,
+        eventId: "author-event-1",
+        eventSetId: "event-set-1",
+        operation: "CREATE",
+        authorId: "author-1",
+        name: "著者1",
+        yomi: null,
+        authorCreatedAt: 1609459200,
+        authorUpdatedAt: 1609459200,
+        changedAt: 1609459200,
+        extra: null,
+      },
+    ];
+  }
+  if (authorId === "author-2") {
+    return [
+      {
+        __typename: "AuthorEventEntry" as const,
+        eventId: "author-event-2",
+        eventSetId: "event-set-2",
+        operation: "CREATE",
+        authorId: "author-2",
+        name: "著者2",
+        yomi: null,
+        authorCreatedAt: 1609545600,
+        authorUpdatedAt: 1609545600,
+        changedAt: 1609545600,
+        extra: null,
+      },
+    ];
+  }
+  return [];
+}
+
 export const handlers = [
   graphqlApi.query("loggedInUser", () => {
     return HttpResponse.json({
@@ -92,6 +199,32 @@ export const handlers = [
           authors: resolveBookAuthors(book),
         },
       },
+    });
+  }),
+
+  graphqlApi.query("bookEvents", ({ variables }) => {
+    if (!isObject(variables) || !isString(variables.bookId)) {
+      return HttpResponse.json(
+        { errors: [{ message: "Invalid variables" }] },
+        { status: 200 },
+      );
+    }
+    const events = getBookEvents(variables.bookId);
+    return HttpResponse.json({
+      data: { bookEvents: events },
+    });
+  }),
+
+  graphqlApi.query("authorEvents", ({ variables }) => {
+    if (!isObject(variables) || !isString(variables.authorId)) {
+      return HttpResponse.json(
+        { errors: [{ message: "Invalid variables" }] },
+        { status: 200 },
+      );
+    }
+    const events = getAuthorEvents(variables.authorId);
+    return HttpResponse.json({
+      data: { authorEvents: events },
     });
   }),
 
