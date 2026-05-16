@@ -38,4 +38,4 @@
 - [x] 6.1 Run `npm run lint:fix`
 - [x] 6.2 Run `npm run typecheck`
 - [x] 6.3 Run `npm run test`
-- [ ] 6.4 Commit changes
+- [x] 6.4 Commit changes

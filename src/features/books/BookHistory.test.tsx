@@ -25,8 +25,7 @@ beforeAll(() => {
 });
 
 vi.mock("../../compoments/hooks/useBookEvents", () => ({
-  useBookEvents: (...args: unknown[]) =>
-    mockUseBookEvents(...args) as unknown,
+  useBookEvents: (...args: unknown[]) => mockUseBookEvents(...args) as unknown,
 }));
 
 const createWrapper = (): React.FC<{ children: React.ReactNode }> => {

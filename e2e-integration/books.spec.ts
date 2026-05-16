@@ -68,7 +68,7 @@ test.describe
 
       await expect(page).toHaveURL(/\/books\/.+$/);
       await expect(page.getByText("更新しました")).toBeVisible();
-      await expect(page.getByText(UPDATED_TITLE)).toBeVisible();
+      await expect(page.getByText(UPDATED_TITLE).first()).toBeVisible();
 
       // Delete the book
       await page.getByRole("button", { name: "削除" }).click();
