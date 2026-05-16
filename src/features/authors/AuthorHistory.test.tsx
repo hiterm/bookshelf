@@ -102,7 +102,9 @@ describe("AuthorHistory", () => {
       wrapper: createWrapper(),
     });
 
-    await userEvent.click(screen.getByText("CREATE"));
+    await userEvent.click(
+      screen.getByRole("button", { name: "View event detail" }),
+    );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("Event Detail")).toBeInTheDocument();

@@ -1,4 +1,5 @@
-import { Modal, Table, Text, Title } from "@mantine/core";
+import { ActionIcon, Modal, Table, Text, Title } from "@mantine/core";
+import { IconEye } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { useBookEvents } from "../../compoments/hooks/useBookEvents";
@@ -50,22 +51,28 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
             <Table.Th>Operation</Table.Th>
             <Table.Th>Date</Table.Th>
             <Table.Th>Title</Table.Th>
+            <Table.Th>Detail</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           {data.bookEvents.map((event) => (
-            <Table.Tr
-              key={event.eventId}
-              onClick={() => {
-                setSelectedEventId(event.eventId);
-              }}
-              style={{ cursor: "pointer" }}
-            >
+            <Table.Tr key={event.eventId}>
               <Table.Td>{event.operation}</Table.Td>
               <Table.Td>
                 {dayjs(event.changedAt * 1000).format("YYYY/MM/DD HH:mm:ss")}
               </Table.Td>
               <Table.Td>{event.title}</Table.Td>
+              <Table.Td>
+                <ActionIcon
+                  onClick={() => {
+                    setSelectedEventId(event.eventId);
+                  }}
+                  variant="subtle"
+                  aria-label="View event detail"
+                >
+                  <IconEye />
+                </ActionIcon>
+              </Table.Td>
             </Table.Tr>
           ))}
         </Table.Tbody>

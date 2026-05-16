@@ -1,4 +1,5 @@
-import { Modal, Table, Text, Title } from "@mantine/core";
+import { ActionIcon, Modal, Table, Text, Title } from "@mantine/core";
+import { IconEye } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { useAuthorEvents } from "../../compoments/hooks/useAuthorEvents";
@@ -34,22 +35,28 @@ export const AuthorHistory: React.FC<{ authorId: string }> = ({ authorId }) => {
             <Table.Th>Operation</Table.Th>
             <Table.Th>Date</Table.Th>
             <Table.Th>Name</Table.Th>
+            <Table.Th>Detail</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           {data.authorEvents.map((event) => (
-            <Table.Tr
-              key={event.eventId}
-              onClick={() => {
-                setSelectedEventId(event.eventId);
-              }}
-              style={{ cursor: "pointer" }}
-            >
+            <Table.Tr key={event.eventId}>
               <Table.Td>{event.operation}</Table.Td>
               <Table.Td>
                 {dayjs(event.changedAt * 1000).format("YYYY/MM/DD HH:mm:ss")}
               </Table.Td>
               <Table.Td>{event.name}</Table.Td>
+              <Table.Td>
+                <ActionIcon
+                  onClick={() => {
+                    setSelectedEventId(event.eventId);
+                  }}
+                  variant="subtle"
+                  aria-label="View event detail"
+                >
+                  <IconEye />
+                </ActionIcon>
+              </Table.Td>
             </Table.Tr>
           ))}
         </Table.Tbody>
