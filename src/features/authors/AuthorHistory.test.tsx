@@ -2,6 +2,7 @@ import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
 import { AuthorHistory } from "./AuthorHistory";
@@ -22,6 +23,15 @@ beforeAll(() => {
       dispatchEvent: vi.fn(),
     })),
   });
+
+  global.ResizeObserver = class ResizeObserver {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    observe() {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    unobserve() {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    disconnect() {}
+  };
 });
 
 vi.mock("../../compoments/hooks/useAuthorEvents", () => ({
@@ -79,6 +89,25 @@ describe("AuthorHistory", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("CREATE")).toBeInTheDocument();
     expect(screen.getByText("著者1")).toBeInTheDocument();
+  });
+
+  test("opens modal with event details on row click", async () => {
+    mockUseAuthorEvents.mockReturnValue({
+      data: mockEvents,
+      isLoading: false,
+      error: null,
+    });
+
+    render(<AuthorHistory authorId="author-1" />, {
+      wrapper: createWrapper(),
+    });
+
+    await userEvent.click(screen.getByText("CREATE"));
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText("Event Detail")).toBeInTheDocument();
+    expect(screen.getByText("Operation:")).toBeInTheDocument();
+    expect(screen.getByText("Name:")).toBeInTheDocument();
   });
 
   test("renders nothing when no events exist", () => {

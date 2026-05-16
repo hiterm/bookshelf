@@ -1,6 +1,6 @@
-import { ScrollArea, Table, Text, Title } from "@mantine/core";
+import { Modal, Table, Text, Title } from "@mantine/core";
 import dayjs from "dayjs";
-import React from "react";
+import React, { useState } from "react";
 import { useBookEvents } from "../../compoments/hooks/useBookEvents";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { Author } from "../../generated/graphql-request";
@@ -15,6 +15,7 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
   authors,
 }) => {
   const { data, isLoading, error } = useBookEvents(bookId);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   if (isLoading) {
     return <Text>Loading...</Text>;
@@ -28,6 +29,10 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
     return null;
   }
 
+  const selectedEvent = data.bookEvents.find(
+    (e) => e.eventId === selectedEventId,
+  );
+
   const authorMap = new Map(authors.map((a) => [a.id, a.name]));
 
   const resolveAuthorNames = (authorIds: string[]) => {
@@ -39,50 +44,90 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
       <Title order={2} mt="xl" mb="md">
         History
       </Title>
-      <ScrollArea>
-        <Table withColumnBorders>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Operation</Table.Th>
-              <Table.Th>Date</Table.Th>
-              <Table.Th>Title</Table.Th>
-              <Table.Th>Authors</Table.Th>
-              <Table.Th>ISBN</Table.Th>
-              <Table.Th>Format</Table.Th>
-              <Table.Th>Store</Table.Th>
-              <Table.Th>Read</Table.Th>
-              <Table.Th>Owned</Table.Th>
-              <Table.Th>Priority</Table.Th>
+      <Table highlightOnHover>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Operation</Table.Th>
+            <Table.Th>Date</Table.Th>
+            <Table.Th>Title</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {data.bookEvents.map((event) => (
+            <Table.Tr
+              key={event.eventId}
+              onClick={() => {
+                setSelectedEventId(event.eventId);
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              <Table.Td>{event.operation}</Table.Td>
+              <Table.Td>
+                {dayjs(event.changedAt * 1000).format("YYYY/MM/DD HH:mm:ss")}
+              </Table.Td>
+              <Table.Td>{event.title}</Table.Td>
             </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {data.bookEvents.map((event) => (
-              <Table.Tr key={event.eventId}>
-                <Table.Td>{event.operation}</Table.Td>
-                <Table.Td>
-                  {dayjs(event.changedAt * 1000).format("YYYY/MM/DD HH:mm:ss")}
-                </Table.Td>
-                <Table.Td>{event.title}</Table.Td>
-                <Table.Td>{resolveAuthorNames(event.authorIds)}</Table.Td>
-                <Table.Td>{event.isbn}</Table.Td>
-                <Table.Td>{event.format}</Table.Td>
-                <Table.Td>{event.store}</Table.Td>
-                <Table.Td>
-                  {event.read != null ? (
-                    <ShowBoolean flag={event.read} />
-                  ) : null}
-                </Table.Td>
-                <Table.Td>
-                  {event.owned != null ? (
-                    <ShowBoolean flag={event.owned} />
-                  ) : null}
-                </Table.Td>
-                <Table.Td>{event.priority ?? null}</Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-      </ScrollArea>
+          ))}
+        </Table.Tbody>
+      </Table>
+
+      <Modal
+        opened={selectedEventId != null}
+        onClose={() => {
+          setSelectedEventId(null);
+        }}
+        title="Event Detail"
+      >
+        {selectedEvent && (
+          <div>
+            <Text>
+              <strong>Operation:</strong> {selectedEvent.operation}
+            </Text>
+            <Text>
+              <strong>Date:</strong>{" "}
+              {dayjs(selectedEvent.changedAt * 1000).format(
+                "YYYY/MM/DD HH:mm:ss",
+              )}
+            </Text>
+            <Text>
+              <strong>Title:</strong> {selectedEvent.title}
+            </Text>
+            <Text>
+              <strong>Authors:</strong>{" "}
+              {resolveAuthorNames(selectedEvent.authorIds)}
+            </Text>
+            <Text>
+              <strong>ISBN:</strong> {selectedEvent.isbn}
+            </Text>
+            <Text>
+              <strong>Format:</strong> {selectedEvent.format}
+            </Text>
+            <Text>
+              <strong>Store:</strong> {selectedEvent.store}
+            </Text>
+            <Text>
+              <strong>Read:</strong>{" "}
+              {selectedEvent.read != null ? (
+                <ShowBoolean flag={selectedEvent.read} />
+              ) : null}
+            </Text>
+            <Text>
+              <strong>Owned:</strong>{" "}
+              {selectedEvent.owned != null ? (
+                <ShowBoolean flag={selectedEvent.owned} />
+              ) : null}
+            </Text>
+            <Text>
+              <strong>Priority:</strong> {selectedEvent.priority ?? "-"}
+            </Text>
+            {selectedEvent.extra && (
+              <Text>
+                <strong>Extra:</strong> {JSON.stringify(selectedEvent.extra)}
+              </Text>
+            )}
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

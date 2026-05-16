@@ -2,6 +2,7 @@ import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
 import { BookHistory } from "./BookHistory";
@@ -98,7 +99,24 @@ describe("BookHistory", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("CREATE")).toBeInTheDocument();
     expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
-    expect(screen.getByText("著者1")).toBeInTheDocument();
+  });
+
+  test("opens modal with event details on row click", async () => {
+    mockUseBookEvents.mockReturnValue({
+      data: mockEvents,
+      isLoading: false,
+      error: null,
+    });
+
+    render(<BookHistory bookId="book-1" authors={mockAuthors} />, {
+      wrapper: createWrapper(),
+    });
+
+    await userEvent.click(screen.getByText("CREATE"));
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText("Event Detail")).toBeInTheDocument();
+    expect(screen.getByText("Operation:")).toBeInTheDocument();
     expect(screen.getByText("978-4-00-000001-0")).toBeInTheDocument();
     expect(screen.getByText("PRINTED")).toBeInTheDocument();
     expect(screen.getByText("UNKNOWN")).toBeInTheDocument();
