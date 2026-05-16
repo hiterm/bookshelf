@@ -2,6 +2,7 @@ import { Center, Loader } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 import { BookDetailShow } from "../../features/books/BookDetailShow";
+import { BookHistory } from "../../features/books/BookHistory";
 import { graphQlBookToBook } from "../../features/books/entity/Book";
 import { useBook } from "../../compoments/hooks/useBook";
 
@@ -38,5 +39,10 @@ const BookDetailPage: React.FC = () => {
 
   const book = graphQlBookToBook(graphqlBook);
 
-  return <BookDetailShow book={book} />;
+  return (
+    <>
+      <BookDetailShow book={book} />
+      <BookHistory bookId={book.id} authors={graphqlBook.authors} />
+    </>
+  );
 };
