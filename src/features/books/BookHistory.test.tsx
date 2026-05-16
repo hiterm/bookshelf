@@ -25,10 +25,13 @@ beforeAll(() => {
   });
 
   global.ResizeObserver = class ResizeObserver {
+    // No-op stub: DOM layout/ResizeObserver behavior is not needed in unit tests and no side effects are expected.
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     observe() {}
+    // No-op stub: DOM layout/ResizeObserver behavior is not needed in unit tests and no side effects are expected.
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     unobserve() {}
+    // No-op stub: DOM layout/ResizeObserver behavior is not needed in unit tests and no side effects are expected.
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     disconnect() {}
   };
