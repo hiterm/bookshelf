@@ -1,0 +1,14 @@
+query authorEvents($authorId: ID!) {
+  authorEvents(authorId: $authorId) {
+    eventId
+    eventSetId
+    operation
+    authorId
+    name
+    yomi
+    authorCreatedAt
+    authorUpdatedAt
+    changedAt
+    extra
+  }
+}
