@@ -1,0 +1,141 @@
+import "@testing-library/jest-dom";
+import { MantineProvider } from "@mantine/core";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { render, screen } from "@testing-library/react";
+import React from "react";
+import { vi } from "vitest";
+import { BookHistory } from "./BookHistory";
+
+const mockUseBookEvents = vi.fn();
+
+beforeAll(() => {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+});
+
+vi.mock("../../compoments/hooks/useBookEvents", () => ({
+  useBookEvents: (...args: unknown[]) =>
+    mockUseBookEvents(...args) as unknown,
+}));
+
+const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider env="test">{children}</MantineProvider>
+    </QueryClientProvider>
+  );
+  return wrapper;
+};
+
+const mockAuthors = [
+  { id: "author-1", name: "著者1" },
+  { id: "author-2", name: "著者2" },
+];
+
+const mockEvents = {
+  bookEvents: [
+    {
+      eventId: "event-1",
+      eventSetId: "set-1",
+      operation: "CREATE",
+      bookId: "book-1",
+      title: "テスト書籍1",
+      authorIds: ["author-1"],
+      isbn: "978-4-00-000001-0",
+      read: false,
+      owned: true,
+      priority: 50,
+      format: "PRINTED",
+      store: "UNKNOWN",
+      bookCreatedAt: 1609459200,
+      bookUpdatedAt: 1609459200,
+      changedAt: 1609459200,
+      extra: null,
+    },
+  ],
+};
+
+describe("BookHistory", () => {
+  beforeEach(() => {
+    mockUseBookEvents.mockReset();
+  });
+
+  test("renders history table with events", () => {
+    mockUseBookEvents.mockReturnValue({
+      data: mockEvents,
+      isLoading: false,
+      error: null,
+    });
+
+    render(<BookHistory bookId="book-1" authors={mockAuthors} />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(
+      screen.getByRole("heading", { name: "History" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("CREATE")).toBeInTheDocument();
+    expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
+    expect(screen.getByText("著者1")).toBeInTheDocument();
+    expect(screen.getByText("PRINTED")).toBeInTheDocument();
+    expect(screen.getByText("UNKNOWN")).toBeInTheDocument();
+  });
+
+  test("renders nothing when no events exist", () => {
+    mockUseBookEvents.mockReturnValue({
+      data: { bookEvents: [] },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<BookHistory bookId="book-1" authors={mockAuthors} />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(
+      screen.queryByRole("heading", { name: "History" }),
+    ).not.toBeInTheDocument();
+  });
+
+  test("renders loading state", () => {
+    mockUseBookEvents.mockReturnValue({
+      data: null,
+      isLoading: true,
+      error: null,
+    });
+
+    render(<BookHistory bookId="book-1" authors={mockAuthors} />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
+  });
+
+  test("renders error state", () => {
+    mockUseBookEvents.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: new Error("fail"),
+    });
+
+    render(<BookHistory bookId="book-1" authors={mockAuthors} />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(screen.getByText("Error loading history")).toBeInTheDocument();
+  });
+});
