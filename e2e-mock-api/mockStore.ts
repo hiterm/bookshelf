@@ -1,3 +1,35 @@
+type AuthorEventEntry = {
+  eventId: string;
+  eventSetId: string;
+  operation: string;
+  authorId: string;
+  name: string | null;
+  yomi: string | null;
+  authorCreatedAt: number | null;
+  authorUpdatedAt: number | null;
+  changedAt: number;
+  extra: null;
+};
+
+type BookEventEntry = {
+  eventId: string;
+  eventSetId: string;
+  operation: string;
+  bookId: string;
+  title: string | null;
+  authorIds: string[];
+  isbn: string | null;
+  read: boolean | null;
+  owned: boolean | null;
+  priority: number | null;
+  format: string | null;
+  store: string | null;
+  bookCreatedAt: number | null;
+  bookUpdatedAt: number | null;
+  changedAt: number;
+  extra: null;
+};
+
 type Author = {
   id: string;
   name: string;
@@ -20,15 +52,23 @@ type Book = {
 export class MockStore {
   private authors: Map<string, Author>;
   private books: Map<string, Book>;
+  private authorEvents: AuthorEventEntry[];
+  private bookEvents: BookEventEntry[];
   private nextAuthorId: number;
   private nextBookId: number;
+  private nextEventId: number;
+  private nextEventSetId: number;
   private _userRegistered: boolean;
 
   constructor(options?: { userRegistered?: boolean }) {
     this.authors = new Map();
     this.books = new Map();
+    this.authorEvents = [];
+    this.bookEvents = [];
     this.nextAuthorId = 1;
     this.nextBookId = 1;
+    this.nextEventId = 1;
+    this.nextEventSetId = 1;
     this._userRegistered = options?.userRegistered ?? true;
     this.seedData();
   }
@@ -42,10 +82,10 @@ export class MockStore {
   }
 
   private seedData(): void {
-    const author1 = this.createAuthor("著者1");
-    const author2 = this.createAuthor("著者2");
+    const author1 = this.createAuthorInternal("著者1");
+    const author2 = this.createAuthorInternal("著者2");
 
-    this.createBook({
+    this.createBookInternal({
       title: "テスト書籍1",
       authorIds: [author1.id],
       isbn: "978-4-00-000001-0",
@@ -56,7 +96,7 @@ export class MockStore {
       store: "UNKNOWN",
     });
 
-    this.createBook({
+    this.createBookInternal({
       title: "テスト書籍2",
       authorIds: [author2.id],
       isbn: "978-4-00-000002-7",
@@ -67,7 +107,7 @@ export class MockStore {
       store: "KINDLE",
     });
 
-    this.createBook({
+    this.createBookInternal({
       title: "テスト書籍3",
       authorIds: [author1.id],
       isbn: "978-4-00-000003-4",
@@ -78,7 +118,7 @@ export class MockStore {
       store: "UNKNOWN",
     });
 
-    this.createBook({
+    this.createBookInternal({
       title: "テスト書籍4",
       authorIds: [author2.id],
       isbn: "978-4-00-000004-1",
@@ -90,11 +130,101 @@ export class MockStore {
     });
   }
 
-  createAuthor(name: string): Author {
+  private recordAuthorEvent(
+    operation: string,
+    authorId: string,
+    name: string | null,
+    yomi: string | null,
+    authorCreatedAt: number | null,
+    authorUpdatedAt: number | null,
+  ): void {
+    const now = Math.floor(Date.now() / 1000);
+    const eventSetId = `event-set-${String(this.nextEventSetId)}`;
+    const eventId = `event-${String(this.nextEventId)}`;
+    this.nextEventSetId += 1;
+    this.nextEventId += 1;
+    this.authorEvents.push({
+      eventId,
+      eventSetId,
+      operation,
+      authorId,
+      name,
+      yomi,
+      authorCreatedAt,
+      authorUpdatedAt,
+      changedAt: now,
+      extra: null,
+    });
+  }
+
+  private recordBookEvent(
+    operation: string,
+    book: {
+      id: string;
+      title: string;
+      authorIds: string[];
+      isbn: string;
+      read: boolean;
+      owned: boolean;
+      priority: number;
+      format: string;
+      store: string;
+      createdAt: number;
+      updatedAt: number;
+    },
+  ): void {
+    const now = Math.floor(Date.now() / 1000);
+    const eventSetId = `event-set-${String(this.nextEventSetId)}`;
+    const eventId = `event-${String(this.nextEventId)}`;
+    this.nextEventSetId += 1;
+    this.nextEventId += 1;
+    this.bookEvents.push({
+      eventId,
+      eventSetId,
+      operation,
+      bookId: book.id,
+      title: book.title,
+      authorIds: [...book.authorIds],
+      isbn: book.isbn,
+      read: book.read,
+      owned: book.owned,
+      priority: book.priority,
+      format: book.format,
+      store: book.store,
+      bookCreatedAt: book.createdAt,
+      bookUpdatedAt: book.updatedAt,
+      changedAt: now,
+      extra: null,
+    });
+  }
+
+  private createAuthorInternal(name: string): Author {
     const id = `author-${String(this.nextAuthorId)}`;
     this.nextAuthorId += 1;
     const author: Author = { id, name };
     this.authors.set(id, author);
+    return author;
+  }
+
+  private createBookInternal(
+    bookData: Omit<Book, "id" | "createdAt" | "updatedAt">,
+  ): Book {
+    const id = `book-${String(this.nextBookId)}`;
+    this.nextBookId += 1;
+    const now = Math.floor(Date.now() / 1000);
+    const book: Book = {
+      ...bookData,
+      id,
+      createdAt: now,
+      updatedAt: now,
+    };
+    this.books.set(id, book);
+    return book;
+  }
+
+  createAuthor(name: string): Author {
+    const author = this.createAuthorInternal(name);
+    this.recordAuthorEvent("CREATE", author.id, author.name, null, null, null);
     return author;
   }
 
@@ -111,10 +241,14 @@ export class MockStore {
     if (!author) return null;
     const updated: Author = { id, name };
     this.authors.set(id, updated);
+    this.recordAuthorEvent("UPDATE", id, name, null, null, null);
     return updated;
   }
 
   deleteAuthor(id: string): boolean {
+    const author = this.authors.get(id);
+    if (!author) return false;
+    this.recordAuthorEvent("DELETE", id, author.name, null, null, null);
     const deleted = this.authors.delete(id);
     if (deleted) {
       this.books.forEach((book, bookId) => {
@@ -132,16 +266,8 @@ export class MockStore {
   }
 
   createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">): Book {
-    const id = `book-${String(this.nextBookId)}`;
-    this.nextBookId += 1;
-    const now = Math.floor(Date.now() / 1000);
-    const book: Book = {
-      ...bookData,
-      id,
-      createdAt: now,
-      updatedAt: now,
-    };
-    this.books.set(id, book);
+    const book = this.createBookInternal(bookData);
+    this.recordBookEvent("CREATE", book);
     return book;
   }
 
@@ -151,6 +277,18 @@ export class MockStore {
 
   getAllBooks(): Book[] {
     return Array.from(this.books.values());
+  }
+
+  getAuthorEvents(authorId: string): AuthorEventEntry[] {
+    return this.authorEvents
+      .filter((e) => e.authorId === authorId)
+      .sort((a, b) => b.changedAt - a.changedAt);
+  }
+
+  getBookEvents(bookId: string): BookEventEntry[] {
+    return this.bookEvents
+      .filter((e) => e.bookId === bookId)
+      .sort((a, b) => b.changedAt - a.changedAt);
   }
 
   updateBook(
@@ -168,10 +306,14 @@ export class MockStore {
       updatedAt: now,
     };
     this.books.set(bookData.id, updatedBook);
+    this.recordBookEvent("UPDATE", updatedBook);
     return updatedBook;
   }
 
   deleteBook(id: string): boolean {
+    const book = this.books.get(id);
+    if (!book) return false;
+    this.recordBookEvent("DELETE", book);
     return this.books.delete(id);
   }
 }

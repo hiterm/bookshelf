@@ -158,4 +158,121 @@ describe("AuthorHistory", () => {
 
     expect(screen.getByText("Error loading history")).toBeInTheDocument();
   });
+
+  test("renders UPDATE and DELETE operations", () => {
+    const eventsWithMultipleOperations = {
+      authorEvents: [
+        {
+          eventId: "event-1",
+          eventSetId: "set-1",
+          operation: "CREATE",
+          authorId: "author-1",
+          name: "著者1",
+          yomi: null,
+          authorCreatedAt: 1609459200,
+          authorUpdatedAt: 1609459200,
+          changedAt: 1609459200,
+          extra: null,
+        },
+        {
+          eventId: "event-2",
+          eventSetId: "set-2",
+          operation: "UPDATE",
+          authorId: "author-1",
+          name: "更新著者1",
+          yomi: null,
+          authorCreatedAt: 1609459200,
+          authorUpdatedAt: 1609459300,
+          changedAt: 1609459300,
+          extra: null,
+        },
+        {
+          eventId: "event-3",
+          eventSetId: "set-3",
+          operation: "DELETE",
+          authorId: "author-1",
+          name: "更新著者1",
+          yomi: null,
+          authorCreatedAt: 1609459200,
+          authorUpdatedAt: 1609459300,
+          changedAt: 1609459400,
+          extra: null,
+        },
+      ],
+    };
+
+    mockUseAuthorEvents.mockReturnValue({
+      data: eventsWithMultipleOperations,
+      isLoading: false,
+      error: null,
+    });
+
+    render(<AuthorHistory authorId="author-1" />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(screen.getByText("CREATE")).toBeInTheDocument();
+    expect(screen.getByText("UPDATE")).toBeInTheDocument();
+    expect(screen.getByText("DELETE")).toBeInTheDocument();
+  });
+
+  test("displays events in descending order by changedAt", () => {
+    const eventsWithOrder = {
+      authorEvents: [
+        {
+          eventId: "event-2",
+          eventSetId: "set-2",
+          operation: "UPDATE",
+          authorId: "author-1",
+          name: "更新著者1",
+          yomi: null,
+          authorCreatedAt: 1609459200,
+          authorUpdatedAt: 1609459300,
+          changedAt: 1609459300,
+          extra: null,
+        },
+        {
+          eventId: "event-1",
+          eventSetId: "set-1",
+          operation: "CREATE",
+          authorId: "author-1",
+          name: "著者1",
+          yomi: null,
+          authorCreatedAt: 1609459200,
+          authorUpdatedAt: 1609459200,
+          changedAt: 1609459200,
+          extra: null,
+        },
+      ],
+    };
+
+    mockUseAuthorEvents.mockReturnValue({
+      data: eventsWithOrder,
+      isLoading: false,
+      error: null,
+    });
+
+    render(<AuthorHistory authorId="author-1" />, {
+      wrapper: createWrapper(),
+    });
+
+    const rows = screen.getAllByRole("row");
+    const dataRows = rows.filter((row) => !row.querySelector("th"));
+    expect(dataRows[0]).toHaveTextContent("UPDATE");
+    expect(dataRows[1]).toHaveTextContent("CREATE");
+  });
+
+  test("formats date as YYYY/MM/DD HH:mm:ss", () => {
+    mockUseAuthorEvents.mockReturnValue({
+      data: mockEvents,
+      isLoading: false,
+      error: null,
+    });
+
+    render(<AuthorHistory authorId="author-1" />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(screen.getByText("2021/01/01 00:00:00")).toBeInTheDocument();
+  });
 });

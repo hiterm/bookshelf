@@ -171,4 +171,165 @@ describe("BookHistory", () => {
 
     expect(screen.getByText("Error loading history")).toBeInTheDocument();
   });
+
+  test("renders UPDATE and DELETE operations", () => {
+    const eventsWithMultipleOperations = {
+      bookEvents: [
+        {
+          eventId: "event-1",
+          eventSetId: "set-1",
+          operation: "CREATE",
+          bookId: "book-1",
+          title: "テスト書籍1",
+          authorIds: ["author-1"],
+          isbn: "978-4-00-000001-0",
+          read: false,
+          owned: true,
+          priority: 50,
+          format: "PRINTED",
+          store: "UNKNOWN",
+          bookCreatedAt: 1609459200,
+          bookUpdatedAt: 1609459200,
+          changedAt: 1609459200,
+          extra: null,
+        },
+        {
+          eventId: "event-2",
+          eventSetId: "set-2",
+          operation: "UPDATE",
+          bookId: "book-1",
+          title: "更新テスト書籍1",
+          authorIds: ["author-1"],
+          isbn: "978-4-00-000001-0",
+          read: true,
+          owned: true,
+          priority: 60,
+          format: "PRINTED",
+          store: "UNKNOWN",
+          bookCreatedAt: 1609459200,
+          bookUpdatedAt: 1609459300,
+          changedAt: 1609459300,
+          extra: null,
+        },
+        {
+          eventId: "event-3",
+          eventSetId: "set-3",
+          operation: "DELETE",
+          bookId: "book-1",
+          title: "更新テスト書籍1",
+          authorIds: ["author-1"],
+          isbn: "978-4-00-000001-0",
+          read: true,
+          owned: true,
+          priority: 60,
+          format: "PRINTED",
+          store: "UNKNOWN",
+          bookCreatedAt: 1609459200,
+          bookUpdatedAt: 1609459300,
+          changedAt: 1609459400,
+          extra: null,
+        },
+      ],
+    };
+
+    mockUseBookEvents.mockReturnValue({
+      data: eventsWithMultipleOperations,
+      isLoading: false,
+      error: null,
+    });
+
+    render(<BookHistory bookId="book-1" authors={mockAuthors} />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(screen.getByText("CREATE")).toBeInTheDocument();
+    expect(screen.getByText("UPDATE")).toBeInTheDocument();
+    expect(screen.getByText("DELETE")).toBeInTheDocument();
+  });
+
+  test("displays events in descending order by changedAt", () => {
+    const eventsWithOrder = {
+      bookEvents: [
+        {
+          eventId: "event-2",
+          eventSetId: "set-2",
+          operation: "UPDATE",
+          bookId: "book-1",
+          title: "更新テスト書籍1",
+          authorIds: ["author-1"],
+          isbn: "978-4-00-000001-0",
+          read: true,
+          owned: true,
+          priority: 60,
+          format: "PRINTED",
+          store: "UNKNOWN",
+          bookCreatedAt: 1609459200,
+          bookUpdatedAt: 1609459300,
+          changedAt: 1609459300,
+          extra: null,
+        },
+        {
+          eventId: "event-1",
+          eventSetId: "set-1",
+          operation: "CREATE",
+          bookId: "book-1",
+          title: "テスト書籍1",
+          authorIds: ["author-1"],
+          isbn: "978-4-00-000001-0",
+          read: false,
+          owned: true,
+          priority: 50,
+          format: "PRINTED",
+          store: "UNKNOWN",
+          bookCreatedAt: 1609459200,
+          bookUpdatedAt: 1609459200,
+          changedAt: 1609459200,
+          extra: null,
+        },
+      ],
+    };
+
+    mockUseBookEvents.mockReturnValue({
+      data: eventsWithOrder,
+      isLoading: false,
+      error: null,
+    });
+
+    render(<BookHistory bookId="book-1" authors={mockAuthors} />, {
+      wrapper: createWrapper(),
+    });
+
+    const rows = screen.getAllByRole("row");
+    const dataRows = rows.filter((row) => !row.querySelector("th"));
+    expect(dataRows[0]).toHaveTextContent("UPDATE");
+    expect(dataRows[1]).toHaveTextContent("CREATE");
+  });
+
+  test("formats date as YYYY/MM/DD HH:mm:ss", () => {
+    mockUseBookEvents.mockReturnValue({
+      data: mockEvents,
+      isLoading: false,
+      error: null,
+    });
+
+    render(<BookHistory bookId="book-1" authors={mockAuthors} />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(screen.getByText("2021/01/01 00:00:00")).toBeInTheDocument();
+  });
+
+  test("resolves author IDs to author names", () => {
+    mockUseBookEvents.mockReturnValue({
+      data: mockEvents,
+      isLoading: false,
+      error: null,
+    });
+
+    render(<BookHistory bookId="book-1" authors={mockAuthors} />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(screen.getByText("著者1")).toBeInTheDocument();
+  });
 });

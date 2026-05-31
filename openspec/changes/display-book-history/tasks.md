@@ -38,44 +38,37 @@
 
 ## 6. Additional Unit Tests
 
-- [ ] 6.1 Add UPDATE/DELETE operation display tests to `AuthorHistory.test.tsx`
-- [ ] 6.2 Add multiple events ordering test (desc by changedAt) to `AuthorHistory.test.tsx`
-- [ ] 6.3 Add date format test (`YYYY/MM/DD HH:mm:ss`) to `AuthorHistory.test.tsx`
-- [ ] 6.4 Add UPDATE/DELETE operation display tests to `BookHistory.test.tsx`
-- [ ] 6.5 Add multiple events ordering test to `BookHistory.test.tsx`
-- [ ] 6.6 Add date format test to `BookHistory.test.tsx`
-- [ ] 6.7 Add author name resolution test (author IDs mapped to names) to `BookHistory.test.tsx`
+- [x] 6.1 Add UPDATE/DELETE operation display tests to `AuthorHistory.test.tsx`
+- [x] 6.2 Add multiple events ordering test (desc by changedAt) to `AuthorHistory.test.tsx`
+- [x] 6.3 Add date format test (`YYYY/MM/DD HH:mm:ss`) to `AuthorHistory.test.tsx`
+- [x] 6.4 Add UPDATE/DELETE operation display tests to `BookHistory.test.tsx`
+- [x] 6.5 Add multiple events ordering test to `BookHistory.test.tsx`
+- [x] 6.6 Add date format test to `BookHistory.test.tsx`
+- [x] 6.7 Add author name resolution test (author IDs mapped to names) to `BookHistory.test.tsx`
 
 ## 7. e2e-mock-api Event History Support
 
-- [ ] 7.1 Add `authorEvents` / `bookEvents` arrays to `MockStore`
-- [ ] 7.2 Record events on createAuthor/updateAuthor/deleteAuthor/createBook/updateBook/deleteBook
-- [ ] 7.3 Add `getAuthorEvents(authorId)` / `getBookEvents(bookId)` methods to `MockStore`
-- [ ] 7.4 Add `Query.authorEvents` / `Query.bookEvents` resolvers to `resolvers.ts`
+- [x] 7.1 Add `authorEvents` / `bookEvents` arrays to `MockStore`
+- [x] 7.2 Record events on createAuthor/updateAuthor/deleteAuthor/createBook/updateBook/deleteBook
+- [x] 7.3 Add `getAuthorEvents(authorId)` / `getBookEvents(bookId)` methods to `MockStore`
+- [x] 7.4 Add `Query.authorEvents` / `Query.bookEvents` resolvers to `resolvers.ts`
 
 ## 8. e2e-integration History Tests
 
-- [ ] 8.1 Add test: author creation shows History heading and CREATE on detail page
-- [ ] 8.2 Add test: book creation shows History heading and CREATE on detail page
-- [ ] 8.3 Add test: book update shows both CREATE and UPDATE in history
+- [x] 8.1 Add test: author creation shows History heading and CREATE on detail page
+- [x] 8.2 Add test: book creation shows History heading and CREATE on detail page
+- [x] 8.3 Add test: book update shows both CREATE and UPDATE in history
 
 ## 9. e2e-mock-api History Tests
 
-- [ ] 9.1 Add test: author creation shows History heading and CREATE on detail page
-- [ ] 9.2 Add test: book creation shows History heading and CREATE on detail page
-- [ ] 9.3 Add test: book update shows both CREATE and UPDATE in history
+- [x] 9.1 Add test: author creation shows History heading and CREATE on detail page
+- [x] 9.2 Add test: book creation shows History heading and CREATE on detail page
+- [x] 9.3 Add test: book update shows both CREATE and UPDATE in history
 
 ## 10. Final Checks
 
-- [ ] 10.1 Run `npm run generate`
-- [ ] 10.2 Run `npm run lint:fix`
-- [ ] 10.3 Run `npm run typecheck`
-- [ ] 10.4 Run `npm run test`
+- [x] 10.1 Run `npm run generate`
+- [x] 10.2 Run `npm run lint:fix`
+- [x] 10.3 Run `npm run typecheck`
+- [x] 10.4 Run `npm run test`
 - [ ] 10.5 Commit changes
-
-## 11. Final Checks
-
-- [x] 11.1 Run `npm run lint:fix`
-- [x] 11.2 Run `npm run typecheck`
-- [x] 11.3 Run `npm run test`
-- [x] 11.4 Commit changes

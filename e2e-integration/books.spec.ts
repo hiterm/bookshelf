@@ -85,3 +85,100 @@ test.describe
       ).not.toBeVisible();
     });
   });
+
+test.describe
+  .serial("Book history", () => {
+    test("displays history after book creation", async ({ page }) => {
+      await loginAndRegister(page);
+
+      // Create author
+      await page.goto("/authors");
+      await page.getByLabel("名前").fill(AUTHOR_NAME);
+      await page.getByRole("button", { name: "登録" }).click();
+      await expect(
+        page.locator("td").filter({ hasText: AUTHOR_NAME }),
+      ).toBeVisible();
+
+      // Navigate to books and create a book
+      await page.goto("/books");
+      await page.getByRole("button", { name: "追加" }).click();
+      await expect(
+        page.getByRole("dialog", { name: "書籍追加" }),
+      ).toBeVisible();
+
+      await page.getByLabel("書名").fill(BOOK_TITLE);
+
+      const authorInput = page.getByRole("textbox", { name: "著者" });
+      await authorInput.click();
+      await authorInput.fill(AUTHOR_NAME);
+      await expect(page.getByRole("listbox")).toBeVisible();
+      await page.keyboard.press("ArrowDown");
+      await page.keyboard.press("Enter");
+
+      await page
+        .getByRole("dialog")
+        .getByRole("button", { name: "追加" })
+        .click();
+
+      await expect(
+        page.getByRole("dialog", { name: "書籍追加" }),
+      ).not.toBeVisible();
+      await expect(page.getByRole("link", { name: BOOK_TITLE })).toBeVisible();
+
+      // Navigate to detail page and verify history
+      await page.getByRole("link", { name: BOOK_TITLE }).click();
+      await expect(page).toHaveURL(/\/books\/.+$/);
+      await expect(
+        page.getByRole("heading", { name: "History" }),
+      ).toBeVisible();
+      await expect(page.getByText("CREATE")).toBeVisible();
+    });
+
+    test("displays CREATE and UPDATE after book update", async ({ page }) => {
+      await loginAndRegister(page);
+
+      // Create author
+      await page.goto("/authors");
+      await page.getByLabel("名前").fill(AUTHOR_NAME);
+      await page.getByRole("button", { name: "登録" }).click();
+
+      // Create a book
+      await page.goto("/books");
+      await page.getByRole("button", { name: "追加" }).click();
+      await page.getByLabel("書名").fill(BOOK_TITLE);
+
+      const authorInput = page.getByRole("textbox", { name: "著者" });
+      await authorInput.click();
+      await authorInput.fill(AUTHOR_NAME);
+      await expect(page.getByRole("listbox")).toBeVisible();
+      await page.keyboard.press("ArrowDown");
+      await page.keyboard.press("Enter");
+
+      await page
+        .getByRole("dialog")
+        .getByRole("button", { name: "追加" })
+        .click();
+
+      await expect(page.getByRole("link", { name: BOOK_TITLE })).toBeVisible();
+
+      // Navigate to detail page
+      await page.getByRole("link", { name: BOOK_TITLE }).click();
+      await expect(page).toHaveURL(/\/books\/.+$/);
+
+      // Update the book
+      await page.getByRole("link", { name: "変更" }).click();
+      await expect(page).toHaveURL(/\/books\/.+\/edit$/);
+      await page.getByLabel("書名").fill(UPDATED_TITLE);
+      await page.getByRole("button", { name: "Save" }).click();
+
+      await expect(page).toHaveURL(/\/books\/.+$/);
+      await expect(page.getByText("更新しました")).toBeVisible();
+
+      // Verify history shows both CREATE and UPDATE
+      await expect(
+        page.getByRole("heading", { name: "History" }),
+      ).toBeVisible();
+      await expect(page.getByText("CREATE")).toBeVisible();
+      await expect(page.getByText("UPDATE")).toBeVisible();
+    });
+  });

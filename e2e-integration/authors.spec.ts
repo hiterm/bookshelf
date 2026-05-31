@@ -62,3 +62,26 @@ test.describe
       ).toHaveCount(0);
     });
   });
+
+test.describe
+  .serial("Author history", () => {
+    test("displays history after author creation", async ({ page }) => {
+      await loginAndRegister(page);
+
+      // Create author
+      await page.goto("/authors");
+      await page.getByLabel("名前").fill(AUTHOR_NAME);
+      await page.getByRole("button", { name: "登録" }).click();
+      await expect(
+        page.locator("td").filter({ hasText: AUTHOR_NAME }),
+      ).toBeVisible();
+
+      // Navigate to detail page and verify history
+      await page.getByRole("link", { name: AUTHOR_NAME }).click();
+      await expect(page).toHaveURL(/\/authors\/.+$/);
+      await expect(
+        page.getByRole("heading", { name: "History" }),
+      ).toBeVisible();
+      await expect(page.getByText("CREATE")).toBeVisible();
+    });
+  });

@@ -407,3 +407,34 @@ test.describe("Books DELETE", () => {
     ).not.toBeVisible();
   });
 });
+
+test.describe("Book History", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/books");
+    await page.getByRole("button", { name: "Login" }).click();
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+  });
+
+  test("displays history on book detail page", async ({ page }) => {
+    await page.getByRole("link", { name: "テスト書籍1" }).click();
+    await expect(page).toHaveURL(/\/books\/book-1$/);
+    await expect(page.getByRole("heading", { name: "History" })).toBeVisible();
+    await expect(page.getByText("CREATE")).toBeVisible();
+  });
+
+  test("displays CREATE and UPDATE after book update", async ({ page }) => {
+    await page.getByRole("link", { name: "テスト書籍1" }).click();
+    await expect(page).toHaveURL(/\/books\/book-1$/);
+
+    await page.getByRole("link", { name: "変更" }).click();
+    await expect(page).toHaveURL(/\/books\/book-1\/edit$/);
+    await page.getByLabel("書名").fill("更新テスト書籍");
+    await page.getByRole("button", { name: "Save" }).click();
+
+    await expect(page).toHaveURL(/\/books\/book-1$/);
+    await expect(page.getByText("更新しました")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "History" })).toBeVisible();
+    await expect(page.getByText("CREATE")).toBeVisible();
+    await expect(page.getByText("UPDATE")).toBeVisible();
+  });
+});

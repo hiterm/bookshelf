@@ -128,3 +128,18 @@ test.describe("Authors DELETE", () => {
     await expect(page.getByRole("heading", { name: "著者1" })).toBeVisible();
   });
 });
+
+test.describe("Author History", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "Login" }).click();
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+  });
+
+  test("displays history on author detail page", async ({ page }) => {
+    await page.goto("/authors");
+    await page.getByRole("link", { name: "著者1" }).click();
+    await expect(page.getByRole("heading", { name: "History" })).toBeVisible();
+    await expect(page.getByText("CREATE")).toBeVisible();
+  });
+});
