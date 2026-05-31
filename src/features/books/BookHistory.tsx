@@ -1,4 +1,12 @@
-import { ActionIcon, Modal, Table, Text, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Modal,
+  Table,
+  Text,
+  Title,
+  useMantineTheme,
+} from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { IconEye } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import React, { useState } from "react";
@@ -15,6 +23,9 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
   bookId,
   authors,
 }) => {
+  const theme = useMantineTheme();
+  const isMd = useMediaQuery(`(min-width: ${theme.breakpoints.md})`);
+  const isLg = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`);
   const { data, isLoading, error } = useBookEvents(bookId);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
@@ -51,6 +62,12 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
             <Table.Th>Operation</Table.Th>
             <Table.Th>Date</Table.Th>
             <Table.Th>Title</Table.Th>
+            <Table.Th>Authors</Table.Th>
+            {isMd && <Table.Th>ISBN</Table.Th>}
+            {isMd && <Table.Th>Format</Table.Th>}
+            {isLg && <Table.Th>Store</Table.Th>}
+            {isLg && <Table.Th>Read</Table.Th>}
+            {isLg && <Table.Th>Owned</Table.Th>}
             <Table.Th>Detail</Table.Th>
           </Table.Tr>
         </Table.Thead>
@@ -62,6 +79,24 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
                 {dayjs(event.changedAt * 1000).format("YYYY/MM/DD HH:mm:ss")}
               </Table.Td>
               <Table.Td>{event.title}</Table.Td>
+              <Table.Td>{resolveAuthorNames(event.authorIds)}</Table.Td>
+              {isMd && <Table.Td>{event.isbn}</Table.Td>}
+              {isMd && <Table.Td>{event.format}</Table.Td>}
+              {isLg && <Table.Td>{event.store}</Table.Td>}
+              {isLg && (
+                <Table.Td>
+                  {event.read != null ? (
+                    <ShowBoolean flag={event.read} />
+                  ) : null}
+                </Table.Td>
+              )}
+              {isLg && (
+                <Table.Td>
+                  {event.owned != null ? (
+                    <ShowBoolean flag={event.owned} />
+                  ) : null}
+                </Table.Td>
+              )}
               <Table.Td>
                 <ActionIcon
                   onClick={() => {

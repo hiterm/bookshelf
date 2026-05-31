@@ -1,10 +1,20 @@
-import { ActionIcon, Modal, Table, Text, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Modal,
+  Table,
+  Text,
+  Title,
+  useMantineTheme,
+} from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { IconEye } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { useAuthorEvents } from "../../compoments/hooks/useAuthorEvents";
 
 export const AuthorHistory: React.FC<{ authorId: string }> = ({ authorId }) => {
+  const theme = useMantineTheme();
+  const isMd = useMediaQuery(`(min-width: ${theme.breakpoints.md})`);
   const { data, isLoading, error } = useAuthorEvents(authorId);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
@@ -35,6 +45,7 @@ export const AuthorHistory: React.FC<{ authorId: string }> = ({ authorId }) => {
             <Table.Th>Operation</Table.Th>
             <Table.Th>Date</Table.Th>
             <Table.Th>Name</Table.Th>
+            {isMd && <Table.Th>Yomi</Table.Th>}
             <Table.Th>Detail</Table.Th>
           </Table.Tr>
         </Table.Thead>
@@ -46,6 +57,7 @@ export const AuthorHistory: React.FC<{ authorId: string }> = ({ authorId }) => {
                 {dayjs(event.changedAt * 1000).format("YYYY/MM/DD HH:mm:ss")}
               </Table.Td>
               <Table.Td>{event.name}</Table.Td>
+              {isMd && <Table.Td>{event.yomi ?? "-"}</Table.Td>}
               <Table.Td>
                 <ActionIcon
                   onClick={() => {
