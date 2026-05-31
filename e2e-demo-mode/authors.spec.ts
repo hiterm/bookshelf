@@ -28,6 +28,14 @@ test("navigates to author detail page", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "著者1" })).toBeVisible();
 });
 
+test("displays author history on detail page", async ({ page }) => {
+  await page.goto("/authors");
+
+  await page.getByRole("link", { name: "著者1" }).click();
+  await expect(page.getByRole("heading", { name: "History" })).toBeVisible();
+  await expect(page.getByText("CREATE")).toBeVisible();
+});
+
 test.describe("author mutations", () => {
   let testAuthorName: string;
 

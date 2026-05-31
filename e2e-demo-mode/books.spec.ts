@@ -75,6 +75,15 @@ test("updates book", async ({ page }) => {
   await expect(page.getByText("更新済みテスト書籍1")).toBeVisible();
 });
 
+test("displays book history on detail page", async ({ page }) => {
+  await page.goto("/books");
+
+  await page.getByRole("link", { name: "テスト書籍1" }).click();
+  await expect(page.getByRole("heading", { name: "History" })).toBeVisible();
+  await expect(page.getByText("CREATE")).toBeVisible();
+  await expect(page.getByText("UPDATE")).toBeVisible();
+});
+
 test("deletes book", async ({ page }) => {
   await page.goto("/books");
 

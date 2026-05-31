@@ -1,0 +1,20 @@
+query bookEvents($bookId: ID!) {
+  bookEvents(bookId: $bookId) {
+    eventId
+    eventSetId
+    operation
+    bookId
+    title
+    authorIds
+    isbn
+    read
+    owned
+    priority
+    format
+    store
+    bookCreatedAt
+    bookUpdatedAt
+    changedAt
+    extra
+  }
+}

@@ -114,6 +114,7 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
         Back
       </LinkButton>
       <Box
+        data-testid="book-detail"
         style={{
           display: "grid",
           rowGap: 20,
