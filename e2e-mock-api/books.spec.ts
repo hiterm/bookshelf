@@ -33,8 +33,12 @@ test.describe("Books READ", () => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await expect(page).toHaveURL(/\/books\/book-1$/);
 
-    await expect(page.getByText("テスト書籍1")).toBeVisible();
-    await expect(page.getByText("978-4-00-000001-0")).toBeVisible();
+    await expect(
+      page.getByTestId("book-detail").getByText("テスト書籍1"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("book-detail").getByText("978-4-00-000001-0"),
+    ).toBeVisible();
 
     await expect(page.getByRole("link", { name: "Back" })).toBeVisible();
     await expect(page.getByRole("link", { name: "変更" })).toBeVisible();
@@ -118,7 +122,9 @@ test.describe("Books CREATE", () => {
     // Verify created book details
     await page.getByRole("link", { name: "新しい書籍" }).click();
     await expect(page).toHaveURL(/\/books\/book-5$/);
-    await expect(page.getByText("9784000000010")).toBeVisible();
+    await expect(
+      page.getByTestId("book-detail").getByText("9784000000010"),
+    ).toBeVisible();
     await expect(page.locator("text=著者1").first()).toBeVisible();
   });
 });
@@ -183,9 +189,13 @@ test.describe("Books UPDATE", () => {
     // Verify updates
     await expect(page).toHaveURL(/\/books\/book-1$/);
     await expect(page.getByText("更新しました")).toBeVisible();
-    await expect(page.getByText("全フィールド更新")).toBeVisible();
+    await expect(
+      page.getByTestId("book-detail").getByText("全フィールド更新"),
+    ).toBeVisible();
     await expect(page.locator("text=著者1").first()).toBeVisible();
-    await expect(page.getByText("9784000000999")).toBeVisible();
+    await expect(
+      page.getByTestId("book-detail").getByText("9784000000999"),
+    ).toBeVisible();
   });
 
   test("preserves values when not changed", async ({ page }) => {
@@ -199,9 +209,13 @@ test.describe("Books UPDATE", () => {
     // Verify values are unchanged
     await expect(page).toHaveURL(/\/books\/book-1$/);
     await expect(page.getByText("更新しました")).toBeVisible();
-    await expect(page.getByText("テスト書籍1")).toBeVisible();
+    await expect(
+      page.getByTestId("book-detail").getByText("テスト書籍1"),
+    ).toBeVisible();
     await expect(page.locator("text=著者1").first()).toBeVisible();
-    await expect(page.getByText("978-4-00-000001-0")).toBeVisible();
+    await expect(
+      page.getByTestId("book-detail").getByText("978-4-00-000001-0"),
+    ).toBeVisible();
   });
 
   test("returns to detail page with Cancel", async ({ page }) => {
