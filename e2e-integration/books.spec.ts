@@ -57,7 +57,9 @@ test.describe
       // Navigate to detail page
       await page.getByRole("link", { name: BOOK_TITLE }).click();
       await expect(page).toHaveURL(/\/books\/.+$/);
-      await expect(page.getByText(BOOK_TITLE, { exact: true })).toBeVisible();
+      await expect(
+        page.getByTestId("book-detail").getByText(BOOK_TITLE),
+      ).toBeVisible();
 
       // Update the book
       await page.getByRole("link", { name: "変更" }).click();
