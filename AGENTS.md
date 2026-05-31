@@ -37,8 +37,9 @@
 
 ## Branching (REQUIRED FIRST STEP)
 
-Before doing ANY work, check the current branch. If on `main`, create a
-feature branch first:
+Before doing ANY work — including investigation that may lead to code
+changes — check the current branch. If on `main`, create a feature branch
+**before editing any files or running npm install**:
 
 ```bash
 git checkout -b <type>/<short-description>
