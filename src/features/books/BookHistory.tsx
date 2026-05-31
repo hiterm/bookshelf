@@ -162,7 +162,7 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
             <Text>
               <strong>Priority:</strong> {selectedEvent.priority ?? "-"}
             </Text>
-            {selectedEvent.extra && (
+            {selectedEvent.extra != null && (
               <Text>
                 <strong>Extra:</strong> {JSON.stringify(selectedEvent.extra)}
               </Text>

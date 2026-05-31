@@ -2,10 +2,18 @@ overwrite: true
 schema: "src/graphql/schema.graphql"
 documents: "src/**/*.graphql"
 generates:
-  src/generated/graphql-request.ts:
+  src/generated/graphql-schema.ts:
     config:
       enumsAsTypes: true
     plugins:
       - "typescript"
+  src/generated/graphql-request.ts:
+    config:
+      enumsAsTypes: true
+      importSchemaTypesFrom: 'src/generated/graphql-schema'
+      namespacedImportName: 'Types'
+    plugins:
+      - add:
+          content: "export * from './graphql-schema';"
       - "typescript-operations"
       - "typescript-graphql-request"

@@ -98,7 +98,7 @@ export const AuthorHistory: React.FC<{ authorId: string }> = ({ authorId }) => {
             <Text>
               <strong>Yomi:</strong> {selectedEvent.yomi ?? "-"}
             </Text>
-            {selectedEvent.extra && (
+            {selectedEvent.extra != null && (
               <Text>
                 <strong>Extra:</strong> {JSON.stringify(selectedEvent.extra)}
               </Text>
