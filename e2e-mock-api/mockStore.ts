@@ -82,10 +82,10 @@ export class MockStore {
   }
 
   private seedData(): void {
-    const author1 = this.createAuthorInternal("著者1");
-    const author2 = this.createAuthorInternal("著者2");
+    const author1 = this.createAuthor("著者1");
+    const author2 = this.createAuthor("著者2");
 
-    this.createBookInternal({
+    this.createBook({
       title: "テスト書籍1",
       authorIds: [author1.id],
       isbn: "978-4-00-000001-0",
@@ -96,7 +96,7 @@ export class MockStore {
       store: "UNKNOWN",
     });
 
-    this.createBookInternal({
+    this.createBook({
       title: "テスト書籍2",
       authorIds: [author2.id],
       isbn: "978-4-00-000002-7",
@@ -107,7 +107,7 @@ export class MockStore {
       store: "KINDLE",
     });
 
-    this.createBookInternal({
+    this.createBook({
       title: "テスト書籍3",
       authorIds: [author1.id],
       isbn: "978-4-00-000003-4",
@@ -118,7 +118,7 @@ export class MockStore {
       store: "UNKNOWN",
     });
 
-    this.createBookInternal({
+    this.createBook({
       title: "テスト書籍4",
       authorIds: [author2.id],
       isbn: "978-4-00-000004-1",
