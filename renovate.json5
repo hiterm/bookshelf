@@ -43,7 +43,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["bookshelf-api\\.version"],
+      "managerFilePatterns": ["/bookshelf-api\\.version/"],
       "matchStrings": ["(?<currentValue>.+)"],
       "datasourceTemplate": "github-tags",
       "depNameTemplate": "hiterm/bookshelf-api"
