@@ -4,6 +4,9 @@
     "config:best-practices",
     ":pinAllExceptPeerDependencies",
   ],
+  // config:best-practices already applies minimumReleaseAge for npm via security:minimumReleaseAgeNpm.
+  // This global setting ensures other managers (e.g. github-actions, docker, github-tags) also wait.
+  "minimumReleaseAge": "3 days",
   "packageRules": [
     {
       // Group minor/patch updates by manager (e.g. npm, github-actions).
