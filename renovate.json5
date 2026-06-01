@@ -30,6 +30,11 @@
       "matchDatasources": ["github-releases", "node-version"],
       "matchUpdateTypes": ["pin"],
       "enabled": false
+    },
+    {
+      // Separate msw updates into individual PRs because grouped updates often fail.
+      "matchDepNames": ["msw"],
+      "groupName": null
     }
   ],
   "customManagers": [
