@@ -3,6 +3,7 @@ import { Alert, AppShell, Button, Center, Loader } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import React, { Fragment, memo } from "react";
 import { ChildrenProps } from "../compoments/ChildrenProps";
 import { HeaderContents } from "../compoments/layout/Header";
@@ -123,6 +124,7 @@ function RootComponent() {
       <AppShell.Main>
         <MainContent />
       </AppShell.Main>
+      <TanStackRouterDevtools />
     </AppShell>
   );
 }
