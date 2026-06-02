@@ -217,7 +217,7 @@ describe("BookList filters", () => {
     });
 
     await userEvent.click(
-      within(screen.getByTestId("filter-read")).getByRole("textbox"),
+      within(screen.getByTestId("filter-read")).getByRole("combobox"),
     );
     await userEvent.click(screen.getByRole("option", { name: "true" }));
 
@@ -237,7 +237,7 @@ describe("BookList filters", () => {
     });
 
     await userEvent.click(
-      within(screen.getByTestId("filter-read")).getByRole("textbox"),
+      within(screen.getByTestId("filter-read")).getByRole("combobox"),
     );
     await userEvent.click(screen.getByRole("option", { name: "false" }));
 
@@ -257,7 +257,7 @@ describe("BookList filters", () => {
     });
 
     await userEvent.click(
-      within(screen.getByTestId("filter-owned")).getByRole("textbox"),
+      within(screen.getByTestId("filter-owned")).getByRole("combobox"),
     );
     await userEvent.click(screen.getByRole("option", { name: "true" }));
 
@@ -277,7 +277,7 @@ describe("BookList filters", () => {
     });
 
     await userEvent.click(
-      within(screen.getByTestId("filter-format")).getByRole("textbox"),
+      within(screen.getByTestId("filter-format")).getByRole("combobox"),
     );
     await userEvent.click(screen.getByRole("option", { name: "Printed" }));
 
@@ -297,7 +297,7 @@ describe("BookList filters", () => {
     });
 
     await userEvent.click(
-      within(screen.getByTestId("filter-format")).getByRole("textbox"),
+      within(screen.getByTestId("filter-format")).getByRole("combobox"),
     );
     await userEvent.click(screen.getByRole("option", { name: "eBook" }));
 
@@ -317,7 +317,7 @@ describe("BookList filters", () => {
     });
 
     await userEvent.click(
-      within(screen.getByTestId("filter-store")).getByRole("textbox"),
+      within(screen.getByTestId("filter-store")).getByRole("combobox"),
     );
     await userEvent.click(screen.getByRole("option", { name: "Kindle" }));
 
@@ -337,7 +337,7 @@ describe("BookList filters", () => {
     });
 
     await userEvent.click(
-      within(screen.getByTestId("filter-authors")).getByRole("textbox"),
+      within(screen.getByTestId("filter-authors")).getByRole("combobox"),
     );
     await userEvent.click(screen.getByRole("option", { name: "著者1" }));
 

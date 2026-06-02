@@ -6,7 +6,7 @@ const selectFilterOption = async (
   testId: string,
   optionName: string,
 ) => {
-  await page.getByTestId(testId).getByRole("textbox").click();
+  await page.getByTestId(testId).getByRole("combobox").click();
   await page.getByRole("option", { name: optionName }).click();
 };
 
@@ -75,7 +75,7 @@ test.describe("Books CREATE", () => {
     await page.getByLabel("書名").fill("新しい書籍");
 
     // Set author (MultiSelect)
-    const authorInput = page.getByRole("textbox", { name: "著者" });
+    const authorInput = page.getByPlaceholder("著者を検索");
     await authorInput.click();
     await authorInput.fill("著者1");
     await expect(page.getByRole("listbox")).toBeVisible();
@@ -85,7 +85,7 @@ test.describe("Books CREATE", () => {
     await page.getByLabel("ISBN").fill("9784000000010");
 
     // Set format (Select)
-    const formatSelect = page.getByRole("textbox", { name: "形式" });
+    const formatSelect = page.getByRole("combobox", { name: "形式" });
     await formatSelect.click();
     await expect(page.getByRole("listbox")).toBeVisible();
     await expect(page.getByRole("option").first()).toBeVisible();
@@ -95,7 +95,7 @@ test.describe("Books CREATE", () => {
     await expect(formatSelect).toHaveValue("eBook");
 
     // Set store (Select)
-    const storeSelect = page.getByRole("textbox", { name: "ストア" });
+    const storeSelect = page.getByRole("combobox", { name: "ストア" });
     await storeSelect.click();
     await expect(page.getByRole("listbox")).toBeVisible();
     await expect(page.getByRole("option").first()).toBeVisible();
@@ -158,7 +158,7 @@ test.describe("Books UPDATE", () => {
     await page.getByLabel("ISBN").fill("9784000000999");
 
     // Change format (Select component) - from PRINTED to E_BOOK
-    const formatSelect = page.getByRole("textbox", { name: "形式" });
+    const formatSelect = page.getByRole("combobox", { name: "形式" });
     await formatSelect.click();
     await expect(page.getByRole("listbox")).toBeVisible();
     await expect(page.getByRole("option").first()).toBeVisible();
@@ -168,7 +168,7 @@ test.describe("Books UPDATE", () => {
     await expect(formatSelect).toHaveValue("eBook");
 
     // Change store (Select component) - from UNKNOWN to KINDLE
-    const storeSelect = page.getByRole("textbox", { name: "ストア" });
+    const storeSelect = page.getByRole("combobox", { name: "ストア" });
     await storeSelect.click();
     await expect(page.getByRole("listbox")).toBeVisible();
     await expect(page.getByRole("option").first()).toBeVisible();

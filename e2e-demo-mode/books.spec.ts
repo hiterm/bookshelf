@@ -18,7 +18,7 @@ test("creates book and displays in list", async ({ page }) => {
 
   await page.getByLabel("書名").fill("新規テスト書籍");
 
-  const authorInput = page.getByRole("textbox", { name: "著者" });
+  const authorInput = page.getByPlaceholder("著者を検索");
   await authorInput.click();
   await authorInput.fill("著者1");
   await expect(page.getByRole("listbox")).toBeVisible();
@@ -27,7 +27,7 @@ test("creates book and displays in list", async ({ page }) => {
 
   await page.getByLabel("ISBN").fill("9784000000999");
 
-  const formatSelect = page.getByRole("textbox", { name: "形式" });
+  const formatSelect = page.getByRole("combobox", { name: "形式" });
   await formatSelect.click();
   await expect(page.getByRole("listbox")).toBeVisible();
   await expect(page.getByRole("option").first()).toBeVisible();
@@ -37,7 +37,7 @@ test("creates book and displays in list", async ({ page }) => {
   // Verify format was selected (default UNKNOWN, ArrowDown selects E_BOOK which displays as "eBook")
   await expect(formatSelect).toHaveValue("eBook");
 
-  const storeSelect = page.getByRole("textbox", { name: "ストア" });
+  const storeSelect = page.getByRole("combobox", { name: "ストア" });
   await storeSelect.click();
   await expect(page.getByRole("listbox")).toBeVisible();
   await expect(page.getByRole("option").first()).toBeVisible();
