@@ -65,9 +65,7 @@ export const BookLookupDialog = ({
         <SegmentedControl
           value={backend}
           onChange={(v) => {
-            if (v === "googleBooks" || v === "ndl") {
-              setBackend(v);
-            }
+            setBackend(v);
           }}
           data={[
             { value: "ndl", label: "NDL（国立国会図書館）" },
