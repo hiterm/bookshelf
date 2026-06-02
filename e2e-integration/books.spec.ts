@@ -37,7 +37,7 @@ test.describe
 
       await page.getByLabel("書名").fill(BOOK_TITLE);
 
-      const authorInput = page.getByRole("combobox", { name: "著者" });
+      const authorInput = page.getByPlaceholder("著者を検索");
       await authorInput.click();
       await authorInput.fill(AUTHOR_NAME);
       await expect(page.getByRole("listbox")).toBeVisible();
@@ -108,7 +108,7 @@ test.describe
 
       await page.getByLabel("書名").fill(BOOK_TITLE);
 
-      const authorInput = page.getByRole("combobox", { name: "著者" });
+      const authorInput = page.getByPlaceholder("著者を検索");
       await authorInput.click();
       await authorInput.fill(AUTHOR_NAME);
       await expect(page.getByRole("listbox")).toBeVisible();
@@ -147,7 +147,7 @@ test.describe
       await page.getByRole("button", { name: "追加" }).click();
       await page.getByLabel("書名").fill(BOOK_TITLE);
 
-      const authorInput = page.getByRole("combobox", { name: "著者" });
+      const authorInput = page.getByPlaceholder("著者を検索");
       await authorInput.click();
       await authorInput.fill(AUTHOR_NAME);
       await expect(page.getByRole("listbox")).toBeVisible();

@@ -18,7 +18,7 @@ test("creates book and displays in list", async ({ page }) => {
 
   await page.getByLabel("書名").fill("新規テスト書籍");
 
-  const authorInput = page.getByRole("combobox", { name: "著者" });
+  const authorInput = page.getByPlaceholder("著者を検索");
   await authorInput.click();
   await authorInput.fill("著者1");
   await expect(page.getByRole("listbox")).toBeVisible();
