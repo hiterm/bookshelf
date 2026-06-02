@@ -35,6 +35,15 @@
   explaining why it is safe to ignore. Place the comment on the line immediately
   before the ignore directive.
 
+## Environment / Tooling Restrictions
+
+- **Never modify `.npmrc` or global npm config** (e.g., `before`, `registry`, `min-release-age`).
+  If `npm install` fails due to a config issue, report it to the user and ask for permission
+  rather than changing settings yourself.
+
+- Do not change `before`, `registry`, or `min-release-age` settings under any circumstances.
+  If it is absolutely necessary, you must obtain permission from the user before proceeding.
+
 ## Branching (REQUIRED FIRST STEP)
 
 Before doing ANY work — including investigation that may lead to code
