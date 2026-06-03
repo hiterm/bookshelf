@@ -78,7 +78,7 @@
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint_d": "15.0.2",
-    "graphql-tag": "^2.12.6",
+    "graphql-tag": "2.12.6",
     "jose": "6.2.3",
     "jsdom": "29.1.1",
     "msw": "2.14.6",
