@@ -11,16 +11,17 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+      - uses: pnpm/action-setup@a7487c4f542f830ac57b32e6de5cc64b286d8d3c # v4.1.1
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: "24"
-          cache: "npm"
-      - run: npm ci
-      - run: npm run generate
-      - run: npm run typecheck
-      - run: npm run test
-      - run: npm run lint
-      - run: npm run build
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run generate
+      - run: pnpm run typecheck
+      - run: pnpm run test
+      - run: pnpm run lint
+      - run: pnpm run build
 
   check-generated:
     runs-on: ubuntu-latest
@@ -28,12 +29,13 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+      - uses: pnpm/action-setup@a7487c4f542f830ac57b32e6de5cc64b286d8d3c # v4.1.1
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: "24"
-          cache: "npm"
-      - run: npm ci
-      - run: npm run generate
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run generate
       - run: git diff --exit-code
 
   test-e2e-mock-api:
@@ -42,14 +44,15 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+      - uses: pnpm/action-setup@a7487c4f542f830ac57b32e6de5cc64b286d8d3c # v4.1.1
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: "24"
-          cache: "npm"
-      - run: npm ci
-      - run: npm run generate
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e:mock-api
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run generate
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run test:e2e:mock-api
 
   test-e2e-demo-mode:
     runs-on: ubuntu-latest
@@ -57,14 +60,15 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+      - uses: pnpm/action-setup@a7487c4f542f830ac57b32e6de5cc64b286d8d3c # v4.1.1
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: "24"
-          cache: "npm"
-      - run: npm ci
-      - run: npm run generate
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e:demo-mode
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run generate
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run test:e2e:demo-mode
 
   test-integration:
     runs-on: ubuntu-latest
@@ -72,12 +76,13 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+      - uses: pnpm/action-setup@a7487c4f542f830ac57b32e6de5cc64b286d8d3c # v4.1.1
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: "24"
-          cache: "npm"
-      - run: npm ci
-      - run: npm run generate
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run generate
       - id: api-version
         run: echo "version=$(tr -d '[:space:]' < bookshelf-api.version)" >> "$GITHUB_OUTPUT"
       - name: Start PostgreSQL
@@ -127,8 +132,8 @@ jobs:
             sleep 1
           done
           docker logs bookshelf-api; exit 1
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:integration
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run test:integration
 
   test-integration-api-main:
     runs-on: ubuntu-latest
@@ -159,7 +164,7 @@ jobs:
         with:
           workspaces: bookshelf-api-src
       - run: npm ci
-      - run: npm run generate
+      - run: pnpm run generate
       - name: Build bookshelf-api
         run: cargo build --locked --release
         working-directory: bookshelf-api-src
@@ -206,5 +211,5 @@ jobs:
             sleep 1
           done
           cat /tmp/api.log; exit 1
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:integration
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run test:integration
