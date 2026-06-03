@@ -91,7 +91,7 @@ importers:
         specifier: 1.168.11
         version: 1.168.11(@tanstack/react-router@1.170.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))
       '@tanstack/table-core':
-        specifier: ^8.21.3
+        specifier: 8.21.3
         version: 8.21.3
       '@testing-library/jest-dom':
         specifier: 6.9.1
