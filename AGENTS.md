@@ -103,14 +103,14 @@ Before every `git commit`, run the following and fix any
 failures before proceeding:
 
 ```bash
-npm run generate   # Regenerate GraphQL types, MSW worker, and route tree
-npm run lint:fix   # Auto-fix ESLint and Biome format issues
-npm run test       # Run unit tests
-npm run typecheck  # Run TypeScript type checking
+pnpm run generate   # Regenerate GraphQL types, MSW worker, and route tree
+ppnpm run lint:fix   # Auto-fix ESLint and Biome format issues
+pnpm run test       # Run unit tests
+pnpm run typecheck  # Run TypeScript type checking
 ```
 
 Never skip these unless the user explicitly instructs you to, or
-the changes are documentation-only (in which case only `npm run lint:fix`
+the changes are documentation-only (in which case only `pnpm run lint:fix`
 is required).
 
 # ExecPlans

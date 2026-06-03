@@ -1,0 +1,4 @@
+allowBuilds:
+  browser-tabs-lock: false
+  msw: true
+minimumReleaseAge: 4320
