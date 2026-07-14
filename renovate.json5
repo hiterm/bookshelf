@@ -41,6 +41,12 @@
       // Separate msw updates into individual PRs because grouped updates often fail.
       "matchDepNames": ["msw"],
       "groupName": null
+    },
+    {
+      // Internal API releases can be consumed without the global waiting period.
+      "matchPackageNames": ["hiterm/bookshelf-api"],
+      "matchDatasources": ["github-tags"],
+      "minimumReleaseAge": null
     }
   ],
   "customManagers": [
