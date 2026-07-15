@@ -1,3 +1,5 @@
 mutation deleteBook($bookId: ID!) {
-  deleteBook(bookId: $bookId)
+  deleteBook(bookId: $bookId) {
+    id
+  }
 }

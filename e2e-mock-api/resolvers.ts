@@ -37,7 +37,7 @@ export const createResolvers = (mockStore: MockStore) => ({
       if (!deleted) {
         throw new Error(`Author not found: ${authorId}`);
       }
-      return authorId;
+      return { id: authorId };
     },
     createBook: (
       _: unknown,
@@ -52,7 +52,7 @@ export const createResolvers = (mockStore: MockStore) => ({
       if (!deleted) {
         throw new Error(`Book not found: ${bookId}`);
       }
-      return bookId;
+      return { id: bookId };
     },
   },
   Book: {
