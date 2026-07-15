@@ -71,9 +71,6 @@ jobs:
       - run: pnpm run test:e2e:demo-mode
 
   test-integration:
-    # Use an unreachable event condition because actionlint rejects a constant false.
-    # This job is temporarily replaced by ci-api-sha.yml.
-    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -139,9 +136,6 @@ jobs:
       - run: pnpm run test:integration
 
   test-integration-api-main:
-    # Use an unreachable event condition because actionlint rejects a constant false.
-    # This job is temporarily replaced by ci-api-sha.yml.
-    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
