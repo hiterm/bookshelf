@@ -303,7 +303,7 @@ export const handlers = [
       );
     }
     return HttpResponse.json({
-      data: { deleteAuthor: variables.authorId },
+      data: { deleteAuthor: { id: variables.authorId } },
     });
   }),
 
@@ -421,7 +421,7 @@ export const handlers = [
       );
     }
     return HttpResponse.json({
-      data: { deleteBook: variables.bookId },
+      data: { deleteBook: { id: variables.bookId } },
     });
   }),
 ];
