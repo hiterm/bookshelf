@@ -61,6 +61,16 @@ Never commit directly to `main`.
 - Always use `git --no-pager` for git commands to avoid opening a pager
 - Example: `git --no-pager log`, `git --no-pager diff`, `git --no-pager status`
 
+## GitHub CLI Authentication
+
+When running as Codex, do not immediately conclude that GitHub CLI is
+unauthenticated when a `gh` command fails with an authentication or
+network-related error. Sandbox restrictions can cause misleading failures.
+
+Retry the required command with escalated sandbox permissions first. Only ask
+the user to re-authenticate when the authentication failure also occurs outside
+the sandbox.
+
 ## Communication
 
 - Be concise and direct
