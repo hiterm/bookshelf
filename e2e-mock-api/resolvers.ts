@@ -21,7 +21,7 @@ export const createResolvers = (mockStore: MockStore) => ({
     createAuthor: (
       _: unknown,
       { authorData }: { authorData: { name: string } },
-    ) => mockStore.createAuthor(authorData.name),
+    ) => ({ author: mockStore.createAuthor(authorData.name) }),
     updateAuthor: (
       _: unknown,
       { authorData }: { authorData: { id: string; name: string } },
@@ -30,29 +30,35 @@ export const createResolvers = (mockStore: MockStore) => ({
       if (!updated) {
         throw new Error(`Author not found: ${authorData.id}`);
       }
-      return updated;
+      return { author: updated };
     },
     deleteAuthor: (_: unknown, { authorId }: { authorId: string }) => {
       const deleted = mockStore.deleteAuthor(authorId);
       if (!deleted) {
         throw new Error(`Author not found: ${authorId}`);
       }
-      return { id: authorId };
+      return { authorId };
     },
     createBook: (
       _: unknown,
       { bookData }: { bookData: Parameters<typeof mockStore.createBook>[0] },
-    ) => mockStore.createBook(bookData),
+    ) => ({ book: mockStore.createBook(bookData) }),
     updateBook: (
       _: unknown,
       { bookData }: { bookData: Parameters<typeof mockStore.updateBook>[0] },
-    ) => mockStore.updateBook(bookData),
+    ) => {
+      const updated = mockStore.updateBook(bookData);
+      if (!updated) {
+        throw new Error(`Book not found: ${bookData.id}`);
+      }
+      return { book: updated };
+    },
     deleteBook: (_: unknown, { bookId }: { bookId: string }) => {
       const deleted = mockStore.deleteBook(bookId);
       if (!deleted) {
         throw new Error(`Book not found: ${bookId}`);
       }
-      return { id: bookId };
+      return { bookId };
     },
   },
   Book: {

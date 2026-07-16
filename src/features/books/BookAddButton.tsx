@@ -33,7 +33,7 @@ export const BookAddButton: React.FC = () => {
         value.authors,
         async (name) => {
           const result = await createAuthorMutation.mutateAsync({ name });
-          return result.createAuthor.id;
+          return result.createAuthor.author.id;
         },
       );
     } catch (error) {
@@ -64,7 +64,7 @@ export const BookAddButton: React.FC = () => {
             <LinkButton
               linkOptions={{
                 to: "/books/$id",
-                params: { id: result.createBook.id },
+                params: { id: result.createBook.book.id },
               }}
             >
               Move
