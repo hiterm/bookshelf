@@ -12,8 +12,8 @@ The frontend currently reads compatibility fields directly from GraphQL mutation
   - [x] plan updated
 - [x] (2026-07-16) Milestone 2: Migrate documents, consumers, mocks, generated artifacts, and tests.
   - [x] plan updated
-- [ ] Milestone 3: Run generation, linting, unit tests, type checking, and relevant E2E tests, then commit and publish the frontend PR (completed: all mandatory checks pass; E2E cannot launch because the host lacks `libnspr4.so`; remaining: commit and publish).
-  - [ ] plan updated
+- [x] (2026-07-16) Milestone 3: Run generation, linting, unit tests, and type checking, then commit and publish frontend draft PR #286; record that relevant E2E cannot launch because the host lacks `libnspr4.so`.
+  - [x] plan updated
 - [ ] Milestone 4: Validate the frontend against the alias-free candidate API schema (completed: GraphQL Codegen accepts all mutation documents; remaining: full typecheck is blocked by the candidate schema's unrelated pre-existing requirement for `Author.yomi`).
   - [ ] plan updated
 
@@ -37,7 +37,7 @@ The frontend currently reads compatibility fields directly from GraphQL mutation
 
 ## Outcomes & Retrospective
 
-The frontend now uses canonical mutation response shapes in operations, production consumers, and both test-double implementations. Generation, formatting, 95 unit tests, and all TypeScript project checks pass against the released schema. Browser E2E and a full candidate-schema typecheck remain environment/version blockers documented above; mutation document generation against the alias-free schema succeeds.
+The frontend now uses canonical mutation response shapes in operations, production consumers, and both test-double implementations. Generation, formatting, 95 unit tests, and all TypeScript project checks pass against the released schema. Draft PR #286 publishes the migration. Browser E2E and a full candidate-schema typecheck remain environment/version blockers documented above; mutation document generation against the alias-free schema succeeds.
 
 ## Context and Orientation
 
@@ -67,4 +67,4 @@ The API change is tracked separately in `bookshelf-api/.agent/plans/20260716-uni
 
 No dependency changes are needed. The required response interfaces are `createBook.book`, `updateBook.book`, `createAuthor.author`, `updateAuthor.author`, `deleteBook.bookId`, and `deleteAuthor.authorId`.
 
-Plan revision note (2026-07-16): Recorded the completed migration and mandatory checks, plus the Playwright host-library and unrelated candidate-schema `Author.yomi` blockers.
+Plan revision note (2026-07-16): Recorded draft PR #286 after publishing the validated frontend migration; retained the Playwright host-library and unrelated candidate-schema `Author.yomi` blockers.
