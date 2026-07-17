@@ -1,5 +1,7 @@
 mutation createBook($bookData: CreateBookInput!) {
   createBook(bookData: $bookData) {
-    id
+    book {
+      id
+    }
   }
 }

@@ -27,7 +27,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
         values.authors,
         async (name) => {
           const result = await createAuthorMutation.mutateAsync({ name });
-          return result.createAuthor.id;
+          return result.createAuthor.author.id;
         },
       );
     } catch (error) {

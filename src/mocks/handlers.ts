@@ -250,8 +250,10 @@ export const handlers = [
     return HttpResponse.json({
       data: {
         createAuthor: {
-          __typename: "Author",
-          ...author,
+          author: {
+            __typename: "Author",
+            ...author,
+          },
         },
       },
     });
@@ -281,8 +283,10 @@ export const handlers = [
     return HttpResponse.json({
       data: {
         updateAuthor: {
-          __typename: "Author",
-          ...author,
+          author: {
+            __typename: "Author",
+            ...author,
+          },
         },
       },
     });
@@ -303,7 +307,7 @@ export const handlers = [
       );
     }
     return HttpResponse.json({
-      data: { deleteAuthor: { id: variables.authorId } },
+      data: { deleteAuthor: { authorId: variables.authorId } },
     });
   }),
 
@@ -344,9 +348,11 @@ export const handlers = [
     return HttpResponse.json({
       data: {
         createBook: {
-          __typename: "Book",
-          ...book,
-          authors: resolveBookAuthors(book),
+          book: {
+            __typename: "Book",
+            ...book,
+            authors: resolveBookAuthors(book),
+          },
         },
       },
     });
@@ -398,9 +404,11 @@ export const handlers = [
     return HttpResponse.json({
       data: {
         updateBook: {
-          __typename: "Book",
-          ...book,
-          authors: resolveBookAuthors(book),
+          book: {
+            __typename: "Book",
+            ...book,
+            authors: resolveBookAuthors(book),
+          },
         },
       },
     });
@@ -421,7 +429,7 @@ export const handlers = [
       );
     }
     return HttpResponse.json({
-      data: { deleteBook: { id: variables.bookId } },
+      data: { deleteBook: { bookId: variables.bookId } },
     });
   }),
 ];
