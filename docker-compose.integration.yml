@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:15@sha256:36388d068f460ae61d9701625cbd0deb0008f6aeaf759bf2c7b64dba59950e45
+    image: postgres:15@sha256:74e110c41804365e3915fcc09d5e7a1eff50161aaa94d5da0e58e0cd75ae509c
     network_mode: host
     environment:
       POSTGRES_USER: bookshelf
