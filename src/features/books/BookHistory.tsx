@@ -12,11 +12,13 @@ import dayjs from "dayjs";
 import React, { useState } from "react";
 import { useBookEvents } from "../../compoments/hooks/useBookEvents";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
-import { Author } from "../../generated/graphql-request";
+import type { BookQuery } from "../../generated/graphql-request";
+
+type BookAuthors = NonNullable<BookQuery["book"]>["authors"];
 
 type BookHistoryProps = {
   bookId: string;
-  authors: Author[];
+  authors: BookAuthors;
 };
 
 export const BookHistory: React.FC<BookHistoryProps> = ({
