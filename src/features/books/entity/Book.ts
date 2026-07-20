@@ -1,5 +1,4 @@
 import {
-  Author,
   BookFormat,
   BooksQuery,
   BookStore,
@@ -10,7 +9,7 @@ type GraphQLBook = BooksQuery["books"][0];
 export type Book = {
   id: string;
   title: string;
-  authors: Author[];
+  authors: GraphQLBook["authors"];
   isbn: string;
   read: boolean;
   owned: boolean;
