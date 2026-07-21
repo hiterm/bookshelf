@@ -146,6 +146,21 @@ describe("AuthorDetailEdit", () => {
     ).toBeInTheDocument();
   });
 
+  test("shows validation error when reading is empty", async () => {
+    render(<AuthorDetailEdit author={testAuthor} />, {
+      wrapper: createWrapper(),
+    });
+    const input = screen.getByRole("textbox", { name: "読み仮名" });
+    await userEvent.clear(input);
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => {
+      expect(mockMutateAsync).not.toHaveBeenCalled();
+    });
+    expect(
+      await screen.findByText("読み仮名を入力してください"),
+    ).toBeInTheDocument();
+  });
+
   test("shows error notification when update fails", async () => {
     mockMutateAsync.mockRejectedValueOnce(new Error("Network error"));
     render(<AuthorDetailEdit author={testAuthor} />, {

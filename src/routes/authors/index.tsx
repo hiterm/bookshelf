@@ -9,6 +9,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { createFileRoute } from "@tanstack/react-router";
+import { zod4Resolver } from "mantine-form-zod-resolver";
 import {
   ColumnDef,
   createColumnHelper,
@@ -22,6 +23,10 @@ import { useState } from "react";
 import { useCreateAuthor } from "../../compoments/hooks/useCreateAuthor";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
 import { Link } from "../../compoments/mantineTsr";
+import {
+  authorFormSchema,
+  type AuthorFormValues,
+} from "../../features/authors/authorFormSchema";
 import type { Author } from "../../features/books/entity/Author";
 
 export const Route = createFileRoute("/authors/")({
@@ -32,17 +37,13 @@ function RouteComponent() {
   return <AuthorIndexPage />;
 }
 
-type RegisterAuthorFormInput = {
-  name: string;
-  yomi: string;
-};
-
 const RegisterAuthorForm: React.FC = () => {
   const createAuthorMutation = useCreateAuthor();
-  const form = useForm<RegisterAuthorFormInput>({
+  const form = useForm<AuthorFormValues>({
     initialValues: { name: "", yomi: "" },
+    validate: zod4Resolver(authorFormSchema),
   });
-  const handleSubmit = (data: RegisterAuthorFormInput) => {
+  const handleSubmit = (data: AuthorFormValues) => {
     if (createAuthorMutation.isPending) return;
     createAuthorMutation.mutate({ name: data.name, yomi: data.yomi });
   };

@@ -111,7 +111,9 @@ test.describe("Authors UPDATE", () => {
     await expect(
       page.getByRole("heading", { name: "更新された著者" }),
     ).toBeVisible();
-    await expect(page.getByText("こうしんされたちょしゃ")).toBeVisible();
+    await expect(
+      page.getByText("こうしんされたちょしゃ").first(),
+    ).toBeVisible();
   });
 });
 
