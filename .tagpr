@@ -1,0 +1,8 @@
+[tagpr]
+	releaseBranch = main
+	versionFile = package.json
+	vPrefix = true
+	changelog = true
+	release = true
+	majorLabels = bump-major
+	minorLabels = bump-minor
