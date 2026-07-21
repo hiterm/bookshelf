@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  tagpr:
+    name: Update release pull request or tag release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Ensure tagpr labels exist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create tagpr \
+            --color 0E8A16 \
+            --description "Pull requests managed by tagpr" \
+            --force
+          gh label create "tagpr:minor" \
+            --color FBCA04 \
+            --description "Release PR with a minor version bump" \
+            --force
+          gh label create "tagpr:major" \
+            --color B60205 \
+            --description "Release PR with a major version bump" \
+            --force
+      - name: Run tagpr
+        uses: Songmu/tagpr@d1b8138b7a31075141b6cd64103de9485ced7ac9 # v1.20.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
