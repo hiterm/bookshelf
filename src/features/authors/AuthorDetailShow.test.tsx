@@ -71,7 +71,11 @@ beforeAll(() => {
   });
 });
 
-const testAuthor = { id: "author-1", name: "テスト著者" };
+const testAuthor = {
+  id: "author-1",
+  name: "テスト著者",
+  yomi: "てすとちょしゃ",
+};
 
 const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   const queryClient = new QueryClient({
@@ -97,6 +101,7 @@ describe("AuthorDetailShow", () => {
     expect(
       screen.getByRole("heading", { name: "テスト著者" }),
     ).toBeInTheDocument();
+    expect(screen.getByText("てすとちょしゃ")).toBeInTheDocument();
   });
 
   test("renders edit and delete buttons", () => {

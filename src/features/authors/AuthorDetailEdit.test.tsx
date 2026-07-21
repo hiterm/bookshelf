@@ -68,7 +68,11 @@ beforeAll(() => {
   });
 });
 
-const testAuthor = { id: "author-1", name: "テスト著者" };
+const testAuthor = {
+  id: "author-1",
+  name: "テスト著者",
+  yomi: "てすとちょしゃ",
+};
 
 const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   const queryClient = new QueryClient({
@@ -88,12 +92,15 @@ describe("AuthorDetailEdit", () => {
     vi.mocked(showNotification).mockClear();
   });
 
-  test("renders name input with initial value", () => {
+  test("renders inputs with initial values", () => {
     render(<AuthorDetailEdit author={testAuthor} />, {
       wrapper: createWrapper(),
     });
     const input = screen.getByRole("textbox", { name: "名前" });
     expect(input).toHaveValue("テスト著者");
+    expect(screen.getByRole("textbox", { name: "読み仮名" })).toHaveValue(
+      "てすとちょしゃ",
+    );
   });
 
   test("renders Save and Cancel buttons", () => {
@@ -104,18 +111,22 @@ describe("AuthorDetailEdit", () => {
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
   });
 
-  test("calls updateAuthor mutation with updated name on save", async () => {
+  test("calls updateAuthor mutation with updated values on save", async () => {
     render(<AuthorDetailEdit author={testAuthor} />, {
       wrapper: createWrapper(),
     });
     const input = screen.getByRole("textbox", { name: "名前" });
     await userEvent.clear(input);
     await userEvent.type(input, "更新された著者");
+    const yomiInput = screen.getByRole("textbox", { name: "読み仮名" });
+    await userEvent.clear(yomiInput);
+    await userEvent.type(yomiInput, "こうしんされたちょしゃ");
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
     await waitFor(() => {
       expect(mockMutateAsync).toHaveBeenCalledWith({
         id: "author-1",
         name: "更新された著者",
+        yomi: "こうしんされたちょしゃ",
       });
     });
   });
@@ -132,6 +143,21 @@ describe("AuthorDetailEdit", () => {
     });
     expect(
       await screen.findByText("Please enter a valid name"),
+    ).toBeInTheDocument();
+  });
+
+  test("shows validation error when reading is empty", async () => {
+    render(<AuthorDetailEdit author={testAuthor} />, {
+      wrapper: createWrapper(),
+    });
+    const input = screen.getByRole("textbox", { name: "読み仮名" });
+    await userEvent.clear(input);
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => {
+      expect(mockMutateAsync).not.toHaveBeenCalled();
+    });
+    expect(
+      await screen.findByText("読み仮名を入力してください"),
     ).toBeInTheDocument();
   });
 

@@ -2,5 +2,6 @@ query author($authorId: ID!) {
   author(id: $authorId) {
     id
     name
+    yomi
   }
 }

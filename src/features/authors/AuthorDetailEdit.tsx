@@ -11,6 +11,7 @@ import { authorFormSchema, type AuthorFormValues } from "./authorFormSchema";
 type Author = {
   id: string;
   name: string;
+  yomi: string;
 };
 
 export const AuthorDetailEdit: React.FC<{ author: Author }> = ({ author }) => {
@@ -18,7 +19,7 @@ export const AuthorDetailEdit: React.FC<{ author: Author }> = ({ author }) => {
   const updateAuthorMutation = useUpdateAuthor();
 
   const form = useForm<AuthorFormValues>({
-    initialValues: { name: author.name },
+    initialValues: { name: author.name, yomi: author.yomi },
     validate: zod4Resolver(authorFormSchema),
     validateInputOnBlur: true,
   });
@@ -28,6 +29,7 @@ export const AuthorDetailEdit: React.FC<{ author: Author }> = ({ author }) => {
       await updateAuthorMutation.mutateAsync({
         id: author.id,
         name: values.name,
+        yomi: values.yomi,
       });
       await navigate({ to: "/authors/$id", params: { id: author.id } });
       showNotification({ message: "更新しました", color: "teal" });
@@ -49,6 +51,7 @@ export const AuthorDetailEdit: React.FC<{ author: Author }> = ({ author }) => {
         style={{ minWidth: 400 }}
       >
         <TextInput label="名前" {...form.getInputProps("name")} />
+        <TextInput label="読み仮名" {...form.getInputProps("yomi")} />
         <Group mt="md">
           <Button type="submit">Save</Button>
           <LinkButton

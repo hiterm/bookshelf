@@ -12,6 +12,7 @@ test("creates author and displays in list", async ({ page }) => {
 
   // CREATE - 著者を作成
   await page.getByLabel("名前").fill("新規テスト著者");
+  await page.getByLabel("読み仮名").fill("しんきてすとちょしゃ");
   await page.getByRole("button", { name: "登録" }).click();
 
   // 一覧に表示されるか確認（リロードなし）
@@ -43,6 +44,7 @@ test.describe("author mutations", () => {
     testAuthorName = `テスト著者-${String(Date.now())}`;
     await page.goto("/authors");
     await page.getByLabel("名前").fill(testAuthorName);
+    await page.getByLabel("読み仮名").fill("てすとちょしゃ");
     await page.getByRole("button", { name: "登録" }).click();
     await expect(
       page.locator("td").filter({ hasText: testAuthorName }),
@@ -57,12 +59,16 @@ test.describe("author mutations", () => {
     const nameInput = page.getByRole("textbox", { name: "名前" });
     await expect(nameInput).toHaveValue(testAuthorName);
     await nameInput.fill("デモ更新著者");
+    const yomiInput = page.getByRole("textbox", { name: "読み仮名" });
+    await expect(yomiInput).toHaveValue("てすとちょしゃ");
+    await yomiInput.fill("でもこうしんちょしゃ");
     await page.getByRole("button", { name: "Save" }).click();
 
     await expect(page).toHaveURL(/\/authors\/[^/]+$/);
     await expect(
       page.getByRole("heading", { name: "デモ更新著者" }),
     ).toBeVisible();
+    await expect(page.getByText("でもこうしんちょしゃ").first()).toBeVisible();
   });
 
   test("deletes author after confirmation", async ({ page }) => {
