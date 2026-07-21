@@ -34,21 +34,23 @@ function RouteComponent() {
 
 type RegisterAuthorFormInput = {
   name: string;
+  yomi: string;
 };
 
 const RegisterAuthorForm: React.FC = () => {
   const createAuthorMutation = useCreateAuthor();
   const form = useForm<RegisterAuthorFormInput>({
-    initialValues: { name: "" },
+    initialValues: { name: "", yomi: "" },
   });
   const handleSubmit = (data: RegisterAuthorFormInput) => {
     if (createAuthorMutation.isPending) return;
-    createAuthorMutation.mutate({ name: data.name });
+    createAuthorMutation.mutate({ name: data.name, yomi: data.yomi });
   };
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <TextInput label="名前" {...form.getInputProps("name")} />
+      <TextInput label="読み仮名" {...form.getInputProps("yomi")} />
       <Button
         type="submit"
         mt="md"
@@ -73,6 +75,9 @@ const AuthorIndexPage: React.FC = () => {
           {row.getValue("name")}
         </Link>
       ),
+    }),
+    columnHelper.accessor("yomi", {
+      header: "読み仮名",
     }),
   ];
   const table = useReactTable({

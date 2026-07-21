@@ -20,13 +20,21 @@ export const createResolvers = (mockStore: MockStore) => ({
     },
     createAuthor: (
       _: unknown,
-      { authorData }: { authorData: { name: string } },
-    ) => ({ author: mockStore.createAuthor(authorData.name) }),
+      { authorData }: { authorData: { name: string; yomi?: string | null } },
+    ) => ({
+      author: mockStore.createAuthor(authorData.name, authorData.yomi ?? ""),
+    }),
     updateAuthor: (
       _: unknown,
-      { authorData }: { authorData: { id: string; name: string } },
+      {
+        authorData,
+      }: { authorData: { id: string; name: string; yomi?: string | null } },
     ) => {
-      const updated = mockStore.updateAuthor(authorData.id, authorData.name);
+      const updated = mockStore.updateAuthor(
+        authorData.id,
+        authorData.name,
+        authorData.yomi ?? "",
+      );
       if (!updated) {
         throw new Error(`Author not found: ${authorData.id}`);
       }

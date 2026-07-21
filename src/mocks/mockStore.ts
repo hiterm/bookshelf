@@ -1,6 +1,7 @@
 type Author = {
   id: string;
   name: string;
+  yomi: string;
 };
 
 type Book = {
@@ -42,8 +43,8 @@ class MockStore {
   }
 
   private seedData(): void {
-    const author1 = this.createAuthor("著者1");
-    const author2 = this.createAuthor("著者2");
+    const author1 = this.createAuthor("著者1", "ちょしゃいち");
+    const author2 = this.createAuthor("著者2", "ちょしゃに");
 
     this.createBook({
       title: "テスト書籍1",
@@ -68,10 +69,10 @@ class MockStore {
     });
   }
 
-  createAuthor(name: string): Author {
+  createAuthor(name: string, yomi = ""): Author {
     const id = `author-${String(this.nextAuthorId)}`;
     this.nextAuthorId += 1;
-    const author: Author = { id, name };
+    const author: Author = { id, name, yomi };
     this.authors.set(id, author);
     return author;
   }
@@ -84,10 +85,10 @@ class MockStore {
     return Array.from(this.authors.values());
   }
 
-  updateAuthor(id: string, name: string): Author | null {
+  updateAuthor(id: string, name: string, yomi = ""): Author | null {
     const author = this.authors.get(id);
     if (!author) return null;
-    const updated: Author = { id, name };
+    const updated: Author = { id, name, yomi };
     this.authors.set(id, updated);
     return updated;
   }

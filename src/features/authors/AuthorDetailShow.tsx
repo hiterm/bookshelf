@@ -18,6 +18,7 @@ import { LinkButton } from "../../compoments/mantineTsr";
 type Author = {
   id: string;
   name: string;
+  yomi: string;
 };
 
 const DeleteButton: React.FC<{ author: Author }> = ({ author }) => {
@@ -103,6 +104,10 @@ export const AuthorDetailShow: React.FC<{ author: Author }> = ({ author }) => {
         <Box>
           <Text fw="bold">名前</Text>
           <Text>{author.name}</Text>
+        </Box>
+        <Box>
+          <Text fw="bold">読み仮名</Text>
+          <Text>{author.yomi}</Text>
         </Box>
       </Stack>
       <Group m={20}>

@@ -3,6 +3,7 @@ mutation updateAuthor($authorData: UpdateAuthorInput!) {
     author {
       id
       name
+      yomi
     }
   }
 }

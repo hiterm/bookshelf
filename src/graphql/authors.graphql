@@ -2,5 +2,6 @@ query authors {
   authors {
     id
     name
+    yomi
   }
 }

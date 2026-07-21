@@ -33,6 +33,7 @@ type BookEventEntry = {
 type Author = {
   id: string;
   name: string;
+  yomi: string;
 };
 
 type Book = {
@@ -82,8 +83,8 @@ export class MockStore {
   }
 
   private seedData(): void {
-    const author1 = this.createAuthor("著者1");
-    const author2 = this.createAuthor("著者2");
+    const author1 = this.createAuthor("著者1", "ちょしゃいち");
+    const author2 = this.createAuthor("著者2", "ちょしゃに");
 
     this.createBook({
       title: "テスト書籍1",
@@ -198,10 +199,10 @@ export class MockStore {
     });
   }
 
-  private createAuthorInternal(name: string): Author {
+  private createAuthorInternal(name: string, yomi = ""): Author {
     const id = `author-${String(this.nextAuthorId)}`;
     this.nextAuthorId += 1;
-    const author: Author = { id, name };
+    const author: Author = { id, name, yomi };
     this.authors.set(id, author);
     return author;
   }
@@ -222,9 +223,16 @@ export class MockStore {
     return book;
   }
 
-  createAuthor(name: string): Author {
-    const author = this.createAuthorInternal(name);
-    this.recordAuthorEvent("CREATE", author.id, author.name, null, null, null);
+  createAuthor(name: string, yomi = ""): Author {
+    const author = this.createAuthorInternal(name, yomi);
+    this.recordAuthorEvent(
+      "CREATE",
+      author.id,
+      author.name,
+      author.yomi,
+      null,
+      null,
+    );
     return author;
   }
 
@@ -236,19 +244,19 @@ export class MockStore {
     return Array.from(this.authors.values());
   }
 
-  updateAuthor(id: string, name: string): Author | null {
+  updateAuthor(id: string, name: string, yomi = ""): Author | null {
     const author = this.authors.get(id);
     if (!author) return null;
-    const updated: Author = { id, name };
+    const updated: Author = { id, name, yomi };
     this.authors.set(id, updated);
-    this.recordAuthorEvent("UPDATE", id, name, null, null, null);
+    this.recordAuthorEvent("UPDATE", id, name, yomi, null, null);
     return updated;
   }
 
   deleteAuthor(id: string): boolean {
     const author = this.authors.get(id);
     if (!author) return false;
-    this.recordAuthorEvent("DELETE", id, author.name, null, null, null);
+    this.recordAuthorEvent("DELETE", id, author.name, author.yomi, null, null);
     const deleted = this.authors.delete(id);
     if (deleted) {
       this.books.forEach((book, bookId) => {

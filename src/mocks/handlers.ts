@@ -246,7 +246,10 @@ export const handlers = [
         { status: 200 },
       );
     }
-    const author = mockStore.createAuthor(variables.authorData.name);
+    const yomi = isString(variables.authorData.yomi)
+      ? variables.authorData.yomi
+      : "";
+    const author = mockStore.createAuthor(variables.authorData.name, yomi);
     return HttpResponse.json({
       data: {
         createAuthor: {
@@ -273,7 +276,8 @@ export const handlers = [
         { status: 200 },
       );
     }
-    const author = mockStore.updateAuthor(authorData.id, authorData.name);
+    const yomi = isString(authorData.yomi) ? authorData.yomi : "";
+    const author = mockStore.updateAuthor(authorData.id, authorData.name, yomi);
     if (!author) {
       return HttpResponse.json(
         { errors: [{ message: `Author not found: ${authorData.id}` }] },

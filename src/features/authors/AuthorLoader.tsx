@@ -2,7 +2,7 @@ import { Center, Loader, Text } from "@mantine/core";
 import React from "react";
 import { useAuthor } from "../../compoments/hooks/useAuthor";
 
-type Author = { id: string; name: string };
+type Author = { id: string; name: string; yomi: string };
 
 type AuthorLoaderProps = {
   id: string;
