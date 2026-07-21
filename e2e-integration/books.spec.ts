@@ -3,6 +3,7 @@ import { test } from "./fixtures";
 
 const BOOK_TITLE = "統合テスト書籍";
 const AUTHOR_NAME = "統合テスト著者";
+const AUTHOR_YOMI = "とうごうてすとちょしゃ";
 const UPDATED_TITLE = "更新された統合テスト書籍";
 
 async function loginAndRegister(page: Page) {
@@ -23,6 +24,7 @@ test.describe
       // Create author
       await page.goto("/authors");
       await page.getByLabel("名前").fill(AUTHOR_NAME);
+      await page.getByLabel("読み仮名").fill(AUTHOR_YOMI);
       await page.getByRole("button", { name: "登録" }).click();
       await expect(
         page.locator("td").filter({ hasText: AUTHOR_NAME }),
@@ -94,6 +96,7 @@ test.describe
       // Create author
       await page.goto("/authors");
       await page.getByLabel("名前").fill(AUTHOR_NAME);
+      await page.getByLabel("読み仮名").fill(AUTHOR_YOMI);
       await page.getByRole("button", { name: "登録" }).click();
       await expect(
         page.locator("td").filter({ hasText: AUTHOR_NAME }),
@@ -140,6 +143,7 @@ test.describe
       // Create author
       await page.goto("/authors");
       await page.getByLabel("名前").fill(AUTHOR_NAME);
+      await page.getByLabel("読み仮名").fill(AUTHOR_YOMI);
       await page.getByRole("button", { name: "登録" }).click();
 
       // Create a book

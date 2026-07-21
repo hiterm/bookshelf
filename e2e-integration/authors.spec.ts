@@ -2,7 +2,9 @@ import { expect, type Page } from "@playwright/test";
 import { test } from "./fixtures";
 
 const AUTHOR_NAME = "統合テスト著者";
+const AUTHOR_YOMI = "とうごうてすとちょしゃ";
 const UPDATED_AUTHOR_NAME = "更新された統合テスト著者";
+const UPDATED_AUTHOR_YOMI = "こうしんされたとうごうてすとちょしゃ";
 
 async function loginAndRegister(page: Page) {
   await page.goto("/books");
@@ -24,6 +26,7 @@ test.describe
       // Create author
       await page.goto("/authors");
       await page.getByLabel("名前").fill(AUTHOR_NAME);
+      await page.getByLabel("読み仮名").fill(AUTHOR_YOMI);
       await page.getByRole("button", { name: "登録" }).click();
       await expect(
         page.locator("td").filter({ hasText: AUTHOR_NAME }),
@@ -43,6 +46,9 @@ test.describe
       const nameInput = page.getByRole("textbox", { name: "名前" });
       await expect(nameInput).toHaveValue(AUTHOR_NAME);
       await nameInput.fill(UPDATED_AUTHOR_NAME);
+      const yomiInput = page.getByRole("textbox", { name: "読み仮名" });
+      await expect(yomiInput).toHaveValue(AUTHOR_YOMI);
+      await yomiInput.fill(UPDATED_AUTHOR_YOMI);
       await page.getByRole("button", { name: "Save" }).click();
 
       await expect(page).toHaveURL(/\/authors\/.+$/);
@@ -50,6 +56,7 @@ test.describe
       await expect(
         page.getByRole("heading", { name: UPDATED_AUTHOR_NAME }),
       ).toBeVisible();
+      await expect(page.getByText(UPDATED_AUTHOR_YOMI).first()).toBeVisible();
 
       // Delete the author
       await page.getByRole("button", { name: "削除" }).click();
@@ -71,6 +78,7 @@ test.describe
       // Create author
       await page.goto("/authors");
       await page.getByLabel("名前").fill(AUTHOR_NAME);
+      await page.getByLabel("読み仮名").fill(AUTHOR_YOMI);
       await page.getByRole("button", { name: "登録" }).click();
       await expect(
         page.locator("td").filter({ hasText: AUTHOR_NAME }),
