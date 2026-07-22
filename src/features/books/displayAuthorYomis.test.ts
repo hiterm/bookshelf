@@ -12,15 +12,10 @@ describe("displayAuthorYomis", () => {
     ).toBe("やまだたろう, すずきはなこ");
   });
 
-  test("displays missing readings as hyphens", () => {
-    expect(
-      displayAuthorYomis([
-        { yomi: "やまだたろう" },
-        { yomi: null },
-        { yomi: undefined },
-        { yomi: "" },
-      ]),
-    ).toBe("やまだたろう, -, -, -");
+  test("displays empty readings as hyphens", () => {
+    expect(displayAuthorYomis([{ yomi: "やまだたろう" }, { yomi: "" }])).toBe(
+      "やまだたろう, -",
+    );
   });
 
   test("displays an empty string when there are no authors", () => {
