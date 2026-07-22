@@ -300,7 +300,7 @@ describe("BookHistory", () => {
     });
 
     const rows = screen.getAllByRole("row");
-    const dataRows = rows.filter((row) => !row.querySelector("th"));
+    const dataRows = rows.filter((row) => row.querySelector("th") == null);
     expect(dataRows[0]).toHaveTextContent("UPDATE");
     expect(dataRows[1]).toHaveTextContent("CREATE");
   });

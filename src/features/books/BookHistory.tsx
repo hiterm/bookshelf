@@ -35,11 +35,11 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
     return <Text>Loading...</Text>;
   }
 
-  if (error) {
+  if (error != null) {
     return <Text>Error loading history</Text>;
   }
 
-  if (!data || data.bookEvents.length === 0) {
+  if (data == null || data.bookEvents.length === 0) {
     return null;
   }
 
@@ -122,7 +122,7 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
         }}
         title="Event Detail"
       >
-        {selectedEvent && (
+        {selectedEvent != null && (
           <div>
             <Text>
               <strong>Operation:</strong> {selectedEvent.operation}

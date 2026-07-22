@@ -31,6 +31,9 @@
 - Follow existing conventions in the codebase
 - Use existing libraries and utilities
 - Never introduce code that exposes or logs secrets
+- Prefer `value == null` and `value != null` for nullish checks when `null`
+  and `undefined` do not need to be distinguished. Use strict equality only
+  when the distinction is meaningful.
 - When ignoring a linter or security tool finding, always add a comment
   explaining why it is safe to ignore. Place the comment on the line immediately
   before the ignore directive.

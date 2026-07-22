@@ -22,11 +22,11 @@ export const AuthorHistory: React.FC<{ authorId: string }> = ({ authorId }) => {
     return <Text>Loading...</Text>;
   }
 
-  if (error) {
+  if (error != null) {
     return <Text>Error loading history</Text>;
   }
 
-  if (!data || data.authorEvents.length === 0) {
+  if (data == null || data.authorEvents.length === 0) {
     return null;
   }
 
@@ -81,7 +81,7 @@ export const AuthorHistory: React.FC<{ authorId: string }> = ({ authorId }) => {
         }}
         title="Event Detail"
       >
-        {selectedEvent && (
+        {selectedEvent != null && (
           <div>
             <Text>
               <strong>Operation:</strong> {selectedEvent.operation}

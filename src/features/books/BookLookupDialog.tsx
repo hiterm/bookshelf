@@ -45,7 +45,10 @@ export const BookLookupDialog = ({
   const trimmedPublisher = publisher.trim();
   const trimmedIsbn = isbn.trim();
   const isAllEmpty =
-    !trimmedTitle && !trimmedAuthorName && !trimmedPublisher && !trimmedIsbn;
+    trimmedTitle === "" &&
+    trimmedAuthorName === "" &&
+    trimmedPublisher === "" &&
+    trimmedIsbn === "";
 
   const handleSearch = () => {
     void search(
@@ -113,58 +116,71 @@ export const BookLookupDialog = ({
             {state.results.map((result, index) => (
               <Box
                 key={
-                  result.isbn || `${backend}-${String(index)}-${result.title}`
+                  result.isbn !== ""
+                    ? result.isbn
+                    : `${backend}-${String(index)}-${result.title}`
                 }
                 component="div"
               >
                 <Paper p="xs" withBorder>
                   <Group align="flex-start" wrap="nowrap">
-                    {result.coverImageUrl && (
-                      <Image
-                        src={result.coverImageUrl}
-                        w={50}
-                        h={70}
-                        fit="contain"
-                        style={{ flexShrink: 0 }}
-                        alt={
-                          result.title
-                            ? `Cover of ${result.title}`
-                            : "Book cover"
-                        }
-                      />
-                    )}
+                    {result.coverImageUrl !== undefined &&
+                      result.coverImageUrl !== "" && (
+                        <Image
+                          src={result.coverImageUrl}
+                          w={50}
+                          h={70}
+                          fit="contain"
+                          style={{ flexShrink: 0 }}
+                          alt={
+                            result.title !== ""
+                              ? `Cover of ${result.title}`
+                              : "Book cover"
+                          }
+                        />
+                      )}
                     <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
                       <Text fw={700} lineClamp={2}>
                         {result.title}
                       </Text>
-                      {result.subtitle && (
-                        <Text size="sm" lineClamp={1}>
-                          {result.subtitle}
-                        </Text>
-                      )}
+                      {result.subtitle !== undefined &&
+                        result.subtitle !== "" && (
+                          <Text size="sm" lineClamp={1}>
+                            {result.subtitle}
+                          </Text>
+                        )}
                       <Text size="sm">{result.authorNames.join("、")}</Text>
-                      {(result.series ?? result.volume) && (
-                        <Text size="sm" c="dimmed">
-                          {[result.series, result.volume]
-                            .filter(Boolean)
-                            .join(" ")}
-                        </Text>
-                      )}
-                      {result.openBdFormat && (
-                        <Text size="sm" c="dimmed">
-                          {result.openBdFormat}
-                        </Text>
-                      )}
+                      {(result.series ?? result.volume) !== undefined &&
+                        (result.series ?? result.volume) !== "" && (
+                          <Text size="sm" c="dimmed">
+                            {[result.series, result.volume]
+                              .filter(
+                                (value) => value !== undefined && value !== "",
+                              )
+                              .join(" ")}
+                          </Text>
+                        )}
+                      {result.openBdFormat !== undefined &&
+                        result.openBdFormat !== "" && (
+                          <Text size="sm" c="dimmed">
+                            {result.openBdFormat}
+                          </Text>
+                        )}
                       <Group justify="space-between" align="flex-end">
                         <Stack gap={0}>
-                          {(result.publisher || result.publishedDate) && (
+                          {(result.publisher !== "" ||
+                            (result.publishedDate !== undefined &&
+                              result.publishedDate !== "")) && (
                             <Text size="sm" c="dimmed">
                               {[result.publisher, result.publishedDate]
-                                .filter(Boolean)
+                                .filter(
+                                  (value) =>
+                                    value !== undefined && value !== "",
+                                )
                                 .join(" ")}
                             </Text>
                           )}
-                          {result.isbn && (
+                          {result.isbn !== "" && (
                             <Text size="sm" c="dimmed">
                               ISBN: {result.isbn}
                             </Text>
@@ -174,7 +190,7 @@ export const BookLookupDialog = ({
                           <Button
                             variant="outline"
                             size="xs"
-                            disabled={!result.isbn}
+                            disabled={result.isbn === ""}
                             onClick={(e) => {
                               e.stopPropagation();
                               setDetailResult(result);
@@ -203,7 +219,7 @@ export const BookLookupDialog = ({
           </Stack>
         )}
       </Stack>
-      {detailResult && (
+      {detailResult != null && (
         <BookDetailModal
           opened
           onClose={() => {

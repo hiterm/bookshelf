@@ -80,7 +80,7 @@ const findTextContent = (
 ): string | undefined => {
   for (const type of types) {
     const entry = textContents.find((t) => t.TextType === type);
-    if (entry?.Text) return entry.Text;
+    if (entry?.Text !== undefined && entry.Text !== "") return entry.Text;
   }
   return undefined;
 };

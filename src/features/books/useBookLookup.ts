@@ -96,15 +96,17 @@ const enrichWithOpenBd = async (
     return results;
   }
 
-  const byRequestIsbn = new Map<string, OpenBdEnrichEntry>();
+  const byRequestIsbn = new Map<string, NonNullable<OpenBdEnrichEntry>>();
   for (let i = 0; i < uniqueIsbns.length; i++) {
     const entry = data[i];
-    if (entry) byRequestIsbn.set(uniqueIsbns[i], entry);
+    if (entry != null) {
+      byRequestIsbn.set(uniqueIsbns[i], entry);
+    }
   }
 
   return results.map((r) => {
     const entry = byRequestIsbn.get(r.isbn);
-    if (!entry) return r;
+    if (entry == null) return r;
     const isbn13 = entry.summary?.isbn;
     const cover = entry.summary?.cover;
     const rawTitle = entry.summary?.title;
@@ -158,10 +160,18 @@ const searchGoogleBooks = async (
   query: BookLookupQuery,
 ): Promise<BookLookupResult[]> => {
   const parts: string[] = [];
-  if (query.title) parts.push(`intitle:${query.title}`);
-  if (query.authorName) parts.push(`inauthor:${query.authorName}`);
-  if (query.publisher) parts.push(`inpublisher:${query.publisher}`);
-  if (query.isbn) parts.push(`isbn:${query.isbn.replace(/-/g, "")}`);
+  if (query.title !== undefined && query.title !== "") {
+    parts.push(`intitle:${query.title}`);
+  }
+  if (query.authorName !== undefined && query.authorName !== "") {
+    parts.push(`inauthor:${query.authorName}`);
+  }
+  if (query.publisher !== undefined && query.publisher !== "") {
+    parts.push(`inpublisher:${query.publisher}`);
+  }
+  if (query.isbn !== undefined && query.isbn !== "") {
+    parts.push(`isbn:${query.isbn.replace(/-/g, "")}`);
+  }
 
   const encoded = encodeURIComponent(parts.join("+"));
   const response = await fetch(
@@ -172,7 +182,7 @@ const searchGoogleBooks = async (
   }
   const rawData: unknown = await response.json();
   const data = googleBooksResponseSchema.parse(rawData);
-  if (!data.items) return [];
+  if (data.items === undefined) return [];
 
   return data.items
     .map((item) => {
@@ -197,10 +207,18 @@ const searchNdl = async (
 ): Promise<BookLookupResult[]> => {
   const params = new URLSearchParams();
   params.set("mediaType", "1");
-  if (query.title) params.set("title", query.title);
-  if (query.authorName) params.set("creator", query.authorName);
-  if (query.publisher) params.set("publisher", query.publisher);
-  if (query.isbn) params.set("isbn", query.isbn.replace(/-/g, ""));
+  if (query.title !== undefined && query.title !== "") {
+    params.set("title", query.title);
+  }
+  if (query.authorName !== undefined && query.authorName !== "") {
+    params.set("creator", query.authorName);
+  }
+  if (query.publisher !== undefined && query.publisher !== "") {
+    params.set("publisher", query.publisher);
+  }
+  if (query.isbn !== undefined && query.isbn !== "") {
+    params.set("isbn", query.isbn.replace(/-/g, ""));
+  }
 
   const response = await fetch(`/ndl-proxy/api/opensearch?${params}`);
   if (!response.ok) {
@@ -266,7 +284,10 @@ export const useBookLookup = (): {
     backend: BookLookupBackend,
   ): Promise<void> => {
     const isEmpty =
-      !query.isbn && !query.title && !query.authorName && !query.publisher;
+      (query.isbn === undefined || query.isbn === "") &&
+      (query.title === undefined || query.title === "") &&
+      (query.authorName === undefined || query.authorName === "") &&
+      (query.publisher === undefined || query.publisher === "");
     if (isEmpty) {
       latestRequestIdRef.current += 1;
       setState({ status: "idle" });

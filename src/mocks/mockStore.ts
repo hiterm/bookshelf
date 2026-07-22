@@ -87,7 +87,7 @@ class MockStore {
 
   updateAuthor(id: string, name: string, yomi = ""): Author | null {
     const author = this.authors.get(id);
-    if (!author) return null;
+    if (author == null) return null;
     const updated: Author = { id, name, yomi };
     this.authors.set(id, updated);
     return updated;
@@ -125,7 +125,7 @@ class MockStore {
     >,
   ): Book | null {
     const book = this.books.get(bookData.id);
-    if (!book) return null;
+    if (book == null) return null;
 
     const now = Math.floor(Date.now() / 1000);
     const updatedBook: Book = {

@@ -27,7 +27,7 @@ export const BookDetailModal = ({
   const { state, fetch, reset } = useOpenBdDetail();
 
   useEffect(() => {
-    if (opened && searchResult.isbn) {
+    if (opened && searchResult.isbn !== "") {
       void fetch(searchResult.isbn);
     }
     if (!opened) {
@@ -38,6 +38,9 @@ export const BookDetailModal = ({
   const detail = state.status === "success" ? state.detail : null;
   const coverImageUrl =
     detail?.coverImageUrl ?? searchResult.coverImageUrl ?? null;
+  const seriesAndVolume = [detail?.series, detail?.volume]
+    .filter((value) => value !== undefined && value !== "")
+    .join(" ");
 
   const handleSelect = () => {
     onSelect(searchResult);
@@ -54,7 +57,7 @@ export const BookDetailModal = ({
       <Stack>
         {state.status === "loading" && <Loader />}
         <Group align="flex-start" wrap="nowrap">
-          {coverImageUrl && (
+          {coverImageUrl !== null && coverImageUrl !== "" && (
             <Image
               src={coverImageUrl}
               alt={searchResult.title}
@@ -64,16 +67,13 @@ export const BookDetailModal = ({
             />
           )}
           <Stack gap="xs" style={{ flex: 1 }}>
-            {(detail?.series ?? detail?.volume) && (
-              <Text size="sm">
-                {[detail.series, detail.volume].filter(Boolean).join(" ")}
-              </Text>
-            )}
-            {searchResult.subtitle && (
-              <Text size="sm" c="dimmed">
-                {searchResult.subtitle}
-              </Text>
-            )}
+            {seriesAndVolume !== "" && <Text size="sm">{seriesAndVolume}</Text>}
+            {searchResult.subtitle !== undefined &&
+              searchResult.subtitle !== "" && (
+                <Text size="sm" c="dimmed">
+                  {searchResult.subtitle}
+                </Text>
+              )}
             <Text>{searchResult.authorNames.join("、")}</Text>
             <Text size="sm" c="dimmed">
               {[
@@ -84,28 +84,35 @@ export const BookDetailModal = ({
                 .filter(Boolean)
                 .join("  ")}
             </Text>
-            {detail?.genre && <Text size="sm">ジャンル: {detail.genre}</Text>}
-            {detail?.format && <Text size="sm">判型: {detail.format}</Text>}
-            {detail?.pageCount && (
-              <Text size="sm">{detail.pageCount}ページ</Text>
+            {detail?.genre !== undefined && detail.genre !== "" && (
+              <Text size="sm">ジャンル: {detail.genre}</Text>
             )}
+            {detail?.format !== undefined && detail.format !== "" && (
+              <Text size="sm">判型: {detail.format}</Text>
+            )}
+            {detail?.pageCount !== undefined &&
+              detail.pageCount !== 0 &&
+              !Number.isNaN(detail.pageCount) && (
+                <Text size="sm">{detail.pageCount}ページ</Text>
+              )}
           </Stack>
         </Group>
-        {detail?.description && (
+        {detail?.description !== undefined && detail.description !== "" && (
           <Text size="sm" style={{ whiteSpace: "pre-wrap" }}>
             {detail.description}
           </Text>
         )}
-        {detail?.tableOfContents && (
-          <Stack gap={4}>
-            <Text size="sm" fw={700}>
-              目次
-            </Text>
-            <Text size="sm" style={{ whiteSpace: "pre-wrap" }}>
-              {detail.tableOfContents}
-            </Text>
-          </Stack>
-        )}
+        {detail?.tableOfContents !== undefined &&
+          detail.tableOfContents !== "" && (
+            <Stack gap={4}>
+              <Text size="sm" fw={700}>
+                目次
+              </Text>
+              <Text size="sm" style={{ whiteSpace: "pre-wrap" }}>
+                {detail.tableOfContents}
+              </Text>
+            </Stack>
+          )}
         {state.status === "error" && (
           <Text size="sm" c="dimmed">
             {state.message}

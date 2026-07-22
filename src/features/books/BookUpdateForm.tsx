@@ -21,7 +21,7 @@ type BookUpdateFormProps = {
 export const BookUpdateForm: React.FC<BookUpdateFormProps> = ({ form }) => {
   const { data, isLoading, error } = useAuthors();
 
-  if (error) {
+  if (error != null) {
     return <div>{JSON.stringify(error)}</div>;
   }
 

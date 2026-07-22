@@ -26,7 +26,7 @@ export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
   const { data, isLoading, error } = useAuthors();
   const [searchOpened, setSearchOpened] = useState(false);
 
-  if (error) {
+  if (error != null) {
     console.error(error);
     return <div>著者の読み込みに失敗しました。</div>;
   }
