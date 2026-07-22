@@ -1,6 +1,4 @@
-type AuthorWithYomi = {
-  yomi: string;
-};
+import type { Author } from "./entity/Author";
 
-export const displayAuthorYomis = (authors: AuthorWithYomi[]): string =>
-  authors.map((author) => (author.yomi.length ? author.yomi : "-")).join(", ");
+export const displayAuthorYomis = (authors: Pick<Author, "yomi">[]): string =>
+  authors.map((author) => (author.yomi === "" ? "-" : author.yomi)).join(", ");

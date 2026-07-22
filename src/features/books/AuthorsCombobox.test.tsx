@@ -5,11 +5,12 @@ import userEvent from "@testing-library/user-event";
 import React, { useState } from "react";
 import { type Mock, vi } from "vitest";
 import { AuthorsCombobox } from "./AuthorsCombobox";
+import type { BookFormAuthor } from "./bookFormSchema";
 import type { Author } from "./entity/Author";
 
 const defaultAuthors: Author[] = [
-  { id: "1", name: "name1" },
-  { id: "2", name: "name2" },
+  { id: "1", name: "name1", yomi: "name one" },
+  { id: "2", name: "name2", yomi: "name two" },
 ];
 
 beforeAll(() => {
@@ -50,7 +51,7 @@ const mockMatchMedia = () => {
 
 type TestComboboxProps = {
   onChange: Mock;
-  initial?: Author[];
+  initial?: BookFormAuthor[];
   authors?: Author[];
   error?: React.ReactNode;
 };
