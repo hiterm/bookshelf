@@ -14,7 +14,7 @@ import { IconArrowBack } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import React, { useState } from "react";
-import { LinkButton } from "../../compoments/mantineTsr";
+import { Link, LinkButton } from "../../compoments/mantineTsr";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { useDeleteBook } from "../../compoments/hooks/useDeleteBook";
 import { Book } from "./entity/Book";
@@ -129,7 +129,14 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
         <BookDetailShowItem field="書名" value={book.title} />
         <BookDetailShowItem
           field="著者"
-          value={book.authors.map((author) => author.name).join(", ")}
+          value={book.authors.map((author, index) => (
+            <React.Fragment key={author.id}>
+              {index > 0 && ", "}
+              <Link to="/authors/$id" params={{ id: author.id }}>
+                {author.name}
+              </Link>
+            </React.Fragment>
+          ))}
         />
         <BookDetailShowItem
           field="著者読み仮名"

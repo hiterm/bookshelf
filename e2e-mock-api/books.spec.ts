@@ -58,6 +58,19 @@ test.describe("Books READ", () => {
     await expect(page.getByRole("button", { name: "削除" })).toBeVisible();
   });
 
+  test("navigates to author detail from book detail", async ({ page }) => {
+    await page.getByRole("link", { name: "テスト書籍1" }).click();
+    await expect(page).toHaveURL(/\/books\/book-1$/);
+
+    await page
+      .getByTestId("book-detail")
+      .getByRole("link", { name: "著者1" })
+      .click();
+
+    await expect(page).toHaveURL(/\/authors\/author-1$/);
+    await expect(page.getByRole("heading", { name: "著者1" })).toBeVisible();
+  });
+
   test("returns to list with Back button", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await expect(page).toHaveURL(/\/books\/book-1$/);
