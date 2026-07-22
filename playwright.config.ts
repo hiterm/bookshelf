@@ -4,11 +4,13 @@ import {
   TEST_AUTH0_DOMAIN,
 } from "./e2e-mock-api/testConstants";
 
+const isCi = process.env.CI !== undefined && process.env.CI !== "";
+
 export default defineConfig({
   testDir: "./e2e-mock-api",
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  forbidOnly: isCi,
+  retries: isCi ? 2 : 0,
   use: {
     baseURL: "http://localhost:4173",
     trace: "on-first-retry",
@@ -23,7 +25,7 @@ export default defineConfig({
   webServer: {
     command: "npm run build && npm run preview",
     url: "http://localhost:4173",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !isCi,
     stdout: "pipe",
     stderr: "pipe",
     env: {

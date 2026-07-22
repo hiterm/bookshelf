@@ -65,7 +65,12 @@ export const test = base.extend<{
         const nonce = url.searchParams.get("nonce") ?? "";
         const responseMode = url.searchParams.get("response_mode");
 
-        if (!redirectUri || !state) {
+        if (
+          redirectUri === null ||
+          redirectUri === "" ||
+          state === null ||
+          state === ""
+        ) {
           await route.abort();
           return;
         }
@@ -117,7 +122,7 @@ window.parent.postMessage({
       async (route) => {
         log("Auth0 token route hit");
         const body = route.request().postData();
-        if (!body) {
+        if (body === null || body === "") {
           await route.abort();
           return;
         }

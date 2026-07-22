@@ -62,7 +62,12 @@ export const test = base.extend<Record<never, never>>({
         const nonce = url.searchParams.get("nonce") ?? "";
         const responseMode = url.searchParams.get("response_mode");
 
-        if (!redirectUri || !state) {
+        if (
+          redirectUri === null ||
+          redirectUri === "" ||
+          state === null ||
+          state === ""
+        ) {
           await route.abort();
           return;
         }
@@ -113,7 +118,7 @@ window.parent.postMessage({
       `https://${TEST_AUTH0_DOMAIN}/oauth/token`,
       async (route) => {
         const body = route.request().postData();
-        if (!body) {
+        if (body === null || body === "") {
           await route.abort();
           return;
         }

@@ -33,7 +33,7 @@ const BookDetailShowItem: React.FC<{
       <Group
         align="center"
         style={{
-          gridColumn: halfWidth ? "span 1" : "2 / -1",
+          gridColumn: halfWidth === true ? "span 1" : "2 / -1",
         }}
       >
         {value}

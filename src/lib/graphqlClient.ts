@@ -4,7 +4,10 @@ import { graphqlApiUrl, isDemoMode } from "../config";
 
 export const createGraphQLClient = (accessToken?: string) => {
   const client = new GraphQLClient(graphqlApiUrl, {
-    headers: accessToken ? { authorization: `Bearer ${accessToken}` } : {},
+    headers:
+      accessToken !== undefined && accessToken !== ""
+        ? { authorization: `Bearer ${accessToken}` }
+        : {},
   });
   return getSdk(client);
 };

@@ -4,11 +4,13 @@ import {
   TEST_AUTH0_DOMAIN,
 } from "./e2e-mock-api/testConstants";
 
+const isCi = process.env.CI !== undefined && process.env.CI !== "";
+
 export default defineConfig({
   testDir: "./e2e-integration",
   fullyParallel: false,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
+  forbidOnly: isCi,
+  retries: isCi ? 1 : 0,
   workers: 1,
   use: {
     baseURL: "http://localhost:4173",
