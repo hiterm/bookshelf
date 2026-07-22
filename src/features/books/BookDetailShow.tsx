@@ -20,6 +20,7 @@ import { useDeleteBook } from "../../compoments/hooks/useDeleteBook";
 import { Book } from "./entity/Book";
 import { displayBookFormat } from "./entity/BookFormat";
 import { displayBookStore } from "./entity/BookStore";
+import { displayAuthorYomis } from "./displayAuthorYomis";
 
 const BookDetailShowItem: React.FC<{
   field: string;
@@ -129,6 +130,10 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
         <BookDetailShowItem
           field="著者"
           value={book.authors.map((author) => author.name).join(", ")}
+        />
+        <BookDetailShowItem
+          field="著者読み仮名"
+          value={displayAuthorYomis(book.authors)}
         />
         <BookDetailShowItem
           field="形式"

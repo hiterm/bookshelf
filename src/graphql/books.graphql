@@ -5,6 +5,7 @@ query books {
     authors {
       id
       name
+      yomi
     }
     isbn
     read

@@ -55,12 +55,22 @@ test.describe
         page.getByRole("dialog", { name: "書籍追加" }),
       ).not.toBeVisible();
       await expect(page.getByRole("link", { name: BOOK_TITLE })).toBeVisible();
+      const bookRow = page
+        .getByRole("link", { name: BOOK_TITLE })
+        .locator("xpath=ancestor::tr");
+      await expect(bookRow.getByText(AUTHOR_YOMI)).toBeVisible();
 
       // Navigate to detail page
       await page.getByRole("link", { name: BOOK_TITLE }).click();
       await expect(page).toHaveURL(/\/books\/.+$/);
       await expect(
         page.getByTestId("book-detail").getByText(BOOK_TITLE),
+      ).toBeVisible();
+      await expect(
+        page.getByTestId("book-detail").getByText("著者読み仮名"),
+      ).toBeVisible();
+      await expect(
+        page.getByTestId("book-detail").getByText(AUTHOR_YOMI),
       ).toBeVisible();
 
       // Update the book
