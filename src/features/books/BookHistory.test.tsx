@@ -5,9 +5,13 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
+import { useBookEvents } from "../../compoments/hooks/useBookEvents";
+import type { BookEventsQuery } from "../../generated/graphql-request";
 import { BookHistory } from "./BookHistory";
 
-const mockUseBookEvents = vi.fn();
+vi.mock(import("../../compoments/hooks/useBookEvents"));
+
+const mockUseBookEvents = vi.mocked(useBookEvents, { partial: true });
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
@@ -37,10 +41,6 @@ beforeAll(() => {
   };
 });
 
-vi.mock("../../compoments/hooks/useBookEvents", () => ({
-  useBookEvents: (...args: unknown[]) => mockUseBookEvents(...args) as unknown,
-}));
-
 const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
@@ -58,7 +58,7 @@ const mockAuthors = [
   { id: "author-2", name: "著者2", yomi: "ちょしゃに" },
 ];
 
-const mockEvents = {
+const mockEvents: BookEventsQuery = {
   bookEvents: [
     {
       eventId: "event-1",
@@ -146,7 +146,7 @@ describe("BookHistory", () => {
 
   test("renders loading state", () => {
     mockUseBookEvents.mockReturnValue({
-      data: null,
+      data: undefined,
       isLoading: true,
       error: null,
     });
@@ -160,7 +160,7 @@ describe("BookHistory", () => {
 
   test("renders error state", () => {
     mockUseBookEvents.mockReturnValue({
-      data: null,
+      data: undefined,
       isLoading: false,
       error: new Error("fail"),
     });
@@ -173,7 +173,7 @@ describe("BookHistory", () => {
   });
 
   test("renders UPDATE and DELETE operations", () => {
-    const eventsWithMultipleOperations = {
+    const eventsWithMultipleOperations: BookEventsQuery = {
       bookEvents: [
         {
           eventId: "event-1",
@@ -248,7 +248,7 @@ describe("BookHistory", () => {
   });
 
   test("displays events in descending order by changedAt", () => {
-    const eventsWithOrder = {
+    const eventsWithOrder: BookEventsQuery = {
       bookEvents: [
         {
           eventId: "event-2",

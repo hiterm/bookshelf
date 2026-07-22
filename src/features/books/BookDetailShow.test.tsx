@@ -3,6 +3,7 @@ import { MantineProvider } from "@mantine/core";
 import { render, screen, within } from "@testing-library/react";
 import React from "react";
 import { vi } from "vitest";
+import { useDeleteBook } from "../../compoments/hooks/useDeleteBook";
 import { BookDetailShow } from "./BookDetailShow";
 import type { Book } from "./entity/Book";
 
@@ -12,9 +13,10 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   return { ...actual, useNavigate: () => vi.fn() };
 });
 
-vi.mock("../../compoments/hooks/useDeleteBook", () => ({
-  useDeleteBook: () => ({ mutateAsync: vi.fn() }),
-}));
+vi.mock(import("../../compoments/hooks/useDeleteBook"));
+vi.mocked(useDeleteBook, { partial: true }).mockReturnValue({
+  mutateAsync: vi.fn(),
+});
 
 vi.mock("../../compoments/mantineTsr", () => ({
   LinkButton: ({ children }: { children: React.ReactNode }) => (

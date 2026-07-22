@@ -5,6 +5,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
+import { useDeleteAuthor } from "../../compoments/hooks/useDeleteAuthor";
 import { AuthorDetailShow } from "./AuthorDetailShow";
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -18,12 +19,11 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 
 const mockMutateAsync = vi.fn().mockResolvedValue({});
 
-vi.mock("../../compoments/hooks/useDeleteAuthor", () => ({
-  useDeleteAuthor: () => ({
-    mutateAsync: mockMutateAsync,
-    isPending: false,
-  }),
-}));
+vi.mock(import("../../compoments/hooks/useDeleteAuthor"));
+vi.mocked(useDeleteAuthor, { partial: true }).mockReturnValue({
+  mutateAsync: mockMutateAsync,
+  isPending: false,
+});
 
 vi.mock("../../compoments/mantineTsr", () => ({
   Link: ({
