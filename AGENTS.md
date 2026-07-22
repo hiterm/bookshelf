@@ -79,11 +79,26 @@ the sandbox.
 
 ## Testing Policy
 
-- When implementing a new feature, always implement tests for it.
+- When implementing a new feature, always add or update tests appropriate to
+  the change.
+- Use Vitest (`pnpm run test`) to test logic, hooks, and component behavior.
+- Use Playwright E2E tests to test critical user flows and interactions across
+  screens.
+- Choose E2E suites according to their purpose:
+  - Use `e2e-mock-api` (`pnpm run test:e2e:mock-api`) for flows with a mocked
+    API.
+  - Use `e2e-demo-mode` (`pnpm run test:e2e:demo-mode`) for Demo Mode behavior.
+  - Use `e2e-integration` (`pnpm run test:integration`) for integration with the
+    real backend.
+- Test types are not substitutes for one another. Test the same feature at
+  multiple layers or in multiple E2E suites when they cover different
+  responsibilities, execution environments, integration boundaries, or
+  failure modes. Do not mechanically duplicate identical assertions.
+- When fixing a bug, add a reproducible regression test whenever possible.
 
 ## E2E Test Isolation
 
-This project has two E2E test suites with different isolation mechanisms:
+This project has three E2E test suites with different isolation mechanisms:
 
 **`e2e-mock-api`** — MockStore lives in the **Node.js (Playwright) process**.
 Each test gets a fresh `MockStore` instance via the `mockStore` Playwright
@@ -98,6 +113,11 @@ There is no explicit reset between tests. Isolation comes from Playwright's
 default behavior of creating a new `BrowserContext` per test: each context
 registers a fresh service worker, which reloads the module and re-initializes
 the singleton.
+
+**`e2e-integration`** — Tests use the **real backend**. The Playwright `page`
+fixture (`e2e-integration/fixtures.ts`) generates a unique user ID for each
+page. The suite is configured to run serially with one worker to avoid
+conflicts in shared backend state.
 
 ## Testing Mantine Components
 
