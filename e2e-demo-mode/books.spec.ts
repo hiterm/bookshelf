@@ -7,6 +7,21 @@ test("displays book list", async ({ page }) => {
   await expect(page.getByRole("link", { name: "著者" })).toBeVisible();
   await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
   await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
+  await expect(
+    page.getByRole("columnheader", { name: "著者読み仮名" }),
+  ).toBeVisible();
+  const firstBookRow = page
+    .getByRole("link", { name: "テスト書籍1" })
+    .locator("xpath=ancestor::tr");
+  await expect(firstBookRow.getByText("ちょしゃいち")).toBeVisible();
+
+  await page.getByRole("link", { name: "テスト書籍1" }).click();
+  await expect(
+    page.getByTestId("book-detail").getByText("著者読み仮名"),
+  ).toBeVisible();
+  await expect(
+    page.getByTestId("book-detail").getByText("ちょしゃいち"),
+  ).toBeVisible();
 });
 
 test("creates book and displays in list", async ({ page }) => {

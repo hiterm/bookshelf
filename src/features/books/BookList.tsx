@@ -45,6 +45,7 @@ import { Book } from "./entity/Book";
 import { displayBookFormat } from "./entity/BookFormat";
 import { displayBookStore } from "./entity/BookStore";
 import { Filter } from "./Filter";
+import { displayAuthorYomis } from "./displayAuthorYomis";
 
 type FilterType = "string" | "boolean" | "store" | "format" | "authors";
 
@@ -100,6 +101,12 @@ const columns: ColumnDef<Book>[] = [
         .join(", "),
     meta: { filterType: "authors" },
     filterFn: authorsFilter,
+    minSize: 200,
+  }),
+  columnHelper.display({
+    id: "authorYomis",
+    header: "著者読み仮名",
+    cell: (info) => displayAuthorYomis(info.row.original.authors),
     minSize: 200,
   }),
   columnHelper.accessor("isbn", {

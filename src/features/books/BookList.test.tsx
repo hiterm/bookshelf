@@ -12,6 +12,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
+import { useAuthors } from "../../compoments/hooks/useAuthors";
 import { BookList } from "./BookList";
 import type { Book } from "./entity/Book";
 
@@ -27,18 +28,18 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   };
 });
 
-vi.mock("../../compoments/hooks/useAuthors", () => ({
-  useAuthors: () => ({
-    data: {
-      authors: [
-        { id: "author-1", name: "著者1" },
-        { id: "author-2", name: "著者2" },
-      ],
-    },
-    isLoading: false,
-    error: null,
-  }),
-}));
+vi.mock(import("../../compoments/hooks/useAuthors"));
+
+vi.mocked(useAuthors, { partial: true }).mockReturnValue({
+  data: {
+    authors: [
+      { id: "author-1", name: "著者1", yomi: "ちょしゃいち" },
+      { id: "author-2", name: "著者2", yomi: "ちょしゃに" },
+    ],
+  },
+  isLoading: false,
+  error: null,
+});
 
 vi.mock("../../compoments/mantineTsr", () => ({
   Link: ({ children }: { children: React.ReactNode }) => (
@@ -76,7 +77,7 @@ const testBooks: Book[] = [
   {
     id: "book-1",
     title: "テスト書籍1",
-    authors: [{ id: "author-1", name: "著者1" }],
+    authors: [{ id: "author-1", name: "著者1", yomi: "ちょしゃいち" }],
     isbn: "978-4-00-000001-0",
     read: false,
     owned: true,
@@ -89,7 +90,7 @@ const testBooks: Book[] = [
   {
     id: "book-2",
     title: "テスト書籍2",
-    authors: [{ id: "author-2", name: "著者2" }],
+    authors: [{ id: "author-2", name: "著者2", yomi: "ちょしゃに" }],
     isbn: "978-4-00-000002-7",
     read: true,
     owned: true,
@@ -102,7 +103,7 @@ const testBooks: Book[] = [
   {
     id: "book-3",
     title: "テスト書籍3",
-    authors: [{ id: "author-1", name: "著者1" }],
+    authors: [{ id: "author-1", name: "著者1", yomi: "ちょしゃいち" }],
     isbn: "978-4-00-000003-4",
     read: false,
     owned: false,
@@ -115,7 +116,7 @@ const testBooks: Book[] = [
   {
     id: "book-4",
     title: "テスト書籍4",
-    authors: [{ id: "author-2", name: "著者2" }],
+    authors: [{ id: "author-2", name: "著者2", yomi: "ちょしゃに" }],
     isbn: "978-4-00-000004-1",
     read: true,
     owned: false,
@@ -155,6 +156,16 @@ describe("BookList filters", () => {
     expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
     expect(screen.getByText("テスト書籍3")).toBeInTheDocument();
     expect(screen.getByText("テスト書籍4")).toBeInTheDocument();
+  });
+
+  test("shows author readings in an independent column", () => {
+    renderBookList();
+
+    expect(
+      screen.getByRole("columnheader", { name: "著者読み仮名" }),
+    ).toBeInTheDocument();
+    const row = screen.getByRole("row", { name: /テスト書籍1/ });
+    expect(within(row).getByText("ちょしゃいち")).toBeInTheDocument();
   });
 
   test("title string filter shows only matching books", async () => {

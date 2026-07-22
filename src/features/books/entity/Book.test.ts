@@ -3,7 +3,7 @@ import { graphQlBookToBook } from "./Book";
 const baseGraphQLBook = {
   id: "book-1",
   title: "Test Book",
-  authors: [{ id: "author-1", name: "Author One" }],
+  authors: [{ id: "author-1", name: "Author One", yomi: "author one" }],
   isbn: "9784000000001",
   read: false,
   owned: true,
@@ -35,7 +35,9 @@ describe("graphQlBookToBook", () => {
     const book = graphQlBookToBook(baseGraphQLBook);
     expect(book.id).toBe("book-1");
     expect(book.title).toBe("Test Book");
-    expect(book.authors).toEqual([{ id: "author-1", name: "Author One" }]);
+    expect(book.authors).toEqual([
+      { id: "author-1", name: "Author One", yomi: "author one" },
+    ]);
     expect(book.isbn).toBe("9784000000001");
     expect(book.read).toBe(false);
     expect(book.owned).toBe(true);

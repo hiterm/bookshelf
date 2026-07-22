@@ -9,12 +9,13 @@ import {
   useCombobox,
 } from "@mantine/core";
 import React, { useRef, useState } from "react";
+import type { BookFormAuthor } from "./bookFormSchema";
 import { Author } from "./entity/Author";
 
 type AuthorsComboboxProps = {
   authors: Author[];
-  value: Author[];
-  onChange: (authors: Author[]) => void;
+  value: BookFormAuthor[];
+  onChange: (authors: BookFormAuthor[]) => void;
   error?: React.ReactNode;
 };
 
@@ -60,7 +61,7 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
       } else {
         const author = authors.find((a) => a.id === val);
         if (author) {
-          onChange([...value, author]);
+          onChange([...value, { id: author.id, name: author.name }]);
         }
       }
     }
@@ -70,7 +71,7 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
     onChange(value.filter((a) => a.id !== id));
   };
 
-  const handlePendingAuthorEdit = (author: Author) => {
+  const handlePendingAuthorEdit = (author: BookFormAuthor) => {
     setEditingAuthorId(author.id);
     setEditingName(author.name);
   };

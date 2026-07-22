@@ -5,6 +5,7 @@ query book($bookId: ID!) {
     authors {
       id
       name
+      yomi
     }
     isbn
     read

@@ -54,8 +54,8 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
 };
 
 const mockAuthors = [
-  { id: "author-1", name: "著者1" },
-  { id: "author-2", name: "著者2" },
+  { id: "author-1", name: "著者1", yomi: "ちょしゃいち" },
+  { id: "author-2", name: "著者2", yomi: "ちょしゃに" },
 ];
 
 const mockEvents = {

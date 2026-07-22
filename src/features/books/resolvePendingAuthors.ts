@@ -1,9 +1,9 @@
-import type { Author } from "./entity/Author";
+import type { BookFormAuthor } from "./bookFormSchema";
 
 export const resolvePendingAuthors = async (
-  authors: Author[],
+  authors: BookFormAuthor[],
   createAuthor: (name: string) => Promise<string>,
-): Promise<Author[]> => {
+): Promise<BookFormAuthor[]> => {
   const pendingNames = new Set(
     authors.filter((a) => a.id.startsWith("__pending__:")).map((a) => a.name),
   );
