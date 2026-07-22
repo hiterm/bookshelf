@@ -17,15 +17,15 @@ const BookDetailEditPage: React.FC = () => {
   const { id } = Route.useParams();
   const { data, isLoading, error } = useBook(id);
 
-  if (error) return <>{JSON.stringify(error)}</>;
-  if (isLoading || !data) {
+  if (error != null) return <>{JSON.stringify(error)}</>;
+  if (isLoading || data == null) {
     return (
       <Center>
         <Loader />
       </Center>
     );
   }
-  if (!data.book) return <div>Not found.</div>;
+  if (data.book == null) return <div>Not found.</div>;
 
   const book = graphQlBookToBook(data.book);
   return <BookDetailEdit book={book} />;

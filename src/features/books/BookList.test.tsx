@@ -368,7 +368,9 @@ describe("BookList sorting", () => {
     const el = screen
       .getAllByText(name)
       .find((e) => e.closest("thead") !== null);
-    if (!el) throw new Error(`Header text "${name}" not found in thead`);
+    if (el == null) {
+      throw new Error(`Header text "${name}" not found in thead`);
+    }
     return el;
   };
 
@@ -385,7 +387,7 @@ describe("BookList sorting", () => {
     await waitFor(() => {
       const bodyRows = screen
         .getAllByRole("row")
-        .filter((r) => r.closest("tbody"));
+        .filter((r) => r.closest("tbody") != null);
       expect(within(bodyRows[0]).getByText("テスト書籍2")).toBeInTheDocument();
     });
   });
@@ -405,7 +407,7 @@ describe("BookList sorting", () => {
     await waitFor(() => {
       const bodyRows = screen
         .getAllByRole("row")
-        .filter((r) => r.closest("tbody"));
+        .filter((r) => r.closest("tbody") != null);
       expect(within(bodyRows[0]).getByText("テスト書籍4")).toBeInTheDocument();
     });
   });
@@ -423,7 +425,7 @@ describe("BookList sorting", () => {
     await waitFor(() => {
       const bodyRows = screen
         .getAllByRole("row")
-        .filter((r) => r.closest("tbody"));
+        .filter((r) => r.closest("tbody") != null);
       expect(within(bodyRows[0]).getByText("テスト書籍1")).toBeInTheDocument();
     });
   });

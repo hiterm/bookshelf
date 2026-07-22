@@ -15,7 +15,7 @@ export const AuthorsFilter = <TData, TValue>({
     ? filterValue.filter((x): x is string => typeof x === "string")
     : [];
 
-  if (error) {
+  if (error != null) {
     console.error("AuthorsFilter: failed to load authors", error);
     return <div>An error occurred while loading authors</div>;
   }

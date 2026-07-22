@@ -60,7 +60,7 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
         onChange(value.filter((a) => a.id !== val));
       } else {
         const author = authors.find((a) => a.id === val);
-        if (author) {
+        if (author != null) {
           onChange([...value, { id: author.id, name: author.name }]);
         }
       }
@@ -79,7 +79,7 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
   const commitPendingAuthorEdit = () => {
     if (editingAuthorId == null) return;
     const newName = editingName.trim();
-    if (newName) {
+    if (newName !== "") {
       onChange(
         value.map((a) =>
           a.id === editingAuthorId

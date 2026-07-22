@@ -188,7 +188,7 @@ describe("AuthorsCombobox", () => {
     const removeButton = container.querySelector(
       '[aria-label="Remove author name1"]',
     );
-    if (!removeButton) throw new Error("Remove button not found");
+    if (removeButton == null) throw new Error("Remove button not found");
     await user.click(removeButton);
 
     expect(onChange).toHaveBeenLastCalledWith([]);

@@ -45,7 +45,10 @@ export const BookLookupDialog = ({
   const trimmedPublisher = publisher.trim();
   const trimmedIsbn = isbn.trim();
   const isAllEmpty =
-    !trimmedTitle && !trimmedAuthorName && !trimmedPublisher && !trimmedIsbn;
+    trimmedTitle === "" &&
+    trimmedAuthorName === "" &&
+    trimmedPublisher === "" &&
+    trimmedIsbn === "";
 
   const handleSearch = () => {
     void search(
@@ -187,7 +190,7 @@ export const BookLookupDialog = ({
                           <Button
                             variant="outline"
                             size="xs"
-                            disabled={!result.isbn}
+                            disabled={result.isbn === ""}
                             onClick={(e) => {
                               e.stopPropagation();
                               setDetailResult(result);
@@ -216,7 +219,7 @@ export const BookLookupDialog = ({
           </Stack>
         )}
       </Stack>
-      {detailResult && (
+      {detailResult != null && (
         <BookDetailModal
           opened
           onClose={() => {

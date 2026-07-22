@@ -110,7 +110,14 @@ export default tseslint.config(
       // compatibility warning for third-party libraries (e.g. TanStack Table).
       "react-hooks/incompatible-library": "off",
       "@typescript-eslint/no-unsafe-type-assertion": "error",
-      "@typescript-eslint/strict-boolean-expressions": "error",
+      "@typescript-eslint/strict-boolean-expressions": [
+        "error",
+        {
+          allowNullableObject: false,
+          allowNumber: false,
+          allowString: false,
+        },
+      ],
       "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
       "no-plusplus": [
         "error",

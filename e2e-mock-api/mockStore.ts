@@ -246,7 +246,7 @@ export class MockStore {
 
   updateAuthor(id: string, name: string, yomi = ""): Author | null {
     const author = this.authors.get(id);
-    if (!author) return null;
+    if (author == null) return null;
     const updated: Author = { id, name, yomi };
     this.authors.set(id, updated);
     this.recordAuthorEvent("UPDATE", id, name, yomi, null, null);
@@ -255,7 +255,7 @@ export class MockStore {
 
   deleteAuthor(id: string): boolean {
     const author = this.authors.get(id);
-    if (!author) return false;
+    if (author == null) return false;
     this.recordAuthorEvent("DELETE", id, author.name, author.yomi, null, null);
     const deleted = this.authors.delete(id);
     if (deleted) {
@@ -305,7 +305,7 @@ export class MockStore {
     >,
   ): Book | null {
     const book = this.books.get(bookData.id);
-    if (!book) return null;
+    if (book == null) return null;
 
     const now = Math.floor(Date.now() / 1000);
     const updatedBook: Book = {
@@ -320,7 +320,7 @@ export class MockStore {
 
   deleteBook(id: string): boolean {
     const book = this.books.get(id);
-    if (!book) return false;
+    if (book == null) return false;
     this.recordBookEvent("DELETE", book);
     return this.books.delete(id);
   }

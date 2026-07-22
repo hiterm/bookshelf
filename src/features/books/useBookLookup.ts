@@ -96,15 +96,17 @@ const enrichWithOpenBd = async (
     return results;
   }
 
-  const byRequestIsbn = new Map<string, OpenBdEnrichEntry>();
+  const byRequestIsbn = new Map<string, NonNullable<OpenBdEnrichEntry>>();
   for (let i = 0; i < uniqueIsbns.length; i++) {
     const entry = data[i];
-    if (entry) byRequestIsbn.set(uniqueIsbns[i], entry);
+    if (entry != null) {
+      byRequestIsbn.set(uniqueIsbns[i], entry);
+    }
   }
 
   return results.map((r) => {
     const entry = byRequestIsbn.get(r.isbn);
-    if (!entry) return r;
+    if (entry == null) return r;
     const isbn13 = entry.summary?.isbn;
     const cover = entry.summary?.cover;
     const rawTitle = entry.summary?.title;

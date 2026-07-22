@@ -152,7 +152,7 @@ export const handlers = [
       );
     }
     const author = mockStore.getAuthor(variables.authorId);
-    if (!author) {
+    if (author == null) {
       return HttpResponse.json({
         data: { author: null },
       });
@@ -186,7 +186,7 @@ export const handlers = [
       );
     }
     const book = mockStore.getBook(variables.bookId);
-    if (!book) {
+    if (book == null) {
       return HttpResponse.json({
         data: { book: null },
       });
@@ -278,7 +278,7 @@ export const handlers = [
     }
     const yomi = isString(authorData.yomi) ? authorData.yomi : "";
     const author = mockStore.updateAuthor(authorData.id, authorData.name, yomi);
-    if (!author) {
+    if (author == null) {
       return HttpResponse.json(
         { errors: [{ message: `Author not found: ${authorData.id}` }] },
         { status: 200 },
@@ -399,7 +399,7 @@ export const handlers = [
     if (isString(bookData.format)) update.format = bookData.format;
     if (isString(bookData.store)) update.store = bookData.store;
     const book = mockStore.updateBook(update);
-    if (!book) {
+    if (book == null) {
       return HttpResponse.json(
         { errors: [{ message: `Book not found: ${bookId}` }] },
         { status: 200 },

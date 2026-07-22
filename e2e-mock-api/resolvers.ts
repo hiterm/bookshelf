@@ -35,7 +35,7 @@ export const createResolvers = (mockStore: MockStore) => ({
         authorData.name,
         authorData.yomi ?? "",
       );
-      if (!updated) {
+      if (updated == null) {
         throw new Error(`Author not found: ${authorData.id}`);
       }
       return { author: updated };
@@ -56,7 +56,7 @@ export const createResolvers = (mockStore: MockStore) => ({
       { bookData }: { bookData: Parameters<typeof mockStore.updateBook>[0] },
     ) => {
       const updated = mockStore.updateBook(bookData);
-      if (!updated) {
+      if (updated == null) {
         throw new Error(`Book not found: ${bookData.id}`);
       }
       return { book: updated };
