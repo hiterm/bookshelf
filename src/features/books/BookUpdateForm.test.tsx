@@ -7,21 +7,21 @@ import userEvent from "@testing-library/user-event";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import React from "react";
 import { vi } from "vitest";
+import { useAuthors } from "../../compoments/hooks/useAuthors";
 import { bookFormSchema, BookFormValues } from "./bookFormSchema";
 import { BookUpdateForm } from "./BookUpdateForm";
 
-vi.mock("../../compoments/hooks/useAuthors", () => ({
-  useAuthors: () => ({
-    data: {
-      authors: [
-        { id: "1", name: "name1" },
-        { id: "2", name: "name2" },
-      ],
-    },
-    isLoading: false,
-    error: null,
-  }),
-}));
+vi.mock(import("../../compoments/hooks/useAuthors"));
+vi.mocked(useAuthors, { partial: true }).mockReturnValue({
+  data: {
+    authors: [
+      { id: "1", name: "name1", yomi: "" },
+      { id: "2", name: "name2", yomi: "" },
+    ],
+  },
+  isLoading: false,
+  error: null,
+});
 
 // mock ResizeObserver
 beforeAll(() => {

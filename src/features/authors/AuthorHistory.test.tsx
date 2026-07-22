@@ -5,9 +5,13 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
+import { useAuthorEvents } from "../../compoments/hooks/useAuthorEvents";
+import type { AuthorEventsQuery } from "../../generated/graphql-request";
 import { AuthorHistory } from "./AuthorHistory";
 
-const mockUseAuthorEvents = vi.fn();
+vi.mock(import("../../compoments/hooks/useAuthorEvents"));
+
+const mockUseAuthorEvents = vi.mocked(useAuthorEvents, { partial: true });
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
@@ -37,11 +41,6 @@ beforeAll(() => {
   };
 });
 
-vi.mock("../../compoments/hooks/useAuthorEvents", () => ({
-  useAuthorEvents: (...args: unknown[]) =>
-    mockUseAuthorEvents(...args) as unknown,
-}));
-
 const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
@@ -54,7 +53,7 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   return wrapper;
 };
 
-const mockEvents = {
+const mockEvents: AuthorEventsQuery = {
   authorEvents: [
     {
       eventId: "event-1",
@@ -133,7 +132,7 @@ describe("AuthorHistory", () => {
 
   test("renders loading state", () => {
     mockUseAuthorEvents.mockReturnValue({
-      data: null,
+      data: undefined,
       isLoading: true,
       error: null,
     });
@@ -147,7 +146,7 @@ describe("AuthorHistory", () => {
 
   test("renders error state", () => {
     mockUseAuthorEvents.mockReturnValue({
-      data: null,
+      data: undefined,
       isLoading: false,
       error: new Error("fail"),
     });
@@ -160,7 +159,7 @@ describe("AuthorHistory", () => {
   });
 
   test("renders UPDATE and DELETE operations", () => {
-    const eventsWithMultipleOperations = {
+    const eventsWithMultipleOperations: AuthorEventsQuery = {
       authorEvents: [
         {
           eventId: "event-1",
@@ -217,7 +216,7 @@ describe("AuthorHistory", () => {
   });
 
   test("displays events in descending order by changedAt", () => {
-    const eventsWithOrder = {
+    const eventsWithOrder: AuthorEventsQuery = {
       authorEvents: [
         {
           eventId: "event-2",

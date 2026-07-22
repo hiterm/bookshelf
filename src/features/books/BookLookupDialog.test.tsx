@@ -4,16 +4,19 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import { BookLookupDialog } from "./BookLookupDialog";
-import { BookLookupResult, BookLookupState } from "./useBookLookup";
+import {
+  BookLookupResult,
+  BookLookupState,
+  useBookLookup,
+} from "./useBookLookup";
 
 const mockSearch = vi.fn();
 let mockState: BookLookupState = { status: "idle" };
 
-vi.mock("./useBookLookup", () => ({
-  useBookLookup: () => ({
-    state: mockState,
-    search: mockSearch,
-  }),
+vi.mock(import("./useBookLookup"));
+vi.mocked(useBookLookup).mockImplementation(() => ({
+  state: mockState,
+  search: mockSearch,
 }));
 
 beforeAll(() => {
