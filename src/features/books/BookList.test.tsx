@@ -12,6 +12,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
+import { useAuthors } from "../../compoments/hooks/useAuthors";
 import { BookList } from "./BookList";
 import type { Book } from "./entity/Book";
 
@@ -27,18 +28,18 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   };
 });
 
-vi.mock("../../compoments/hooks/useAuthors", () => ({
-  useAuthors: () => ({
-    data: {
-      authors: [
-        { id: "author-1", name: "著者1" },
-        { id: "author-2", name: "著者2" },
-      ],
-    },
-    isLoading: false,
-    error: null,
-  }),
-}));
+vi.mock(import("../../compoments/hooks/useAuthors"));
+
+vi.mocked(useAuthors, { partial: true }).mockReturnValue({
+  data: {
+    authors: [
+      { id: "author-1", name: "著者1", yomi: "ちょしゃいち" },
+      { id: "author-2", name: "著者2", yomi: "ちょしゃに" },
+    ],
+  },
+  isLoading: false,
+  error: null,
+});
 
 vi.mock("../../compoments/mantineTsr", () => ({
   Link: ({ children }: { children: React.ReactNode }) => (
