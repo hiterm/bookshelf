@@ -74,6 +74,20 @@ export default tseslint.config(
     ],
   },
   {
+    files: ["**/*.{test,spec}.{ts,tsx}"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "CallExpression[callee.object.name='vi'][callee.property.name='mock'] > Literal.arguments:first-child[value=/^\\.\\.?\\/(?:.*\\/)?use[A-Z][^/]*$/]",
+          message:
+            "Use vi.mock(import(...)) so local hook mocks are type-checked.",
+        },
+      ],
+    },
+  },
+  {
     rules: {
       eqeqeq: ["error", "smart"],
       "react/prop-types": "off",
