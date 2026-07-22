@@ -71,6 +71,15 @@ Retry the required command with escalated sandbox permissions first. Only ask
 the user to re-authenticate when the authentication failure also occurs outside
 the sandbox.
 
+## Pull Requests
+
+- When a pull request already exists for the current branch, update its
+  description after making code changes.
+  - Keep the PR description consistent with the final implementation,
+    including the summary, notable design decisions, and test results.
+  - Use `gh pr edit --body-file <file>` or the GitHub integration to avoid
+    shell quoting issues.
+
 ## Communication
 
 - Be concise and direct
