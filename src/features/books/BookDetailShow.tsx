@@ -129,14 +129,18 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
         <BookDetailShowItem field="書名" value={book.title} />
         <BookDetailShowItem
           field="著者"
-          value={book.authors.map((author, index) => (
-            <React.Fragment key={author.id}>
-              {index > 0 && ", "}
-              <Link to="/authors/$id" params={{ id: author.id }}>
-                {author.name}
-              </Link>
-            </React.Fragment>
-          ))}
+          value={
+            <Text component="span">
+              {book.authors.map((author, index) => (
+                <React.Fragment key={author.id}>
+                  {index > 0 && ", "}
+                  <Link to="/authors/$id" params={{ id: author.id }}>
+                    {author.name}
+                  </Link>
+                </React.Fragment>
+              ))}
+            </Text>
+          }
         />
         <BookDetailShowItem
           field="著者読み仮名"

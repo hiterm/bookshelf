@@ -73,12 +73,16 @@ test("shows authors and author readings as separate items", () => {
 
   const detail = screen.getByTestId("book-detail");
   expect(within(detail).getByText("著者")).toBeInTheDocument();
-  expect(
-    within(detail).getByRole("link", { name: "山田太郎" }),
-  ).toHaveAttribute("href", "/authors/author-1");
-  expect(
-    within(detail).getByRole("link", { name: "鈴木花子" }),
-  ).toHaveAttribute("href", "/authors/author-2");
+  const firstAuthorLink = within(detail).getByRole("link", {
+    name: "山田太郎",
+  });
+  const secondAuthorLink = within(detail).getByRole("link", {
+    name: "鈴木花子",
+  });
+  expect(firstAuthorLink).toHaveAttribute("href", "/authors/author-1");
+  expect(secondAuthorLink).toHaveAttribute("href", "/authors/author-2");
+  expect(firstAuthorLink.parentElement).toBe(secondAuthorLink.parentElement);
+  expect(firstAuthorLink.parentElement).toHaveTextContent("山田太郎, 鈴木花子");
   expect(detail).toHaveTextContent("山田太郎, 鈴木花子");
   expect(within(detail).getByText("著者読み仮名")).toBeInTheDocument();
   expect(
