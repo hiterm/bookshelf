@@ -27,9 +27,7 @@ vi.mock("../../compoments/mantineTsr", () => ({
     children: React.ReactNode;
     to: string;
     params: { id: string };
-  }) => (
-    <a href={to.replace("$id", params.id)}>{children}</a>
-  ),
+  }) => <a href={to.replace("$id", params.id)}>{children}</a>,
   LinkButton: ({ children }: { children: React.ReactNode }) => (
     <button type="button">{children}</button>
   ),
