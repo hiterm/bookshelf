@@ -14,20 +14,14 @@ import {
 } from "@mantine/core";
 import {
   Column,
-  ColumnDef,
   ColumnFiltersState,
   createColumnHelper,
   FilterFn,
   flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   OnChangeFn,
   PaginationState,
-  RowData,
   SortingState,
-  useReactTable,
+  useTable,
 } from "@tanstack/react-table";
 import dayjs from "dayjs";
 
@@ -46,17 +40,9 @@ import { displayBookFormat } from "./entity/BookFormat";
 import { displayBookStore } from "./entity/BookStore";
 import { Filter } from "./Filter";
 import { displayAuthorYomis } from "./displayAuthorYomis";
+import { bookTableFeatures } from "./bookTable";
 
-type FilterType = "string" | "boolean" | "store" | "format" | "authors";
-
-declare module "@tanstack/table-core" {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/consistent-type-definitions
-  interface ColumnMeta<TData extends RowData, TValue> {
-    filterType: FilterType;
-  }
-}
-
-const authorsFilter: FilterFn<Book> = (
+const authorsFilter: FilterFn<typeof bookTableFeatures, Book> = (
   row,
   columnId,
   filterValue: string[],
@@ -78,9 +64,9 @@ const formatDate = (date: Date) => dayjs(date).format("YYYY/MM/DD HH:mm Z");
 
 const DEFAULT_PAGE_SIZE = 20;
 
-const columnHelper = createColumnHelper<Book>();
+const columnHelper = createColumnHelper<typeof bookTableFeatures, Book>();
 
-const columns: ColumnDef<Book>[] = [
+const columns = columnHelper.columns([
   columnHelper.accessor("title", {
     header: "書名",
     cell: (info) => (
@@ -155,12 +141,12 @@ const columns: ColumnDef<Book>[] = [
       <Box style={{ whiteSpace: "nowrap" }}>{formatDate(info.getValue())}</Box>
     ),
   }),
-];
+]);
 
 type BookListProps = { list: Book[] };
 
 type SortIconProps = {
-  isSorted: ReturnType<Column<Book>["getIsSorted"]>;
+  isSorted: ReturnType<Column<typeof bookTableFeatures, Book>["getIsSorted"]>;
 };
 
 const SortIcon: React.FC<SortIconProps> = ({ isSorted }) => {
@@ -204,18 +190,24 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
   const serializedSorting = JSON.stringify(search.sorting ?? []);
 
   useEffect(() => {
+    // Route search is external state that must update the controlled table state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setColumnFilters(search.columnFilters ?? []);
     // serializedColumnFilters is the stable dep; search.columnFilters is the current value.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serializedColumnFilters]);
 
   useEffect(() => {
+    // Route search is external state that must update the controlled table state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSorting(search.sorting ?? []);
     // serializedSorting is the stable dep; search.sorting is the current value.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serializedSorting]);
 
   useEffect(() => {
+    // Route search is external state that must update the controlled table state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPagination({
       pageIndex: search.pageIndex ?? 0,
       pageSize: search.pageSize ?? DEFAULT_PAGE_SIZE,
@@ -263,18 +255,14 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
     });
   };
 
-  const table = useReactTable({
+  const table = useTable({
+    features: bookTableFeatures,
     data: list,
     columns,
     state: { columnFilters, sorting, pagination },
     onColumnFiltersChange: handleColumnFiltersChange,
     onSortingChange: handleSortingChange,
     onPaginationChange: handlePaginationChange,
-
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
@@ -388,7 +376,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
                   <Table.Th key={header.id}>
                     <Box style={{ fontWeight: "normal" }}>
                       {header.isPlaceholder ? null : header.column.getCanFilter() ? (
-                        <Filter column={header.column} table={table} />
+                        <Filter column={header.column} />
                       ) : null}
                     </Box>
                   </Table.Th>
@@ -412,7 +400,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
       <Center mt="md" mb="md">
         <Pagination
           total={table.getPageCount()}
-          value={table.getState().pagination.pageIndex + 1}
+          value={table.state.pagination.pageIndex + 1}
           onChange={(page) => {
             table.setPageIndex(page - 1);
           }}
@@ -422,7 +410,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
         <Select
           label="Page size"
           data={["20", "50", "100"]}
-          value={table.getState().pagination.pageSize.toString()}
+          value={table.state.pagination.pageSize.toString()}
           onChange={(value) => {
             if (value !== null) {
               table.setPageSize(parseInt(value, 10));

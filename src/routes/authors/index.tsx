@@ -11,13 +11,14 @@ import { useForm } from "@mantine/form";
 import { createFileRoute } from "@tanstack/react-router";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import {
-  ColumnDef,
   createColumnHelper,
+  createFilteredRowModel,
+  createPaginatedRowModel,
+  filterFns,
   flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  useReactTable,
+  stockFeatures,
+  tableFeatures,
+  useTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
 import { useCreateAuthor } from "../../compoments/hooks/useCreateAuthor";
@@ -28,6 +29,32 @@ import {
   type AuthorFormValues,
 } from "../../features/authors/authorFormSchema";
 import type { Author } from "../../features/books/entity/Author";
+
+const authorTableFeatures = tableFeatures({
+  ...stockFeatures,
+  filteredRowModel: createFilteredRowModel(),
+  paginatedRowModel: createPaginatedRowModel(),
+  filterFns,
+});
+
+const authorColumnHelper = createColumnHelper<
+  typeof authorTableFeatures,
+  Author
+>();
+
+const authorColumns = authorColumnHelper.columns([
+  authorColumnHelper.accessor("name", {
+    header: "名前",
+    cell: ({ row }) => (
+      <Link to="/authors/$id" params={{ id: row.original.id }}>
+        {row.getValue("name")}
+      </Link>
+    ),
+  }),
+  authorColumnHelper.accessor("yomi", {
+    header: "読み仮名",
+  }),
+]);
 
 export const Route = createFileRoute("/authors/")({
   component: RouteComponent,
@@ -67,28 +94,12 @@ const RegisterAuthorForm: React.FC = () => {
 const AuthorIndexPage: React.FC = () => {
   const { data, isLoading, error } = useAuthors();
   const [globalFilter, setGlobalFilter] = useState("");
-  const columnHelper = createColumnHelper<Author>();
-  const columns: ColumnDef<Author>[] = [
-    columnHelper.accessor("name", {
-      header: "名前",
-      cell: ({ row }) => (
-        <Link to="/authors/$id" params={{ id: row.original.id }}>
-          {row.getValue("name")}
-        </Link>
-      ),
-    }),
-    columnHelper.accessor("yomi", {
-      header: "読み仮名",
-    }),
-  ];
-  const table = useReactTable({
+  const table = useTable({
+    features: authorTableFeatures,
     data: data?.authors ?? [], // その場しのぎ
-    columns,
+    columns: authorColumns,
     state: { globalFilter },
     onGlobalFilterChange: setGlobalFilter,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
   });
 
   if (error != null) {
@@ -147,7 +158,7 @@ const AuthorIndexPage: React.FC = () => {
         <Center mt="md">
           <Pagination
             total={table.getPageCount()}
-            value={table.getState().pagination.pageIndex + 1}
+            value={table.state.pagination.pageIndex + 1}
             onChange={(page) => {
               table.setPageIndex(page - 1);
             }}

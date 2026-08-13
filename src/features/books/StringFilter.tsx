@@ -2,14 +2,14 @@ import { TextInput } from "@mantine/core";
 import { Column } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { useDebouncedEffect } from "../../compoments/hooks/useDebouncedEffect";
+import { bookTableFeatures } from "./bookTable";
+import { Book } from "./entity/Book";
 
-export type StringFilterProps<TData, TValue> = {
-  column: Column<TData, TValue>;
+export type StringFilterProps = {
+  column: Column<typeof bookTableFeatures, Book>;
 };
 
-export const StringFilter = <TData, TValue>({
-  column,
-}: StringFilterProps<TData, TValue>) => {
+export const StringFilter = ({ column }: StringFilterProps) => {
   const initial = column.getFilterValue();
   const [value, setValue] = useState(
     typeof initial === "string" ? initial : "",

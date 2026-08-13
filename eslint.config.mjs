@@ -144,6 +144,11 @@ export default tseslint.config(
       "import/default": "off",
       "import/no-named-as-default-member": "off",
       "import/no-named-as-default": "off",
+      // The node resolver does not recognize TanStack Table v9's exports-only package entry.
+      "import/no-unresolved": [
+        "error",
+        { ignore: ["^@tanstack/react-table$"] },
+      ],
     },
   },
   {

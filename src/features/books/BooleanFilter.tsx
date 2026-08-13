@@ -1,13 +1,15 @@
 import { Select } from "@mantine/core";
 import { Column } from "@tanstack/react-table";
+import { bookTableFeatures } from "./bookTable";
+import { Book } from "./entity/Book";
 
-export type BooleanFilterProps<TData, TValue> = {
-  column: Column<TData, TValue>;
+export type BooleanFilterProps = {
+  column: Column<typeof bookTableFeatures, Book>;
 };
 
-export const BooleanFilter = <TData, TValue>({
+export const BooleanFilter = ({
   column,
-}: BooleanFilterProps<TData, TValue>): React.JSX.Element => {
+}: BooleanFilterProps): React.JSX.Element => {
   return (
     <Select
       data={["-", "true", "false"]}
