@@ -16,14 +16,54 @@ import { useAuthors } from "../../compoments/hooks/useAuthors";
 import { BookList } from "./BookList";
 import type { Book } from "./entity/Book";
 
+type MockSearch = {
+  columnFilters?: { id: string; value: unknown }[];
+  sorting?: { id: string; desc: boolean }[];
+  pageIndex?: number;
+  pageSize?: number;
+};
+
+const routerMock = vi.hoisted(() => ({
+  listeners: new Set<() => void>(),
+  navigate: vi.fn(),
+  search: {},
+}));
+
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual =
     await importOriginal<typeof import("@tanstack/react-router")>();
+  const { useSyncExternalStore } = await import("react");
+
+  routerMock.navigate.mockImplementation(
+    ({
+      search,
+    }: {
+      search: MockSearch | ((prev: MockSearch) => MockSearch);
+    }) => {
+      routerMock.search =
+        typeof search === "function" ? search(routerMock.search) : search;
+      routerMock.listeners.forEach((listener) => {
+        listener();
+      });
+      return Promise.resolve();
+    },
+  );
+
   return {
     ...actual,
     getRouteApi: () => ({
-      useSearch: () => ({}),
-      useNavigate: () => vi.fn().mockResolvedValue(undefined),
+      useSearch: () =>
+        useSyncExternalStore(
+          (listener) => {
+            routerMock.listeners.add(listener);
+            return () => {
+              routerMock.listeners.delete(listener);
+            };
+          },
+          () => routerMock.search,
+          () => routerMock.search,
+        ),
+      useNavigate: () => routerMock.navigate,
     }),
   };
 });
@@ -143,6 +183,11 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
 const renderBookList = () =>
   render(<BookList list={testBooks} />, { wrapper: createWrapper() });
 
+beforeEach(() => {
+  routerMock.search = {};
+  routerMock.navigate.mockClear();
+});
+
 describe("BookList filters", () => {
   afterEach(() => {
     vi.useRealTimers();
@@ -166,6 +211,41 @@ describe("BookList filters", () => {
     ).toBeInTheDocument();
     const row = screen.getByRole("row", { name: /テスト書籍1/ });
     expect(within(row).getByText("ちょしゃいち")).toBeInTheDocument();
+  });
+
+  test("uses column filters from route search", async () => {
+    routerMock.search = {
+      columnFilters: [{ id: "title", value: "書籍2" }],
+    };
+
+    renderBookList();
+
+    await waitFor(() => {
+      expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
+    });
+    expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
+    expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
+    expect(screen.queryByText("テスト書籍4")).not.toBeInTheDocument();
+  });
+
+  test("reacts to route search changes after rendering", async () => {
+    renderBookList();
+
+    await waitFor(() => {
+      expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
+    });
+
+    await act(async () => {
+      await routerMock.navigate({
+        search: { columnFilters: [{ id: "read", value: true }] },
+      });
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
+    });
+    expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
+    expect(screen.getByText("テスト書籍4")).toBeInTheDocument();
   });
 
   test("title string filter shows only matching books", async () => {
@@ -238,6 +318,10 @@ describe("BookList filters", () => {
     expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
     expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
     expect(screen.getByText("テスト書籍4")).toBeInTheDocument();
+    expect(routerMock.search).toMatchObject({
+      columnFilters: [{ id: "read", value: true }],
+      pageIndex: 0,
+    });
   });
 
   test("read filter = false shows only unread books", async () => {

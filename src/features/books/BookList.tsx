@@ -31,7 +31,7 @@ import {
   IconSortDescending,
 } from "@tabler/icons-react";
 import { getRouteApi } from "@tanstack/react-router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "../../compoments/mantineTsr";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { authorSchema } from "./entity/Author";
@@ -177,49 +177,18 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
   const navigate = routeApi.useNavigate();
   const search = routeApi.useSearch();
 
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    search.columnFilters ?? [],
-  );
-  const [sorting, setSorting] = useState<SortingState>(search.sorting ?? []);
-  const [pagination, setPagination] = useState({
+  const columnFilters = search.columnFilters ?? [];
+  const sorting = search.sorting ?? [];
+  const pagination = {
     pageIndex: search.pageIndex ?? 0,
     pageSize: search.pageSize ?? DEFAULT_PAGE_SIZE,
-  });
-
-  const serializedColumnFilters = JSON.stringify(search.columnFilters ?? []);
-  const serializedSorting = JSON.stringify(search.sorting ?? []);
-
-  useEffect(() => {
-    // Route search is external state that must update the controlled table state.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setColumnFilters(search.columnFilters ?? []);
-    // serializedColumnFilters is the stable dep; search.columnFilters is the current value.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [serializedColumnFilters]);
-
-  useEffect(() => {
-    // Route search is external state that must update the controlled table state.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSorting(search.sorting ?? []);
-    // serializedSorting is the stable dep; search.sorting is the current value.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [serializedSorting]);
-
-  useEffect(() => {
-    // Route search is external state that must update the controlled table state.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setPagination({
-      pageIndex: search.pageIndex ?? 0,
-      pageSize: search.pageSize ?? DEFAULT_PAGE_SIZE,
-    });
-  }, [search.pageIndex, search.pageSize]);
+  };
 
   const handleColumnFiltersChange: OnChangeFn<ColumnFiltersState> = (
     updater,
   ) => {
     const next =
       typeof updater === "function" ? updater(columnFilters) : updater;
-    setColumnFilters(next);
     if (JSON.stringify(next) === JSON.stringify(columnFilters)) return;
     void navigate({
       search: (prev) => ({ ...prev, columnFilters: next, pageIndex: 0 }),
@@ -229,7 +198,6 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
 
   const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
     const next = typeof updater === "function" ? updater(sorting) : updater;
-    setSorting(next);
     if (JSON.stringify(next) === JSON.stringify(sorting)) return;
     void navigate({
       search: (prev) => ({ ...prev, sorting: next }),
@@ -239,7 +207,6 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
 
   const handlePaginationChange: OnChangeFn<PaginationState> = (updater) => {
     const next = typeof updater === "function" ? updater(pagination) : updater;
-    setPagination(next);
     if (
       next.pageIndex === pagination.pageIndex &&
       next.pageSize === pagination.pageSize
@@ -321,9 +288,6 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
         </Menu>
         <Button
           onClick={() => {
-            setColumnFilters([]);
-            setSorting([]);
-            setPagination({ pageIndex: 0, pageSize: DEFAULT_PAGE_SIZE });
             void navigate({ search: {}, replace: true });
           }}
           color="red"
