@@ -1,5 +1,15 @@
 # Changelog
 
+## [v2.13.0](https://github.com/hiterm/bookshelf/compare/v2.12.1...v2.13.0) - 2026-08-13
+
+### Other Changes
+- Clarify testing policy by @hiterm in https://github.com/hiterm/bookshelf/pull/300
+- Document PR description update guidance by @hiterm in https://github.com/hiterm/bookshelf/pull/303
+- Show author readings on book views by @hiterm in https://github.com/hiterm/bookshelf/pull/299
+- Enforce strict boolean expressions by @hiterm in https://github.com/hiterm/bookshelf/pull/301
+- Type-check local hook mocks by @hiterm in https://github.com/hiterm/bookshelf/pull/305
+- 書籍詳細から著者詳細へリンクする by @hiterm in https://github.com/hiterm/bookshelf/pull/306
+
 ## [v2.12.1](https://github.com/hiterm/bookshelf/compare/v2.12.0...v2.12.1) - 2026-07-21
 
 ### Other Changes
