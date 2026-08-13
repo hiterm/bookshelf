@@ -12,11 +12,8 @@ type FilterProps = {
 };
 
 export const Filter = ({ column }: FilterProps): React.JSX.Element => {
-  const meta = column.columnDef.meta;
-  const filterType =
-    meta != null && "filterType" in meta ? meta.filterType : undefined;
   const inner = (() => {
-    switch (filterType) {
+    switch (column.columnDef.meta?.filterType) {
       case "string":
         return <StringFilter column={column} />;
       case "boolean":

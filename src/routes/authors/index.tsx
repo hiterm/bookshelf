@@ -11,12 +11,14 @@ import { useForm } from "@mantine/form";
 import { createFileRoute } from "@tanstack/react-router";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import {
+  columnFilteringFeature,
+  columnVisibilityFeature,
   createColumnHelper,
   createFilteredRowModel,
   createPaginatedRowModel,
-  filterFns,
   flexRender,
-  stockFeatures,
+  globalFilteringFeature,
+  rowPaginationFeature,
   tableFeatures,
   useTable,
 } from "@tanstack/react-table";
@@ -31,10 +33,12 @@ import {
 import type { Author } from "../../features/books/entity/Author";
 
 const authorTableFeatures = tableFeatures({
-  ...stockFeatures,
+  columnFilteringFeature,
+  columnVisibilityFeature,
+  globalFilteringFeature,
+  rowPaginationFeature,
   filteredRowModel: createFilteredRowModel(),
   paginatedRowModel: createPaginatedRowModel(),
-  filterFns,
 });
 
 const authorColumnHelper = createColumnHelper<
