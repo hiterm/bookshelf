@@ -313,6 +313,9 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
       .getByRole("menuitem", { name: "Unread owned, order by priority" })
       .click();
 
+    await expect(page).toHaveURL(/columnFilters/);
+    await expect(page).toHaveURL(/sorting/);
+
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
     await expect(
       page.getByRole("link", { name: "テスト書籍2" }),

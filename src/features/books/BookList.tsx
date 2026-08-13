@@ -191,7 +191,11 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
       typeof updater === "function" ? updater(columnFilters) : updater;
     if (JSON.stringify(next) === JSON.stringify(columnFilters)) return;
     void navigate({
-      search: (prev) => ({ ...prev, columnFilters: next, pageIndex: 0 }),
+      search: (prev) => ({
+        ...prev,
+        columnFilters: next.length === 0 ? undefined : next,
+        pageIndex: undefined,
+      }),
       replace: true,
     });
   };
@@ -200,7 +204,11 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
     const next = typeof updater === "function" ? updater(sorting) : updater;
     if (JSON.stringify(next) === JSON.stringify(sorting)) return;
     void navigate({
-      search: (prev) => ({ ...prev, sorting: next }),
+      search: (prev) => ({
+        ...prev,
+        sorting: next.length === 0 ? undefined : next,
+        pageIndex: undefined,
+      }),
       replace: true,
     });
   };
@@ -215,8 +223,11 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
     void navigate({
       search: (prev) => ({
         ...prev,
-        pageIndex: next.pageIndex,
-        pageSize: next.pageSize,
+        pageIndex: next.pageIndex === 0 ? undefined : next.pageIndex,
+        pageSize:
+          next.pageSize === 50 || next.pageSize === 100
+            ? next.pageSize
+            : undefined,
       }),
       replace: true,
     });
@@ -275,11 +286,18 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
           <Menu.Dropdown>
             <Menu.Item
               onClick={() => {
-                table.setColumnFilters(() => [
-                  { id: "read", value: false },
-                  { id: "owned", value: true },
-                ]);
-                table.setSorting(() => [{ id: "priority", desc: true }]);
+                void navigate({
+                  search: (prev) => ({
+                    ...prev,
+                    columnFilters: [
+                      { id: "read", value: false },
+                      { id: "owned", value: true },
+                    ],
+                    sorting: [{ id: "priority", desc: true }],
+                    pageIndex: undefined,
+                  }),
+                  replace: true,
+                });
               }}
             >
               Unread owned, order by priority

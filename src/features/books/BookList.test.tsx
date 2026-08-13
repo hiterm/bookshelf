@@ -23,7 +23,19 @@ type MockSearch = {
   pageSize?: number;
 };
 
-const routerMock = vi.hoisted(() => ({
+type NavigateOptions = {
+  search: MockSearch | ((prev: MockSearch) => MockSearch);
+};
+
+type RouterMock = {
+  listeners: Set<() => void>;
+  navigate: ReturnType<
+    typeof vi.fn<(options: NavigateOptions) => Promise<void>>
+  >;
+  search: MockSearch;
+};
+
+const routerMock = vi.hoisted<RouterMock>(() => ({
   listeners: new Set<() => void>(),
   navigate: vi.fn(),
   search: {},
@@ -34,20 +46,14 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
     await importOriginal<typeof import("@tanstack/react-router")>();
   const { useSyncExternalStore } = await import("react");
 
-  routerMock.navigate.mockImplementation(
-    ({
-      search,
-    }: {
-      search: MockSearch | ((prev: MockSearch) => MockSearch);
-    }) => {
-      routerMock.search =
-        typeof search === "function" ? search(routerMock.search) : search;
-      routerMock.listeners.forEach((listener) => {
-        listener();
-      });
-      return Promise.resolve();
-    },
-  );
+  routerMock.navigate.mockImplementation(({ search }: NavigateOptions) => {
+    routerMock.search =
+      typeof search === "function" ? search(routerMock.search) : search;
+    routerMock.listeners.forEach((listener) => {
+      listener();
+    });
+    return Promise.resolve();
+  });
 
   return {
     ...actual,
@@ -320,8 +326,8 @@ describe("BookList filters", () => {
     expect(screen.getByText("テスト書籍4")).toBeInTheDocument();
     expect(routerMock.search).toMatchObject({
       columnFilters: [{ id: "read", value: true }],
-      pageIndex: 0,
     });
+    expect(routerMock.search.pageIndex).toBeUndefined();
   });
 
   test("read filter = false shows only unread books", async () => {
@@ -513,6 +519,21 @@ describe("BookList sorting", () => {
       expect(within(bodyRows[0]).getByText("テスト書籍1")).toBeInTheDocument();
     });
   });
+
+  test("sorting resets the URL page index", async () => {
+    routerMock.search = { pageIndex: 2 };
+    const user = userEvent.setup();
+    renderBookList();
+
+    await user.click(getHeaderText("優先度"));
+
+    await waitFor(() => {
+      expect(routerMock.search.sorting).toEqual([
+        { id: "priority", desc: true },
+      ]);
+    });
+    expect(routerMock.search.pageIndex).toBeUndefined();
+  });
 });
 
 describe("BookList preset and reset", () => {
@@ -545,6 +566,15 @@ describe("BookList preset and reset", () => {
     expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
     expect(screen.queryByText("テスト書籍4")).not.toBeInTheDocument();
     expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
+    expect(routerMock.search).toMatchObject({
+      columnFilters: [
+        { id: "read", value: false },
+        { id: "owned", value: true },
+      ],
+      sorting: [{ id: "priority", desc: true }],
+    });
+    expect(routerMock.search.pageIndex).toBeUndefined();
+    expect(routerMock.navigate).toHaveBeenCalledTimes(1);
   });
 
   test("reset filter restores all books", async () => {
