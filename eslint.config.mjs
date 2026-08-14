@@ -72,6 +72,12 @@ export default tseslint.config(
       importPlugin.flatConfigs.recommended,
       importPlugin.flatConfigs.typescript,
     ],
+    settings: {
+      "import/resolver": {
+        typescript: true,
+        node: true,
+      },
+    },
   },
   {
     files: ["**/*.{test,spec}.{ts,tsx}"],
@@ -144,18 +150,6 @@ export default tseslint.config(
       "import/default": "off",
       "import/no-named-as-default-member": "off",
       "import/no-named-as-default": "off",
-    },
-  },
-  {
-    files: ["src/features/books/**/*.{ts,tsx}", "src/routes/authors/index.tsx"],
-    rules: {
-      // The resolver cannot read TanStack Table v9's exports-only entry. This
-      // exact-package exception is limited to table consumers; typecheck still
-      // verifies that the package and its exports resolve correctly.
-      "import/no-unresolved": [
-        "error",
-        { ignore: ["^@tanstack/react-table$"] },
-      ],
     },
   },
   {
