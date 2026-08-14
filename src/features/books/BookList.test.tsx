@@ -370,7 +370,7 @@ describe("BookList filters", () => {
 
   test("authors filter shows only books by selected author", async () => {
     await renderBookList({
-      columnFilters: [{ id: "authors", value: "author-1" }],
+      columnFilters: [{ id: "authors", value: ["author-1"] }],
     });
 
     await waitFor(() => {

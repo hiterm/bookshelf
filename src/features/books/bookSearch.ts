@@ -1,9 +1,18 @@
 import { z } from "zod";
+import { BOOK_FORMAT_VALUE } from "./entity/BookFormat";
+import { BOOK_STORE_VALUE } from "./entity/BookStore";
 
-const columnFilterSchema = z.object({
-  id: z.string(),
-  value: z.unknown(),
-});
+const columnFilterSchema = z.discriminatedUnion("id", [
+  z.object({ id: z.literal("title"), value: z.string() }),
+  z.object({ id: z.literal("authors"), value: z.array(z.string()) }),
+  z.object({ id: z.literal("isbn"), value: z.string() }),
+  z.object({ id: z.literal("format"), value: z.enum(BOOK_FORMAT_VALUE) }),
+  z.object({ id: z.literal("store"), value: z.enum(BOOK_STORE_VALUE) }),
+  z.object({ id: z.literal("read"), value: z.boolean() }),
+  z.object({ id: z.literal("owned"), value: z.boolean() }),
+]);
+
+export const bookColumnFiltersSchema = z.array(columnFilterSchema);
 
 const sortingItemSchema = z.object({
   id: z.string(),
@@ -11,7 +20,7 @@ const sortingItemSchema = z.object({
 });
 
 export const bookSearchSchema = z.object({
-  columnFilters: z.array(columnFilterSchema).optional(),
+  columnFilters: bookColumnFiltersSchema.optional(),
   sorting: z.array(sortingItemSchema).optional(),
   pageIndex: z.number().int().nonnegative().optional(),
   pageSize: z.union([z.literal(20), z.literal(50), z.literal(100)]).optional(),
