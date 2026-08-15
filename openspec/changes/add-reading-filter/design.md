@@ -12,6 +12,8 @@ a filter control.
 - Make the author reading column filterable with the existing text input.
 - Match a book when the entered text occurs in at least one author's reading.
 - Preserve and restore the filter through the route search state.
+- Sort by the derived author reading value and preserve that sorting through
+  the route search state.
 
 **Non-Goals:**
 
@@ -28,7 +30,9 @@ a filter control.
 - Reuse `StringFilter` and the existing debounced URL synchronization behavior
   instead of introducing a reading-specific control.
 - Extend the route search schema with `authorYomis` so bookmarked and
-  browser-driven filter state remains validated.
+  browser-driven filter and sorting state remains validated.
+- Use the table's default text sorting for the derived `authorYomis` string,
+  consistent with the other text accessor columns.
 
 ## Risks / Trade-offs
 

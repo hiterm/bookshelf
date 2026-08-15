@@ -510,6 +510,33 @@ describe("BookList sorting", () => {
     });
   });
 
+  test("writes author reading sorting to route search", async () => {
+    const user = userEvent.setup();
+    const { router } = await renderBookList();
+
+    await user.click(getHeaderText("著者読み仮名"));
+
+    await waitFor(() => {
+      expect(router.state.location.search.sorting).toEqual([
+        { id: "authorYomis", desc: false },
+      ]);
+    });
+  });
+
+  test("restores author reading sorting from route search", async () => {
+    await renderBookList({ sorting: [{ id: "authorYomis", desc: false }] }, [
+      testBooks[1],
+      testBooks[0],
+    ]);
+
+    await waitFor(() => {
+      const bodyRows = screen
+        .getAllByRole("row")
+        .filter((row) => row.closest("tbody") != null);
+      expect(within(bodyRows[0]).getByText("テスト書籍1")).toBeInTheDocument();
+    });
+  });
+
   test("sorting resets the URL page index", async () => {
     const user = userEvent.setup();
     const { router } = await renderBookList({ pageIndex: 2 });

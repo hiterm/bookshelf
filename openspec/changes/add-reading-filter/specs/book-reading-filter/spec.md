@@ -16,3 +16,15 @@ contains the entered text.
 #### Scenario: Clear the reading filter
 - **WHEN** a user clears the author reading filter
 - **THEN** books are no longer excluded based on author reading
+
+### Requirement: Sort books by author reading
+The book list SHALL allow sorting by the author reading column and SHALL
+preserve the selected sorting in the route search state.
+
+#### Scenario: Sort by author reading
+- **WHEN** a user activates sorting on the author reading column
+- **THEN** the list orders books by the displayed author reading
+
+#### Scenario: Restore author reading sorting from the URL
+- **WHEN** the book list route contains sorting for `authorYomis`
+- **THEN** the displayed books and sorting indicator reflect that sorting

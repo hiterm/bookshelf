@@ -10,12 +10,14 @@ books when an author's written name is unknown or ambiguous.
 - Match books when any associated author's reading contains the entered text.
 - Persist the reading filter in the book list URL search state like existing
   column filters.
+- Allow sorting the book list by author reading and persist that sorting in the
+  URL search state.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `book-reading-filter`: Filter the book list by partial author reading text.
+- `book-reading-filter`: Filter and sort the book list by author reading.
 
 ### Modified Capabilities
 

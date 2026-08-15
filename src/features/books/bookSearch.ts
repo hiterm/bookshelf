@@ -19,6 +19,7 @@ const sortingItemSchema = z.object({
   id: z.enum([
     "title",
     "authors",
+    "authorYomis",
     "isbn",
     "format",
     "store",

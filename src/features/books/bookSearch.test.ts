@@ -35,6 +35,7 @@ describe("bookSearchSchema", () => {
 
   test("accepts sorting for sortable columns", () => {
     const sorting = [
+      { id: "authorYomis", desc: false },
       { id: "priority", desc: true },
       { id: "createdAt", desc: false },
     ];

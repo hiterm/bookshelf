@@ -7,3 +7,9 @@
 
 - [x] 2.1 Add component tests for filtering and restoring a reading filter from the URL
 - [x] 2.2 Run the relevant tests, linting, and type checking
+
+## 3. Reading Sorting
+
+- [x] 3.1 Accept author reading sorting in book list route search validation
+- [x] 3.2 Add component tests for activating and restoring author reading sorting
+- [x] 3.3 Run mandatory validation and update pull request 312
