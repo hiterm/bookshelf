@@ -32,6 +32,23 @@ describe("bookSearchSchema", () => {
     ).toThrow();
   });
 
+  test("accepts sorting for sortable columns", () => {
+    const sorting = [
+      { id: "priority", desc: true },
+      { id: "createdAt", desc: false },
+    ];
+
+    expect(bookSearchSchema.parse({ sorting })).toEqual({ sorting });
+  });
+
+  test.each([
+    { id: "unknown", desc: false },
+    { id: "priority", desc: "true" },
+    { id: "priority" },
+  ])("rejects invalid sorting $id=$desc", (sorting) => {
+    expect(() => bookSearchSchema.parse({ sorting: [sorting] })).toThrow();
+  });
+
   test.each([20, 50, 100])("accepts supported page size %i", (pageSize) => {
     expect(bookSearchSchema.parse({ pageIndex: 0, pageSize })).toEqual({
       pageIndex: 0,

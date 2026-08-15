@@ -15,13 +15,26 @@ const columnFilterSchema = z.discriminatedUnion("id", [
 export const bookColumnFiltersSchema = z.array(columnFilterSchema);
 
 const sortingItemSchema = z.object({
-  id: z.string(),
+  id: z.enum([
+    "title",
+    "authors",
+    "isbn",
+    "format",
+    "store",
+    "priority",
+    "read",
+    "owned",
+    "createdAt",
+    "updatedAt",
+  ]),
   desc: z.boolean(),
 });
 
+export const bookSortingSchema = z.array(sortingItemSchema);
+
 export const bookSearchSchema = z.object({
   columnFilters: bookColumnFiltersSchema.optional(),
-  sorting: z.array(sortingItemSchema).optional(),
+  sorting: bookSortingSchema.optional(),
   pageIndex: z.number().int().nonnegative().optional(),
   pageSize: z.union([z.literal(20), z.literal(50), z.literal(100)]).optional(),
 });

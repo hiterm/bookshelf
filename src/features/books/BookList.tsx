@@ -40,7 +40,7 @@ import { displayBookFormat } from "./entity/BookFormat";
 import { displayBookStore } from "./entity/BookStore";
 import { Filter } from "./Filter";
 import { displayAuthorYomis } from "./displayAuthorYomis";
-import { bookColumnFiltersSchema } from "./bookSearch";
+import { bookColumnFiltersSchema, bookSortingSchema } from "./bookSearch";
 import { bookTableFeatures } from "./bookTable";
 
 const authorsFilter: FilterFn<typeof bookTableFeatures, Book> = (
@@ -206,10 +206,12 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
   const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
     const next = typeof updater === "function" ? updater(sorting) : updater;
     if (JSON.stringify(next) === JSON.stringify(sorting)) return;
+    const parsed = bookSortingSchema.safeParse(next);
+    if (!parsed.success) return;
     void navigate({
       search: (prev) => ({
         ...prev,
-        sorting: next.length === 0 ? undefined : next,
+        sorting: parsed.data.length === 0 ? undefined : parsed.data,
         pageIndex: undefined,
       }),
       replace: true,
