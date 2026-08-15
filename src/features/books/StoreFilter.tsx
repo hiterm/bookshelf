@@ -1,12 +1,16 @@
 import { Select } from "@mantine/core";
 import { Column } from "@tanstack/react-table";
+import { bookTableFeatures } from "./bookTable";
+import { Book } from "./entity/Book";
 import { BOOK_STORE_VALUE, displayBookStore } from "./entity/BookStore";
 
-export type StoreFilterProps<TData, TValue> = { column: Column<TData, TValue> };
+export type StoreFilterProps = {
+  column: Column<typeof bookTableFeatures, Book>;
+};
 
-export const StoreFilter = <TData, TValue>({
+export const StoreFilter = ({
   column,
-}: StoreFilterProps<TData, TValue>): React.JSX.Element => {
+}: StoreFilterProps): React.JSX.Element => {
   const filterValue = column.getFilterValue();
   return (
     <Select

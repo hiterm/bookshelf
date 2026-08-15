@@ -2,6 +2,15 @@ import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
+  createMemoryHistory,
+  createRootRoute,
+  createRoute,
+  createRouter,
+  defaultStringifySearch,
+  Outlet,
+  RouterProvider,
+} from "@tanstack/react-router";
+import {
   act,
   fireEvent,
   render,
@@ -14,19 +23,15 @@ import React from "react";
 import { vi } from "vitest";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
 import { BookList } from "./BookList";
+import { bookSearchSchema } from "./bookSearch";
 import type { Book } from "./entity/Book";
 
-vi.mock("@tanstack/react-router", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@tanstack/react-router")>();
-  return {
-    ...actual,
-    getRouteApi: () => ({
-      useSearch: () => ({}),
-      useNavigate: () => vi.fn().mockResolvedValue(undefined),
-    }),
-  };
-});
+type BookSearch = {
+  columnFilters?: { id: string; value: unknown }[];
+  sorting?: { id: string; desc: boolean }[];
+  pageIndex?: number;
+  pageSize?: 20 | 50 | 100;
+};
 
 vi.mock(import("../../compoments/hooks/useAuthors"));
 
@@ -55,6 +60,7 @@ beforeAll(() => {
   };
 
   HTMLElement.prototype.scrollIntoView = vi.fn();
+  window.scrollTo = vi.fn();
 
   Object.defineProperty(window, "matchMedia", {
     writable: true,
@@ -128,6 +134,14 @@ const testBooks: Book[] = [
   },
 ];
 
+const createBooks = (count: number): Book[] =>
+  Array.from({ length: count }, (_, index) => ({
+    ...testBooks[index % testBooks.length],
+    id: `book-${String(index + 1)}`,
+    title: `テスト書籍${String(index + 1)}`,
+    priority: index + 1,
+  }));
+
 const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
@@ -140,16 +154,42 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   return wrapper;
 };
 
-const renderBookList = () =>
-  render(<BookList list={testBooks} />, { wrapper: createWrapper() });
+const renderBookList = async (
+  initialSearch: BookSearch = {},
+  books: Book[] = testBooks,
+) => {
+  const rootRoute = createRootRoute({ component: Outlet });
+  const booksRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "books",
+    component: Outlet,
+  });
+  const booksIndexRoute = createRoute({
+    getParentRoute: () => booksRoute,
+    path: "/",
+    validateSearch: bookSearchSchema,
+    component: () => <BookList list={books} />,
+  });
+  const routeTree = rootRoute.addChildren([
+    booksRoute.addChildren([booksIndexRoute]),
+  ]);
+  const router = createRouter({
+    routeTree,
+    history: createMemoryHistory({
+      initialEntries: [`/books${defaultStringifySearch(initialSearch)}`],
+    }),
+  });
+  await router.load();
+
+  return {
+    ...render(<RouterProvider router={router} />, { wrapper: createWrapper() }),
+    router,
+  };
+};
 
 describe("BookList filters", () => {
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   test("shows all books initially", async () => {
-    renderBookList();
+    await renderBookList();
     await waitFor(() => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
@@ -158,19 +198,57 @@ describe("BookList filters", () => {
     expect(screen.getByText("テスト書籍4")).toBeInTheDocument();
   });
 
-  test("shows author readings in an independent column", () => {
-    renderBookList();
+  test("shows author readings in an independent column", async () => {
+    await renderBookList();
 
-    expect(
-      screen.getByRole("columnheader", { name: "著者読み仮名" }),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByRole("columnheader", { name: "著者読み仮名" }),
+      ).toBeInTheDocument();
+    });
     const row = screen.getByRole("row", { name: /テスト書籍1/ });
     expect(within(row).getByText("ちょしゃいち")).toBeInTheDocument();
   });
 
+  test("uses column filters from route search", async () => {
+    await renderBookList({
+      columnFilters: [{ id: "title", value: "書籍2" }],
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
+    });
+    expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
+    expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
+    expect(screen.queryByText("テスト書籍4")).not.toBeInTheDocument();
+  });
+
+  test("syncs the title filter input from route changes", async () => {
+    const { router } = await renderBookList();
+
+    await waitFor(() => {
+      expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
+    });
+
+    await act(async () => {
+      await router.navigate({
+        to: "/books",
+        search: { columnFilters: [{ id: "title", value: "書籍2" }] },
+      });
+    });
+
+    const titleInput = within(screen.getByTestId("filter-title")).getByRole(
+      "textbox",
+    );
+    await waitFor(() => {
+      expect(titleInput).toHaveValue("書籍2");
+    });
+    expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
+    expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
+  });
+
   test("title string filter shows only matching books", async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-    renderBookList();
+    const { router } = await renderBookList();
 
     await waitFor(() => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
@@ -181,22 +259,22 @@ describe("BookList filters", () => {
     );
     fireEvent.change(titleInput, { target: { value: "書籍1" } });
 
-    await act(async () => {
-      vi.advanceTimersByTime(1100);
-      await Promise.resolve();
-    });
-
-    expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
+    await waitFor(
+      () => {
+        expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
     expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
     expect(screen.queryByText("テスト書籍4")).not.toBeInTheDocument();
     expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
-
-    vi.useRealTimers();
+    expect(router.state.location.search.columnFilters).toEqual([
+      { id: "title", value: "書籍1" },
+    ]);
   });
 
   test("ISBN string filter shows only matching books", async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-    renderBookList();
+    await renderBookList();
 
     await waitFor(() => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
@@ -207,154 +285,109 @@ describe("BookList filters", () => {
     );
     fireEvent.change(isbnInput, { target: { value: "000002" } });
 
-    await act(async () => {
-      vi.advanceTimersByTime(1100);
-      await Promise.resolve();
-    });
-
-    expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
+    await waitFor(
+      () => {
+        expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
     expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
     expect(screen.queryByText("テスト書籍4")).not.toBeInTheDocument();
     expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
-
-    vi.useRealTimers();
   });
 
   test("read filter = true shows only read books", async () => {
-    renderBookList();
+    await renderBookList({ columnFilters: [{ id: "read", value: true }] });
 
     await waitFor(() => {
-      expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
+      expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
     });
 
-    await userEvent.click(
-      within(screen.getByTestId("filter-read")).getByRole("combobox"),
-    );
-    await userEvent.click(screen.getByRole("option", { name: "true" }));
-
-    await waitFor(() => {
-      expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
-    });
+    expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
     expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
     expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
     expect(screen.getByText("テスト書籍4")).toBeInTheDocument();
   });
 
   test("read filter = false shows only unread books", async () => {
-    renderBookList();
+    await renderBookList({ columnFilters: [{ id: "read", value: false }] });
 
     await waitFor(() => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    await userEvent.click(
-      within(screen.getByTestId("filter-read")).getByRole("combobox"),
-    );
-    await userEvent.click(screen.getByRole("option", { name: "false" }));
-
-    await waitFor(() => {
-      expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
-    });
+    expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
     expect(screen.queryByText("テスト書籍4")).not.toBeInTheDocument();
     expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     expect(screen.getByText("テスト書籍3")).toBeInTheDocument();
   });
 
   test("owned filter = true shows only owned books", async () => {
-    renderBookList();
+    await renderBookList({ columnFilters: [{ id: "owned", value: true }] });
 
     await waitFor(() => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    await userEvent.click(
-      within(screen.getByTestId("filter-owned")).getByRole("combobox"),
-    );
-    await userEvent.click(screen.getByRole("option", { name: "true" }));
-
-    await waitFor(() => {
-      expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
-    });
+    expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
     expect(screen.queryByText("テスト書籍4")).not.toBeInTheDocument();
     expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
   });
 
   test("format filter = PRINTED shows only printed books", async () => {
-    renderBookList();
+    await renderBookList({
+      columnFilters: [{ id: "format", value: "PRINTED" }],
+    });
 
     await waitFor(() => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    await userEvent.click(
-      within(screen.getByTestId("filter-format")).getByRole("combobox"),
-    );
-    await userEvent.click(screen.getByRole("option", { name: "Printed" }));
-
-    await waitFor(() => {
-      expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
-    });
+    expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
     expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
     expect(screen.queryByText("テスト書籍4")).not.toBeInTheDocument();
     expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
   });
 
   test("format filter = E_BOOK shows only eBook books", async () => {
-    renderBookList();
-
-    await waitFor(() => {
-      expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
+    await renderBookList({
+      columnFilters: [{ id: "format", value: "E_BOOK" }],
     });
 
-    await userEvent.click(
-      within(screen.getByTestId("filter-format")).getByRole("combobox"),
-    );
-    await userEvent.click(screen.getByRole("option", { name: "eBook" }));
-
     await waitFor(() => {
-      expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
+      expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
     });
+
+    expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
     expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
     expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
     expect(screen.getByText("テスト書籍4")).toBeInTheDocument();
   });
 
   test("store filter = KINDLE shows only Kindle books", async () => {
-    renderBookList();
+    await renderBookList({ columnFilters: [{ id: "store", value: "KINDLE" }] });
 
     await waitFor(() => {
-      expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
+      expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
     });
 
-    await userEvent.click(
-      within(screen.getByTestId("filter-store")).getByRole("combobox"),
-    );
-    await userEvent.click(screen.getByRole("option", { name: "Kindle" }));
-
-    await waitFor(() => {
-      expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
-    });
+    expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
     expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
     expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
     expect(screen.getByText("テスト書籍4")).toBeInTheDocument();
   });
 
   test("authors filter shows only books by selected author", async () => {
-    renderBookList();
+    await renderBookList({
+      columnFilters: [{ id: "authors", value: ["author-1"] }],
+    });
 
     await waitFor(() => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     });
 
-    await userEvent.click(
-      within(screen.getByTestId("filter-authors")).getByRole("combobox"),
-    );
-    await userEvent.click(screen.getByRole("option", { name: "著者1" }));
-
-    await waitFor(() => {
-      expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
-    });
+    expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
     expect(screen.queryByText("テスト書籍4")).not.toBeInTheDocument();
     expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
     expect(screen.getByText("テスト書籍3")).toBeInTheDocument();
@@ -376,7 +409,7 @@ describe("BookList sorting", () => {
 
   test("sort priority descending puts highest priority first", async () => {
     const user = userEvent.setup();
-    renderBookList();
+    await renderBookList();
 
     await waitFor(() => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
@@ -392,9 +425,22 @@ describe("BookList sorting", () => {
     });
   });
 
+  test("restores priority sorting from route search", async () => {
+    await renderBookList({
+      sorting: [{ id: "priority", desc: true }],
+    });
+
+    await waitFor(() => {
+      const bodyRows = screen
+        .getAllByRole("row")
+        .filter((row) => row.closest("tbody") != null);
+      expect(within(bodyRows[0]).getByText("テスト書籍2")).toBeInTheDocument();
+    });
+  });
+
   test("sort priority ascending puts lowest priority first", async () => {
     const user = userEvent.setup();
-    renderBookList();
+    await renderBookList();
 
     await waitFor(() => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
@@ -414,7 +460,7 @@ describe("BookList sorting", () => {
 
   test("sort title ascending puts テスト書籍1 first", async () => {
     const user = userEvent.setup();
-    renderBookList();
+    await renderBookList();
 
     await waitFor(() => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
@@ -429,15 +475,88 @@ describe("BookList sorting", () => {
       expect(within(bodyRows[0]).getByText("テスト書籍1")).toBeInTheDocument();
     });
   });
+
+  test("sorting resets the URL page index", async () => {
+    const user = userEvent.setup();
+    const { router } = await renderBookList({ pageIndex: 2 });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("columnheader", { name: /優先度/ }),
+      ).toBeVisible();
+    });
+
+    await user.click(getHeaderText("優先度"));
+
+    await waitFor(() => {
+      expect(router.state.location.search.sorting).toEqual([
+        { id: "priority", desc: true },
+      ]);
+    });
+    expect(router.state.location.search.pageIndex).toBeUndefined();
+  });
+});
+
+describe("BookList pagination", () => {
+  test("restores page index and size from route search", async () => {
+    await renderBookList({ pageIndex: 1, pageSize: 20 }, createBooks(51));
+
+    await waitFor(() => {
+      expect(screen.getByText("テスト書籍21")).toBeInTheDocument();
+    });
+    expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Page size" })).toHaveValue(
+      "20",
+    );
+  });
+
+  test("writes page changes to route search", async () => {
+    const { router } = await renderBookList({}, createBooks(21));
+
+    fireEvent.click(await screen.findByRole("button", { name: "2" }));
+
+    await waitFor(() => {
+      expect(router.state.location.search.pageIndex).toBe(1);
+    });
+    expect(router.state.location.search.pageSize).toBeUndefined();
+  });
+
+  test("writes page size changes to route search", async () => {
+    const user = userEvent.setup();
+    const { router } = await renderBookList({}, createBooks(51));
+
+    await user.click(
+      await screen.findByRole("combobox", { name: "Page size" }),
+    );
+    await user.click(screen.getByRole("option", { name: "50" }));
+
+    await waitFor(() => {
+      expect(router.state.location.search.pageSize).toBe(50);
+    });
+    expect(router.state.location.search.pageIndex).toBeUndefined();
+  });
+
+  test("omits default pagination values from route search", async () => {
+    const user = userEvent.setup();
+    const { router } = await renderBookList(
+      { pageIndex: 1, pageSize: 50 },
+      createBooks(51),
+    );
+
+    fireEvent.click(await screen.findByRole("button", { name: "1" }));
+    await user.click(screen.getByRole("combobox", { name: "Page size" }));
+    await user.click(screen.getByRole("option", { name: "20" }));
+
+    await waitFor(() => {
+      expect(router.state.location.search.pageIndex).toBeUndefined();
+      expect(router.state.location.search.pageSize).toBeUndefined();
+    });
+  });
 });
 
 describe("BookList preset and reset", () => {
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   test("preset filter shows only unread owned books", async () => {
-    renderBookList();
+    const { router } = await renderBookList();
 
     await waitFor(() => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
@@ -461,11 +580,18 @@ describe("BookList preset and reset", () => {
     expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
     expect(screen.queryByText("テスト書籍4")).not.toBeInTheDocument();
     expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
+    expect(router.state.location.search).toMatchObject({
+      columnFilters: [
+        { id: "read", value: false },
+        { id: "owned", value: true },
+      ],
+      sorting: [{ id: "priority", desc: true }],
+    });
+    expect(router.state.location.search.pageIndex).toBeUndefined();
   });
 
   test("reset filter restores all books", async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-    renderBookList();
+    await renderBookList();
 
     await waitFor(() => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
@@ -476,14 +602,12 @@ describe("BookList preset and reset", () => {
     );
     fireEvent.change(titleInput, { target: { value: "書籍1" } });
 
-    await act(async () => {
-      vi.advanceTimersByTime(1100);
-      await Promise.resolve();
-    });
-
-    expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
-
-    vi.useRealTimers();
+    await waitFor(
+      () => {
+        expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Reset filter" }));
 
@@ -496,8 +620,7 @@ describe("BookList preset and reset", () => {
   });
 
   test("reset filter clears the title input", async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-    renderBookList();
+    await renderBookList();
 
     await waitFor(() => {
       expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
@@ -508,14 +631,12 @@ describe("BookList preset and reset", () => {
     );
     fireEvent.change(titleInput, { target: { value: "書籍1" } });
 
-    await act(async () => {
-      vi.advanceTimersByTime(1100);
-      await Promise.resolve();
-    });
-
-    expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
-
-    vi.useRealTimers();
+    await waitFor(
+      () => {
+        expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Reset filter" }));
 

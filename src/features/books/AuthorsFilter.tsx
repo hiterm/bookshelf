@@ -1,14 +1,16 @@
 import { Loader, MultiSelect } from "@mantine/core";
 import { Column } from "@tanstack/react-table";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
+import { bookTableFeatures } from "./bookTable";
+import { Book } from "./entity/Book";
 
-export type AuthorsFilterProps<TData, TValue> = {
-  column: Column<TData, TValue>;
+export type AuthorsFilterProps = {
+  column: Column<typeof bookTableFeatures, Book>;
 };
 
-export const AuthorsFilter = <TData, TValue>({
+export const AuthorsFilter = ({
   column,
-}: AuthorsFilterProps<TData, TValue>): React.JSX.Element => {
+}: AuthorsFilterProps): React.JSX.Element => {
   const { data, isLoading, error } = useAuthors();
   const filterValue = column.getFilterValue();
   const selectedIds = Array.isArray(filterValue)

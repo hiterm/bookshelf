@@ -1,6 +1,9 @@
 import { type Page, expect } from "@playwright/test";
 import { test } from "./fixtures";
 
+const parseJsonSearchParam = (value: string | null): unknown =>
+  JSON.parse(value ?? "null") as unknown;
+
 const selectFilterOption = async (
   page: Page,
   testId: string,
@@ -312,6 +315,24 @@ test.describe("Books FILTER SORT AND URL PERSISTENCE", () => {
     await page
       .getByRole("menuitem", { name: "Unread owned, order by priority" })
       .click();
+
+    await expect
+      .poll(() => {
+        const url = new URL(page.url());
+        return {
+          columnFilters: parseJsonSearchParam(
+            url.searchParams.get("columnFilters"),
+          ),
+          sorting: parseJsonSearchParam(url.searchParams.get("sorting")),
+        };
+      })
+      .toEqual({
+        columnFilters: [
+          { id: "read", value: false },
+          { id: "owned", value: true },
+        ],
+        sorting: [{ id: "priority", desc: true }],
+      });
 
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
     await expect(

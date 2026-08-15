@@ -72,6 +72,12 @@ export default tseslint.config(
       importPlugin.flatConfigs.recommended,
       importPlugin.flatConfigs.typescript,
     ],
+    settings: {
+      "import/resolver": {
+        typescript: true,
+        node: true,
+      },
+    },
   },
   {
     files: ["**/*.{test,spec}.{ts,tsx}"],

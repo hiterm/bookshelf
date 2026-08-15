@@ -1,18 +1,17 @@
-import { Column, Table as ReactTable } from "@tanstack/react-table";
+import { Column } from "@tanstack/react-table";
 import { AuthorsFilter } from "./AuthorsFilter";
 import { BooleanFilter } from "./BooleanFilter";
 import { FormatFilter } from "./FormatFilter";
 import { StoreFilter } from "./StoreFilter";
 import { StringFilter } from "./StringFilter";
+import { bookTableFeatures } from "./bookTable";
+import { Book } from "./entity/Book";
 
-type FilterProps<TData, TValue> = {
-  column: Column<TData, TValue>;
-  table: ReactTable<TData>;
+type FilterProps = {
+  column: Column<typeof bookTableFeatures, Book>;
 };
 
-export const Filter = <TData, TValue>({
-  column,
-}: FilterProps<TData, TValue>): React.JSX.Element => {
+export const Filter = ({ column }: FilterProps): React.JSX.Element => {
   const inner = (() => {
     switch (column.columnDef.meta?.filterType) {
       case "string":

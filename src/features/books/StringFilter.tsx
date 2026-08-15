@@ -2,14 +2,14 @@ import { TextInput } from "@mantine/core";
 import { Column } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { useDebouncedEffect } from "../../compoments/hooks/useDebouncedEffect";
+import { bookTableFeatures } from "./bookTable";
+import { Book } from "./entity/Book";
 
-export type StringFilterProps<TData, TValue> = {
-  column: Column<TData, TValue>;
+export type StringFilterProps = {
+  column: Column<typeof bookTableFeatures, Book>;
 };
 
-export const StringFilter = <TData, TValue>({
-  column,
-}: StringFilterProps<TData, TValue>) => {
+export const StringFilter = ({ column }: StringFilterProps) => {
   const initial = column.getFilterValue();
   const [value, setValue] = useState(
     typeof initial === "string" ? initial : "",
@@ -26,9 +26,8 @@ export const StringFilter = <TData, TValue>({
 
   const filterValue = column.getFilterValue();
   useEffect(() => {
-    // TanStack Table v8 requires syncing local state with externally-driven
-    // filter resets (e.g. "clear all filters"). No infinite loop risk as
-    // filterValue changes are externally driven. Expect improvement in v9.
+    // Keep the debounced input in sync with externally-driven URL changes,
+    // including resets and browser navigation.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setValue(typeof filterValue === "string" ? filterValue : "");
   }, [filterValue]);

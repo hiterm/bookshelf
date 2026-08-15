@@ -1,6 +1,7 @@
 allowBuilds:
   browser-tabs-lock: false
   msw: true
+  unrs-resolver: false
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
   # Renovate security update: vite@8.0.16
