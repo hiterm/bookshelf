@@ -90,10 +90,11 @@ const columns = columnHelper.columns([
     filterFn: authorsFilter,
     minSize: 200,
   }),
-  columnHelper.display({
+  columnHelper.accessor((book) => displayAuthorYomis(book.authors), {
     id: "authorYomis",
     header: "著者読み仮名",
-    cell: (info) => displayAuthorYomis(info.row.original.authors),
+    filterFn: "includesString",
+    meta: { filterType: "string" },
     minSize: 200,
   }),
   columnHelper.accessor("isbn", {

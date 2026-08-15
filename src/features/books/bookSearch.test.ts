@@ -6,6 +6,7 @@ describe("bookSearchSchema", () => {
     const columnFilters = [
       { id: "title", value: "TypeScript" },
       { id: "authors", value: ["author-1", "author-2"] },
+      { id: "authorYomis", value: "ちょしゃ" },
       { id: "isbn", value: "978" },
       { id: "format", value: "E_BOOK" },
       { id: "store", value: "KINDLE" },
@@ -34,6 +35,7 @@ describe("bookSearchSchema", () => {
 
   test("accepts sorting for sortable columns", () => {
     const sorting = [
+      { id: "authorYomis", desc: false },
       { id: "priority", desc: true },
       { id: "createdAt", desc: false },
     ];
