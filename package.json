@@ -81,7 +81,7 @@
     "eslint_d": "15.0.3",
     "graphql-tag": "2.12.7",
     "jose": "6.2.8",
-    "jsdom": "29.1.1",
+    "jsdom": "30.0.1",
     "msw": "2.14.6",
     "typescript": "6.0.3",
     "typescript-eslint": "8.67.0",
