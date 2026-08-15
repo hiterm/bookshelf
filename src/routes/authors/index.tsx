@@ -95,7 +95,7 @@ const RegisterAuthorForm: React.FC = () => {
   );
 };
 
-const AuthorIndexPage: React.FC = () => {
+export const AuthorIndexPage: React.FC = () => {
   const { data, isLoading, error } = useAuthors();
   const [globalFilter, setGlobalFilter] = useState("");
   const table = useTable({

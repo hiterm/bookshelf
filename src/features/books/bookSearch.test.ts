@@ -43,6 +43,7 @@ describe("bookSearchSchema", () => {
 
   test.each([
     { id: "unknown", desc: false },
+    { id: 1, desc: false },
     { id: "priority", desc: "true" },
     { id: "priority" },
   ])("rejects invalid sorting $id=$desc", (sorting) => {
@@ -64,5 +65,9 @@ describe("bookSearchSchema", () => {
 
   test.each([-1, 0.5])("rejects invalid page index %s", (pageIndex) => {
     expect(() => bookSearchSchema.parse({ pageIndex })).toThrow();
+  });
+
+  test("accepts a positive integer page index", () => {
+    expect(bookSearchSchema.parse({ pageIndex: 1 })).toEqual({ pageIndex: 1 });
   });
 });

@@ -134,6 +134,14 @@ const testBooks: Book[] = [
   },
 ];
 
+const createBooks = (count: number): Book[] =>
+  Array.from({ length: count }, (_, index) => ({
+    ...testBooks[index % testBooks.length],
+    id: `book-${String(index + 1)}`,
+    title: `テスト書籍${String(index + 1)}`,
+    priority: index + 1,
+  }));
+
 const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
@@ -146,7 +154,10 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   return wrapper;
 };
 
-const renderBookList = async (initialSearch: BookSearch = {}) => {
+const renderBookList = async (
+  initialSearch: BookSearch = {},
+  books: Book[] = testBooks,
+) => {
   const rootRoute = createRootRoute({ component: Outlet });
   const booksRoute = createRoute({
     getParentRoute: () => rootRoute,
@@ -157,7 +168,7 @@ const renderBookList = async (initialSearch: BookSearch = {}) => {
     getParentRoute: () => booksRoute,
     path: "/",
     validateSearch: bookSearchSchema,
-    component: () => <BookList list={testBooks} />,
+    component: () => <BookList list={books} />,
   });
   const routeTree = rootRoute.addChildren([
     booksRoute.addChildren([booksIndexRoute]),
@@ -212,7 +223,7 @@ describe("BookList filters", () => {
     expect(screen.queryByText("テスト書籍4")).not.toBeInTheDocument();
   });
 
-  test("reacts to route search changes after rendering", async () => {
+  test("syncs the title filter input from route changes", async () => {
     const { router } = await renderBookList();
 
     await waitFor(() => {
@@ -222,15 +233,18 @@ describe("BookList filters", () => {
     await act(async () => {
       await router.navigate({
         to: "/books",
-        search: { columnFilters: [{ id: "read", value: true }] },
+        search: { columnFilters: [{ id: "title", value: "書籍2" }] },
       });
     });
 
+    const titleInput = within(screen.getByTestId("filter-title")).getByRole(
+      "textbox",
+    );
     await waitFor(() => {
-      expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
+      expect(titleInput).toHaveValue("書籍2");
     });
     expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
-    expect(screen.getByText("テスト書籍4")).toBeInTheDocument();
+    expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
   });
 
   test("title string filter shows only matching books", async () => {
@@ -411,6 +425,19 @@ describe("BookList sorting", () => {
     });
   });
 
+  test("restores priority sorting from route search", async () => {
+    await renderBookList({
+      sorting: [{ id: "priority", desc: true }],
+    });
+
+    await waitFor(() => {
+      const bodyRows = screen
+        .getAllByRole("row")
+        .filter((row) => row.closest("tbody") != null);
+      expect(within(bodyRows[0]).getByText("テスト書籍2")).toBeInTheDocument();
+    });
+  });
+
   test("sort priority ascending puts lowest priority first", async () => {
     const user = userEvent.setup();
     await renderBookList();
@@ -467,6 +494,63 @@ describe("BookList sorting", () => {
       ]);
     });
     expect(router.state.location.search.pageIndex).toBeUndefined();
+  });
+});
+
+describe("BookList pagination", () => {
+  test("restores page index and size from route search", async () => {
+    await renderBookList({ pageIndex: 1, pageSize: 20 }, createBooks(51));
+
+    await waitFor(() => {
+      expect(screen.getByText("テスト書籍21")).toBeInTheDocument();
+    });
+    expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Page size" })).toHaveValue(
+      "20",
+    );
+  });
+
+  test("writes page changes to route search", async () => {
+    const { router } = await renderBookList({}, createBooks(21));
+
+    fireEvent.click(await screen.findByRole("button", { name: "2" }));
+
+    await waitFor(() => {
+      expect(router.state.location.search.pageIndex).toBe(1);
+    });
+    expect(router.state.location.search.pageSize).toBeUndefined();
+  });
+
+  test("writes page size changes to route search", async () => {
+    const user = userEvent.setup();
+    const { router } = await renderBookList({}, createBooks(51));
+
+    await user.click(
+      await screen.findByRole("combobox", { name: "Page size" }),
+    );
+    await user.click(screen.getByRole("option", { name: "50" }));
+
+    await waitFor(() => {
+      expect(router.state.location.search.pageSize).toBe(50);
+    });
+    expect(router.state.location.search.pageIndex).toBeUndefined();
+  });
+
+  test("omits default pagination values from route search", async () => {
+    const user = userEvent.setup();
+    const { router } = await renderBookList(
+      { pageIndex: 1, pageSize: 50 },
+      createBooks(51),
+    );
+
+    fireEvent.click(await screen.findByRole("button", { name: "1" }));
+    await user.click(screen.getByRole("combobox", { name: "Page size" }));
+    await user.click(screen.getByRole("option", { name: "20" }));
+
+    await waitFor(() => {
+      expect(router.state.location.search.pageIndex).toBeUndefined();
+      expect(router.state.location.search.pageSize).toBeUndefined();
+    });
   });
 });
 
