@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.14.0](https://github.com/hiterm/bookshelf/compare/v2.13.0...v2.14.0) - 2026-08-15
+
+### Other Changes
+- Update TanStack Table to v9 by @hiterm in https://github.com/hiterm/bookshelf/pull/310
+- Add author reading filter and sorting by @hiterm in https://github.com/hiterm/bookshelf/pull/312
+
 ## [v2.13.0](https://github.com/hiterm/bookshelf/compare/v2.12.1...v2.13.0) - 2026-08-13
 
 ### Other Changes
