@@ -26,10 +26,6 @@ import { BookList } from "./BookList";
 import { bookSearchSchema } from "./bookSearch";
 import type { Book } from "./entity/Book";
 
-// Mounting real routers is CPU-intensive when Vitest runs all files in
-// parallel. Keep the normal assertions bounded while allowing worker delays.
-vi.setConfig({ testTimeout: 120_000 });
-
 type BookSearch = {
   columnFilters?: { id: string; value: unknown }[];
   sorting?: { id: string; desc: boolean }[];
