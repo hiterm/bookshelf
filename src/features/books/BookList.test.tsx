@@ -210,6 +210,40 @@ describe("BookList filters", () => {
     expect(within(row).getByText("ちょしゃいち")).toBeInTheDocument();
   });
 
+  test("author reading filter shows only books with a matching reading", async () => {
+    await renderBookList();
+
+    const readingInput = within(
+      screen.getByTestId("filter-authorYomis"),
+    ).getByRole("textbox");
+    fireEvent.change(readingInput, { target: { value: "いち" } });
+
+    await waitFor(
+      () => {
+        expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
+    expect(screen.queryByText("テスト書籍4")).not.toBeInTheDocument();
+    expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
+    expect(screen.getByText("テスト書籍3")).toBeInTheDocument();
+  });
+
+  test("restores the author reading filter from route search", async () => {
+    await renderBookList({
+      columnFilters: [{ id: "authorYomis", value: "に" }],
+    });
+
+    const readingInput = within(
+      screen.getByTestId("filter-authorYomis"),
+    ).getByRole("textbox");
+    expect(readingInput).toHaveValue("に");
+    expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
+    expect(screen.queryByText("テスト書籍3")).not.toBeInTheDocument();
+    expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
+    expect(screen.getByText("テスト書籍4")).toBeInTheDocument();
+  });
+
   test("uses column filters from route search", async () => {
     await renderBookList({
       columnFilters: [{ id: "title", value: "書籍2" }],

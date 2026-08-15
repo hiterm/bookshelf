@@ -5,6 +5,7 @@ import { BOOK_STORE_VALUE } from "./entity/BookStore";
 const columnFilterSchema = z.discriminatedUnion("id", [
   z.object({ id: z.literal("title"), value: z.string() }),
   z.object({ id: z.literal("authors"), value: z.array(z.string()) }),
+  z.object({ id: z.literal("authorYomis"), value: z.string() }),
   z.object({ id: z.literal("isbn"), value: z.string() }),
   z.object({ id: z.literal("format"), value: z.enum(BOOK_FORMAT_VALUE) }),
   z.object({ id: z.literal("store"), value: z.enum(BOOK_STORE_VALUE) }),
