@@ -7,7 +7,6 @@ import {
   createSortedRowModel,
   filterFn_equals,
   filterFn_equalsString,
-  filterFn_inDateRange,
   filterFn_includesString,
   metaHelper,
   rowPaginationFeature,
@@ -34,7 +33,6 @@ export const bookTableFeatures = tableFeatures({
   filterFns: {
     equals: filterFn_equals,
     equalsString: filterFn_equalsString,
-    inDateRange: filterFn_inDateRange,
     includesString: filterFn_includesString,
   },
   sortFns: {
