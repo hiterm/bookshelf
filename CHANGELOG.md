@@ -1,5 +1,16 @@
 # Changelog
 
+## [v2.14.1](https://github.com/hiterm/bookshelf/compare/v2.14.0...v2.14.1) - 2026-08-16
+
+### Other Changes
+- Update Biome to 2.5.8 by @hiterm in https://github.com/hiterm/bookshelf/pull/313
+- Update npm non-major by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/279
+- Update Node.js to v24.19.0 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/309
+- Update github-actions non-major by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/288
+- Update dependency hiterm/bookshelf-api to v2.12.0 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/315
+- Update dependency @graphql-tools/schema to v10.1.0 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/316
+- Update postgres:15 Docker digest to 6eb0add by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/234
+
 ## [v2.14.0](https://github.com/hiterm/bookshelf/compare/v2.13.0...v2.14.0) - 2026-08-15
 
 ### Other Changes
