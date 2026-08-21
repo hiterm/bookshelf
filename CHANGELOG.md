@@ -1,5 +1,10 @@
 # Changelog
 
+## [v2.15.0](https://github.com/hiterm/bookshelf/compare/v2.14.1...v2.15.0) - 2026-08-21
+
+### Other Changes
+- Show books on author pages by @hiterm in https://github.com/hiterm/bookshelf/pull/320
+
 ## [v2.14.1](https://github.com/hiterm/bookshelf/compare/v2.14.0...v2.14.1) - 2026-08-16
 
 ### Other Changes
