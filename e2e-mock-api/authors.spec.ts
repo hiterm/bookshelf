@@ -40,6 +40,44 @@ test.describe("Authors READ", () => {
     await expect(page).toHaveURL(/\/authors\/[^/]+$/);
     await expect(page.getByRole("heading", { name: "著者1" })).toBeVisible();
   });
+
+  test("displays only related books and navigates to a book", async ({
+    page,
+    mockStore,
+  }) => {
+    mockStore.createBook({
+      title: "共同著者の書籍",
+      authorIds: ["author-1", "author-2"],
+      isbn: "978-4-00-000005-8",
+      read: false,
+      owned: true,
+      priority: 20,
+      format: "PRINTED",
+      store: "UNKNOWN",
+    });
+
+    await page.getByRole("link", { name: "著者1" }).click();
+    const bookTable = page
+      .getByRole("heading", { name: "本一覧" })
+      .locator("xpath=..")
+      .getByRole("table");
+
+    await expect(
+      bookTable.getByRole("link", { name: "テスト書籍1" }),
+    ).toBeVisible();
+    await expect(
+      bookTable.getByRole("link", { name: "テスト書籍3" }),
+    ).toBeVisible();
+    await expect(
+      bookTable.getByRole("link", { name: "共同著者の書籍" }),
+    ).toBeVisible();
+    await expect(
+      bookTable.getByRole("link", { name: "テスト書籍2" }),
+    ).toHaveCount(0);
+
+    await bookTable.getByRole("link", { name: "共同著者の書籍" }).click();
+    await expect(page).toHaveURL(/\/books\/book-5$/);
+  });
 });
 
 test.describe("Authors CREATE", () => {

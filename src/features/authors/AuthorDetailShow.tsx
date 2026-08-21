@@ -14,12 +14,10 @@ import { useNavigate } from "@tanstack/react-router";
 import React, { useState } from "react";
 import { useDeleteAuthor } from "../../compoments/hooks/useDeleteAuthor";
 import { LinkButton } from "../../compoments/mantineTsr";
+import type { AuthorQuery } from "../../generated/graphql-request";
+import { AuthorBookList } from "./AuthorBookList";
 
-type Author = {
-  id: string;
-  name: string;
-  yomi: string;
-};
+type Author = NonNullable<AuthorQuery["author"]>;
 
 const DeleteButton: React.FC<{ author: Author }> = ({ author }) => {
   const [open, setOpen] = useState(false);
@@ -122,6 +120,7 @@ export const AuthorDetailShow: React.FC<{ author: Author }> = ({ author }) => {
         </LinkButton>
         <DeleteButton author={author} />
       </Group>
+      <AuthorBookList books={author.books} />
     </React.Fragment>
   );
 };

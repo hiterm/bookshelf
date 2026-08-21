@@ -29,6 +29,22 @@ test("navigates to author detail page", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "著者1" })).toBeVisible();
 });
 
+test("displays books related to the author", async ({ page }) => {
+  await page.goto("/authors");
+  await page.getByRole("link", { name: "著者1" }).click();
+
+  const bookTable = page
+    .getByRole("heading", { name: "本一覧" })
+    .locator("xpath=..")
+    .getByRole("table");
+  await expect(
+    bookTable.getByRole("link", { name: "テスト書籍1" }),
+  ).toBeVisible();
+  await expect(
+    bookTable.getByRole("link", { name: "テスト書籍2" }),
+  ).toHaveCount(0);
+});
+
 test("displays author history on detail page", async ({ page }) => {
   await page.goto("/authors");
 

@@ -93,3 +93,50 @@ test.describe
       await expect(page.getByText("CREATE")).toBeVisible();
     });
   });
+
+test("displays related books and an empty state from the real API", async ({
+  page,
+}) => {
+  const relatedAuthorName = "書籍あり統合テスト著者";
+  const emptyAuthorName = "書籍なし統合テスト著者";
+  const relatedBookTitle = "著者詳細統合テスト書籍";
+
+  await loginAndRegister(page);
+
+  await page.goto("/authors");
+  await page.getByLabel("名前").fill(relatedAuthorName);
+  await page.getByLabel("読み仮名").fill("しょせきありとうごうてすとちょしゃ");
+  await page.getByRole("button", { name: "登録" }).click();
+  await expect(
+    page.getByRole("link", { name: relatedAuthorName }),
+  ).toBeVisible();
+
+  await page.getByLabel("名前").fill(emptyAuthorName);
+  await page.getByLabel("読み仮名").fill("しょせきなしとうごうてすとちょしゃ");
+  await page.getByRole("button", { name: "登録" }).click();
+  await expect(page.getByRole("link", { name: emptyAuthorName })).toBeVisible();
+
+  await page.goto("/books");
+  await page.getByRole("button", { name: "追加" }).click();
+  await page.getByLabel("書名").fill(relatedBookTitle);
+  const authorInput = page.getByPlaceholder("著者を検索");
+  await authorInput.click();
+  await authorInput.fill(relatedAuthorName);
+  await expect(page.getByRole("listbox")).toBeVisible();
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+  await page.getByRole("dialog").getByRole("button", { name: "追加" }).click();
+  await expect(
+    page.getByRole("link", { name: relatedBookTitle }),
+  ).toBeVisible();
+
+  await page.goto("/authors");
+  await page.getByRole("link", { name: relatedAuthorName }).click();
+  await expect(
+    page.getByRole("link", { name: relatedBookTitle }),
+  ).toBeVisible();
+
+  await page.goto("/authors");
+  await page.getByRole("link", { name: emptyAuthorName }).click();
+  await expect(page.getByText("この著者の本はありません")).toBeVisible();
+});
