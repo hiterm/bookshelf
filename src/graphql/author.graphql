@@ -3,5 +3,13 @@ query author($authorId: ID!) {
     id
     name
     yomi
+    books {
+      id
+      title
+      isbn
+      format
+      read
+      owned
+    }
   }
 }

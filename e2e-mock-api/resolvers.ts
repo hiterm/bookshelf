@@ -78,4 +78,10 @@ export const createResolvers = (mockStore: MockStore) => ({
         );
     },
   },
+  Author: {
+    books: (author: { id: string }) =>
+      mockStore
+        .getAllBooks()
+        .filter((book) => book.authorIds.includes(author.id)),
+  },
 });

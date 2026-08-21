@@ -75,6 +75,7 @@ const testAuthor = {
   id: "author-1",
   name: "テスト著者",
   yomi: "てすとちょしゃ",
+  books: [],
 };
 
 const createWrapper = (): React.FC<{ children: React.ReactNode }> => {

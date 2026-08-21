@@ -162,6 +162,10 @@ export const handlers = [
         author: {
           __typename: "Author",
           ...author,
+          books: mockStore
+            .getAllBooks()
+            .filter((book) => book.authorIds.includes(author.id))
+            .map((book) => ({ __typename: "Book" as const, ...book })),
         },
       },
     });
