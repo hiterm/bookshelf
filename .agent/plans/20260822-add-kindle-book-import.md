@@ -16,7 +16,7 @@ After this change, a signed-in user can upload the JSON file produced by Kindle 
 - [x] (2026-08-22 02:32Z) Extend the browser GraphQL mock and add the main mocked-browser import flow (focused Playwright scenario passes).
 - [x] (2026-08-22 02:33Z) Add a real-backend integration flow that proves the generated operation and backend author behavior; execution remains part of final validation.
 - [x] (2026-08-22 02:57Z) Run all required generation, formatting, unit, type, build, mocked E2E, and integration checks: 159 unit tests, 46 mock E2E tests, and 8 integration tests pass.
-- [ ] Review and commit meaningful units after mandatory pre-commit checks, push the branch, create or update the PR, and verify CI.
+- [ ] Review and commit meaningful units after mandatory pre-commit checks, push the branch, create or update the PR, and verify CI (completed: implementation commit `b159324`; remaining: push, PR, and CI).
 
 ## Surprises & Discoveries
 
@@ -56,7 +56,7 @@ After this change, a signed-in user can upload the JSON file produced by Kindle 
 
 ## Outcomes & Retrospective
 
-The complete user flow is implemented and validated. `pnpm run test` passes 159 tests across 24 files, typecheck and production build pass, mocked Playwright passes 46 browser tests, and real-backend Playwright passes 8 integration tests. The importer uses one generated `importBooks` request, preserves retry state, performs no ASIN-to-ISBN substitution, and displays refreshed author data from the backend. Commits, push, PR, and CI verification remain.
+The complete user flow is implemented and validated. `pnpm run test` passes 160 tests across 24 files, typecheck and production build pass, mocked Playwright passes 46 browser tests, and real-backend Playwright passes 8 integration tests. The importer uses one generated `importBooks` request, preserves retry state, performs no ASIN-to-ISBN substitution, and displays refreshed author data from the backend. Implementation is committed as `b159324`; push, PR, and CI verification remain.
 
 ## Context and Orientation
 
@@ -144,3 +144,5 @@ Revision note (2026-08-22 02:57Z): Recorded complete validation results, the exi
 Revision note (2026-08-22 03:04Z): Added the Vitest file scheduling decision after repeated mandatory-suite retries timed out in different pre-existing BookList tests despite a green isolated file. This changes scheduling rather than weakening test timeouts or assertions.
 
 Revision note (2026-08-22 03:09Z): Disabled the redundant Vite TypeScript checker only during Vitest after tracing continued single-test starvation to the checker watcher. Development, build, and mandatory standalone type checking remain unchanged.
+
+Revision note (2026-08-22 03:13Z): Corrected the final unit-test count after adding the nullable image fixture and recorded implementation commit `b159324`. Push, PR, and CI remain active work.
