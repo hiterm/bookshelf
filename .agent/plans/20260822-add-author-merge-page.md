@@ -14,7 +14,7 @@ Users currently have no frontend workflow for the `mergeAuthor` mutation added i
 - [x] (2026-08-22 02:18Z) Extend the Node and browser mock stores and resolvers with merge semantics.
 - [x] (2026-08-22 02:18Z) Add unit, mock API, demo mode, and integration coverage.
 - [x] (2026-08-22 02:18Z) Run all required generation, formatting, unit, type, and end-to-end checks.
-- [ ] Commit the completed feature, push the branch, and create or update a pull request.
+- [x] (2026-08-22 02:22Z) Commit the completed feature, push the branch, and create pull request #324.
 
 ## Surprises & Discoveries
 
@@ -43,7 +43,7 @@ Users currently have no frontend workflow for the `mergeAuthor` mutation added i
 
 ## Outcomes & Retrospective
 
-The dedicated merge page, both book previews, API mutation, cache refresh, confirmation flow, and destination navigation are implemented. Node and browser mock stores reproduce API relationship replacement and deduplication, and the frontend was verified against the real API 2.13.0. All planned automated suites pass. Delivery remains only to commit, push, and open the pull request.
+The dedicated merge page, both book previews, API mutation, cache refresh, confirmation flow, and destination navigation are implemented. Node and browser mock stores reproduce API relationship replacement and deduplication, and the frontend was verified against the real API 2.13.0. All planned automated suites pass. The implementation was committed, pushed, and submitted as pull request #324.
 
 ## Context and Orientation
 
@@ -107,3 +107,5 @@ Define a GraphQL operation named `mergeAuthor`, a `useMergeAuthor` hook whose mu
 Plan created 2026-08-22 after the implementation request. It captures the approved dedicated-page workflow, both book previews, and pull-request delivery requirement.
 
 Plan updated 2026-08-22 after implementation and validation. It records the preview-server collision, completed milestones, and passing unit, mock, demo, and real-API coverage.
+
+Plan updated 2026-08-22 after delivery. Pull request #324 now contains the completed and validated feature.
