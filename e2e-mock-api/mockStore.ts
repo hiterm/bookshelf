@@ -138,11 +138,10 @@ export class MockStore {
     yomi: string | null,
     authorCreatedAt: number | null,
     authorUpdatedAt: number | null,
+    eventSetId = this.createEventSetId(),
   ): void {
     const now = Math.floor(Date.now() / 1000);
-    const eventSetId = `event-set-${String(this.nextEventSetId)}`;
     const eventId = `event-${String(this.nextEventId)}`;
-    this.nextEventSetId += 1;
     this.nextEventId += 1;
     this.authorEvents.push({
       eventId,
@@ -173,11 +172,10 @@ export class MockStore {
       createdAt: number;
       updatedAt: number;
     },
+    eventSetId = this.createEventSetId(),
   ): void {
     const now = Math.floor(Date.now() / 1000);
-    const eventSetId = `event-set-${String(this.nextEventSetId)}`;
     const eventId = `event-${String(this.nextEventId)}`;
-    this.nextEventSetId += 1;
     this.nextEventId += 1;
     this.bookEvents.push({
       eventId,
@@ -197,6 +195,12 @@ export class MockStore {
       changedAt: now,
       extra: null,
     });
+  }
+
+  private createEventSetId(): string {
+    const eventSetId = `event-set-${String(this.nextEventSetId)}`;
+    this.nextEventSetId += 1;
+    return eventSetId;
   }
 
   private createAuthorInternal(name: string, yomi = ""): Author {
@@ -276,11 +280,12 @@ export class MockStore {
   mergeAuthor(
     sourceAuthorId: string,
     destinationAuthorId: string,
-  ): Author | null {
+  ): { author: Author; eventSetId: string } | null {
     if (sourceAuthorId === destinationAuthorId) return null;
     const source = this.authors.get(sourceAuthorId);
     const destination = this.authors.get(destinationAuthorId);
     if (source == null || destination == null) return null;
+    const eventSetId = this.createEventSetId();
 
     this.books.forEach((book, bookId) => {
       if (!book.authorIds.includes(sourceAuthorId)) return;
@@ -293,7 +298,7 @@ export class MockStore {
         updatedAt: Math.floor(Date.now() / 1000),
       };
       this.books.set(bookId, updatedBook);
-      this.recordBookEvent("UPDATE", updatedBook);
+      this.recordBookEvent("UPDATE", updatedBook, eventSetId);
     });
     this.recordAuthorEvent(
       "DELETE",
@@ -302,9 +307,10 @@ export class MockStore {
       source.yomi,
       null,
       null,
+      eventSetId,
     );
     this.authors.delete(sourceAuthorId);
-    return destination;
+    return { author: destination, eventSetId };
   }
 
   createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">): Book {

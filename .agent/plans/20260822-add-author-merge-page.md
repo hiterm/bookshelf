@@ -61,7 +61,7 @@ Extend both mock stores and their GraphQL resolvers. Add component tests for sel
 
 ## Concrete Steps
 
-Run all commands from the repository root `/home/hiterm/.codex/worktrees/0950799b-43cf-4887-8089-a4ac44b724e9/bookshelf`.
+Run all commands from the repository root.
 
 Generate the schema and clients with:
 

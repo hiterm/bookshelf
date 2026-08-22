@@ -201,6 +201,7 @@ test.describe("Authors MERGE", () => {
 
   test("previews both book lists and merges into the destination", async ({
     page,
+    mockStore,
   }) => {
     await page.getByRole("link", { name: "著者を統合" }).click();
     await page.getByRole("combobox", { name: "統合元の著者" }).click();
@@ -224,6 +225,27 @@ test.describe("Authors MERGE", () => {
     await expect(page.getByRole("heading", { name: "著者2" })).toBeVisible();
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
     await expect(page.getByRole("link", { name: "テスト書籍3" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍4" })).toBeVisible();
+
+    const sourceDeleteEvent = mockStore
+      .getAuthorEvents("author-1")
+      .find((event) => event.operation === "DELETE");
+    const movedBookEvents = ["book-1", "book-3"].map((bookId) =>
+      mockStore
+        .getBookEvents(bookId)
+        .find((event) => event.operation === "UPDATE"),
+    );
+    expect(sourceDeleteEvent).toBeDefined();
+    expect(movedBookEvents).not.toContain(undefined);
+    expect(
+      movedBookEvents.every(
+        (event) => event?.eventSetId === sourceDeleteEvent?.eventSetId,
+      ),
+    ).toBe(true);
+
+    await page.goto("/authors/author-1");
+    await expect(page.getByText("Not found.")).toBeVisible();
   });
 });
 
