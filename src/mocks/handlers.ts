@@ -319,6 +319,37 @@ export const handlers = [
     });
   }),
 
+  graphqlApi.mutation("mergeAuthor", ({ variables }) => {
+    if (
+      !isObject(variables) ||
+      !isString(variables.sourceAuthorId) ||
+      !isString(variables.destinationAuthorId)
+    ) {
+      return HttpResponse.json(
+        { errors: [{ message: "Invalid variables" }] },
+        { status: 200 },
+      );
+    }
+    const author = mockStore.mergeAuthor(
+      variables.sourceAuthorId,
+      variables.destinationAuthorId,
+    );
+    if (author == null) {
+      return HttpResponse.json({
+        errors: [{ message: "Authors cannot be merged" }],
+      });
+    }
+    return HttpResponse.json({
+      data: {
+        mergeAuthor: {
+          __typename: "MergeAuthorPayload",
+          author: { __typename: "Author", ...author },
+          eventSetId: "merge-event-set",
+        },
+      },
+    });
+  }),
+
   graphqlApi.mutation("createBook", ({ variables }) => {
     if (!isObject(variables) || !isObject(variables.bookData)) {
       return HttpResponse.json(

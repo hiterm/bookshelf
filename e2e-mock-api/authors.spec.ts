@@ -191,6 +191,42 @@ test.describe("Authors DELETE", () => {
   });
 });
 
+test.describe("Authors MERGE", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "Login" }).click();
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+    await page.goto("/authors");
+  });
+
+  test("previews both book lists and merges into the destination", async ({
+    page,
+  }) => {
+    await page.getByRole("link", { name: "著者を統合" }).click();
+    await page.getByRole("combobox", { name: "統合元の著者" }).click();
+    await page.getByRole("option", { name: "著者1（ちょしゃいち）" }).click();
+    await page.getByRole("combobox", { name: "統合先の著者" }).click();
+    await page.getByRole("option", { name: "著者2（ちょしゃに）" }).click();
+
+    await expect(
+      page.getByRole("heading", { name: /統合元「著者1」の著書/ }),
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /統合先「著者2」の著書/ }),
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
+
+    await page.getByRole("button", { name: "統合内容を確認" }).click();
+    await page.getByRole("button", { name: "統合する" }).click();
+
+    await expect(page).toHaveURL(/\/authors\/author-2$/);
+    await expect(page.getByRole("heading", { name: "著者2" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "テスト書籍3" })).toBeVisible();
+  });
+});
+
 test.describe("Author History", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");

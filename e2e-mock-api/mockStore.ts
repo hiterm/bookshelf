@@ -273,6 +273,40 @@ export class MockStore {
     return deleted;
   }
 
+  mergeAuthor(
+    sourceAuthorId: string,
+    destinationAuthorId: string,
+  ): Author | null {
+    if (sourceAuthorId === destinationAuthorId) return null;
+    const source = this.authors.get(sourceAuthorId);
+    const destination = this.authors.get(destinationAuthorId);
+    if (source == null || destination == null) return null;
+
+    this.books.forEach((book, bookId) => {
+      if (!book.authorIds.includes(sourceAuthorId)) return;
+      const authorIds = book.authorIds.map((authorId) =>
+        authorId === sourceAuthorId ? destinationAuthorId : authorId,
+      );
+      const updatedBook = {
+        ...book,
+        authorIds: [...new Set(authorIds)],
+        updatedAt: Math.floor(Date.now() / 1000),
+      };
+      this.books.set(bookId, updatedBook);
+      this.recordBookEvent("UPDATE", updatedBook);
+    });
+    this.recordAuthorEvent(
+      "DELETE",
+      source.id,
+      source.name,
+      source.yomi,
+      null,
+      null,
+    );
+    this.authors.delete(sourceAuthorId);
+    return destination;
+  }
+
   createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">): Book {
     const book = this.createBookInternal(bookData);
     this.recordBookEvent("CREATE", book);

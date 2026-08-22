@@ -97,6 +97,30 @@ class MockStore {
     return this.authors.delete(id);
   }
 
+  mergeAuthor(
+    sourceAuthorId: string,
+    destinationAuthorId: string,
+  ): Author | null {
+    if (sourceAuthorId === destinationAuthorId) return null;
+    const source = this.authors.get(sourceAuthorId);
+    const destination = this.authors.get(destinationAuthorId);
+    if (source == null || destination == null) return null;
+
+    this.books.forEach((book, bookId) => {
+      if (!book.authorIds.includes(sourceAuthorId)) return;
+      const authorIds = book.authorIds.map((authorId) =>
+        authorId === sourceAuthorId ? destinationAuthorId : authorId,
+      );
+      this.books.set(bookId, {
+        ...book,
+        authorIds: [...new Set(authorIds)],
+        updatedAt: Math.floor(Date.now() / 1000),
+      });
+    });
+    this.authors.delete(sourceAuthorId);
+    return destination;
+  }
+
   createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">): Book {
     const id = `book-${String(this.nextBookId)}`;
     this.nextBookId += 1;

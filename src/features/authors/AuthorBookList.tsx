@@ -7,13 +7,14 @@ import { displayBookFormat } from "../books/entity/BookFormat";
 
 type Author = NonNullable<AuthorQuery["author"]>;
 
-export const AuthorBookList: React.FC<{ books: Author["books"] }> = ({
-  books,
-}) => {
+export const AuthorBookList: React.FC<{
+  books: Author["books"];
+  title?: string;
+}> = ({ books, title }) => {
   return (
     <Paper shadow="xs" m={20} p="lg">
       <Title order={2} mb="md">
-        本一覧
+        {title == null ? "本一覧" : `${title}（${String(books.length)}冊）`}
       </Title>
       {books.length === 0 ? (
         <Text>この著者の本はありません</Text>

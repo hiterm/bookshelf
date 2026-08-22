@@ -47,6 +47,17 @@ export const createResolvers = (mockStore: MockStore) => ({
       }
       return { authorId };
     },
+    mergeAuthor: (
+      _: unknown,
+      {
+        sourceAuthorId,
+        destinationAuthorId,
+      }: { sourceAuthorId: string; destinationAuthorId: string },
+    ) => {
+      const author = mockStore.mergeAuthor(sourceAuthorId, destinationAuthorId);
+      if (author == null) throw new Error("Authors cannot be merged");
+      return { author, eventSetId: "merge-event-set" };
+    },
     createBook: (
       _: unknown,
       { bookData }: { bookData: Parameters<typeof mockStore.createBook>[0] },
