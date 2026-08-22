@@ -114,6 +114,41 @@ describe("BookImportDialog", () => {
     expect(screen.getByText("選択件数: 3")).toBeInTheDocument();
   });
 
+  test("ignores a stale file read that finishes after a newer file", async () => {
+    render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
+    let resolveFirst: ((value: string) => void) | undefined;
+    let resolveSecond: ((value: string) => void) | undefined;
+    const firstFile = new File([], "first.json", {
+      type: "application/json",
+    });
+    const secondFile = new File([], "second.json", {
+      type: "application/json",
+    });
+    Object.defineProperty(firstFile, "text", {
+      value: () =>
+        new Promise<string>((resolve) => {
+          resolveFirst = resolve;
+        }),
+    });
+    Object.defineProperty(secondFile, "text", {
+      value: () =>
+        new Promise<string>((resolve) => {
+          resolveSecond = resolve;
+        }),
+    });
+
+    fireEvent.change(getFileInput(), { target: { files: [firstFile] } });
+    fireEvent.change(getFileInput(), { target: { files: [secondFile] } });
+    resolveSecond?.(JSON.stringify([{ ...fixture[0], title: "新しい選択" }]));
+    expect(await screen.findByText("新しい選択")).toBeInTheDocument();
+
+    resolveFirst?.(JSON.stringify([{ ...fixture[0], title: "古い選択" }]));
+    await waitFor(() => {
+      expect(screen.queryByText("古い選択")).not.toBeInTheDocument();
+    });
+    expect(screen.getByText("新しい選択")).toBeInTheDocument();
+  });
+
   test("filters inclusively without losing the uploaded source books", async () => {
     render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
     await uploadJson();

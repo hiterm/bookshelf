@@ -17,6 +17,7 @@ After this change, a signed-in user can upload the JSON file produced by Kindle 
 - [x] (2026-08-22 02:33Z) Add a real-backend integration flow that proves the generated operation and backend author behavior; execution remains part of final validation.
 - [x] (2026-08-22 02:57Z) Run all required generation, formatting, unit, type, build, mocked E2E, and integration checks: 159 unit tests, 46 mock E2E tests, and 8 integration tests pass.
 - [x] (2026-08-22 03:20Z) Review and commit meaningful units after mandatory pre-commit checks, push the branch, create PR #325, and verify every GitHub check succeeds.
+- [x] (2026-08-22 15:29Z) Address subagent review by discarding stale asynchronous file reads and add a regression test for out-of-order completion.
 
 ## Surprises & Discoveries
 
@@ -53,10 +54,13 @@ After this change, a signed-in user can upload the JSON file produced by Kindle 
 - Decision: Do not start `vite-plugin-checker`'s TypeScript watcher inside Vitest.
   Rationale: the watcher duplicated the mandatory `pnpm run typecheck` and continued to starve a random BookList test even after files were sequential. The checker remains active for development and production builds, and the full standalone TypeScript command still runs before every commit.
   Date/Author: 2026-08-22 / Codex
+- Decision: Keep file-extension enforcement at the browser file chooser through the existing `accept` attribute.
+  Rationale: the review noted that `accept` is advisory, and the user explicitly accepted that behavior. Content still must pass the strict Kindle exporter schema regardless of filename.
+  Date/Author: 2026-08-22 / Codex
 
 ## Outcomes & Retrospective
 
-The complete user flow is implemented, validated, committed, and available in PR #325. `pnpm run test` passes 160 tests across 24 files, typecheck and production build pass, mocked Playwright passes 46 browser tests, and real-backend Playwright passes 8 integration tests. The importer uses one generated `importBooks` request, preserves retry state, performs no ASIN-to-ISBN substitution, and displays refreshed author data from the backend. GitHub's generated-file, unit, demo-mode E2E, mock E2E, pinned integration, API-main integration, security, and deployment checks all completed successfully.
+The complete user flow is implemented, validated, committed, and available in PR #325. The importer uses one generated `importBooks` request, preserves retry state, ignores stale file reads, performs no ASIN-to-ISBN substitution, and displays refreshed author data from the backend. The last full validation before review follow-up passed 160 unit tests, 46 mocked browser tests, 8 real-backend integration tests, typecheck, build, and every GitHub check; final follow-up validation will update these counts.
 
 ## Context and Orientation
 
@@ -150,3 +154,5 @@ Revision note (2026-08-22 03:13Z): Corrected the final unit-test count after add
 Revision note (2026-08-22 03:16Z): Recorded the branch push and creation of PR #325. Only remote CI verification remains.
 
 Revision note (2026-08-22 03:20Z): Marked the plan complete after all PR #325 checks passed, including both integration-backend versions and all browser suites.
+
+Revision note (2026-08-22 15:29Z): Recorded the subagent review outcome, the accepted advisory file-extension behavior, and the stale-read race fix with its regression test.

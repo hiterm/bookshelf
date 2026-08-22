@@ -48,6 +48,7 @@ export const BookImportDialog = ({
   const [parseError, setParseError] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileReadId = useRef(0);
   const submitLock = useRef(false);
   const importBooksMutation = useImportBooks();
 
@@ -65,6 +66,7 @@ export const BookImportDialog = ({
   const busy = isReading || isSubmitting || importBooksMutation.isPending;
 
   const reset = () => {
+    fileReadId.current += 1;
     setFile(null);
     setBooks([]);
     setPurchasedOnOrAfter("");
@@ -82,25 +84,30 @@ export const BookImportDialog = ({
   };
 
   const loadFile = async (nextFile: File | null) => {
+    const readId = fileReadId.current + 1;
+    fileReadId.current = readId;
     setFile(nextFile);
     setParseError(null);
     if (nextFile == null) {
       setBooks([]);
       setSelectedIndexes(new Set());
+      setIsReading(false);
       return;
     }
 
     setIsReading(true);
     try {
       const parsed = parseKindleExport(await nextFile.text());
+      if (fileReadId.current !== readId) return;
       setBooks(parsed);
       setSelectedIndexes(new Set(parsed.map((_, index) => index)));
     } catch (error) {
+      if (fileReadId.current !== readId) return;
       setBooks([]);
       setSelectedIndexes(new Set());
       setParseError(String(error instanceof Error ? error.message : error));
     } finally {
-      setIsReading(false);
+      if (fileReadId.current === readId) setIsReading(false);
     }
   };
 
