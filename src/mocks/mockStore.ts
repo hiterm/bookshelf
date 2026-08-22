@@ -18,18 +18,35 @@ type Book = {
   updatedAt: number;
 };
 
+type AuthorEvent = {
+  eventId: string;
+  eventSetId: string;
+  operation: string;
+  authorId: string;
+  name: string | null;
+  yomi: string | null;
+  authorCreatedAt: number | null;
+  authorUpdatedAt: number | null;
+  changedAt: number;
+  extra: Record<string, unknown> | null;
+};
+
 class MockStore {
   private authors: Map<string, Author>;
   private books: Map<string, Book>;
+  private authorEvents: AuthorEvent[];
   private nextAuthorId: number;
   private nextBookId: number;
+  private nextMergeId: number;
   private _userRegistered: boolean;
 
   constructor(options?: { userRegistered?: boolean }) {
     this.authors = new Map();
     this.books = new Map();
+    this.authorEvents = [];
     this.nextAuthorId = 1;
     this.nextBookId = 1;
+    this.nextMergeId = 1;
     this._userRegistered = options?.userRegistered ?? true;
     this.seedData();
   }
@@ -100,11 +117,15 @@ class MockStore {
   mergeAuthor(
     sourceAuthorId: string,
     destinationAuthorId: string,
-  ): Author | null {
+  ): { author: Author; eventSetId: string } | null {
     if (sourceAuthorId === destinationAuthorId) return null;
     const source = this.authors.get(sourceAuthorId);
     const destination = this.authors.get(destinationAuthorId);
     if (source == null || destination == null) return null;
+    const mergeId = this.nextMergeId;
+    this.nextMergeId += 1;
+    const eventSetId = `merge-event-set-${String(mergeId)}`;
+    const changedAt = Math.floor(Date.now() / 1000);
 
     this.books.forEach((book, bookId) => {
       if (!book.authorIds.includes(sourceAuthorId)) return;
@@ -117,8 +138,42 @@ class MockStore {
         updatedAt: Math.floor(Date.now() / 1000),
       });
     });
+    this.authorEvents.push(
+      {
+        eventId: `merge-source-event-${String(mergeId)}`,
+        eventSetId,
+        operation: "DELETE",
+        authorId: sourceAuthorId,
+        name: source.name,
+        yomi: source.yomi,
+        authorCreatedAt: null,
+        authorUpdatedAt: null,
+        changedAt,
+        extra: {
+          type: "merge",
+          version: 1,
+          destination_author_id: destinationAuthorId,
+        },
+      },
+      {
+        eventId: `merge-destination-event-${String(mergeId)}`,
+        eventSetId,
+        operation: "MERGE_AS_DESTINATION",
+        authorId: destinationAuthorId,
+        name: null,
+        yomi: null,
+        authorCreatedAt: null,
+        authorUpdatedAt: null,
+        changedAt,
+        extra: { version: 1, source_author_id: sourceAuthorId },
+      },
+    );
     this.authors.delete(sourceAuthorId);
-    return destination;
+    return { author: destination, eventSetId };
+  }
+
+  getAuthorEvents(authorId: string): AuthorEvent[] {
+    return this.authorEvents.filter((event) => event.authorId === authorId);
   }
 
   createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">): Book {

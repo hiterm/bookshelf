@@ -237,6 +237,21 @@ test.describe("Authors MERGE", () => {
         .find((event) => event.operation === "UPDATE"),
     );
     expect(sourceDeleteEvent).toBeDefined();
+    expect(sourceDeleteEvent?.extra).toEqual({
+      type: "merge",
+      version: 1,
+      destination_author_id: "author-2",
+    });
+    const destinationMergeEvent = mockStore
+      .getAuthorEvents("author-2")
+      .find((event) => event.operation === "MERGE_AS_DESTINATION");
+    expect(destinationMergeEvent?.extra).toEqual({
+      version: 1,
+      source_author_id: "author-1",
+    });
+    expect(destinationMergeEvent?.eventSetId).toBe(
+      sourceDeleteEvent?.eventSetId,
+    );
     expect(movedBookEvents).not.toContain(undefined);
     expect(
       movedBookEvents.every(

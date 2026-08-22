@@ -8,7 +8,7 @@ type AuthorEventEntry = {
   authorCreatedAt: number | null;
   authorUpdatedAt: number | null;
   changedAt: number;
-  extra: null;
+  extra: Record<string, unknown> | null;
 };
 
 type BookEventEntry = {
@@ -139,6 +139,7 @@ export class MockStore {
     authorCreatedAt: number | null,
     authorUpdatedAt: number | null,
     eventSetId = this.createEventSetId(),
+    extra: Record<string, unknown> | null = null,
   ): void {
     const now = Math.floor(Date.now() / 1000);
     const eventId = `event-${String(this.nextEventId)}`;
@@ -153,7 +154,7 @@ export class MockStore {
       authorCreatedAt,
       authorUpdatedAt,
       changedAt: now,
-      extra: null,
+      extra,
     });
   }
 
@@ -308,6 +309,21 @@ export class MockStore {
       null,
       null,
       eventSetId,
+      {
+        type: "merge",
+        version: 1,
+        destination_author_id: destinationAuthorId,
+      },
+    );
+    this.recordAuthorEvent(
+      "MERGE_AS_DESTINATION",
+      destination.id,
+      null,
+      null,
+      null,
+      null,
+      eventSetId,
+      { version: 1, source_author_id: sourceAuthorId },
     );
     this.authors.delete(sourceAuthorId);
     return { author: destination, eventSetId };

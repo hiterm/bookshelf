@@ -226,7 +226,13 @@ export const handlers = [
         { status: 200 },
       );
     }
-    const events = getAuthorEvents(variables.authorId);
+    const events = [
+      ...getAuthorEvents(variables.authorId),
+      ...mockStore.getAuthorEvents(variables.authorId).map((event) => ({
+        __typename: "AuthorEventEntry" as const,
+        ...event,
+      })),
+    ];
     return HttpResponse.json({
       data: { authorEvents: events },
     });
@@ -330,11 +336,11 @@ export const handlers = [
         { status: 200 },
       );
     }
-    const author = mockStore.mergeAuthor(
+    const result = mockStore.mergeAuthor(
       variables.sourceAuthorId,
       variables.destinationAuthorId,
     );
-    if (author == null) {
+    if (result == null) {
       return HttpResponse.json({
         errors: [{ message: "Authors cannot be merged" }],
       });
@@ -343,8 +349,8 @@ export const handlers = [
       data: {
         mergeAuthor: {
           __typename: "MergeAuthorPayload",
-          author: { __typename: "Author", ...author },
-          eventSetId: "merge-event-set",
+          author: { __typename: "Author", ...result.author },
+          eventSetId: result.eventSetId,
         },
       },
     });

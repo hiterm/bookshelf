@@ -76,6 +76,7 @@ test("previews both authors' books and merges them", async ({ page }) => {
   await expect(page).toHaveURL(/\/authors\/author-2$/);
   await expect(page.getByRole("heading", { name: "著者2" })).toBeVisible();
   await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+  await expect(page.getByText("MERGE_AS_DESTINATION")).toBeVisible();
 });
 
 test.describe("author mutations", () => {
