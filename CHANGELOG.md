@@ -1,5 +1,10 @@
 # Changelog
 
+## [v2.15.1](https://github.com/hiterm/bookshelf/compare/v2.15.0...v2.15.1) - 2026-08-22
+
+### Other Changes
+- Update dependency hiterm/bookshelf-api to v2.13.0 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/322
+
 ## [v2.15.0](https://github.com/hiterm/bookshelf/compare/v2.14.1...v2.15.0) - 2026-08-21
 
 ### Other Changes
