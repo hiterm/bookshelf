@@ -25,7 +25,7 @@ import {
 import { useState } from "react";
 import { useCreateAuthor } from "../../compoments/hooks/useCreateAuthor";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
-import { Link } from "../../compoments/mantineTsr";
+import { Link, LinkButton } from "../../compoments/mantineTsr";
 import {
   authorFormSchema,
   type AuthorFormValues,
@@ -123,6 +123,14 @@ export const AuthorIndexPage: React.FC = () => {
       <Paper shadow="xs" p="md">
         <RegisterAuthorForm />
       </Paper>
+      <LinkButton
+        mt="md"
+        color="red"
+        variant="outline"
+        linkOptions={{ to: "/authors/merge" }}
+      >
+        著者を統合
+      </LinkButton>
       <Paper shadow="xs" p="md" mt="md">
         <TextInput
           placeholder="検索..."

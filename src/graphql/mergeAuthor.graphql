@@ -1,0 +1,11 @@
+mutation mergeAuthor($sourceAuthorId: ID!, $destinationAuthorId: ID!) {
+  mergeAuthor(
+    sourceAuthorId: $sourceAuthorId
+    destinationAuthorId: $destinationAuthorId
+  ) {
+    author {
+      id
+    }
+    eventSetId
+  }
+}
