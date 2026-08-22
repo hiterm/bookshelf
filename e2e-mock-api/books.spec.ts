@@ -196,6 +196,9 @@ test.describe("Books BULK IMPORT", () => {
     await expect(
       page.getByRole("link", { name: "Kindleインポート翌日" }),
     ).not.toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Kindleインポート前日" }),
+    ).not.toBeVisible();
   });
 });
 

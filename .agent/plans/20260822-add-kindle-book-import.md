@@ -156,3 +156,5 @@ Revision note (2026-08-22 03:16Z): Recorded the branch push and creation of PR #
 Revision note (2026-08-22 03:20Z): Marked the plan complete after all PR #325 checks passed, including both integration-backend versions and all browser suites.
 
 Revision note (2026-08-22 15:29Z): Recorded the subagent review outcome, the accepted advisory file-extension behavior, and the stale-read race fix with its regression test.
+
+Revision note (2026-08-22): Addressed GitHub review feedback by making the shared E2E fixture timezone-stable, asserting that date-ineligible books remain absent after import, reusing the generated GraphQL input type in the mock store, and associating mock import events with the returned event-set identifier. The event assertions remain outside frontend E2E scope.

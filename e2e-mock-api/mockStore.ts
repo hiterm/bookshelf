@@ -1,3 +1,5 @@
+import type { ImportBookInput } from "../src/generated/graphql-request";
+
 type AuthorEventEntry = {
   eventId: string;
   eventSetId: string;
@@ -48,17 +50,6 @@ type Book = {
   store: string;
   createdAt: number;
   updatedAt: number;
-};
-
-type ImportBookInput = {
-  title: string;
-  authorNames: string[];
-  isbn: string;
-  read: boolean;
-  owned: boolean;
-  priority: number;
-  format: string;
-  store: string;
 };
 
 export class MockStore {
@@ -149,11 +140,10 @@ export class MockStore {
     yomi: string | null,
     authorCreatedAt: number | null,
     authorUpdatedAt: number | null,
+    eventSetId = this.createEventSetId(),
   ): void {
     const now = Math.floor(Date.now() / 1000);
-    const eventSetId = `event-set-${String(this.nextEventSetId)}`;
     const eventId = `event-${String(this.nextEventId)}`;
-    this.nextEventSetId += 1;
     this.nextEventId += 1;
     this.authorEvents.push({
       eventId,
@@ -184,11 +174,10 @@ export class MockStore {
       createdAt: number;
       updatedAt: number;
     },
+    eventSetId = this.createEventSetId(),
   ): void {
     const now = Math.floor(Date.now() / 1000);
-    const eventSetId = `event-set-${String(this.nextEventSetId)}`;
     const eventId = `event-${String(this.nextEventId)}`;
-    this.nextEventSetId += 1;
     this.nextEventId += 1;
     this.bookEvents.push({
       eventId,
@@ -208,6 +197,12 @@ export class MockStore {
       changedAt: now,
       extra: null,
     });
+  }
+
+  private createEventSetId(): string {
+    const eventSetId = `event-set-${String(this.nextEventSetId)}`;
+    this.nextEventSetId += 1;
+    return eventSetId;
   }
 
   private createAuthorInternal(name: string, yomi = ""): Author {
@@ -294,17 +289,30 @@ export class MockStore {
     eventSetId: string;
     books: Book[];
   } {
+    const eventSetId = this.createEventSetId();
     const books = bookInputs.map(({ authorNames, ...bookData }) => {
       const authorIds = authorNames.map((name) => {
         const existing = this.getAllAuthors().find(
           (author) => author.name === name,
         );
-        return (existing ?? this.createAuthor(name)).id;
+        if (existing != null) return existing.id;
+
+        const author = this.createAuthorInternal(name);
+        this.recordAuthorEvent(
+          "CREATE",
+          author.id,
+          author.name,
+          author.yomi,
+          null,
+          null,
+          eventSetId,
+        );
+        return author.id;
       });
-      return this.createBook({ ...bookData, authorIds });
+      const book = this.createBookInternal({ ...bookData, authorIds });
+      this.recordBookEvent("CREATE", book, eventSetId);
+      return book;
     });
-    const eventSetId = `event-set-${String(this.nextEventSetId)}`;
-    this.nextEventSetId += 1;
     return { eventSetId, books };
   }
 
