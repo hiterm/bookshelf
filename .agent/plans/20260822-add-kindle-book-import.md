@@ -16,7 +16,7 @@ After this change, a signed-in user can upload the JSON file produced by Kindle 
 - [x] (2026-08-22 02:32Z) Extend the browser GraphQL mock and add the main mocked-browser import flow (focused Playwright scenario passes).
 - [x] (2026-08-22 02:33Z) Add a real-backend integration flow that proves the generated operation and backend author behavior; execution remains part of final validation.
 - [x] (2026-08-22 02:57Z) Run all required generation, formatting, unit, type, build, mocked E2E, and integration checks: 159 unit tests, 46 mock E2E tests, and 8 integration tests pass.
-- [ ] Review and commit meaningful units after mandatory pre-commit checks, push the branch, create or update the PR, and verify CI (completed: commits, push, and PR #325; remaining: CI verification).
+- [x] (2026-08-22 03:20Z) Review and commit meaningful units after mandatory pre-commit checks, push the branch, create PR #325, and verify every GitHub check succeeds.
 
 ## Surprises & Discoveries
 
@@ -56,7 +56,7 @@ After this change, a signed-in user can upload the JSON file produced by Kindle 
 
 ## Outcomes & Retrospective
 
-The complete user flow is implemented and validated. `pnpm run test` passes 160 tests across 24 files, typecheck and production build pass, mocked Playwright passes 46 browser tests, and real-backend Playwright passes 8 integration tests. The importer uses one generated `importBooks` request, preserves retry state, performs no ASIN-to-ISBN substitution, and displays refreshed author data from the backend. Implementation is committed and pushed, and PR #325 is open; CI verification remains.
+The complete user flow is implemented, validated, committed, and available in PR #325. `pnpm run test` passes 160 tests across 24 files, typecheck and production build pass, mocked Playwright passes 46 browser tests, and real-backend Playwright passes 8 integration tests. The importer uses one generated `importBooks` request, preserves retry state, performs no ASIN-to-ISBN substitution, and displays refreshed author data from the backend. GitHub's generated-file, unit, demo-mode E2E, mock E2E, pinned integration, API-main integration, security, and deployment checks all completed successfully.
 
 ## Context and Orientation
 
@@ -148,3 +148,5 @@ Revision note (2026-08-22 03:09Z): Disabled the redundant Vite TypeScript checke
 Revision note (2026-08-22 03:13Z): Corrected the final unit-test count after adding the nullable image fixture and recorded implementation commit `b159324`. Push, PR, and CI remain active work.
 
 Revision note (2026-08-22 03:16Z): Recorded the branch push and creation of PR #325. Only remote CI verification remains.
+
+Revision note (2026-08-22 03:20Z): Marked the plan complete after all PR #325 checks passed, including both integration-backend versions and all browser suites.
