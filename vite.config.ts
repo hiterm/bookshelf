@@ -61,12 +61,15 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     react(),
-    vitePluginChecker({ typescript: true }),
+    process.env.VITEST === "true"
+      ? undefined
+      : vitePluginChecker({ typescript: true }),
     excludeMockServiceWorker(),
   ],
   test: {
     globals: true,
     environment: "jsdom",
+    fileParallelism: false,
     exclude: [
       "**/node_modules/**",
       "**/e2e-mock-api/**",

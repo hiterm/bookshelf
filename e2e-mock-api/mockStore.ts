@@ -50,6 +50,17 @@ type Book = {
   updatedAt: number;
 };
 
+type ImportBookInput = {
+  title: string;
+  authorNames: string[];
+  isbn: string;
+  read: boolean;
+  owned: boolean;
+  priority: number;
+  format: string;
+  store: string;
+};
+
 export class MockStore {
   private authors: Map<string, Author>;
   private books: Map<string, Book>;
@@ -277,6 +288,24 @@ export class MockStore {
     const book = this.createBookInternal(bookData);
     this.recordBookEvent("CREATE", book);
     return book;
+  }
+
+  importBooks(bookInputs: ImportBookInput[]): {
+    eventSetId: string;
+    books: Book[];
+  } {
+    const books = bookInputs.map(({ authorNames, ...bookData }) => {
+      const authorIds = authorNames.map((name) => {
+        const existing = this.getAllAuthors().find(
+          (author) => author.name === name,
+        );
+        return (existing ?? this.createAuthor(name)).id;
+      });
+      return this.createBook({ ...bookData, authorIds });
+    });
+    const eventSetId = `event-set-${String(this.nextEventSetId)}`;
+    this.nextEventSetId += 1;
+    return { eventSetId, books };
   }
 
   getBook(id: string): Book | null {

@@ -51,6 +51,10 @@ export const createResolvers = (mockStore: MockStore) => ({
       _: unknown,
       { bookData }: { bookData: Parameters<typeof mockStore.createBook>[0] },
     ) => ({ book: mockStore.createBook(bookData) }),
+    importBooks: (
+      _: unknown,
+      { books }: { books: Parameters<typeof mockStore.importBooks>[0] },
+    ) => mockStore.importBooks(books),
     updateBook: (
       _: unknown,
       { bookData }: { bookData: Parameters<typeof mockStore.updateBook>[0] },
