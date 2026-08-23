@@ -116,36 +116,69 @@ test("previews both authors' books and merges them", async ({ page }) => {
           !("operation" in event) ||
           typeof event.operation !== "string" ||
           !("eventSetId" in event) ||
-          typeof event.eventSetId !== "string"
+          typeof event.eventSetId !== "string" ||
+          !("changedAt" in event) ||
+          typeof event.changedAt !== "number" ||
+          !("extra" in event)
         ) {
           throw new Error(`${field} contains an invalid event`);
         }
-        return { operation: event.operation, eventSetId: event.eventSetId };
+        return {
+          operation: event.operation,
+          eventSetId: event.eventSetId,
+          changedAt: event.changedAt,
+          extra: event.extra,
+        };
       });
     };
-    const [authorEvents, bookEvents] = await Promise.all([
-      request(
-        `query authorEvents($authorId: ID!) { authorEvents(authorId: $authorId) { operation eventSetId } }`,
-        "authorEvents",
-        { authorId: "author-2" },
-      ),
-      request(
-        `query bookEvents($bookId: ID!) { bookEvents(bookId: $bookId) { operation eventSetId } }`,
-        "bookEvents",
-        { bookId: "book-1" },
-      ),
-    ]);
-    return { authorEvents, bookEvents };
+    const [sourceAuthorEvents, destinationAuthorEvents, bookEvents] =
+      await Promise.all([
+        request(
+          `query authorEvents($authorId: ID!) { authorEvents(authorId: $authorId) { operation eventSetId changedAt extra } }`,
+          "authorEvents",
+          { authorId: "author-1" },
+        ),
+        request(
+          `query authorEvents($authorId: ID!) { authorEvents(authorId: $authorId) { operation eventSetId changedAt extra } }`,
+          "authorEvents",
+          { authorId: "author-2" },
+        ),
+        request(
+          `query bookEvents($bookId: ID!) { bookEvents(bookId: $bookId) { operation eventSetId changedAt extra } }`,
+          "bookEvents",
+          { bookId: "book-1" },
+        ),
+      ]);
+    return { sourceAuthorEvents, destinationAuthorEvents, bookEvents };
   });
-  const destinationEvent = mergeEvents.authorEvents.find(
+  const sourceEvent = mergeEvents.sourceAuthorEvents.find(
+    (event) => event.operation === "DELETE",
+  );
+  const destinationEvent = mergeEvents.destinationAuthorEvents.find(
     (event) => event.operation === "MERGE_AS_DESTINATION",
   );
   const bookUpdateEvent = mergeEvents.bookEvents.find((event) =>
     event.eventSetId.startsWith("merge-event-set-"),
   );
-  expect(destinationEvent).toBeDefined();
+  expect(sourceEvent?.extra).toEqual({
+    type: "merge",
+    version: 1,
+    destination_author_id: "author-2",
+  });
+  expect(destinationEvent?.extra).toEqual({
+    version: 1,
+    source_author_id: "author-1",
+  });
+  expect(sourceEvent?.eventSetId).toBe(destinationEvent?.eventSetId);
   expect(bookUpdateEvent?.operation).toBe("UPDATE");
   expect(bookUpdateEvent?.eventSetId).toBe(destinationEvent?.eventSetId);
+  expect(mergeEvents.bookEvents[0]).toEqual(bookUpdateEvent);
+  expect(
+    mergeEvents.bookEvents.every(
+      (event, index, events) =>
+        index === 0 || events[index - 1].changedAt >= event.changedAt,
+    ),
+  ).toBe(true);
 
   // Use client-side navigation because a full reload creates a fresh Demo Mode
   // service worker and intentionally resets its in-browser MockStore.
