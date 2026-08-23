@@ -1,0 +1,25 @@
+[
+  {
+    "title": "Kindleインポート前日",
+    "authors": "既存著者",
+    "acquiredTime": 1777032000000,
+    "readStatus": "UNKNOWN",
+    "asin": "B0E2E000001",
+    "productImage": "https://example.com/kindle-before.jpg"
+  },
+  {
+    "title": "Kindleインポート当日",
+    "authors": "Kindle共通著者",
+    "acquiredTime": 1777118400000,
+    "readStatus": "READ",
+    "asin": "B0E2E000002",
+    "productImage": "https://example.com/kindle-on-date.jpg"
+  },
+  {
+    "title": "Kindleインポート翌日",
+    "authors": "Kindle共通著者",
+    "acquiredTime": 1777204800000,
+    "readStatus": "UNKNOWN",
+    "asin": "B0E2E000003"
+  }
+]

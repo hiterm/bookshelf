@@ -1,0 +1,9 @@
+mutation importBooks($books: [ImportBookInput!]!) {
+  importBooks(books: $books) {
+    eventSetId
+    books {
+      id
+      title
+    }
+  }
+}

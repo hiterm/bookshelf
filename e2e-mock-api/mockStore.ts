@@ -1,3 +1,5 @@
+import type { ImportBookInput } from "../src/generated/graphql-request";
+
 type AuthorEventEntry = {
   eventId: string;
   eventSetId: string;
@@ -333,6 +335,37 @@ export class MockStore {
     const book = this.createBookInternal(bookData);
     this.recordBookEvent("CREATE", book);
     return book;
+  }
+
+  importBooks(bookInputs: ImportBookInput[]): {
+    eventSetId: string;
+    books: Book[];
+  } {
+    const eventSetId = this.createEventSetId();
+    const books = bookInputs.map(({ authorNames, ...bookData }) => {
+      const authorIds = authorNames.map((name) => {
+        const existing = this.getAllAuthors().find(
+          (author) => author.name === name,
+        );
+        if (existing != null) return existing.id;
+
+        const author = this.createAuthorInternal(name);
+        this.recordAuthorEvent(
+          "CREATE",
+          author.id,
+          author.name,
+          author.yomi,
+          null,
+          null,
+          eventSetId,
+        );
+        return author.id;
+      });
+      const book = this.createBookInternal({ ...bookData, authorIds });
+      this.recordBookEvent("CREATE", book, eventSetId);
+      return book;
+    });
+    return { eventSetId, books };
   }
 
   getBook(id: string): Book | null {
