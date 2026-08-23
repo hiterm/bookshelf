@@ -162,3 +162,5 @@ Revision note (2026-08-22): Addressed GitHub review feedback by making the share
 Revision note (2026-08-23): Updated validation results from the latest CI run, recorded the existing flaky sort-persistence E2E, and added a mock-store regression test for the shared import event-set identifier.
 
 Revision note (2026-08-23): Moved the direct mock-store event-set regression test from Playwright to Vitest so browser E2E remains limited to user-facing flows.
+
+Revision note (2026-08-23): Restricted the mock Playwright suite to `*.spec.ts` after CI showed that Playwright's default discovery also collected the colocated Vitest `*.test.ts` file.

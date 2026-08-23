@@ -8,6 +8,7 @@ const isCi = process.env.CI !== undefined && process.env.CI !== "";
 
 export default defineConfig({
   testDir: "./e2e-mock-api",
+  testMatch: "**/*.spec.ts",
   fullyParallel: true,
   forbidOnly: isCi,
   retries: isCi ? 2 : 0,
