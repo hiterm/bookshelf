@@ -72,7 +72,7 @@ export default defineConfig({
     fileParallelism: false,
     exclude: [
       "**/node_modules/**",
-      "**/e2e-mock-api/**",
+      "**/e2e-mock-api/**/*.spec.ts",
       "**/e2e-demo-mode/**",
       "**/e2e-integration/**",
     ],

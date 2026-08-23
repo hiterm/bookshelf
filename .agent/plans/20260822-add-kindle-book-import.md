@@ -160,3 +160,5 @@ Revision note (2026-08-22 15:29Z): Recorded the subagent review outcome, the acc
 Revision note (2026-08-22): Addressed GitHub review feedback by making the shared E2E fixture timezone-stable, asserting that date-ineligible books remain absent after import, reusing the generated GraphQL input type in the mock store, and associating mock import events with the returned event-set identifier. The event assertions remain outside frontend E2E scope.
 
 Revision note (2026-08-23): Updated validation results from the latest CI run, recorded the existing flaky sort-persistence E2E, and added a mock-store regression test for the shared import event-set identifier.
+
+Revision note (2026-08-23): Moved the direct mock-store event-set regression test from Playwright to Vitest so browser E2E remains limited to user-facing flows.
