@@ -36,5 +36,5 @@
 - [x] 6.2 Run mock API, Demo Mode, and integration E2E suites in their required environments and resolve all actionable failures
 - [x] 6.3 Review final generated files, diff, and repository status for unintended changes
 - [x] 6.4 Validate OpenSpec artifacts, reconcile them with the implementation, and mark all completed tasks
-- [ ] 6.5 Archive the completed OpenSpec change and sync its delta spec into the main specifications
+- [x] 6.5 Archive the completed OpenSpec change and sync its delta spec into the main specifications
 - [ ] 6.6 Commit meaningful green units, push the feature branch, create the main-targeting PR, and verify initial CI status
