@@ -361,7 +361,10 @@ export class MockStore {
         );
         return author.id;
       });
-      const book = this.createBookInternal({ ...bookData, authorIds });
+      const book = this.createBookInternal({
+        ...bookData,
+        authorIds: [...new Set(authorIds)],
+      });
       this.recordBookEvent("CREATE", book, eventSetId);
       return book;
     });

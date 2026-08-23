@@ -170,6 +170,18 @@ test("previews both authors' books and merges them", async ({ page }) => {
     source_author_id: "author-1",
   });
   expect(sourceEvent?.eventSetId).toBe(destinationEvent?.eventSetId);
+  expect(mergeEvents.sourceAuthorEvents[0]).toEqual(sourceEvent);
+  expect(mergeEvents.destinationAuthorEvents[0]).toEqual(destinationEvent);
+  [mergeEvents.sourceAuthorEvents, mergeEvents.destinationAuthorEvents].forEach(
+    (events) => {
+      expect(
+        events.every(
+          (event, index) =>
+            index === 0 || events[index - 1].changedAt >= event.changedAt,
+        ),
+      ).toBe(true);
+    },
+  );
   expect(bookUpdateEvent?.operation).toBe("UPDATE");
   expect(bookUpdateEvent?.eventSetId).toBe(destinationEvent?.eventSetId);
   expect(mergeEvents.bookEvents[0]).toEqual(bookUpdateEvent);

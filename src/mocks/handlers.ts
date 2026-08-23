@@ -238,7 +238,7 @@ export const handlers = [
         __typename: "AuthorEventEntry" as const,
         ...event,
       })),
-    ];
+    ].sort((a, b) => b.changedAt - a.changedAt);
     return HttpResponse.json({
       data: { authorEvents: events },
     });

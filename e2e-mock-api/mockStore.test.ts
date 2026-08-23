@@ -31,3 +31,23 @@ test("bulk import events share the returned event set", () => {
       .map(({ eventSetId }) => eventSetId),
   ).toEqual([result.eventSetId]);
 });
+
+test("bulk import removes duplicate authors from a book", () => {
+  const mockStore = new MockStore();
+  const result = mockStore.importBooks([
+    {
+      title: "重複著者確認書籍",
+      authorNames: ["重複著者", "重複著者"],
+      isbn: "",
+      read: false,
+      owned: true,
+      priority: 50,
+      format: "E_BOOK",
+      store: "KINDLE",
+    },
+  ]);
+
+  const importedBook = result.books[0];
+  expect(importedBook.authorIds).toHaveLength(1);
+  expect(mockStore.getAuthor(importedBook.authorIds[0])?.name).toBe("重複著者");
+});
