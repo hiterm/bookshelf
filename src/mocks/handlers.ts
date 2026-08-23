@@ -1,4 +1,5 @@
 import { graphql, HttpResponse } from "msw";
+import type { ImportBookInput } from "../generated/graphql-request";
 import { mockStore } from "./mockStore";
 
 const graphqlApi = graphql.link("/api/graphql");
@@ -9,6 +10,21 @@ function isString(v: unknown): v is string {
 
 function isObject(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null;
+}
+
+function isImportBookInput(v: unknown): v is ImportBookInput {
+  return (
+    isObject(v) &&
+    isString(v.title) &&
+    Array.isArray(v.authorNames) &&
+    v.authorNames.every(isString) &&
+    isString(v.isbn) &&
+    typeof v.read === "boolean" &&
+    typeof v.owned === "boolean" &&
+    typeof v.priority === "number" &&
+    isString(v.format) &&
+    isString(v.store)
+  );
 }
 
 function resolveBookAuthors(book: { authorIds: string[] }) {
@@ -481,6 +497,32 @@ export const handlers = [
     }
     return HttpResponse.json({
       data: { deleteBook: { bookId: variables.bookId } },
+    });
+  }),
+
+  graphqlApi.mutation("importBooks", ({ variables }) => {
+    if (
+      !isObject(variables) ||
+      !Array.isArray(variables.books) ||
+      !variables.books.every(isImportBookInput)
+    ) {
+      return HttpResponse.json(
+        { errors: [{ message: "Invalid variables" }] },
+        { status: 200 },
+      );
+    }
+    const result = mockStore.importBooks(variables.books);
+    return HttpResponse.json({
+      data: {
+        importBooks: {
+          eventSetId: result.eventSetId,
+          books: result.books.map((book) => ({
+            __typename: "Book",
+            ...book,
+            authors: resolveBookAuthors(book),
+          })),
+        },
+      },
     });
   }),
 ];

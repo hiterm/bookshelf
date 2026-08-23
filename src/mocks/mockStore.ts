@@ -1,3 +1,5 @@
+import type { ImportBookInput } from "../generated/graphql-request";
+
 type Author = {
   id: string;
   name: string;
@@ -58,6 +60,7 @@ class MockStore {
   private nextAuthorId: number;
   private nextBookId: number;
   private nextMergeId: number;
+  private nextImportId: number;
   private _userRegistered: boolean;
 
   constructor(options?: { userRegistered?: boolean }) {
@@ -68,6 +71,7 @@ class MockStore {
     this.nextAuthorId = 1;
     this.nextBookId = 1;
     this.nextMergeId = 1;
+    this.nextImportId = 1;
     this._userRegistered = options?.userRegistered ?? true;
     this.seedData();
   }
@@ -234,6 +238,27 @@ class MockStore {
     };
     this.books.set(id, book);
     return book;
+  }
+
+  importBooks(bookInputs: ImportBookInput[]): {
+    eventSetId: string;
+    books: Book[];
+  } {
+    const eventSetId = `import-event-set-${String(this.nextImportId)}`;
+    this.nextImportId += 1;
+    const books = bookInputs.map(({ authorNames, ...bookData }) => {
+      const authorIds = authorNames.map((name) => {
+        const existing = this.getAllAuthors().find(
+          (author) => author.name === name,
+        );
+        return existing?.id ?? this.createAuthor(name).id;
+      });
+      return this.createBook({
+        ...bookData,
+        authorIds: [...new Set(authorIds)],
+      });
+    });
+    return { eventSetId, books };
   }
 
   getBook(id: string): Book | null {

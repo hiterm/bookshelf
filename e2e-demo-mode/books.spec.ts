@@ -77,6 +77,30 @@ test("creates book and displays in list", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("imports selected Kindle books", async ({ page }) => {
+  await page.goto("/books");
+
+  await page.getByRole("button", { name: "一括インポート" }).click();
+  const dialog = page.getByRole("dialog", { name: "書籍一括インポート" });
+  await dialog
+    .locator('input[type="file"]')
+    .setInputFiles("e2e-fixtures/kindle-books.json");
+  await dialog.getByLabel("購入日（指定日以降）").fill("2026-04-25");
+  await dialog
+    .getByRole("checkbox", { name: "Kindleインポート翌日をインポート" })
+    .uncheck();
+  await dialog.getByRole("button", { name: "インポート" }).click();
+
+  await expect(page.getByText("1冊をインポートしました")).toBeVisible();
+  await expect(dialog).not.toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Kindleインポート当日" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Kindleインポート翌日" }),
+  ).not.toBeVisible();
+});
+
 test("updates book", async ({ page }) => {
   await page.goto("/books");
 
