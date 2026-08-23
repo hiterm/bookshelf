@@ -391,6 +391,49 @@ export class MockStore {
       .sort((a, b) => b.changedAt - a.changedAt);
   }
 
+  getEventSets(): { id: string; operation: string; createdAt: number }[] {
+    const grouped = new Map<
+      string,
+      { operations: string[]; createdAt: number }
+    >();
+    for (const event of [...this.bookEvents, ...this.authorEvents]) {
+      const current = grouped.get(event.eventSetId);
+      grouped.set(event.eventSetId, {
+        operations: [...(current?.operations ?? []), event.operation],
+        createdAt: Math.max(current?.createdAt ?? 0, event.changedAt),
+      });
+    }
+    return [...grouped]
+      .map(([id, group]) => ({
+        id,
+        operation: this.resolveEventSetOperation(id, group.operations),
+        createdAt: group.createdAt,
+      }))
+      .sort((a, b) => b.createdAt - a.createdAt);
+  }
+
+  getEventSet(id: string) {
+    const entry = this.getEventSets().find((eventSet) => eventSet.id === id);
+    if (entry == null) return null;
+    return {
+      ...entry,
+      bookEvents: this.bookEvents.filter((event) => event.eventSetId === id),
+      authorEvents: this.authorEvents.filter(
+        (event) => event.eventSetId === id,
+      ),
+    };
+  }
+
+  private resolveEventSetOperation(id: string, operations: string[]): string {
+    if (operations.includes("MERGE_AS_DESTINATION")) return "merge_author";
+    if (operations.length > 1) return "import_books";
+    const operation = operations[0]?.toLowerCase() ?? "unknown";
+    const entity = this.authorEvents.some((event) => event.eventSetId === id)
+      ? "author"
+      : "book";
+    return `${operation}_${entity}`;
+  }
+
   updateBook(
     bookData: { id: string } & Partial<
       Omit<Book, "id" | "createdAt" | "updatedAt">

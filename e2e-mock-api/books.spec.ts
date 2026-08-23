@@ -57,7 +57,9 @@ test.describe("Books READ", () => {
     ).toBeVisible();
 
     await expect(page.getByRole("link", { name: "Back" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "変更" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "変更", exact: true }),
+    ).toBeVisible();
     await expect(page.getByRole("button", { name: "削除" })).toBeVisible();
   });
 
@@ -213,13 +215,13 @@ test.describe("Books UPDATE", () => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await expect(page).toHaveURL(/\/books\/book-1$/);
 
-    await page.getByRole("link", { name: "変更" }).click();
+    await page.getByRole("link", { name: "変更", exact: true }).click();
     await expect(page).toHaveURL(/\/books\/book-1\/edit$/);
   });
 
   test("updates all fields", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
-    await page.getByRole("link", { name: "変更" }).click();
+    await page.getByRole("link", { name: "変更", exact: true }).click();
     await expect(page).toHaveURL(/\/books\/book-1\/edit$/);
 
     // Update all fields
@@ -273,7 +275,7 @@ test.describe("Books UPDATE", () => {
 
   test("preserves values when not changed", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
-    await page.getByRole("link", { name: "変更" }).click();
+    await page.getByRole("link", { name: "変更", exact: true }).click();
     await expect(page).toHaveURL(/\/books\/book-1\/edit$/);
 
     // Just click Save without changing anything
@@ -293,7 +295,7 @@ test.describe("Books UPDATE", () => {
 
   test("returns to detail page with Cancel", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
-    await page.getByRole("link", { name: "変更" }).click();
+    await page.getByRole("link", { name: "変更", exact: true }).click();
     await expect(page).toHaveURL(/\/books\/book-1\/edit$/);
 
     await page.getByRole("link", { name: "Cancel" }).click();
@@ -531,7 +533,7 @@ test.describe("Book History", () => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await expect(page).toHaveURL(/\/books\/book-1$/);
 
-    await page.getByRole("link", { name: "変更" }).click();
+    await page.getByRole("link", { name: "変更", exact: true }).click();
     await expect(page).toHaveURL(/\/books\/book-1\/edit$/);
     await page.getByLabel("書名").fill("更新テスト書籍");
     await page.getByRole("button", { name: "Save" }).click();

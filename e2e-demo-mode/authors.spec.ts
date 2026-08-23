@@ -214,7 +214,7 @@ test.describe("author mutations", () => {
 
   test("updates author name", async ({ page }) => {
     await page.getByRole("link", { name: testAuthorName }).click();
-    await page.getByRole("link", { name: "変更" }).click();
+    await page.getByRole("link", { name: "変更", exact: true }).click();
     await expect(page).toHaveURL(/\/authors\/[^/]+\/edit$/);
 
     const nameInput = page.getByRole("textbox", { name: "名前" });

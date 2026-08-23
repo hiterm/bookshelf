@@ -12,6 +12,8 @@ export const createResolvers = (mockStore: MockStore) => ({
       mockStore.getAuthorEvents(authorId),
     bookEvents: (_: unknown, { bookId }: { bookId: string }) =>
       mockStore.getBookEvents(bookId),
+    eventSets: () => mockStore.getEventSets(),
+    eventSet: (_: unknown, { id }: { id: string }) => mockStore.getEventSet(id),
   },
   Mutation: {
     registerUser: () => {
