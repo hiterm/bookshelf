@@ -98,6 +98,47 @@ test.describe
     });
   });
 
+test.describe("Books bulk import integration", () => {
+  test("imports books and resolves existing and new authors", async ({
+    page,
+  }) => {
+    await loginAndRegister(page);
+
+    await page.goto("/authors");
+    await page.getByLabel("名前").fill("既存著者");
+    await page.getByLabel("読み仮名").fill("きそんちょしゃ");
+    await page.getByRole("button", { name: "登録" }).click();
+    await expect(
+      page.locator("td").filter({ hasText: "既存著者" }),
+    ).toBeVisible();
+
+    await page.goto("/books");
+    await page.getByRole("button", { name: "一括インポート" }).click();
+    const dialog = page.getByRole("dialog", { name: "書籍一括インポート" });
+    await dialog
+      .locator('input[type="file"]')
+      .setInputFiles("e2e-fixtures/kindle-books.json");
+    await expect(dialog.getByText("条件該当件数: 3")).toBeVisible();
+    await dialog.getByRole("button", { name: "インポート" }).click();
+
+    await expect(page.getByText("3冊をインポートしました")).toBeVisible();
+    await expect(dialog).not.toBeVisible();
+
+    const existingAuthorRow = page
+      .getByRole("link", { name: "Kindleインポート前日" })
+      .locator("xpath=ancestor::tr");
+    await expect(existingAuthorRow.getByText("既存著者")).toBeVisible();
+    await expect(existingAuthorRow.getByText("きそんちょしゃ")).toBeVisible();
+
+    for (const title of ["Kindleインポート当日", "Kindleインポート翌日"]) {
+      const row = page
+        .getByRole("link", { name: title })
+        .locator("xpath=ancestor::tr");
+      await expect(row.getByText("Kindle共通著者")).toBeVisible();
+    }
+  });
+});
+
 test.describe
   .serial("Book history", () => {
     test("displays history after book creation", async ({ page }) => {
