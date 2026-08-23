@@ -15,7 +15,7 @@ After this change, a signed-in user can upload the JSON file produced by Kindle 
 - [x] (2026-08-22 02:29Z) Implement and component-test the upload, filtering, preview, selection, bulk submission, retry, and route UI (7 focused tests pass).
 - [x] (2026-08-22 02:32Z) Extend the browser GraphQL mock and add the main mocked-browser import flow (focused Playwright scenario passes).
 - [x] (2026-08-22 02:33Z) Add a real-backend integration flow that proves the generated operation and backend author behavior; execution remains part of final validation.
-- [x] (2026-08-22 02:57Z) Run all required generation, formatting, unit, type, build, mocked E2E, and integration checks: 159 unit tests, 46 mock E2E tests, and 8 integration tests pass.
+- [x] (2026-08-22 02:57Z) Run all required generation, formatting, unit, type, build, mocked E2E, and integration checks; the latest review-follow-up CI passed 24 unit files with 161 tests, typecheck, build, and 8 integration tests. Mock E2E completed with 45 of 46 tests passing and `sort persists on page reload` reported as flaky.
 - [x] (2026-08-22 03:20Z) Review and commit meaningful units after mandatory pre-commit checks, push the branch, create PR #325, and verify every GitHub check succeeds.
 - [x] (2026-08-22 15:29Z) Address subagent review by discarding stale asynchronous file reads and add a regression test for out-of-order completion.
 
@@ -60,7 +60,7 @@ After this change, a signed-in user can upload the JSON file produced by Kindle 
 
 ## Outcomes & Retrospective
 
-The complete user flow is implemented, validated, committed, and available in PR #325. The importer uses one generated `importBooks` request, preserves retry state, ignores stale file reads, performs no ASIN-to-ISBN substitution, and displays refreshed author data from the backend. The last full validation before review follow-up passed 160 unit tests, 46 mocked browser tests, 8 real-backend integration tests, typecheck, build, and every GitHub check; final follow-up validation will update these counts.
+The complete user flow is implemented, validated, committed, and available in PR #325. The importer uses one generated `importBooks` request, preserves retry state, ignores stale file reads, performs no ASIN-to-ISBN substitution, and displays refreshed author data from the backend. The latest review-follow-up CI passed 24 unit files with 161 tests, typecheck, build, and 8 real-backend integration tests. Mock E2E completed successfully with 45 of 46 tests passing and the existing `sort persists on page reload` test reported as flaky.
 
 ## Context and Orientation
 
@@ -158,3 +158,5 @@ Revision note (2026-08-22 03:20Z): Marked the plan complete after all PR #325 ch
 Revision note (2026-08-22 15:29Z): Recorded the subagent review outcome, the accepted advisory file-extension behavior, and the stale-read race fix with its regression test.
 
 Revision note (2026-08-22): Addressed GitHub review feedback by making the shared E2E fixture timezone-stable, asserting that date-ineligible books remain absent after import, reusing the generated GraphQL input type in the mock store, and associating mock import events with the returned event-set identifier. The event assertions remain outside frontend E2E scope.
+
+Revision note (2026-08-23): Updated validation results from the latest CI run, recorded the existing flaky sort-persistence E2E, and added a mock-store regression test for the shared import event-set identifier.
