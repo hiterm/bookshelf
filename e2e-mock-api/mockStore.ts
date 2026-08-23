@@ -10,7 +10,7 @@ type AuthorEventEntry = {
   authorCreatedAt: number | null;
   authorUpdatedAt: number | null;
   changedAt: number;
-  extra: null;
+  extra: Record<string, unknown> | null;
 };
 
 type BookEventEntry = {
@@ -141,6 +141,7 @@ export class MockStore {
     authorCreatedAt: number | null,
     authorUpdatedAt: number | null,
     eventSetId = this.createEventSetId(),
+    extra: Record<string, unknown> | null = null,
   ): void {
     const now = Math.floor(Date.now() / 1000);
     const eventId = `event-${String(this.nextEventId)}`;
@@ -155,7 +156,7 @@ export class MockStore {
       authorCreatedAt,
       authorUpdatedAt,
       changedAt: now,
-      extra: null,
+      extra,
     });
   }
 
@@ -279,6 +280,57 @@ export class MockStore {
     return deleted;
   }
 
+  mergeAuthor(
+    sourceAuthorId: string,
+    destinationAuthorId: string,
+  ): { author: Author; eventSetId: string } | null {
+    if (sourceAuthorId === destinationAuthorId) return null;
+    const source = this.authors.get(sourceAuthorId);
+    const destination = this.authors.get(destinationAuthorId);
+    if (source == null || destination == null) return null;
+    const eventSetId = this.createEventSetId();
+
+    this.books.forEach((book, bookId) => {
+      if (!book.authorIds.includes(sourceAuthorId)) return;
+      const authorIds = book.authorIds.map((authorId) =>
+        authorId === sourceAuthorId ? destinationAuthorId : authorId,
+      );
+      const updatedBook = {
+        ...book,
+        authorIds: [...new Set(authorIds)],
+        updatedAt: Math.floor(Date.now() / 1000),
+      };
+      this.books.set(bookId, updatedBook);
+      this.recordBookEvent("UPDATE", updatedBook, eventSetId);
+    });
+    this.recordAuthorEvent(
+      "DELETE",
+      source.id,
+      source.name,
+      source.yomi,
+      null,
+      null,
+      eventSetId,
+      {
+        type: "merge",
+        version: 1,
+        destination_author_id: destinationAuthorId,
+      },
+    );
+    this.recordAuthorEvent(
+      "MERGE_AS_DESTINATION",
+      destination.id,
+      null,
+      null,
+      null,
+      null,
+      eventSetId,
+      { version: 1, source_author_id: sourceAuthorId },
+    );
+    this.authors.delete(sourceAuthorId);
+    return { author: destination, eventSetId };
+  }
+
   createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">): Book {
     const book = this.createBookInternal(bookData);
     this.recordBookEvent("CREATE", book);
@@ -309,7 +361,10 @@ export class MockStore {
         );
         return author.id;
       });
-      const book = this.createBookInternal({ ...bookData, authorIds });
+      const book = this.createBookInternal({
+        ...bookData,
+        authorIds: [...new Set(authorIds)],
+      });
       this.recordBookEvent("CREATE", book, eventSetId);
       return book;
     });

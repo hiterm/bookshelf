@@ -140,3 +140,55 @@ test("displays related books and an empty state from the real API", async ({
   await page.getByRole("link", { name: emptyAuthorName }).click();
   await expect(page.getByText("この著者の本はありません")).toBeVisible();
 });
+
+test("previews and merges authors with the real API", async ({ page }) => {
+  const sourceName = "統合元著者";
+  const destinationName = "統合先著者";
+  const bookTitle = "統合で移動する書籍";
+
+  await loginAndRegister(page);
+  await page.goto("/authors");
+  await page.getByLabel("名前").fill(sourceName);
+  await page.getByLabel("読み仮名").fill("とうごうもとちょしゃ");
+  await page.getByRole("button", { name: "登録" }).click();
+  await expect(page.getByRole("link", { name: sourceName })).toBeVisible();
+  await page.getByLabel("名前").fill(destinationName);
+  await page.getByLabel("読み仮名").fill("とうごうさきちょしゃ");
+  await page.getByRole("button", { name: "登録" }).click();
+  await expect(page.getByRole("link", { name: destinationName })).toBeVisible();
+
+  await page.goto("/books");
+  await page.getByRole("button", { name: "追加" }).click();
+  await page.getByLabel("書名").fill(bookTitle);
+  const authorInput = page.getByPlaceholder("著者を検索");
+  await authorInput.click();
+  await authorInput.fill(sourceName);
+  await expect(page.getByRole("listbox")).toBeVisible();
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+  await page.getByRole("dialog").getByRole("button", { name: "追加" }).click();
+  await expect(page.getByRole("link", { name: bookTitle })).toBeVisible();
+
+  await page.goto("/authors/merge");
+  await page.getByRole("combobox", { name: "統合元の著者" }).click();
+  await page
+    .getByRole("option", { name: `${sourceName}（とうごうもとちょしゃ）` })
+    .click();
+  await page.getByRole("combobox", { name: "統合先の著者" }).click();
+  await page
+    .getByRole("option", { name: `${destinationName}（とうごうさきちょしゃ）` })
+    .click();
+  await expect(page.getByRole("link", { name: bookTitle })).toBeVisible();
+  await expect(page.getByText("この著者の本はありません")).toBeVisible();
+
+  await page.getByRole("button", { name: "統合内容を確認" }).click();
+  await page.getByRole("button", { name: "統合する" }).click();
+
+  await expect(page).toHaveURL(/\/authors\/.+$/);
+  await expect(
+    page.getByRole("heading", { name: destinationName }),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: bookTitle })).toBeVisible();
+  await page.goto("/authors");
+  await expect(page.getByRole("link", { name: sourceName })).toHaveCount(0);
+});

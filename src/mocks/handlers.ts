@@ -213,7 +213,13 @@ export const handlers = [
         { status: 200 },
       );
     }
-    const events = getBookEvents(variables.bookId);
+    const events = [
+      ...getBookEvents(variables.bookId),
+      ...mockStore.getBookEvents(variables.bookId).map((event) => ({
+        __typename: "BookEventEntry" as const,
+        ...event,
+      })),
+    ].sort((a, b) => b.changedAt - a.changedAt);
     return HttpResponse.json({
       data: { bookEvents: events },
     });
@@ -226,7 +232,13 @@ export const handlers = [
         { status: 200 },
       );
     }
-    const events = getAuthorEvents(variables.authorId);
+    const events = [
+      ...getAuthorEvents(variables.authorId),
+      ...mockStore.getAuthorEvents(variables.authorId).map((event) => ({
+        __typename: "AuthorEventEntry" as const,
+        ...event,
+      })),
+    ].sort((a, b) => b.changedAt - a.changedAt);
     return HttpResponse.json({
       data: { authorEvents: events },
     });
@@ -316,6 +328,37 @@ export const handlers = [
     }
     return HttpResponse.json({
       data: { deleteAuthor: { authorId: variables.authorId } },
+    });
+  }),
+
+  graphqlApi.mutation("mergeAuthor", ({ variables }) => {
+    if (
+      !isObject(variables) ||
+      !isString(variables.sourceAuthorId) ||
+      !isString(variables.destinationAuthorId)
+    ) {
+      return HttpResponse.json(
+        { errors: [{ message: "Invalid variables" }] },
+        { status: 200 },
+      );
+    }
+    const result = mockStore.mergeAuthor(
+      variables.sourceAuthorId,
+      variables.destinationAuthorId,
+    );
+    if (result == null) {
+      return HttpResponse.json({
+        errors: [{ message: "Authors cannot be merged" }],
+      });
+    }
+    return HttpResponse.json({
+      data: {
+        mergeAuthor: {
+          __typename: "MergeAuthorPayload",
+          author: { __typename: "Author", ...result.author },
+          eventSetId: result.eventSetId,
+        },
+      },
     });
   }),
 

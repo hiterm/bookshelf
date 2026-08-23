@@ -13,6 +13,9 @@ vi.mock(import("../../compoments/hooks/useAuthors"));
 
 vi.mock("../../compoments/mantineTsr", () => ({
   Link: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  LinkButton: ({ children }: { children: React.ReactNode }) => (
+    <button type="button">{children}</button>
+  ),
 }));
 
 const authors = Array.from({ length: 11 }, (_, index) => ({

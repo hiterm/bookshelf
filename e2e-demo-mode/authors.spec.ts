@@ -53,6 +53,151 @@ test("displays author history on detail page", async ({ page }) => {
   await expect(page.getByText("CREATE")).toBeVisible();
 });
 
+test("previews both authors' books and merges them", async ({ page }) => {
+  await page.goto("/authors");
+  await page.getByRole("link", { name: "著者を統合" }).click();
+  await page.getByRole("combobox", { name: "統合元の著者" }).click();
+  await page.getByRole("option", { name: "著者1（ちょしゃいち）" }).click();
+  await page.getByRole("combobox", { name: "統合先の著者" }).click();
+  await page.getByRole("option", { name: "著者2（ちょしゃに）" }).click();
+
+  await expect(
+    page.getByRole("heading", { name: /統合元「著者1」の著書/ }),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /統合先「著者2」の著書/ }),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
+
+  await page.getByRole("button", { name: "統合内容を確認" }).click();
+  await page.getByRole("button", { name: "統合する" }).click();
+
+  await expect(page).toHaveURL(/\/authors\/author-2$/);
+  await expect(page.getByRole("heading", { name: "著者2" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
+  await expect(page.getByText("MERGE_AS_DESTINATION")).toBeVisible();
+
+  const mergeEvents = await page.evaluate(async () => {
+    const request = async (
+      query: string,
+      field: "authorEvents" | "bookEvents",
+      variables: Record<string, string>,
+    ) => {
+      const response = await fetch("/api/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, variables }),
+      });
+      const payload: unknown = await response.json();
+      if (
+        typeof payload !== "object" ||
+        payload === null ||
+        !("data" in payload)
+      ) {
+        throw new Error("GraphQL response does not contain data");
+      }
+      const { data } = payload;
+      if (typeof data !== "object" || data === null) {
+        throw new Error(`GraphQL response does not contain ${field}`);
+      }
+      let events: unknown;
+      if (field === "authorEvents" && "authorEvents" in data) {
+        events = data.authorEvents;
+      } else if (field === "bookEvents" && "bookEvents" in data) {
+        events = data.bookEvents;
+      }
+      if (!Array.isArray(events)) throw new Error(`${field} is not an array`);
+      return events.map((event: unknown) => {
+        if (
+          typeof event !== "object" ||
+          event === null ||
+          !("operation" in event) ||
+          typeof event.operation !== "string" ||
+          !("eventSetId" in event) ||
+          typeof event.eventSetId !== "string" ||
+          !("changedAt" in event) ||
+          typeof event.changedAt !== "number" ||
+          !("extra" in event)
+        ) {
+          throw new Error(`${field} contains an invalid event`);
+        }
+        return {
+          operation: event.operation,
+          eventSetId: event.eventSetId,
+          changedAt: event.changedAt,
+          extra: event.extra,
+        };
+      });
+    };
+    const [sourceAuthorEvents, destinationAuthorEvents, bookEvents] =
+      await Promise.all([
+        request(
+          `query authorEvents($authorId: ID!) { authorEvents(authorId: $authorId) { operation eventSetId changedAt extra } }`,
+          "authorEvents",
+          { authorId: "author-1" },
+        ),
+        request(
+          `query authorEvents($authorId: ID!) { authorEvents(authorId: $authorId) { operation eventSetId changedAt extra } }`,
+          "authorEvents",
+          { authorId: "author-2" },
+        ),
+        request(
+          `query bookEvents($bookId: ID!) { bookEvents(bookId: $bookId) { operation eventSetId changedAt extra } }`,
+          "bookEvents",
+          { bookId: "book-1" },
+        ),
+      ]);
+    return { sourceAuthorEvents, destinationAuthorEvents, bookEvents };
+  });
+  const sourceEvent = mergeEvents.sourceAuthorEvents.find(
+    (event) => event.operation === "DELETE",
+  );
+  const destinationEvent = mergeEvents.destinationAuthorEvents.find(
+    (event) => event.operation === "MERGE_AS_DESTINATION",
+  );
+  const bookUpdateEvent = mergeEvents.bookEvents.find((event) =>
+    event.eventSetId.startsWith("merge-event-set-"),
+  );
+  expect(sourceEvent?.extra).toEqual({
+    type: "merge",
+    version: 1,
+    destination_author_id: "author-2",
+  });
+  expect(destinationEvent?.extra).toEqual({
+    version: 1,
+    source_author_id: "author-1",
+  });
+  expect(sourceEvent?.eventSetId).toBe(destinationEvent?.eventSetId);
+  expect(mergeEvents.sourceAuthorEvents[0]).toEqual(sourceEvent);
+  expect(mergeEvents.destinationAuthorEvents[0]).toEqual(destinationEvent);
+  [mergeEvents.sourceAuthorEvents, mergeEvents.destinationAuthorEvents].forEach(
+    (events) => {
+      expect(
+        events.every(
+          (event, index) =>
+            index === 0 || events[index - 1].changedAt >= event.changedAt,
+        ),
+      ).toBe(true);
+    },
+  );
+  expect(bookUpdateEvent?.operation).toBe("UPDATE");
+  expect(bookUpdateEvent?.eventSetId).toBe(destinationEvent?.eventSetId);
+  expect(mergeEvents.bookEvents[0]).toEqual(bookUpdateEvent);
+  expect(
+    mergeEvents.bookEvents.every(
+      (event, index, events) =>
+        index === 0 || events[index - 1].changedAt >= event.changedAt,
+    ),
+  ).toBe(true);
+
+  // Use client-side navigation because a full reload creates a fresh Demo Mode
+  // service worker and intentionally resets its in-browser MockStore.
+  await page.getByRole("link", { name: "著者", exact: true }).click();
+  await expect(page.getByRole("link", { name: "著者1" })).toHaveCount(0);
+});
+
 test.describe("author mutations", () => {
   let testAuthorName: string;
 

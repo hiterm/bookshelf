@@ -7,6 +7,7 @@ export const useAuthor = (id: string) => {
 
   return useQuery({
     queryKey: ["author", id],
+    enabled: id !== "",
     queryFn: async () => {
       const sdk = await createAuthenticatedSdk(getAccessTokenSilently);
       return sdk.author({ authorId: id });
