@@ -213,7 +213,13 @@ export const handlers = [
         { status: 200 },
       );
     }
-    const events = getBookEvents(variables.bookId);
+    const events = [
+      ...getBookEvents(variables.bookId),
+      ...mockStore.getBookEvents(variables.bookId).map((event) => ({
+        __typename: "BookEventEntry" as const,
+        ...event,
+      })),
+    ];
     return HttpResponse.json({
       data: { bookEvents: events },
     });

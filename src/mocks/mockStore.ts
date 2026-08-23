@@ -31,10 +31,30 @@ type AuthorEvent = {
   extra: Record<string, unknown> | null;
 };
 
+type BookEvent = {
+  eventId: string;
+  eventSetId: string;
+  operation: string;
+  bookId: string;
+  title: string;
+  authorIds: string[];
+  isbn: string;
+  read: boolean;
+  owned: boolean;
+  priority: number;
+  format: string;
+  store: string;
+  bookCreatedAt: number;
+  bookUpdatedAt: number;
+  changedAt: number;
+  extra: null;
+};
+
 class MockStore {
   private authors: Map<string, Author>;
   private books: Map<string, Book>;
   private authorEvents: AuthorEvent[];
+  private bookEvents: BookEvent[];
   private nextAuthorId: number;
   private nextBookId: number;
   private nextMergeId: number;
@@ -44,6 +64,7 @@ class MockStore {
     this.authors = new Map();
     this.books = new Map();
     this.authorEvents = [];
+    this.bookEvents = [];
     this.nextAuthorId = 1;
     this.nextBookId = 1;
     this.nextMergeId = 1;
@@ -137,6 +158,27 @@ class MockStore {
         authorIds: [...new Set(authorIds)],
         updatedAt: Math.floor(Date.now() / 1000),
       });
+      const updatedBook = this.books.get(bookId);
+      if (updatedBook != null) {
+        this.bookEvents.push({
+          eventId: `merge-book-event-${String(mergeId)}-${bookId}`,
+          eventSetId,
+          operation: "UPDATE",
+          bookId,
+          title: updatedBook.title,
+          authorIds: [...updatedBook.authorIds],
+          isbn: updatedBook.isbn,
+          read: updatedBook.read,
+          owned: updatedBook.owned,
+          priority: updatedBook.priority,
+          format: updatedBook.format,
+          store: updatedBook.store,
+          bookCreatedAt: updatedBook.createdAt,
+          bookUpdatedAt: updatedBook.updatedAt,
+          changedAt,
+          extra: null,
+        });
+      }
     });
     this.authorEvents.push(
       {
@@ -174,6 +216,10 @@ class MockStore {
 
   getAuthorEvents(authorId: string): AuthorEvent[] {
     return this.authorEvents.filter((event) => event.authorId === authorId);
+  }
+
+  getBookEvents(bookId: string): BookEvent[] {
+    return this.bookEvents.filter((event) => event.bookId === bookId);
   }
 
   createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">): Book {

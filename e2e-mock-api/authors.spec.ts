@@ -237,7 +237,10 @@ test.describe("Authors MERGE", () => {
         .find((event) => event.operation === "UPDATE"),
     );
     expect(sourceDeleteEvent).toBeDefined();
-    expect(sourceDeleteEvent?.extra).toEqual({
+    if (sourceDeleteEvent == null) {
+      throw new Error("Source delete event was not recorded");
+    }
+    expect(sourceDeleteEvent.extra).toEqual({
       type: "merge",
       version: 1,
       destination_author_id: "author-2",
@@ -250,12 +253,12 @@ test.describe("Authors MERGE", () => {
       source_author_id: "author-1",
     });
     expect(destinationMergeEvent?.eventSetId).toBe(
-      sourceDeleteEvent?.eventSetId,
+      sourceDeleteEvent.eventSetId,
     );
     expect(movedBookEvents).not.toContain(undefined);
     expect(
       movedBookEvents.every(
-        (event) => event?.eventSetId === sourceDeleteEvent?.eventSetId,
+        (event) => event?.eventSetId === sourceDeleteEvent.eventSetId,
       ),
     ).toBe(true);
 

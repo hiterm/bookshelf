@@ -76,7 +76,81 @@ test("previews both authors' books and merges them", async ({ page }) => {
   await expect(page).toHaveURL(/\/authors\/author-2$/);
   await expect(page.getByRole("heading", { name: "著者2" })).toBeVisible();
   await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
   await expect(page.getByText("MERGE_AS_DESTINATION")).toBeVisible();
+
+  const mergeEvents = await page.evaluate(async () => {
+    const request = async (
+      query: string,
+      field: "authorEvents" | "bookEvents",
+      variables: Record<string, string>,
+    ) => {
+      const response = await fetch("/api/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, variables }),
+      });
+      const payload: unknown = await response.json();
+      if (
+        typeof payload !== "object" ||
+        payload === null ||
+        !("data" in payload)
+      ) {
+        throw new Error("GraphQL response does not contain data");
+      }
+      const { data } = payload;
+      if (typeof data !== "object" || data === null) {
+        throw new Error(`GraphQL response does not contain ${field}`);
+      }
+      let events: unknown;
+      if (field === "authorEvents" && "authorEvents" in data) {
+        events = data.authorEvents;
+      } else if (field === "bookEvents" && "bookEvents" in data) {
+        events = data.bookEvents;
+      }
+      if (!Array.isArray(events)) throw new Error(`${field} is not an array`);
+      return events.map((event: unknown) => {
+        if (
+          typeof event !== "object" ||
+          event === null ||
+          !("operation" in event) ||
+          typeof event.operation !== "string" ||
+          !("eventSetId" in event) ||
+          typeof event.eventSetId !== "string"
+        ) {
+          throw new Error(`${field} contains an invalid event`);
+        }
+        return { operation: event.operation, eventSetId: event.eventSetId };
+      });
+    };
+    const [authorEvents, bookEvents] = await Promise.all([
+      request(
+        `query authorEvents($authorId: ID!) { authorEvents(authorId: $authorId) { operation eventSetId } }`,
+        "authorEvents",
+        { authorId: "author-2" },
+      ),
+      request(
+        `query bookEvents($bookId: ID!) { bookEvents(bookId: $bookId) { operation eventSetId } }`,
+        "bookEvents",
+        { bookId: "book-1" },
+      ),
+    ]);
+    return { authorEvents, bookEvents };
+  });
+  const destinationEvent = mergeEvents.authorEvents.find(
+    (event) => event.operation === "MERGE_AS_DESTINATION",
+  );
+  const bookUpdateEvent = mergeEvents.bookEvents.find((event) =>
+    event.eventSetId.startsWith("merge-event-set-"),
+  );
+  expect(destinationEvent).toBeDefined();
+  expect(bookUpdateEvent?.operation).toBe("UPDATE");
+  expect(bookUpdateEvent?.eventSetId).toBe(destinationEvent?.eventSetId);
+
+  // Use client-side navigation because a full reload creates a fresh Demo Mode
+  // service worker and intentionally resets its in-browser MockStore.
+  await page.getByRole("link", { name: "著者", exact: true }).click();
+  await expect(page.getByRole("link", { name: "著者1" })).toHaveCount(0);
 });
 
 test.describe("author mutations", () => {
