@@ -1,7 +1,8 @@
 # frontend-query-organization Specification
 
 ## Purpose
-TBD - created by archiving change organize-query-hooks. Update Purpose after archive.
+Define feature ownership for TanStack Query API hooks and feature-local query
+key factories while preserving existing cache, API, and authentication behavior.
 ## Requirements
 ### Requirement: Feature-owned domain API hooks
 The frontend SHALL store domain-specific TanStack Query hooks in the owning feature's flat `api` directory and SHALL keep feature-neutral hooks in the shared hooks directory.
@@ -35,4 +36,3 @@ The refactor MUST preserve all existing cache key values, invalidation targets a
 #### Scenario: Existing mutation succeeds after reorganization
 - **WHEN** a moved mutation hook completes successfully
 - **THEN** it invalidates the same cache keys at the same point in the mutation lifecycle as before
-
