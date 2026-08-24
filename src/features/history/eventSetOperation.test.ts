@@ -17,4 +17,8 @@ describe("history operation labels", () => {
     );
     expect(displayEventOperation("FUTURE_EVENT")).toBe("FUTURE_EVENT");
   });
+
+  test("translates lowercase merge destination events", () => {
+    expect(displayEventOperation("merge_as_destination")).toBe("統合先");
+  });
 });

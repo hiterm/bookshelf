@@ -57,6 +57,7 @@ export class MockStore {
   private books: Map<string, Book>;
   private authorEvents: AuthorEventEntry[];
   private bookEvents: BookEventEntry[];
+  private eventSets: Map<string, { operation: string; createdAt: number }>;
   private nextAuthorId: number;
   private nextBookId: number;
   private nextEventId: number;
@@ -68,6 +69,7 @@ export class MockStore {
     this.books = new Map();
     this.authorEvents = [];
     this.bookEvents = [];
+    this.eventSets = new Map();
     this.nextAuthorId = 1;
     this.nextBookId = 1;
     this.nextEventId = 1;
@@ -140,7 +142,7 @@ export class MockStore {
     yomi: string | null,
     authorCreatedAt: number | null,
     authorUpdatedAt: number | null,
-    eventSetId = this.createEventSetId(),
+    eventSetId = this.createEventSetId(`${operation.toLowerCase()}_author`),
     extra: Record<string, unknown> | null = null,
   ): void {
     const now = Math.floor(Date.now() / 1000);
@@ -175,7 +177,7 @@ export class MockStore {
       createdAt: number;
       updatedAt: number;
     },
-    eventSetId = this.createEventSetId(),
+    eventSetId = this.createEventSetId(`${operation.toLowerCase()}_book`),
   ): void {
     const now = Math.floor(Date.now() / 1000);
     const eventId = `event-${String(this.nextEventId)}`;
@@ -200,9 +202,13 @@ export class MockStore {
     });
   }
 
-  private createEventSetId(): string {
+  private createEventSetId(operation: string): string {
     const eventSetId = `event-set-${String(this.nextEventSetId)}`;
     this.nextEventSetId += 1;
+    this.eventSets.set(eventSetId, {
+      operation,
+      createdAt: Math.floor(Date.now() / 1000),
+    });
     return eventSetId;
   }
 
@@ -288,7 +294,7 @@ export class MockStore {
     const source = this.authors.get(sourceAuthorId);
     const destination = this.authors.get(destinationAuthorId);
     if (source == null || destination == null) return null;
-    const eventSetId = this.createEventSetId();
+    const eventSetId = this.createEventSetId("merge_author");
 
     this.books.forEach((book, bookId) => {
       if (!book.authorIds.includes(sourceAuthorId)) return;
@@ -341,7 +347,7 @@ export class MockStore {
     eventSetId: string;
     books: Book[];
   } {
-    const eventSetId = this.createEventSetId();
+    const eventSetId = this.createEventSetId("import_books");
     const books = bookInputs.map(({ authorNames, ...bookData }) => {
       const authorIds = authorNames.map((name) => {
         const existing = this.getAllAuthors().find(
@@ -392,22 +398,10 @@ export class MockStore {
   }
 
   getEventSets(): { id: string; operation: string; createdAt: number }[] {
-    const grouped = new Map<
-      string,
-      { operations: string[]; createdAt: number }
-    >();
-    for (const event of [...this.bookEvents, ...this.authorEvents]) {
-      const current = grouped.get(event.eventSetId);
-      grouped.set(event.eventSetId, {
-        operations: [...(current?.operations ?? []), event.operation],
-        createdAt: Math.max(current?.createdAt ?? 0, event.changedAt),
-      });
-    }
-    return [...grouped]
-      .map(([id, group]) => ({
+    return [...this.eventSets]
+      .map(([id, eventSet]) => ({
         id,
-        operation: this.resolveEventSetOperation(id, group.operations),
-        createdAt: group.createdAt,
+        ...eventSet,
       }))
       .sort((a, b) => b.createdAt - a.createdAt);
   }
@@ -422,16 +416,6 @@ export class MockStore {
         (event) => event.eventSetId === id,
       ),
     };
-  }
-
-  private resolveEventSetOperation(id: string, operations: string[]): string {
-    if (operations.includes("MERGE_AS_DESTINATION")) return "merge_author";
-    if (operations.length > 1) return "import_books";
-    const operation = operations[0]?.toLowerCase() ?? "unknown";
-    const entity = this.authorEvents.some((event) => event.eventSetId === id)
-      ? "author"
-      : "book";
-    return `${operation}_${entity}`;
   }
 
   updateBook(

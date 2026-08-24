@@ -16,6 +16,7 @@ const eventOperationLabels: Readonly<Record<string, string>> = {
   update: "更新",
   delete: "削除",
   restore: "復元",
+  merge_as_destination: "統合先",
   CREATE: "追加",
   UPDATE: "更新",
   DELETE: "削除",
