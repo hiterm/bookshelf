@@ -105,7 +105,7 @@ test("updates book", async ({ page }) => {
   await page.goto("/books");
 
   await page.getByRole("link", { name: "テスト書籍1" }).click();
-  await page.getByRole("link", { name: "変更" }).click();
+  await page.getByRole("link", { name: "変更", exact: true }).click();
 
   await page.getByLabel("書名").fill("更新済みテスト書籍1");
   await page.getByRole("button", { name: "Save" }).click();

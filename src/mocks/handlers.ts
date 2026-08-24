@@ -150,6 +150,60 @@ export const handlers = [
     });
   }),
 
+  graphqlApi.query("eventSets", () => {
+    return HttpResponse.json({
+      data: {
+        eventSets: [
+          {
+            id: "event-set-2",
+            operation: "update_book",
+            createdAt: 1609545600,
+          },
+          {
+            id: "event-set-1",
+            operation: "create_book",
+            createdAt: 1609459200,
+          },
+        ],
+      },
+    });
+  }),
+
+  graphqlApi.query("eventSet", ({ variables }) => {
+    if (!isObject(variables) || !isString(variables.id)) {
+      return HttpResponse.json(
+        { errors: [{ message: "Invalid variables" }] },
+        { status: 200 },
+      );
+    }
+    const entry =
+      variables.id === "event-set-2"
+        ? { id: variables.id, operation: "update_book", createdAt: 1609545600 }
+        : variables.id === "event-set-1"
+          ? {
+              id: variables.id,
+              operation: "create_book",
+              createdAt: 1609459200,
+            }
+          : null;
+    return HttpResponse.json({
+      data: {
+        eventSet:
+          entry == null
+            ? null
+            : {
+                ...entry,
+                bookEvents: getBookEvents("book-1").filter(
+                  (event) => event.eventSetId === variables.id,
+                ),
+                authorEvents: getAuthorEvents("author-1").filter(
+                  (event) => event.eventSetId === variables.id,
+                ),
+              },
+      },
+    });
+  }),
+
   graphqlApi.query("authors", () => {
     const authors = mockStore.getAllAuthors().map((author) => ({
       __typename: "Author",

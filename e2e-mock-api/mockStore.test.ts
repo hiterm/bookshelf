@@ -51,3 +51,23 @@ test("bulk import removes duplicate authors from a book", () => {
   expect(importedBook.authorIds).toHaveLength(1);
   expect(mockStore.getAuthor(importedBook.authorIds[0])?.name).toBe("重複著者");
 });
+
+test("single-book import with an existing author keeps import operation", () => {
+  const mockStore = new MockStore();
+  const result = mockStore.importBooks([
+    {
+      title: "単一インポート書籍",
+      authorNames: ["著者1"],
+      isbn: "",
+      read: false,
+      owned: true,
+      priority: 50,
+      format: "E_BOOK",
+      store: "KINDLE",
+    },
+  ]);
+
+  expect(mockStore.getEventSet(result.eventSetId)?.operation).toBe(
+    "import_books",
+  );
+});

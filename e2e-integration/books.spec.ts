@@ -16,6 +16,27 @@ async function loginAndRegister(page: Page) {
   await expect(page).toHaveURL(/\/books$/);
 }
 
+test("follows a real author creation EventSet into its detail", async ({
+  page,
+}) => {
+  await loginAndRegister(page);
+  const historyAuthor = `履歴テスト著者-${Date.now().toString()}`;
+  await page.goto("/authors");
+  await page.getByLabel("名前").fill(historyAuthor);
+  await page.getByLabel("読み仮名").fill("りれきてすとちょしゃ");
+  await page.getByRole("button", { name: "登録" }).click();
+  await expect(
+    page.locator("td").filter({ hasText: historyAuthor }),
+  ).toBeVisible();
+
+  await page.getByRole("link", { name: "変更履歴" }).click();
+  await page.getByRole("link", { name: "著者を追加の詳細" }).first().click();
+  await expect(page.getByRole("heading", { name: "著者を追加" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: `追加: ${historyAuthor}` }),
+  ).toBeVisible();
+});
+
 test.describe
   .serial("Books CRUD integration", () => {
     test("creates, displays, updates, and deletes a book", async ({ page }) => {
@@ -74,7 +95,7 @@ test.describe
       ).toBeVisible();
 
       // Update the book
-      await page.getByRole("link", { name: "変更" }).click();
+      await page.getByRole("link", { name: "変更", exact: true }).click();
       await expect(page).toHaveURL(/\/books\/.+\/edit$/);
 
       await page.getByLabel("書名").fill(UPDATED_TITLE);
@@ -221,7 +242,7 @@ test.describe
       await expect(page).toHaveURL(/\/books\/.+$/);
 
       // Update the book
-      await page.getByRole("link", { name: "変更" }).click();
+      await page.getByRole("link", { name: "変更", exact: true }).click();
       await expect(page).toHaveURL(/\/books\/.+\/edit$/);
       await page.getByLabel("書名").fill(UPDATED_TITLE);
       await page.getByRole("button", { name: "Save" }).click();
