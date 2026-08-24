@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AppErrorProvider } from "../../compoments/errors/AppErrorProvider";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
@@ -84,7 +85,9 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   });
   const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <MantineProvider env="test">{children}</MantineProvider>
+      <MantineProvider env="test">
+        <AppErrorProvider>{children}</AppErrorProvider>
+      </MantineProvider>
     </QueryClientProvider>
   );
   return wrapper;

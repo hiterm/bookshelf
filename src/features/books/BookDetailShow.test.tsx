@@ -5,6 +5,7 @@ import React from "react";
 import { vi } from "vitest";
 import { useDeleteBook } from "../../compoments/hooks/useDeleteBook";
 import { BookDetailShow } from "./BookDetailShow";
+import { AppErrorProvider } from "../../compoments/errors/AppErrorProvider";
 import type { Book } from "./entity/Book";
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -69,7 +70,9 @@ beforeAll(() => {
 test("shows authors and author readings as separate items", () => {
   render(<BookDetailShow book={book} />, {
     wrapper: ({ children }) => (
-      <MantineProvider env="test">{children}</MantineProvider>
+      <MantineProvider env="test">
+        <AppErrorProvider>{children}</AppErrorProvider>
+      </MantineProvider>
     ),
   });
 

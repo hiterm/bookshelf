@@ -293,6 +293,55 @@ test.describe("Books UPDATE", () => {
     ).toBeVisible();
   });
 
+  test("keeps update errors visible after the notification closes", async ({
+    page,
+  }) => {
+    await page.route("http://localhost:4000/graphql", async (route) => {
+      const body: unknown = route.request().postDataJSON();
+      const query =
+        typeof body === "object" &&
+        body != null &&
+        "query" in body &&
+        typeof body.query === "string"
+          ? body.query
+          : "";
+      if (query.includes("mutation updateBook")) {
+        await route.fulfill({
+          status: 200,
+          json: {
+            errors: [
+              {
+                message: "Update rejected",
+                extensions: { code: "UPDATE_REJECTED" },
+              },
+            ],
+          },
+        });
+        return;
+      }
+      await route.fallback();
+    });
+
+    await page.getByRole("link", { name: "テスト書籍1" }).click();
+    await page.getByRole("link", { name: "変更", exact: true }).click();
+    await page.getByRole("button", { name: "Save" }).click();
+
+    const notification = page
+      .locator(".mantine-Notification-root")
+      .filter({ hasText: "書籍の更新に失敗しました" });
+    const panel = page.getByTestId("persistent-error-panel");
+    await expect(notification).toBeVisible();
+    await expect(panel.getByText("書籍の更新に失敗しました")).toBeVisible();
+    await expect(notification).not.toBeVisible({ timeout: 10_000 });
+    await expect(panel.getByText("書籍の更新に失敗しました")).toBeVisible();
+
+    await panel.getByRole("button", { name: "詳細を表示" }).click();
+    await expect(panel.getByText(/Operation: UpdateBook/)).toBeVisible();
+    await expect(panel.getByText(/Message: Update rejected/)).toBeVisible();
+    await panel.getByRole("button", { name: "閉じる" }).click();
+    await expect(panel).not.toBeVisible();
+  });
+
   test("returns to detail page with Cancel", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await page.getByRole("link", { name: "変更", exact: true }).click();

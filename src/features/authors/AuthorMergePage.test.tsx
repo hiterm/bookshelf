@@ -8,6 +8,7 @@ import { useAuthor } from "../../compoments/hooks/useAuthor";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
 import { useMergeAuthor } from "../../compoments/hooks/useMergeAuthor";
 import { AuthorMergePage } from "./AuthorMergePage";
+import { AppErrorProvider } from "../../compoments/errors/AppErrorProvider";
 
 const navigate = vi.fn().mockResolvedValue(undefined);
 const mutateAsync = vi.fn().mockResolvedValue({
@@ -126,7 +127,9 @@ beforeEach(() => {
 const renderPage = () =>
   render(<AuthorMergePage />, {
     wrapper: ({ children }) => (
-      <MantineProvider env="test">{children}</MantineProvider>
+      <MantineProvider env="test">
+        <AppErrorProvider>{children}</AppErrorProvider>
+      </MantineProvider>
     ),
   });
 

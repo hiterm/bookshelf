@@ -7,6 +7,7 @@ import React from "react";
 import { LinkButton } from "../../compoments/mantineTsr";
 import { useCreateAuthor } from "../../compoments/hooks/useCreateAuthor";
 import { useUpdateBook } from "../../compoments/hooks/useUpdateBook";
+import { useAppError } from "../../compoments/errors/AppErrorProvider";
 import { bookFormSchema, BookFormValues } from "./bookFormSchema";
 import { resolvePendingAuthors } from "./resolvePendingAuthors";
 import { BookUpdateForm } from "./BookUpdateForm";
@@ -19,6 +20,7 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
 
   const updateBookMutation = useUpdateBook();
   const createAuthorMutation = useCreateAuthor();
+  const { reportError } = useAppError();
 
   const handleSubmit = async (values: BookFormValues) => {
     let resolvedAuthors: Awaited<ReturnType<typeof resolvePendingAuthors>>;
@@ -31,9 +33,10 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
         },
       );
     } catch (error) {
-      showNotification({
-        message: `Failed to create author: ${String(error)}`,
-        color: "red",
+      reportError({
+        title: "著者の作成に失敗しました",
+        operation: "CreateAuthor",
+        error,
       });
       return;
     }
@@ -57,9 +60,10 @@ export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
       await navigate({ to: `/books/$id`, params: { id: book.id } });
       showNotification({ message: "更新しました", color: "teal" });
     } catch (error) {
-      showNotification({
-        message: `Failed to update book: ${String(error)}`,
-        color: "red",
+      reportError({
+        title: "書籍の更新に失敗しました",
+        operation: "UpdateBook",
+        error,
       });
     }
   };

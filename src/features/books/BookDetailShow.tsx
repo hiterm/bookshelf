@@ -17,6 +17,7 @@ import React, { useState } from "react";
 import { Link, LinkButton } from "../../compoments/mantineTsr";
 import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
 import { useDeleteBook } from "../../compoments/hooks/useDeleteBook";
+import { useAppError } from "../../compoments/errors/AppErrorProvider";
 import { Book } from "./entity/Book";
 import { displayBookFormat } from "./entity/BookFormat";
 import { displayBookStore } from "./entity/BookStore";
@@ -46,6 +47,7 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
   const [open, setOpen] = useState(false);
 
   const mutation = useDeleteBook();
+  const { reportError } = useAppError();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -65,9 +67,10 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
         color: "teal",
       });
     } catch (error) {
-      showNotification({
-        message: `削除に失敗しました: ${String(error)}`,
-        color: "red",
+      reportError({
+        title: "書籍の削除に失敗しました",
+        operation: "DeleteBook",
+        error,
       });
     }
   };

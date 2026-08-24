@@ -7,6 +7,7 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
 import { useUpdateAuthor } from "../../compoments/hooks/useUpdateAuthor";
+import { AppErrorProvider } from "../../compoments/errors/AppErrorProvider";
 import { AuthorDetailEdit } from "./AuthorDetailEdit";
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -80,7 +81,9 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   });
   const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <MantineProvider env="test">{children}</MantineProvider>
+      <MantineProvider env="test">
+        <AppErrorProvider>{children}</AppErrorProvider>
+      </MantineProvider>
     </QueryClientProvider>
   );
   return wrapper;
@@ -171,9 +174,10 @@ describe("AuthorDetailEdit", () => {
     await userEvent.type(input, "更新された著者");
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
     await waitFor(() => {
-      const call = vi.mocked(showNotification).mock.calls[0][0];
-      expect(call.color).toBe("red");
-      expect(call.message).toContain("Network error");
+      expect(showNotification).toHaveBeenCalledWith({
+        message: "著者の更新に失敗しました",
+        color: "red",
+      });
     });
   });
 });

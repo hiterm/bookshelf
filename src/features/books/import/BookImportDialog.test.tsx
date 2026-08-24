@@ -7,6 +7,7 @@ import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { showNotification } from "@mantine/notifications";
 import { useImportBooks } from "../../../compoments/hooks/useImportBooks";
 import { BookImportDialog } from "./BookImportDialog";
+import { AppErrorProvider } from "../../../compoments/errors/AppErrorProvider";
 
 const mutateAsync = vi.fn();
 
@@ -72,7 +73,9 @@ const fixture = [
 ];
 
 const wrapper = ({ children }: { children: ReactNode }) => (
-  <MantineProvider env="test">{children}</MantineProvider>
+  <MantineProvider env="test">
+    <AppErrorProvider>{children}</AppErrorProvider>
+  </MantineProvider>
 );
 
 const getFileInput = () => {
