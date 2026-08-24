@@ -170,6 +170,14 @@ test.describe("Books BULK IMPORT", () => {
   test("imports selected Kindle books after an inclusive date filter", async ({
     page,
   }) => {
+    await page.goto("/authors");
+    await page.getByLabel("名前").fill("既存著者");
+    await page.getByLabel("読み仮名").fill("きそんちょしゃ");
+    await page.getByRole("button", { name: "登録" }).click();
+    await expect(
+      page.locator("td").filter({ hasText: "既存著者" }),
+    ).toBeVisible();
+    await page.goto("/books");
     await page.getByRole("button", { name: "一括インポート" }).click();
     const dialog = page.getByRole("dialog", { name: "書籍一括インポート" });
     await expect(dialog).toBeVisible();
@@ -180,27 +188,45 @@ test.describe("Books BULK IMPORT", () => {
     await expect(dialog.getByText("Kindleインポート当日")).toBeVisible();
     await expect(dialog.getByText("Kindleインポート翌日")).toBeVisible();
 
-    await dialog.getByLabel("購入日（指定日以降）").fill("2026-04-25");
-    await expect(dialog.getByText("条件該当件数: 2")).toBeVisible();
-    await expect(dialog.getByText("Kindleインポート前日")).not.toBeVisible();
+    await dialog.getByLabel("購入日（指定日以降）").fill("2026-04-24");
+    await expect(dialog.getByText("条件該当件数: 3")).toBeVisible();
+    await expect(dialog.getByText("Kindleインポート前日")).toBeVisible();
 
     await dialog
       .getByRole("checkbox", { name: "Kindleインポート翌日をインポート" })
       .uncheck();
-    await expect(dialog.getByText("選択件数: 1")).toBeVisible();
+    await expect(dialog.getByText("選択件数: 2")).toBeVisible();
+    await expect(
+      dialog.getByRole("button", { name: "インポート" }),
+    ).toBeDisabled();
+    await dialog.getByRole("button", { name: "プレビュー" }).click();
+    await expect(dialog.getByText("インポート内容")).toBeVisible();
+    await expect(dialog.getByText("Kindleインポート当日").last()).toBeVisible();
+    await expect(dialog.getByText("既存", { exact: true })).toBeVisible();
+    await expect(dialog.getByText("新規", { exact: true })).toBeVisible();
+
+    await dialog
+      .getByRole("checkbox", { name: "Kindleインポート翌日をインポート" })
+      .check();
+    await expect(dialog.getByText("インポート内容")).not.toBeVisible();
+    await expect(
+      dialog.getByRole("button", { name: "インポート" }),
+    ).toBeDisabled();
+    await dialog.getByRole("button", { name: "プレビュー" }).click();
+    await expect(dialog.getByText("3冊をインポートします")).toBeVisible();
     await dialog.getByRole("button", { name: "インポート" }).click();
 
-    await expect(page.getByText("1冊をインポートしました")).toBeVisible();
+    await expect(page.getByText("3冊をインポートしました")).toBeVisible();
     await expect(dialog).not.toBeVisible();
     await expect(
       page.getByRole("link", { name: "Kindleインポート当日" }),
     ).toBeVisible();
     await expect(
       page.getByRole("link", { name: "Kindleインポート翌日" }),
-    ).not.toBeVisible();
+    ).toBeVisible();
     await expect(
       page.getByRole("link", { name: "Kindleインポート前日" }),
-    ).not.toBeVisible();
+    ).toBeVisible();
   });
 });
 

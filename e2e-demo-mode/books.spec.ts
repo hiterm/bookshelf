@@ -89,6 +89,12 @@ test("imports selected Kindle books", async ({ page }) => {
   await dialog
     .getByRole("checkbox", { name: "Kindleインポート翌日をインポート" })
     .uncheck();
+  await expect(
+    dialog.getByRole("button", { name: "インポート" }),
+  ).toBeDisabled();
+  await dialog.getByRole("button", { name: "プレビュー" }).click();
+  await expect(dialog.getByText("インポート内容")).toBeVisible();
+  await expect(dialog.getByText("新規", { exact: true })).toBeVisible();
   await dialog.getByRole("button", { name: "インポート" }).click();
 
   await expect(page.getByText("1冊をインポートしました")).toBeVisible();

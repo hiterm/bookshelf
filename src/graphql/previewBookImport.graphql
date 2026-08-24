@@ -1,0 +1,17 @@
+mutation previewBookImport($books: [ImportBookInput!]!) {
+  previewBookImport(books: $books) {
+    books {
+      title
+      authors {
+        name
+        status
+      }
+      isbn
+      read
+      owned
+      priority
+      format
+      store
+    }
+  }
+}

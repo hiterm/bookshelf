@@ -240,6 +240,23 @@ class MockStore {
     return book;
   }
 
+  previewBookImport(bookInputs: ImportBookInput[]) {
+    const existingAuthorNames = new Set(
+      this.getAllAuthors().map((author) => author.name),
+    );
+    return {
+      books: bookInputs.map(({ authorNames, ...book }) => ({
+        ...book,
+        authors: [...new Set(authorNames)].map((name) => ({
+          name,
+          status: existingAuthorNames.has(name)
+            ? ("EXISTING" as const)
+            : ("NEW" as const),
+        })),
+      })),
+    };
+  }
+
   importBooks(bookInputs: ImportBookInput[]): {
     eventSetId: string;
     books: Book[];
