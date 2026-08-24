@@ -1,15 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
-import { createAuthenticatedSdk } from "../../lib/graphqlClient";
+import { useQuery } from "@tanstack/react-query";
+import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
 
-export const useBooks = () => {
+export const useEventSets = () => {
   const { getAccessTokenSilently } = useAuth0();
 
   return useQuery({
-    queryKey: ["books"],
+    queryKey: ["eventSets"],
     queryFn: async () => {
       const sdk = await createAuthenticatedSdk(getAccessTokenSilently);
-      return sdk.books();
+      return sdk.eventSets();
     },
   });
 };

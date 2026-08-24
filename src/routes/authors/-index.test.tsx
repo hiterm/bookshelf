@@ -4,12 +4,12 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
-import { useCreateAuthor } from "../../compoments/hooks/useCreateAuthor";
-import { useAuthors } from "../../compoments/hooks/useAuthors";
+import { useCreateAuthor } from "../../features/authors/api/useCreateAuthor";
+import { useAuthors } from "../../features/authors/api/useAuthors";
 import { AuthorIndexPage } from "./index";
 
-vi.mock(import("../../compoments/hooks/useCreateAuthor"));
-vi.mock(import("../../compoments/hooks/useAuthors"));
+vi.mock(import("../../features/authors/api/useCreateAuthor"));
+vi.mock(import("../../features/authors/api/useAuthors"));
 
 vi.mock("../../compoments/mantineTsr", () => ({
   Link: ({ children }: { children: React.ReactNode }) => <>{children}</>,

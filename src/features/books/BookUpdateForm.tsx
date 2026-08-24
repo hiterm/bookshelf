@@ -8,7 +8,7 @@ import {
 } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import React from "react";
-import { useAuthors } from "../../compoments/hooks/useAuthors";
+import { useAuthors } from "../authors/api/useAuthors";
 import { AuthorsCombobox } from "./AuthorsCombobox";
 import { BookFormValues } from "./bookFormSchema";
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "./entity/BookFormat";

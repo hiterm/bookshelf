@@ -3,13 +3,13 @@ import { MantineProvider } from "@mantine/core";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import { beforeAll, beforeEach, test, vi } from "vitest";
-import { useEventSet } from "../../compoments/hooks/useEventSet";
-import { useEventSets } from "../../compoments/hooks/useEventSets";
+import { useEventSet } from "../../features/history/api/useEventSet";
+import { useEventSets } from "../../features/history/api/useEventSets";
 import { HistoryDetailPage } from "./$eventSetId";
 import { HistoryIndexPage } from "./index";
 
-vi.mock(import("../../compoments/hooks/useEventSet"));
-vi.mock(import("../../compoments/hooks/useEventSets"));
+vi.mock(import("../../features/history/api/useEventSet"));
+vi.mock(import("../../features/history/api/useEventSets"));
 vi.mock("../../compoments/mantineTsr", () => ({
   Link: ({ children }: { children: React.ReactNode }) => (
     <a href="/history">{children}</a>

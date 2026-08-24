@@ -1,19 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
-import { createAuthenticatedSdk } from "../../lib/graphqlClient";
-import type { CreateBookInput } from "../../generated/graphql-request";
+import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
 
-export const useCreateBook = () => {
+export const useRegisterUser = () => {
   const { getAccessTokenSilently } = useAuth0();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (bookData: CreateBookInput) => {
+    mutationFn: async () => {
       const sdk = await createAuthenticatedSdk(getAccessTokenSilently);
-      return sdk.createBook({ bookData });
+      return sdk.registerUser();
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["books"] });
+      void queryClient.invalidateQueries({ queryKey: ["loggedInUser"] });
     },
   });
 };

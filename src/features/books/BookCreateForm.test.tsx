@@ -7,12 +7,12 @@ import userEvent from "@testing-library/user-event";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import React from "react";
 import { vi } from "vitest";
-import { useAuthors } from "../../compoments/hooks/useAuthors";
+import { useAuthors } from "../authors/api/useAuthors";
 import { BookCreateForm } from "./BookCreateForm";
 import { bookFormSchema, BookFormValues } from "./bookFormSchema";
 import { useBookLookup } from "./useBookLookup";
 
-vi.mock(import("../../compoments/hooks/useAuthors"));
+vi.mock(import("../authors/api/useAuthors"));
 vi.mocked(useAuthors, { partial: true }).mockReturnValue({
   data: {
     authors: [

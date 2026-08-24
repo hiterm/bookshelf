@@ -4,7 +4,7 @@ import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "@tanstack/react-router";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import React from "react";
-import { useUpdateAuthor } from "../../compoments/hooks/useUpdateAuthor";
+import { useUpdateAuthor } from "./api/useUpdateAuthor";
 import { useAppError } from "../../compoments/errors/AppErrorProvider";
 import { LinkButton } from "../../compoments/mantineTsr";
 import { authorFormSchema, type AuthorFormValues } from "./authorFormSchema";

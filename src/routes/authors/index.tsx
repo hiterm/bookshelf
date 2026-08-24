@@ -23,8 +23,8 @@ import {
   useTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import { useCreateAuthor } from "../../compoments/hooks/useCreateAuthor";
-import { useAuthors } from "../../compoments/hooks/useAuthors";
+import { useCreateAuthor } from "../../features/authors/api/useCreateAuthor";
+import { useAuthors } from "../../features/authors/api/useAuthors";
 import { Link, LinkButton } from "../../compoments/mantineTsr";
 import {
   authorFormSchema,

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
-import { createAuthenticatedSdk } from "../../lib/graphqlClient";
+import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
 
 export const useLoggedInUser = () => {
   const { getAccessTokenSilently } = useAuth0();

@@ -10,8 +10,8 @@ import { HeaderContents } from "../compoments/layout/Header";
 import { NavbarContents } from "../compoments/layout/Navbar";
 import { ErrorPanel } from "../compoments/errors/ErrorPanel";
 import { isDemoMode } from "../config";
-import { useLoggedInUser } from "../compoments/hooks/useLoggedInUser";
-import { useRegisterUser } from "../compoments/hooks/useRegisterUser";
+import { useLoggedInUser } from "../features/auth/api/useLoggedInUser";
+import { useRegisterUser } from "../features/auth/api/useRegisterUser";
 import { SignInScreen } from "../features/auth/SignInScreen";
 
 export type RouterContext = {

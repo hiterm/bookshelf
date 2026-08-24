@@ -6,7 +6,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
-import { useUpdateAuthor } from "../../compoments/hooks/useUpdateAuthor";
+import { useUpdateAuthor } from "./api/useUpdateAuthor";
 import { AppErrorProvider } from "../../compoments/errors/AppErrorProvider";
 import { AuthorEdit } from "./AuthorEdit";
 
@@ -21,7 +21,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 
 const mockMutateAsync = vi.fn().mockResolvedValue({});
 
-vi.mock(import("../../compoments/hooks/useUpdateAuthor"));
+vi.mock(import("./api/useUpdateAuthor"));
 vi.mocked(useUpdateAuthor, { partial: true }).mockReturnValue({
   mutateAsync: mockMutateAsync,
   isPending: false,
