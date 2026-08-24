@@ -1,6 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
+import { bookQueryKeys } from "../../books/api/queryKeys";
+import { authorQueryKeys } from "./queryKeys";
 
 export type MergeAuthorInput = {
   sourceAuthorId: string;
@@ -17,17 +19,21 @@ export const useMergeAuthor = () => {
       return sdk.mergeAuthor(input);
     },
     onSuccess: (_, input) => {
-      void queryClient.invalidateQueries({ queryKey: ["authors"] });
+      void queryClient.invalidateQueries({ queryKey: authorQueryKeys.all });
       void queryClient.invalidateQueries({
-        queryKey: ["author", input.sourceAuthorId],
+        queryKey: authorQueryKeys.detail(input.sourceAuthorId),
       });
       void queryClient.invalidateQueries({
-        queryKey: ["author", input.destinationAuthorId],
+        queryKey: authorQueryKeys.detail(input.destinationAuthorId),
       });
-      void queryClient.invalidateQueries({ queryKey: ["authorEvents"] });
-      void queryClient.invalidateQueries({ queryKey: ["books"] });
-      void queryClient.invalidateQueries({ queryKey: ["book"] });
-      void queryClient.invalidateQueries({ queryKey: ["bookEvents"] });
+      void queryClient.invalidateQueries({
+        queryKey: authorQueryKeys.allEvents,
+      });
+      void queryClient.invalidateQueries({ queryKey: bookQueryKeys.all });
+      void queryClient.invalidateQueries({ queryKey: bookQueryKeys.details });
+      void queryClient.invalidateQueries({
+        queryKey: bookQueryKeys.allEvents,
+      });
     },
   });
 };

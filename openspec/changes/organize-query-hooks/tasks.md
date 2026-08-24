@@ -8,13 +8,13 @@
 
 ## 2. Centralize Query Keys
 
-- [ ] 2.1 Add feature-local query key factories that reproduce every existing key tuple exactly
-- [ ] 2.2 Replace query hook key arrays with the applicable feature query key factory
-- [ ] 2.3 Replace mutation invalidation key arrays with factories without changing targets or timing
-- [ ] 2.4 Verify GraphQL operations, variables, Auth0 handling, query options, and hook public APIs remain unchanged
+- [x] 2.1 Add feature-local query key factories that reproduce every existing key tuple exactly
+- [x] 2.2 Replace query hook key arrays with the applicable feature query key factory
+- [x] 2.3 Replace mutation invalidation key arrays with factories without changing targets or timing
+- [x] 2.4 Verify GraphQL operations, variables, Auth0 handling, query options, and hook public APIs remain unchanged
 
 ## 3. Verify the Refactor
 
-- [ ] 3.1 Search for old hook imports and remaining domain key literals in queries and QueryClient operations
-- [ ] 3.2 Run generation, lint, unit tests, and type checking
-- [ ] 3.3 Review the complete diff against `main` for preserved cache values, invalidation behavior, and component naming
+- [x] 3.1 Search for old hook imports and remaining domain key literals in queries and QueryClient operations
+- [x] 3.2 Run generation, lint, unit tests, and type checking
+- [x] 3.3 Review the complete diff against `main` for preserved cache values, invalidation behavior, and component naming
