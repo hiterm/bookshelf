@@ -71,4 +71,4 @@
 - [x] 10.2 Run `npm run lint:fix`
 - [x] 10.3 Run `npm run typecheck`
 - [x] 10.4 Run `npm run test`
-- [ ] 10.5 Commit changes
+- [x] 10.5 Commit changes
