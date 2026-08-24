@@ -91,4 +91,3 @@ context isolation and per-test MockStore isolation in the mock API suite.
 - **Integration environment may not expose the new backend mutation** → Add the
   minimal integration happy path when supported and document any verified
   environment limitation rather than weakening mock/component coverage.
-
