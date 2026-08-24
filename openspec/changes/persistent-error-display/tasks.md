@@ -34,4 +34,4 @@
 
 - [x] 6.1 Redact `apiKey` and `x-api-key` extension fields and add regression coverage
 - [x] 6.2 Align isolated provider subscriptions with their active QueryClient instances
-- [ ] 6.3 Run mandatory checks, push the review fixes, and verify the PR review state
+- [x] 6.3 Run mandatory checks, push the review fixes, and verify the PR review state
