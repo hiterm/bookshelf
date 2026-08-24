@@ -8,6 +8,7 @@ import React, { Fragment, memo } from "react";
 import { ChildrenProps } from "../compoments/ChildrenProps";
 import { HeaderContents } from "../compoments/layout/Header";
 import { NavbarContents } from "../compoments/layout/Navbar";
+import { ErrorPanel } from "../compoments/errors/ErrorPanel";
 import { isDemoMode } from "../config";
 import { useLoggedInUser } from "../compoments/hooks/useLoggedInUser";
 import { useRegisterUser } from "../compoments/hooks/useRegisterUser";
@@ -122,6 +123,7 @@ function RootComponent() {
         <NavbarContents />
       </AppShell.Navbar>
       <AppShell.Main>
+        <ErrorPanel />
         <MainContent />
       </AppShell.Main>
       <TanStackRouterDevtools />

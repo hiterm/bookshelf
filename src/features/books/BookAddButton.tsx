@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { LinkButton } from "../../compoments/mantineTsr";
 import { useCreateAuthor } from "../../compoments/hooks/useCreateAuthor";
 import { useCreateBook } from "../../compoments/hooks/useCreateBook";
+import { useAppError } from "../../compoments/errors/AppErrorProvider";
 import { BookCreateForm } from "./BookCreateForm";
 import { bookFormSchema, BookFormValues } from "./bookFormSchema";
 import { resolvePendingAuthors } from "./resolvePendingAuthors";
@@ -23,6 +24,7 @@ export const BookAddButton: React.FC = () => {
 
   const createBookMutation = useCreateBook();
   const createAuthorMutation = useCreateAuthor();
+  const { reportError } = useAppError();
 
   const submitBook = async (value: BookFormValues) => {
     if (createBookMutation.isPending) return;
@@ -37,9 +39,10 @@ export const BookAddButton: React.FC = () => {
         },
       );
     } catch (error) {
-      showNotification({
-        message: `Failed to create author: ${String(error)}`,
-        color: "red",
+      reportError({
+        title: "著者の作成に失敗しました",
+        operation: "CreateAuthor",
+        error,
       });
       return;
     }
@@ -74,9 +77,10 @@ export const BookAddButton: React.FC = () => {
         color: "teal",
       });
     } catch (error) {
-      showNotification({
-        message: `Failed to create book: ${String(error)}`,
-        color: "red",
+      reportError({
+        title: "書籍の作成に失敗しました",
+        operation: "CreateBook",
+        error,
       });
     }
   };

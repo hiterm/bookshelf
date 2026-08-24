@@ -13,6 +13,7 @@ import { IconArrowBack } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
 import React, { useState } from "react";
 import { useDeleteAuthor } from "../../compoments/hooks/useDeleteAuthor";
+import { useAppError } from "../../compoments/errors/AppErrorProvider";
 import { LinkButton } from "../../compoments/mantineTsr";
 import type { AuthorQuery } from "../../generated/graphql-request";
 import { AuthorBookList } from "./AuthorBookList";
@@ -22,6 +23,7 @@ type Author = NonNullable<AuthorQuery["author"]>;
 const DeleteButton: React.FC<{ author: Author }> = ({ author }) => {
   const [open, setOpen] = useState(false);
   const mutation = useDeleteAuthor();
+  const { reportError } = useAppError();
   const navigate = useNavigate();
 
   const handleDelete = async () => {
@@ -33,9 +35,10 @@ const DeleteButton: React.FC<{ author: Author }> = ({ author }) => {
         color: "teal",
       });
     } catch (error) {
-      showNotification({
-        message: `削除に失敗しました: ${error instanceof Error ? error.message : String(error)}`,
-        color: "red",
+      reportError({
+        title: "著者の削除に失敗しました",
+        operation: "DeleteAuthor",
+        error,
       });
     }
   };

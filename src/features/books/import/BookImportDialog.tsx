@@ -14,6 +14,7 @@ import {
 import { showNotification } from "@mantine/notifications";
 import { useMemo, useRef, useState } from "react";
 import { useImportBooks } from "../../../compoments/hooks/useImportBooks";
+import { useAppError } from "../../../compoments/errors/AppErrorProvider";
 import { filterImportedBooks } from "./filterImportedBooks";
 import { parseKindleExport, type ImportedBook } from "./parseKindleExport";
 import { toImportBookInput } from "./toImportBookInput";
@@ -51,6 +52,7 @@ export const BookImportDialog = ({
   const fileReadId = useRef(0);
   const submitLock = useRef(false);
   const importBooksMutation = useImportBooks();
+  const { reportError } = useAppError();
 
   const indexedBooks = useMemo<IndexedBook[]>(
     () => books.map((book, index) => ({ index, book })),
@@ -137,9 +139,10 @@ export const BookImportDialog = ({
       reset();
       onClose();
     } catch (error) {
-      showNotification({
-        message: `書籍のインポートに失敗しました: ${String(error)}`,
-        color: "red",
+      reportError({
+        title: "書籍のインポートに失敗しました",
+        operation: "ImportBooks",
+        error,
       });
     } finally {
       submitLock.current = false;

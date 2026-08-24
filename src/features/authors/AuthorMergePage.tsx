@@ -18,6 +18,7 @@ import React, { useState } from "react";
 import { useAuthor } from "../../compoments/hooks/useAuthor";
 import { useAuthors } from "../../compoments/hooks/useAuthors";
 import { useMergeAuthor } from "../../compoments/hooks/useMergeAuthor";
+import { useAppError } from "../../compoments/errors/AppErrorProvider";
 import { LinkButton } from "../../compoments/mantineTsr";
 import { AuthorBookList } from "./AuthorBookList";
 
@@ -56,6 +57,7 @@ export const AuthorMergePage: React.FC = () => {
   const navigate = useNavigate();
   const { data, isLoading, error } = useAuthors();
   const mergeMutation = useMergeAuthor();
+  const { reportError } = useAppError();
   const [sourceAuthorId, setSourceAuthorId] = useState("");
   const [destinationAuthorId, setDestinationAuthorId] = useState("");
   const [confirmationOpen, setConfirmationOpen] = useState(false);
@@ -100,9 +102,10 @@ export const AuthorMergePage: React.FC = () => {
         params: { id: result.mergeAuthor.author.id },
       });
     } catch (mutationError) {
-      showNotification({
-        message: `統合に失敗しました: ${mutationError instanceof Error ? mutationError.message : String(mutationError)}`,
-        color: "red",
+      reportError({
+        title: "著者の統合に失敗しました",
+        operation: "MergeAuthor",
+        error: mutationError,
       });
     }
   };

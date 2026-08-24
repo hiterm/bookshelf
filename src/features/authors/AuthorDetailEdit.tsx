@@ -5,6 +5,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import React from "react";
 import { useUpdateAuthor } from "../../compoments/hooks/useUpdateAuthor";
+import { useAppError } from "../../compoments/errors/AppErrorProvider";
 import { LinkButton } from "../../compoments/mantineTsr";
 import { authorFormSchema, type AuthorFormValues } from "./authorFormSchema";
 
@@ -17,6 +18,7 @@ type Author = {
 export const AuthorDetailEdit: React.FC<{ author: Author }> = ({ author }) => {
   const navigate = useNavigate();
   const updateAuthorMutation = useUpdateAuthor();
+  const { reportError } = useAppError();
 
   const form = useForm<AuthorFormValues>({
     initialValues: { name: author.name, yomi: author.yomi },
@@ -34,11 +36,10 @@ export const AuthorDetailEdit: React.FC<{ author: Author }> = ({ author }) => {
       await navigate({ to: "/authors/$id", params: { id: author.id } });
       showNotification({ message: "更新しました", color: "teal" });
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : JSON.stringify(error);
-      showNotification({
-        message: `更新に失敗しました: ${message}`,
-        color: "red",
+      reportError({
+        title: "著者の更新に失敗しました",
+        operation: "UpdateAuthor",
+        error,
       });
     }
   };
