@@ -1,25 +1,29 @@
 import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
-import { showNotification } from "@mantine/notifications";
-import { useImportBooks } from "../../../compoments/hooks/useImportBooks";
-import { BookImportDialog } from "./BookImportDialog";
 import { AppErrorProvider } from "../../../compoments/errors/AppErrorProvider";
+import { useImportBooks } from "../../../compoments/hooks/useImportBooks";
+import { usePreviewBookImport } from "../../../compoments/hooks/usePreviewBookImport";
+import { BookImportDialog } from "./BookImportDialog";
 
-const mutateAsync = vi.fn();
+const importMutateAsync = vi.fn();
+const previewMutateAsync = vi.fn();
 
 vi.mock(import("../../../compoments/hooks/useImportBooks"));
+vi.mock(import("../../../compoments/hooks/usePreviewBookImport"));
 vi.mocked(useImportBooks, { partial: true }).mockReturnValue({
-  mutateAsync,
+  mutateAsync: importMutateAsync,
   isPending: false,
 });
-
-vi.mock("@mantine/notifications", () => ({
-  showNotification: vi.fn(),
-}));
+vi.mocked(usePreviewBookImport, { partial: true }).mockReturnValue({
+  mutateAsync: previewMutateAsync,
+  isPending: false,
+});
+vi.mock("@mantine/notifications", () => ({ showNotification: vi.fn() }));
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
@@ -35,7 +39,6 @@ beforeAll(() => {
       dispatchEvent: vi.fn(),
     })),
   });
-
   // Test stub; methods are intentionally no-ops.
   /* eslint-disable @typescript-eslint/no-empty-function */
   global.ResizeObserver = class ResizeObserver {
@@ -72,6 +75,26 @@ const fixture = [
   },
 ];
 
+const previewResponse = {
+  previewBookImport: {
+    books: [
+      {
+        title: "正規化された本",
+        authors: [
+          { name: "既存著者", status: "EXISTING" as const },
+          { name: "新規著者", status: "NEW" as const },
+        ],
+        isbn: "978-4-00-000001-0",
+        read: true,
+        owned: true,
+        priority: 50,
+        format: "E_BOOK" as const,
+        store: "KINDLE" as const,
+      },
+    ],
+  },
+};
+
 const wrapper = ({ children }: { children: ReactNode }) => (
   <MantineProvider env="test">
     <AppErrorProvider>{children}</AppErrorProvider>
@@ -84,121 +107,93 @@ const getFileInput = () => {
   return input;
 };
 
-const uploadJson = async (contents: unknown = fixture) => {
+const uploadJson = async (
+  contents: unknown = fixture,
+  name = "kindle.json",
+) => {
   const user = userEvent.setup();
-  const file = new File([JSON.stringify(contents)], "kindle.json", {
-    type: "application/json",
-  });
+  const text = JSON.stringify(contents);
+  const file = new File([text], name, { type: "application/json" });
   Object.defineProperty(file, "text", {
-    value: vi.fn().mockResolvedValue(JSON.stringify(contents)),
+    value: vi.fn().mockResolvedValue(text),
   });
   await user.upload(getFileInput(), file);
   return user;
 };
 
+const runSuccessfulPreview = async () => {
+  previewMutateAsync.mockResolvedValueOnce(previewResponse);
+  await userEvent.click(screen.getByRole("button", { name: "プレビュー" }));
+  await screen.findByText("インポート内容");
+};
+
 describe("BookImportDialog", () => {
   beforeEach(() => {
-    mutateAsync.mockReset();
+    importMutateAsync.mockReset();
+    previewMutateAsync.mockReset();
     vi.mocked(showNotification).mockReset();
   });
 
-  test("previews exporter books and their normalized fields", async () => {
+  test("shows exporter books as import candidates", async () => {
     render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
-
     await uploadJson();
-
     expect(await screen.findByText("購入日当日の本")).toBeInTheDocument();
     expect(screen.getByText("著者 二, 著者 三")).toBeInTheDocument();
     expect(screen.getByText("2026-04-25")).toBeInTheDocument();
-    expect(screen.getByText("既読")).toBeInTheDocument();
-    expect(screen.getAllByText("未読")).toHaveLength(2);
     expect(screen.getByText("全件数: 3")).toBeInTheDocument();
     expect(screen.getByText("条件該当件数: 3")).toBeInTheDocument();
     expect(screen.getByText("選択件数: 3")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "プレビュー" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "インポート" })).toBeDisabled();
   });
 
   test("ignores a stale file read that finishes after a newer file", async () => {
     render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
     let resolveFirst: ((value: string) => void) | undefined;
     let resolveSecond: ((value: string) => void) | undefined;
-    const firstFile = new File([], "first.json", {
-      type: "application/json",
-    });
+    const firstFile = new File([], "first.json", { type: "application/json" });
     const secondFile = new File([], "second.json", {
       type: "application/json",
     });
     Object.defineProperty(firstFile, "text", {
-      value: () =>
-        new Promise<string>((resolve) => {
-          resolveFirst = resolve;
-        }),
+      value: () => new Promise<string>((resolve) => (resolveFirst = resolve)),
     });
     Object.defineProperty(secondFile, "text", {
-      value: () =>
-        new Promise<string>((resolve) => {
-          resolveSecond = resolve;
-        }),
+      value: () => new Promise<string>((resolve) => (resolveSecond = resolve)),
     });
-
     fireEvent.change(getFileInput(), { target: { files: [firstFile] } });
     fireEvent.change(getFileInput(), { target: { files: [secondFile] } });
     resolveSecond?.(JSON.stringify([{ ...fixture[0], title: "新しい選択" }]));
     expect(await screen.findByText("新しい選択")).toBeInTheDocument();
-
     resolveFirst?.(JSON.stringify([{ ...fixture[0], title: "古い選択" }]));
     await waitFor(() => {
       expect(screen.queryByText("古い選択")).not.toBeInTheDocument();
     });
-    expect(screen.getByText("新しい選択")).toBeInTheDocument();
   });
 
-  test("filters inclusively without losing the uploaded source books", async () => {
+  test("filters purchase dates inclusively and supports selection", async () => {
     render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
-    await uploadJson();
-
+    const user = await uploadJson();
     fireEvent.change(screen.getByLabelText("購入日（指定日以降）"), {
       target: { value: "2026-04-25" },
     });
-
     expect(screen.queryByText("購入日前の本")).not.toBeInTheDocument();
     expect(screen.getByText("購入日当日の本")).toBeInTheDocument();
     expect(screen.getByText("条件該当件数: 2")).toBeInTheDocument();
-
-    fireEvent.change(screen.getByLabelText("購入日（指定日以降）"), {
-      target: { value: "" },
-    });
-    expect(screen.getByText("購入日前の本")).toBeInTheDocument();
-    expect(screen.getByText("全件数: 3")).toBeInTheDocument();
-  });
-
-  test("supports individual and bulk selection", async () => {
-    render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
-    const user = await uploadJson();
-    const firstBook = screen.getByRole("checkbox", {
-      name: "購入日前の本をインポート",
-    });
-
-    await user.click(firstBook);
-    expect(firstBook).not.toBeChecked();
-    expect(screen.getByText("選択件数: 2")).toBeInTheDocument();
-
-    await user.click(firstBook);
-    expect(firstBook).toBeChecked();
-
+    await user.click(
+      screen.getByRole("checkbox", { name: "購入日後の本をインポート" }),
+    );
+    expect(screen.getByText("選択件数: 1")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "すべて解除" }));
     expect(screen.getByText("選択件数: 0")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "インポート" })).toBeDisabled();
-
+    expect(screen.getByRole("button", { name: "プレビュー" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "すべて選択" }));
-    expect(screen.getByText("選択件数: 3")).toBeInTheDocument();
+    expect(screen.getByText("選択件数: 2")).toBeInTheDocument();
   });
 
-  test("submits only selected visible books in one generated input array", async () => {
-    mutateAsync.mockResolvedValue({
-      importBooks: { books: [{ id: "book-1", title: "購入日当日の本" }] },
-    });
-    const onClose = vi.fn();
-    render(<BookImportDialog opened onClose={onClose} />, { wrapper });
+  test("previews only selected visible inputs and displays backend normalization", async () => {
+    previewMutateAsync.mockResolvedValue(previewResponse);
+    render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
     const user = await uploadJson();
     fireEvent.change(screen.getByLabelText("購入日（指定日以降）"), {
       target: { value: "2026-04-25" },
@@ -206,13 +201,11 @@ describe("BookImportDialog", () => {
     await user.click(
       screen.getByRole("checkbox", { name: "購入日後の本をインポート" }),
     );
-
-    await user.click(screen.getByRole("button", { name: "インポート" }));
-
+    await user.click(screen.getByRole("button", { name: "プレビュー" }));
     await waitFor(() => {
-      expect(mutateAsync).toHaveBeenCalledTimes(1);
+      expect(previewMutateAsync).toHaveBeenCalledOnce();
     });
-    expect(mutateAsync).toHaveBeenCalledWith([
+    expect(previewMutateAsync).toHaveBeenCalledWith([
       {
         title: "購入日当日の本",
         authorNames: ["著者 二, 著者 三"],
@@ -224,59 +217,142 @@ describe("BookImportDialog", () => {
         store: "KINDLE",
       },
     ]);
+    expect(await screen.findByText("正規化された本")).toBeInTheDocument();
+    expect(screen.getByText("既存著者")).toBeInTheDocument();
+    expect(screen.getByText("既存")).toBeInTheDocument();
+    expect(screen.getByText("新規著者")).toBeInTheDocument();
+    expect(screen.getByText("新規")).toBeInTheDocument();
+    expect(screen.getByText("1冊をインポートします")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "インポート" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "再プレビュー" })).toBeEnabled();
+  });
+
+  test("imports the exact input array captured by preview", async () => {
+    importMutateAsync.mockResolvedValue({
+      importBooks: { books: [{ id: "book-1", title: "購入日前の本" }] },
+    });
+    const onClose = vi.fn();
+    render(<BookImportDialog opened onClose={onClose} />, { wrapper });
+    await uploadJson([fixture[0]]);
+    await runSuccessfulPreview();
+    await userEvent.click(screen.getByRole("button", { name: "インポート" }));
+    await waitFor(() => {
+      expect(importMutateAsync).toHaveBeenCalledOnce();
+    });
+    expect(importMutateAsync.mock.calls[0]?.[0]).toBe(
+      previewMutateAsync.mock.calls[0]?.[0],
+    );
     expect(onClose).toHaveBeenCalledOnce();
     expect(showNotification).toHaveBeenCalledWith(
       expect.objectContaining({ message: "1冊をインポートしました" }),
     );
   });
 
-  test("prevents duplicate submission while the bulk mutation is pending", async () => {
-    let resolveMutation: ((value: unknown) => void) | undefined;
-    mutateAsync.mockImplementation(
+  test.each([
+    [
+      "checkbox",
+      async () => userEvent.click(screen.getAllByRole("checkbox")[0]),
+    ],
+    [
+      "date filter",
       () =>
-        new Promise((resolve) => {
-          resolveMutation = resolve;
+        fireEvent.change(screen.getByLabelText("購入日（指定日以降）"), {
+          target: { value: "2026-04-25" },
         }),
-    );
+    ],
+  ])("invalidates preview after a %s change", async (_name, change) => {
     render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
-    const user = await uploadJson([fixture[0]]);
-    const submit = screen.getByRole("button", { name: "インポート" });
-
-    await user.click(submit);
-    await user.click(submit);
-
-    expect(mutateAsync).toHaveBeenCalledTimes(1);
-    expect(submit).toBeDisabled();
-    resolveMutation?.({
-      importBooks: { books: [{ id: "book-1", title: fixture[0].title }] },
-    });
+    await uploadJson();
+    await runSuccessfulPreview();
+    await Promise.resolve(change());
+    expect(screen.queryByText("インポート内容")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "インポート" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "プレビュー" })).toBeEnabled();
   });
 
-  test("keeps the file, filter, and selection after a mutation failure", async () => {
-    mutateAsync.mockRejectedValue(new Error("backend unavailable"));
+  test("invalidates preview when another file is selected", async () => {
     render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
-    const user = await uploadJson();
-    const dateInput = screen.getByLabelText("購入日（指定日以降）");
-    fireEvent.change(dateInput, { target: { value: "2026-04-25" } });
-    const laterBook = screen.getByRole("checkbox", {
-      name: "購入日後の本をインポート",
+    await uploadJson();
+    await runSuccessfulPreview();
+    await uploadJson(
+      [{ ...fixture[0], title: "別ファイルの本" }],
+      "other.json",
+    );
+    expect(await screen.findByText("別ファイルの本")).toBeInTheDocument();
+    expect(screen.queryByText("インポート内容")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "インポート" })).toBeDisabled();
+  });
+
+  test("keeps inputs and disables import after preview failure", async () => {
+    previewMutateAsync.mockRejectedValue(new Error("preview unavailable"));
+    render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
+    await uploadJson();
+    fireEvent.change(screen.getByLabelText("購入日（指定日以降）"), {
+      target: { value: "2026-04-25" },
     });
-    await user.click(laterBook);
-
-    await user.click(screen.getByRole("button", { name: "インポート" }));
-
+    await userEvent.click(screen.getByRole("button", { name: "プレビュー" }));
     await waitFor(() => {
-      expect(mutateAsync).toHaveBeenCalledOnce();
+      expect(previewMutateAsync).toHaveBeenCalledOnce();
     });
     expect(screen.getByText("購入日当日の本")).toBeInTheDocument();
-    expect(dateInput).toHaveValue("2026-04-25");
-    expect(laterBook).not.toBeChecked();
+    expect(screen.getByLabelText("購入日（指定日以降）")).toHaveValue(
+      "2026-04-25",
+    );
+    expect(screen.getByRole("button", { name: "インポート" })).toBeDisabled();
     expect(showNotification).toHaveBeenCalledWith(
       expect.objectContaining({ color: "red" }),
     );
   });
 
-  test("rejects invalid JSON without exposing preview or calling mutation", async () => {
+  test("keeps inputs and preview after import failure", async () => {
+    importMutateAsync.mockRejectedValue(new Error("import unavailable"));
+    render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
+    await uploadJson();
+    await runSuccessfulPreview();
+    await userEvent.click(screen.getByRole("button", { name: "インポート" }));
+    await waitFor(() => {
+      expect(importMutateAsync).toHaveBeenCalledOnce();
+    });
+    expect(screen.getByText("購入日当日の本")).toBeInTheDocument();
+    expect(screen.getByText("インポート内容")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "インポート" })).toBeEnabled();
+    expect(showNotification).toHaveBeenCalledWith(
+      expect.objectContaining({ color: "red" }),
+    );
+  });
+
+  test("prevents duplicate preview submission while pending", async () => {
+    let resolvePreview: ((value: typeof previewResponse) => void) | undefined;
+    previewMutateAsync.mockImplementation(
+      () => new Promise((resolve) => (resolvePreview = resolve)),
+    );
+    render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
+    await uploadJson([fixture[0]]);
+    const button = screen.getByRole("button", { name: "プレビュー" });
+    await userEvent.click(button);
+    await userEvent.click(button);
+    expect(previewMutateAsync).toHaveBeenCalledOnce();
+    expect(button).toBeDisabled();
+    resolvePreview?.(previewResponse);
+  });
+
+  test("prevents duplicate import submission while pending", async () => {
+    let resolveImport: ((value: unknown) => void) | undefined;
+    importMutateAsync.mockImplementation(
+      () => new Promise((resolve) => (resolveImport = resolve)),
+    );
+    render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
+    await uploadJson([fixture[0]]);
+    await runSuccessfulPreview();
+    const button = screen.getByRole("button", { name: "インポート" });
+    await userEvent.click(button);
+    await userEvent.click(button);
+    expect(importMutateAsync).toHaveBeenCalledOnce();
+    expect(button).toBeDisabled();
+    resolveImport?.({ importBooks: { books: [] } });
+  });
+
+  test("rejects invalid JSON without exposing actions or calling mutations", async () => {
     render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
     const user = userEvent.setup();
     const file = new File(["invalid"], "kindle.json", {
@@ -285,13 +361,12 @@ describe("BookImportDialog", () => {
     Object.defineProperty(file, "text", {
       value: vi.fn().mockResolvedValue("invalid"),
     });
-
     await user.upload(getFileInput(), file);
-
     expect(
       await screen.findByText("ファイルを読み込めませんでした"),
     ).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "インポート" })).toBeNull();
-    expect(mutateAsync).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: "プレビュー" })).toBeNull();
+    expect(importMutateAsync).not.toHaveBeenCalled();
+    expect(previewMutateAsync).not.toHaveBeenCalled();
   });
 });

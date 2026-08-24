@@ -1,5 +1,6 @@
 import {
   Alert,
+  Badge,
   Button,
   Checkbox,
   FileInput,
@@ -15,6 +16,11 @@ import { showNotification } from "@mantine/notifications";
 import { useMemo, useRef, useState } from "react";
 import { useImportBooks } from "../../../compoments/hooks/useImportBooks";
 import { useAppError } from "../../../compoments/errors/AppErrorProvider";
+import { usePreviewBookImport } from "../../../compoments/hooks/usePreviewBookImport";
+import type {
+  ImportBookInput,
+  PreviewBookImportMutation,
+} from "../../../generated/graphql-request";
 import { filterImportedBooks } from "./filterImportedBooks";
 import { parseKindleExport, type ImportedBook } from "./parseKindleExport";
 import { toImportBookInput } from "./toImportBookInput";
@@ -48,9 +54,18 @@ export const BookImportDialog = ({
   );
   const [parseError, setParseError] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPreviewing, setIsPreviewing] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [preview, setPreview] = useState<
+    PreviewBookImportMutation["previewBookImport"] | null
+  >(null);
+  const [previewedInputs, setPreviewedInputs] = useState<
+    ImportBookInput[] | null
+  >(null);
   const fileReadId = useRef(0);
-  const submitLock = useRef(false);
+  const previewLock = useRef(false);
+  const importLock = useRef(false);
+  const previewBookImportMutation = usePreviewBookImport();
   const importBooksMutation = useImportBooks();
   const { reportError } = useAppError();
 
@@ -65,7 +80,21 @@ export const BookImportDialog = ({
   const selectedVisibleBooks = visibleBooks.filter(({ index }) =>
     selectedIndexes.has(index),
   );
-  const busy = isReading || isSubmitting || importBooksMutation.isPending;
+  const selectedInputs = useMemo(
+    () => selectedVisibleBooks.map(({ book }) => toImportBookInput(book)),
+    [selectedVisibleBooks],
+  );
+  const busy =
+    isReading ||
+    isPreviewing ||
+    isImporting ||
+    previewBookImportMutation.isPending ||
+    importBooksMutation.isPending;
+
+  const invalidatePreview = () => {
+    setPreview(null);
+    setPreviewedInputs(null);
+  };
 
   const reset = () => {
     fileReadId.current += 1;
@@ -75,8 +104,12 @@ export const BookImportDialog = ({
     setSelectedIndexes(new Set());
     setParseError(null);
     setIsReading(false);
-    setIsSubmitting(false);
-    submitLock.current = false;
+    setIsPreviewing(false);
+    setIsImporting(false);
+    setPreview(null);
+    setPreviewedInputs(null);
+    previewLock.current = false;
+    importLock.current = false;
   };
 
   const close = () => {
@@ -86,8 +119,16 @@ export const BookImportDialog = ({
   };
 
   const loadFile = async (nextFile: File | null) => {
+    if (
+      isPreviewing ||
+      isImporting ||
+      previewBookImportMutation.isPending ||
+      importBooksMutation.isPending
+    )
+      return;
     const readId = fileReadId.current + 1;
     fileReadId.current = readId;
+    invalidatePreview();
     setFile(nextFile);
     setParseError(null);
     if (nextFile == null) {
@@ -114,6 +155,8 @@ export const BookImportDialog = ({
   };
 
   const toggleBook = (index: number, checked: boolean) => {
+    if (busy) return;
+    invalidatePreview();
     setSelectedIndexes((current) => {
       const next = new Set(current);
       if (checked) next.add(index);
@@ -122,15 +165,37 @@ export const BookImportDialog = ({
     });
   };
 
-  const submit = async () => {
-    if (busy || submitLock.current || selectedVisibleBooks.length === 0) return;
+  const runPreview = async () => {
+    if (busy || previewLock.current || selectedInputs.length === 0) return;
 
-    submitLock.current = true;
-    setIsSubmitting(true);
+    previewLock.current = true;
+    setIsPreviewing(true);
+    invalidatePreview();
+    const inputs = selectedInputs;
     try {
-      const result = await importBooksMutation.mutateAsync(
-        selectedVisibleBooks.map(({ book }) => toImportBookInput(book)),
-      );
+      const result = await previewBookImportMutation.mutateAsync(inputs);
+      setPreview(result.previewBookImport);
+      setPreviewedInputs(inputs);
+    } catch (error) {
+      invalidatePreview();
+      reportError({
+        title: "書籍インポートのプレビューに失敗しました",
+        operation: "PreviewBookImport",
+        error,
+      });
+    } finally {
+      previewLock.current = false;
+      setIsPreviewing(false);
+    }
+  };
+
+  const submit = async () => {
+    if (busy || importLock.current || previewedInputs == null) return;
+
+    importLock.current = true;
+    setIsImporting(true);
+    try {
+      const result = await importBooksMutation.mutateAsync(previewedInputs);
       const importedCount = result.importBooks.books.length;
       showNotification({
         message: `${String(importedCount)}冊をインポートしました`,
@@ -145,8 +210,8 @@ export const BookImportDialog = ({
         error,
       });
     } finally {
-      submitLock.current = false;
-      setIsSubmitting(false);
+      importLock.current = false;
+      setIsImporting(false);
     }
   };
 
@@ -183,6 +248,7 @@ export const BookImportDialog = ({
               label="購入日（指定日以降）"
               value={purchasedOnOrAfter}
               onChange={(event) => {
+                invalidatePreview();
                 setPurchasedOnOrAfter(event.target.value);
               }}
               disabled={busy}
@@ -198,6 +264,7 @@ export const BookImportDialog = ({
               <Button
                 variant="default"
                 onClick={() => {
+                  invalidatePreview();
                   setSelectedIndexes(
                     new Set(visibleBooks.map(({ index }) => index)),
                   );
@@ -209,6 +276,7 @@ export const BookImportDialog = ({
               <Button
                 variant="default"
                 onClick={() => {
+                  invalidatePreview();
                   setSelectedIndexes(new Set());
                 }}
                 disabled={busy || selectedIndexes.size === 0}
@@ -255,13 +323,61 @@ export const BookImportDialog = ({
               </ScrollArea>
             )}
 
-            <Button
-              onClick={() => void submit()}
-              disabled={busy || selectedVisibleBooks.length === 0}
-              loading={busy}
-            >
-              インポート
-            </Button>
+            {preview == null ? null : (
+              <Stack gap="xs">
+                <Text fw={700}>インポート内容</Text>
+                {preview.books.map((book, index) => (
+                  <Stack
+                    key={`${book.title}-${String(index)}`}
+                    gap={4}
+                    p="sm"
+                    bd="1px solid var(--mantine-color-gray-3)"
+                  >
+                    <Text fw={600}>{book.title}</Text>
+                    <Group gap="xs">
+                      {book.authors.map((author) => (
+                        <Group key={author.name} gap={4}>
+                          <Text size="sm">{author.name}</Text>
+                          <Badge
+                            size="sm"
+                            color={
+                              author.status === "EXISTING" ? "blue" : "green"
+                            }
+                          >
+                            {author.status === "EXISTING" ? "既存" : "新規"}
+                          </Badge>
+                        </Group>
+                      ))}
+                    </Group>
+                    <Text size="sm">
+                      ISBN: {book.isbn === "" ? "なし" : book.isbn} /{" "}
+                      {book.read ? "既読" : "未読"} /{" "}
+                      {book.owned ? "所有" : "未所有"} / 優先度: {book.priority}{" "}
+                      / {book.format} / {book.store}
+                    </Text>
+                  </Stack>
+                ))}
+                <Text>{preview.books.length}冊をインポートします</Text>
+              </Stack>
+            )}
+
+            <Group justify="flex-end">
+              <Button
+                variant="default"
+                onClick={() => void runPreview()}
+                disabled={busy || selectedInputs.length === 0}
+                loading={isPreviewing || previewBookImportMutation.isPending}
+              >
+                {preview == null ? "プレビュー" : "再プレビュー"}
+              </Button>
+              <Button
+                onClick={() => void submit()}
+                disabled={busy || previewedInputs == null}
+                loading={isImporting || importBooksMutation.isPending}
+              >
+                インポート
+              </Button>
+            </Group>
           </>
         )}
       </Stack>

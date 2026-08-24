@@ -1,6 +1,32 @@
 import { expect, test } from "vitest";
 import { MockStore } from "./mockStore";
 
+test("book import preview resolves authors without mutating state", () => {
+  const mockStore = new MockStore();
+  const booksBefore = mockStore.getAllBooks();
+  const authorsBefore = mockStore.getAllAuthors();
+
+  const result = mockStore.previewBookImport([
+    {
+      title: "プレビュー書籍",
+      authorNames: ["著者1", "プレビュー新規著者", "プレビュー新規著者"],
+      isbn: "",
+      read: false,
+      owned: true,
+      priority: 50,
+      format: "E_BOOK",
+      store: "KINDLE",
+    },
+  ]);
+
+  expect(result.books[0]?.authors).toEqual([
+    { name: "著者1", status: "EXISTING" },
+    { name: "プレビュー新規著者", status: "NEW" },
+  ]);
+  expect(mockStore.getAllBooks()).toEqual(booksBefore);
+  expect(mockStore.getAllAuthors()).toEqual(authorsBefore);
+});
+
 test("bulk import events share the returned event set", () => {
   const mockStore = new MockStore();
   const result = mockStore.importBooks([

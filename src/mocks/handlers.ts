@@ -579,4 +579,22 @@ export const handlers = [
       },
     });
   }),
+
+  graphqlApi.mutation("previewBookImport", ({ variables }) => {
+    if (
+      !isObject(variables) ||
+      !Array.isArray(variables.books) ||
+      !variables.books.every(isImportBookInput)
+    ) {
+      return HttpResponse.json(
+        { errors: [{ message: "Invalid variables" }] },
+        { status: 200 },
+      );
+    }
+    return HttpResponse.json({
+      data: {
+        previewBookImport: mockStore.previewBookImport(variables.books),
+      },
+    });
+  }),
 ];
