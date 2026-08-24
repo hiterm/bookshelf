@@ -29,3 +29,9 @@
 - [x] 5.3 Run the complete unit/component suite and TypeScript checks after final formatting
 - [x] 5.4 Run the complete mock API E2E suite
 - [x] 5.5 Review the final diff, commit meaningful units, create the pull request, and verify CI readiness
+
+## 6. Review Follow-up
+
+- [x] 6.1 Redact `apiKey` and `x-api-key` extension fields and add regression coverage
+- [x] 6.2 Align isolated provider subscriptions with their active QueryClient instances
+- [ ] 6.3 Run mandatory checks, push the review fixes, and verify the PR review state

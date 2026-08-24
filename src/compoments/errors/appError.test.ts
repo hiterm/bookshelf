@@ -26,6 +26,8 @@ describe("normalizeError", () => {
               code: "FORBIDDEN",
               accessToken: "response-secret",
               authorization: "Bearer header-secret",
+              apiKey: "camel-api-key-secret",
+              "x-api-key": "header-api-key-secret",
             },
           }),
         ],
@@ -41,7 +43,7 @@ describe("normalizeError", () => {
     expect(normalized.details).toContain('"httpStatus": 403');
     expect(normalized.details).toContain('"code": "FORBIDDEN"');
     expect(normalized.details).not.toMatch(
-      /response-secret|variable-secret|header-secret|authorization|variables/i,
+      /response-secret|variable-secret|header-secret|api-key-secret|authorization|variables/i,
     );
   });
 

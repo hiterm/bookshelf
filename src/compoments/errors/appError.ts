@@ -18,7 +18,7 @@ export type ReportErrorInput = {
 type NormalizedError = Pick<AppError, "message" | "details">;
 
 const sensitiveKey =
-  /authorization|cookie|credential|password|secret|token|header|variable/i;
+  /authorization|api[-_]?key|cookie|credential|password|secret|token|header|variable/i;
 
 const sanitizeExtensionValue = (value: unknown): unknown => {
   if (value == null || typeof value === "string" || typeof value === "boolean")

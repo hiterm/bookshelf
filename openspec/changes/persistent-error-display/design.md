@@ -34,6 +34,8 @@ Render a thin `ErrorPanel` before routed content in `AppShell.Main`. Compose Man
 
 Subscribe once in the provider to error transition events from the application's shared React Query `QueryCache`. This reports all query failures without component render effects or repeated registrations. Use the generic operation name `Query` and omit query keys because keys can contain identifiers or variables. Existing local query error UI remains because it explains why an individual screen cannot render.
 
+Allow tests and other isolated provider hosts to inject their active `QueryClient`, defaulting to the application singleton. This keeps the provider subscription aligned with the `QueryClientProvider` used by that tree without weakening production behavior.
+
 Keep feature-specific Japanese titles and stable GraphQL operation identifiers at call sites. This provides meaningful user context and developer diagnostics while moving normalization, color selection, storage, and notification behavior out of feature components.
 
 ## Risks / Trade-offs

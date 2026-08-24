@@ -86,7 +86,9 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MantineProvider env="test">
-        <AppErrorProvider>{children}</AppErrorProvider>
+        <AppErrorProvider queryClient={queryClient}>
+          {children}
+        </AppErrorProvider>
       </MantineProvider>
     </QueryClientProvider>
   );

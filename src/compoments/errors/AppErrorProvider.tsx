@@ -1,4 +1,5 @@
 import { showNotification } from "@mantine/notifications";
+import type { QueryClient } from "@tanstack/react-query";
 import {
   createContext,
   useCallback,
@@ -13,7 +14,7 @@ import {
   type AppError,
   type ReportErrorInput,
 } from "./appError";
-import { queryClient } from "../../lib/queryClient";
+import { queryClient as applicationQueryClient } from "../../lib/queryClient";
 
 type AppErrorContextValue = {
   errors: AppError[];
@@ -26,7 +27,13 @@ const AppErrorContext = createContext<AppErrorContextValue | null>(null);
 
 const createErrorId = (): string => globalThis.crypto.randomUUID();
 
-export const AppErrorProvider = ({ children }: { children: ReactNode }) => {
+export const AppErrorProvider = ({
+  children,
+  queryClient = applicationQueryClient,
+}: {
+  children: ReactNode;
+  queryClient?: QueryClient;
+}) => {
   const [errors, setErrors] = useState<AppError[]>([]);
 
   const reportError = useCallback((input: ReportErrorInput) => {
@@ -62,7 +69,7 @@ export const AppErrorProvider = ({ children }: { children: ReactNode }) => {
           });
         }
       }),
-    [reportError],
+    [queryClient, reportError],
   );
 
   const value = useMemo(
