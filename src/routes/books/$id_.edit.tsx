@@ -1,7 +1,7 @@
 import { Center, Loader } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
-import { BookDetailEdit } from "../../features/books/BookDetailEdit";
+import { BookEdit } from "../../features/books/BookEdit";
 import { graphQlBookToBook } from "../../features/books/entity/Book";
 import { useBook } from "../../compoments/hooks/useBook";
 
@@ -10,10 +10,10 @@ export const Route = createFileRoute("/books/$id_/edit")({
 });
 
 function RouteComponent() {
-  return <BookDetailEditPage />;
+  return <BookEditPage />;
 }
 
-const BookDetailEditPage: React.FC = () => {
+const BookEditPage: React.FC = () => {
   const { id } = Route.useParams();
   const { data, isLoading, error } = useBook(id);
 
@@ -28,5 +28,5 @@ const BookDetailEditPage: React.FC = () => {
   if (data.book == null) return <div>Not found.</div>;
 
   const book = graphQlBookToBook(data.book);
-  return <BookDetailEdit book={book} />;
+  return <BookEdit book={book} />;
 };

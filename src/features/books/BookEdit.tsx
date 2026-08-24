@@ -13,7 +13,7 @@ import { resolvePendingAuthors } from "./resolvePendingAuthors";
 import { BookUpdateForm } from "./BookUpdateForm";
 import { Book } from "./entity/Book";
 
-export const BookDetailEdit: React.FC<{ book: Book }> = (props) => {
+export const BookEdit: React.FC<{ book: Book }> = (props) => {
   const book = props.book;
 
   const navigate = useNavigate();

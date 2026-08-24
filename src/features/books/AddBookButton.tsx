@@ -11,7 +11,7 @@ import { BookCreateForm } from "./BookCreateForm";
 import { bookFormSchema, BookFormValues } from "./bookFormSchema";
 import { resolvePendingAuthors } from "./resolvePendingAuthors";
 
-export const BookAddButton: React.FC = () => {
+export const AddBookButton: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   const handleDialogOpenClick = () => {

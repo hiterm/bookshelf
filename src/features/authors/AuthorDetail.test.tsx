@@ -7,7 +7,7 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
 import { useDeleteAuthor } from "../../compoments/hooks/useDeleteAuthor";
-import { AuthorDetailShow } from "./AuthorDetailShow";
+import { AuthorDetail } from "./AuthorDetail";
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual =
@@ -95,13 +95,13 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   return wrapper;
 };
 
-describe("AuthorDetailShow", () => {
+describe("AuthorDetail", () => {
   beforeEach(() => {
     mockMutateAsync.mockClear();
   });
 
   test("renders the author name", () => {
-    render(<AuthorDetailShow author={testAuthor} />, {
+    render(<AuthorDetail author={testAuthor} />, {
       wrapper: createWrapper(),
     });
     expect(
@@ -111,7 +111,7 @@ describe("AuthorDetailShow", () => {
   });
 
   test("renders edit and delete buttons", () => {
-    render(<AuthorDetailShow author={testAuthor} />, {
+    render(<AuthorDetail author={testAuthor} />, {
       wrapper: createWrapper(),
     });
     expect(screen.getByRole("button", { name: "変更" })).toBeInTheDocument();
@@ -119,7 +119,7 @@ describe("AuthorDetailShow", () => {
   });
 
   test("opens delete confirmation modal on delete button click", async () => {
-    render(<AuthorDetailShow author={testAuthor} />, {
+    render(<AuthorDetail author={testAuthor} />, {
       wrapper: createWrapper(),
     });
     await userEvent.click(screen.getByRole("button", { name: "削除" }));
@@ -130,7 +130,7 @@ describe("AuthorDetailShow", () => {
   });
 
   test("closes modal on cancel", async () => {
-    render(<AuthorDetailShow author={testAuthor} />, {
+    render(<AuthorDetail author={testAuthor} />, {
       wrapper: createWrapper(),
     });
     await userEvent.click(screen.getByRole("button", { name: "削除" }));
@@ -144,7 +144,7 @@ describe("AuthorDetailShow", () => {
   });
 
   test("calls deleteAuthor mutation on confirm", async () => {
-    render(<AuthorDetailShow author={testAuthor} />, {
+    render(<AuthorDetail author={testAuthor} />, {
       wrapper: createWrapper(),
     });
     await userEvent.click(screen.getByRole("button", { name: "削除" }));

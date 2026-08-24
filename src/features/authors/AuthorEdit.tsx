@@ -15,7 +15,7 @@ type Author = {
   yomi: string;
 };
 
-export const AuthorDetailEdit: React.FC<{ author: Author }> = ({ author }) => {
+export const AuthorEdit: React.FC<{ author: Author }> = ({ author }) => {
   const navigate = useNavigate();
   const updateAuthorMutation = useUpdateAuthor();
   const { reportError } = useAppError();

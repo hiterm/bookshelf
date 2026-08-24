@@ -7,11 +7,13 @@ import { StringFilter } from "./StringFilter";
 import { bookTableFeatures } from "./bookTable";
 import { Book } from "./entity/Book";
 
-type FilterProps = {
+type ColumnFilterProps = {
   column: Column<typeof bookTableFeatures, Book>;
 };
 
-export const Filter = ({ column }: FilterProps): React.JSX.Element => {
+export const ColumnFilter = ({
+  column,
+}: ColumnFilterProps): React.JSX.Element => {
   const inner = (() => {
     switch (column.columnDef.meta?.filterType) {
       case "string":

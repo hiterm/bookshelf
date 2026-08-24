@@ -4,7 +4,7 @@ import { render, screen, within } from "@testing-library/react";
 import React from "react";
 import { vi } from "vitest";
 import { useDeleteBook } from "../../compoments/hooks/useDeleteBook";
-import { BookDetailShow } from "./BookDetailShow";
+import { BookDetail } from "./BookDetail";
 import { AppErrorProvider } from "../../compoments/errors/AppErrorProvider";
 import type { Book } from "./entity/Book";
 
@@ -68,7 +68,7 @@ beforeAll(() => {
 });
 
 test("shows authors and author readings as separate items", () => {
-  render(<BookDetailShow book={book} />, {
+  render(<BookDetail book={book} />, {
     wrapper: ({ children }) => (
       <MantineProvider env="test">
         <AppErrorProvider>{children}</AppErrorProvider>

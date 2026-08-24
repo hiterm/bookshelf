@@ -2,7 +2,7 @@ import { Button } from "@mantine/core";
 import { useState } from "react";
 import { BookImportDialog } from "./BookImportDialog";
 
-export const BookImportButton = () => {
+export const ImportBooksButton = () => {
   const [opened, setOpened] = useState(false);
 
   return (

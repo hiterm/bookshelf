@@ -11,7 +11,7 @@ import { IconEye } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { useBookEvents } from "../../compoments/hooks/useBookEvents";
-import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
+import { BooleanValue } from "../../compoments/utils/BooleanValue";
 import type { BookQuery } from "../../generated/graphql-request";
 
 type BookAuthors = NonNullable<BookQuery["book"]>["authors"];
@@ -88,14 +88,14 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
               {isLg && (
                 <Table.Td>
                   {event.read != null ? (
-                    <ShowBoolean flag={event.read} />
+                    <BooleanValue flag={event.read} />
                   ) : null}
                 </Table.Td>
               )}
               {isLg && (
                 <Table.Td>
                   {event.owned != null ? (
-                    <ShowBoolean flag={event.owned} />
+                    <BooleanValue flag={event.owned} />
                   ) : null}
                 </Table.Td>
               )}
@@ -152,13 +152,13 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
             <Text>
               <strong>Read:</strong>{" "}
               {selectedEvent.read != null ? (
-                <ShowBoolean flag={selectedEvent.read} />
+                <BooleanValue flag={selectedEvent.read} />
               ) : null}
             </Text>
             <Text>
               <strong>Owned:</strong>{" "}
               {selectedEvent.owned != null ? (
-                <ShowBoolean flag={selectedEvent.owned} />
+                <BooleanValue flag={selectedEvent.owned} />
               ) : null}
             </Text>
             <Text>

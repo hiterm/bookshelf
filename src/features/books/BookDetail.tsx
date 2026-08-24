@@ -15,7 +15,7 @@ import { useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { Link, LinkButton } from "../../compoments/mantineTsr";
-import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
+import { BooleanValue } from "../../compoments/utils/BooleanValue";
 import { useDeleteBook } from "../../compoments/hooks/useDeleteBook";
 import { useAppError } from "../../compoments/errors/AppErrorProvider";
 import { Book } from "./entity/Book";
@@ -23,7 +23,7 @@ import { displayBookFormat } from "./entity/BookFormat";
 import { displayBookStore } from "./entity/BookStore";
 import { displayAuthorYomis } from "./displayAuthorYomis";
 
-const BookDetailShowItem: React.FC<{
+const BookDetailField: React.FC<{
   field: string;
   value: React.ReactNode;
   halfWidth?: boolean;
@@ -101,7 +101,7 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
   );
 };
 
-export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
+export const BookDetail: React.FC<{ book: Book }> = (props) => {
   const theme = useMantineTheme();
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
@@ -129,8 +129,8 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
             : "max-content 1fr max-content 1fr",
         }}
       >
-        <BookDetailShowItem field="書名" value={book.title} />
-        <BookDetailShowItem
+        <BookDetailField field="書名" value={book.title} />
+        <BookDetailField
           field="著者"
           value={
             <Text component="span">
@@ -145,38 +145,38 @@ export const BookDetailShow: React.FC<{ book: Book }> = (props) => {
             </Text>
           }
         />
-        <BookDetailShowItem
+        <BookDetailField
           field="著者読み仮名"
           value={displayAuthorYomis(book.authors)}
         />
-        <BookDetailShowItem
+        <BookDetailField
           field="形式"
           value={displayBookFormat(book.format)}
           halfWidth
         />
-        <BookDetailShowItem
+        <BookDetailField
           field="ストア"
           value={displayBookStore(book.store)}
           halfWidth
         />
-        <BookDetailShowItem field="優先度" value={book.priority.toString()} />
-        <BookDetailShowItem
+        <BookDetailField field="優先度" value={book.priority.toString()} />
+        <BookDetailField
           field="既読"
-          value={<ShowBoolean flag={book.read} />}
+          value={<BooleanValue flag={book.read} />}
           halfWidth
         />
-        <BookDetailShowItem
+        <BookDetailField
           field="所有"
-          value={<ShowBoolean flag={book.owned} />}
+          value={<BooleanValue flag={book.owned} />}
           halfWidth
         />
-        <BookDetailShowItem field="ISBN" value={book.isbn} />
-        <BookDetailShowItem
+        <BookDetailField field="ISBN" value={book.isbn} />
+        <BookDetailField
           field="作成日時"
           value={dayjs(book.createdAt).format("YYYY/MM/DD HH:mm:ss")}
           halfWidth
         />
-        <BookDetailShowItem
+        <BookDetailField
           field="更新日時"
           value={dayjs(book.updatedAt).format("YYYY/MM/DD HH:mm:ss")}
           halfWidth
