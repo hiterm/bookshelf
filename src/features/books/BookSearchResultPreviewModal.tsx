@@ -11,19 +11,19 @@ import { useEffect } from "react";
 import { BookLookupResult } from "./useBookLookup";
 import { useOpenBdDetail } from "./useOpenBdDetail";
 
-type BookDetailModalProps = {
+type BookSearchResultPreviewModalProps = {
   opened: boolean;
   onClose: () => void;
   searchResult: BookLookupResult;
   onSelect: (result: BookLookupResult) => void;
 };
 
-export const BookDetailModal = ({
+export const BookSearchResultPreviewModal = ({
   opened,
   onClose,
   searchResult,
   onSelect,
-}: BookDetailModalProps) => {
+}: BookSearchResultPreviewModalProps) => {
   const { state, fetch, reset } = useOpenBdDetail();
 
   useEffect(() => {

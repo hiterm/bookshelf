@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AuthorLoader } from "../../features/authors/AuthorLoader";
-import { AuthorDetailShow } from "../../features/authors/AuthorDetailShow";
+import { AuthorDetail } from "../../features/authors/AuthorDetail";
 import { AuthorHistory } from "../../features/authors/AuthorHistory";
 
 export const Route = createFileRoute("/authors/$id")({
@@ -13,7 +13,7 @@ function RouteComponent() {
     <AuthorLoader id={id}>
       {(author) => (
         <>
-          <AuthorDetailShow author={author} />
+          <AuthorDetail author={author} />
           <AuthorHistory authorId={author.id} />
         </>
       )}

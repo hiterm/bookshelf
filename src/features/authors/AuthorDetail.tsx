@@ -89,7 +89,7 @@ const DeleteButton: React.FC<{ author: Author }> = ({ author }) => {
   );
 };
 
-export const AuthorDetailShow: React.FC<{ author: Author }> = ({ author }) => {
+export const AuthorDetail: React.FC<{ author: Author }> = ({ author }) => {
   return (
     <React.Fragment>
       <LinkButton

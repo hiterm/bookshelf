@@ -1,7 +1,7 @@
 import { Paper, Table, Text, Title } from "@mantine/core";
 import React from "react";
 import { Link } from "../../compoments/mantineTsr";
-import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
+import { BooleanValue } from "../../compoments/utils/BooleanValue";
 import type { AuthorQuery } from "../../generated/graphql-request";
 import { displayBookFormat } from "../books/entity/BookFormat";
 
@@ -41,10 +41,10 @@ export const AuthorBookList: React.FC<{
                   <Table.Td>{book.isbn}</Table.Td>
                   <Table.Td>{displayBookFormat(book.format)}</Table.Td>
                   <Table.Td>
-                    <ShowBoolean flag={book.read} />
+                    <BooleanValue flag={book.read} />
                   </Table.Td>
                   <Table.Td>
-                    <ShowBoolean flag={book.owned} />
+                    <BooleanValue flag={book.owned} />
                   </Table.Td>
                 </Table.Tr>
               ))}

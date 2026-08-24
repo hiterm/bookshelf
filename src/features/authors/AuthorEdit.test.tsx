@@ -8,7 +8,7 @@ import React from "react";
 import { vi } from "vitest";
 import { useUpdateAuthor } from "../../compoments/hooks/useUpdateAuthor";
 import { AppErrorProvider } from "../../compoments/errors/AppErrorProvider";
-import { AuthorDetailEdit } from "./AuthorDetailEdit";
+import { AuthorEdit } from "./AuthorEdit";
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual =
@@ -91,14 +91,14 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
   return wrapper;
 };
 
-describe("AuthorDetailEdit", () => {
+describe("AuthorEdit", () => {
   beforeEach(() => {
     mockMutateAsync.mockClear();
     vi.mocked(showNotification).mockClear();
   });
 
   test("renders inputs with initial values", () => {
-    render(<AuthorDetailEdit author={testAuthor} />, {
+    render(<AuthorEdit author={testAuthor} />, {
       wrapper: createWrapper(),
     });
     const input = screen.getByRole("textbox", { name: "名前" });
@@ -109,7 +109,7 @@ describe("AuthorDetailEdit", () => {
   });
 
   test("renders Save and Cancel buttons", () => {
-    render(<AuthorDetailEdit author={testAuthor} />, {
+    render(<AuthorEdit author={testAuthor} />, {
       wrapper: createWrapper(),
     });
     expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
@@ -117,7 +117,7 @@ describe("AuthorDetailEdit", () => {
   });
 
   test("calls updateAuthor mutation with updated values on save", async () => {
-    render(<AuthorDetailEdit author={testAuthor} />, {
+    render(<AuthorEdit author={testAuthor} />, {
       wrapper: createWrapper(),
     });
     const input = screen.getByRole("textbox", { name: "名前" });
@@ -137,7 +137,7 @@ describe("AuthorDetailEdit", () => {
   });
 
   test("shows validation error when name is empty", async () => {
-    render(<AuthorDetailEdit author={testAuthor} />, {
+    render(<AuthorEdit author={testAuthor} />, {
       wrapper: createWrapper(),
     });
     const input = screen.getByRole("textbox", { name: "名前" });
@@ -152,7 +152,7 @@ describe("AuthorDetailEdit", () => {
   });
 
   test("shows validation error when reading is empty", async () => {
-    render(<AuthorDetailEdit author={testAuthor} />, {
+    render(<AuthorEdit author={testAuthor} />, {
       wrapper: createWrapper(),
     });
     const input = screen.getByRole("textbox", { name: "読み仮名" });
@@ -168,7 +168,7 @@ describe("AuthorDetailEdit", () => {
 
   test("shows error notification when update fails", async () => {
     mockMutateAsync.mockRejectedValueOnce(new Error("Network error"));
-    render(<AuthorDetailEdit author={testAuthor} />, {
+    render(<AuthorEdit author={testAuthor} />, {
       wrapper: createWrapper(),
     });
     const input = screen.getByRole("textbox", { name: "名前" });

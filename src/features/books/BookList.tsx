@@ -33,12 +33,12 @@ import {
 import { getRouteApi } from "@tanstack/react-router";
 import React from "react";
 import { Link } from "../../compoments/mantineTsr";
-import { ShowBoolean } from "../../compoments/utils/ShowBoolean";
+import { BooleanValue } from "../../compoments/utils/BooleanValue";
 import { authorSchema } from "./entity/Author";
 import { Book } from "./entity/Book";
 import { displayBookFormat } from "./entity/BookFormat";
 import { displayBookStore } from "./entity/BookStore";
-import { Filter } from "./Filter";
+import { ColumnFilter } from "./ColumnFilter";
 import { displayAuthorYomis } from "./displayAuthorYomis";
 import { bookColumnFiltersSchema, bookSortingSchema } from "./bookSearch";
 import { bookTableFeatures } from "./bookTable";
@@ -119,14 +119,14 @@ const columns = columnHelper.columns([
   columnHelper.accessor("priority", { header: "優先度", filterFn: "equals" }),
   columnHelper.accessor("read", {
     header: "既読",
-    cell: (info) => <ShowBoolean flag={info.getValue()} />,
+    cell: (info) => <BooleanValue flag={info.getValue()} />,
     filterFn: "equals",
     meta: { filterType: "boolean" },
     minSize: 100,
   }),
   columnHelper.accessor("owned", {
     header: "所有",
-    cell: (info) => <ShowBoolean flag={info.getValue()} />,
+    cell: (info) => <BooleanValue flag={info.getValue()} />,
     filterFn: "equals",
     meta: { filterType: "boolean" },
     minSize: 100,
@@ -364,7 +364,7 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
                   <Table.Th key={header.id}>
                     <Box style={{ fontWeight: "normal" }}>
                       {header.isPlaceholder ? null : header.column.getCanFilter() ? (
-                        <Filter column={header.column} />
+                        <ColumnFilter column={header.column} />
                       ) : null}
                     </Box>
                   </Table.Th>

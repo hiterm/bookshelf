@@ -1,9 +1,9 @@
 import { Center, Group, Loader, Paper } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
-import { BookAddButton } from "../../features/books/BookAddButton";
+import { AddBookButton } from "../../features/books/AddBookButton";
 import { BookList } from "../../features/books/BookList";
-import { BookImportButton } from "../../features/books/import/BookImportButton";
+import { ImportBooksButton } from "../../features/books/import/ImportBooksButton";
 import { bookSearchSchema } from "../../features/books/bookSearch";
 import { Book, graphQlBookToBook } from "../../features/books/entity/Book";
 import { useBooks } from "../../compoments/hooks/useBooks";
@@ -37,8 +37,8 @@ const BookIndexPage: React.FC = () => {
   return (
     <React.Fragment>
       <Group>
-        <BookAddButton />
-        <BookImportButton />
+        <AddBookButton />
+        <ImportBooksButton />
       </Group>
       <Paper shadow="xs" mt="md" p="lg">
         <BookList list={books} />

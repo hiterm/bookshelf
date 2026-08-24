@@ -12,7 +12,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useState } from "react";
-import { BookDetailModal } from "./BookDetailModal";
+import { BookSearchResultPreviewModal } from "./BookSearchResultPreviewModal";
 import {
   BookLookupBackend,
   BookLookupResult,
@@ -220,7 +220,7 @@ export const BookLookupDialog = ({
         )}
       </Stack>
       {detailResult != null && (
-        <BookDetailModal
+        <BookSearchResultPreviewModal
           opened
           onClose={() => {
             setDetailResult(null);

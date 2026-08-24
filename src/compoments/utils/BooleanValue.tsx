@@ -1,7 +1,7 @@
 import { ThemeIcon } from "@mantine/core";
 import { IconCheck, IconX } from "@tabler/icons-react";
 
-export const ShowBoolean: React.FC<{ flag: boolean }> = ({ flag }) => {
+export const BooleanValue: React.FC<{ flag: boolean }> = ({ flag }) => {
   return flag ? (
     <ThemeIcon size="sm" color="green">
       <IconCheck />
