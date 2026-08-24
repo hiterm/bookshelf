@@ -53,6 +53,11 @@ selection, select-all, and clear-all invoke it when not busy. This explicit
 boundary approach is easier to audit than deriving preview validity through a
 deep comparison effect and prevents transient renders with stale confirmation.
 
+`runPreview` also invalidates the retained response and input before starting
+every preview attempt and again when an attempt fails. Therefore, a failed
+re-preview cannot leave an older successful preview authorized for import; the
+user must obtain a new successful preview.
+
 ### Keep candidate and backend preview displays separate
 
 The checkbox list remains the editable candidate list. A distinct

@@ -38,4 +38,6 @@ None.
 - Extends generated GraphQL artifacts and preview support in mock
   infrastructure.
 - Updates Vitest component tests and relevant Playwright mock/integration
-  flows. The backend API contract itself is unchanged.
+  flows. The existing backend import implementation and `importBooks` contract
+  remain unchanged, while the GraphQL schema contract is extended with
+  `previewBookImport`.

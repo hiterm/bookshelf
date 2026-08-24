@@ -304,6 +304,24 @@ describe("BookImportDialog", () => {
     );
   });
 
+  test("clears a successful preview when re-preview fails", async () => {
+    render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
+    await uploadJson();
+    await runSuccessfulPreview();
+    previewMutateAsync.mockRejectedValueOnce(
+      new Error("re-preview unavailable"),
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "再プレビュー" }));
+
+    await waitFor(() => {
+      expect(previewMutateAsync).toHaveBeenCalledTimes(2);
+    });
+    expect(screen.queryByText("インポート内容")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "インポート" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "プレビュー" })).toBeEnabled();
+  });
+
   test("keeps inputs and preview after import failure", async () => {
     importMutateAsync.mockRejectedValue(new Error("import unavailable"));
     render(<BookImportDialog opened onClose={vi.fn()} />, { wrapper });
