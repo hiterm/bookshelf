@@ -46,7 +46,7 @@ vi.mocked(useAuthors, { partial: true }).mockReturnValue({
   error: null,
 });
 
-vi.mock("../../compoments/mantineTsr", () => ({
+vi.mock("../../components/mantineTsr", () => ({
   Link: ({ children }: { children: React.ReactNode }) => (
     <span>{children}</span>
   ),

@@ -9,7 +9,7 @@ The frontend SHALL store domain-specific TanStack Query hooks in the owning feat
 
 #### Scenario: Shared hook location
 - **WHEN** a hook is generic and has no feature ownership
-- **THEN** the hook remains in `src/compoments/hooks`
+- **THEN** the hook remains in `src/components/hooks`
 
 ### Requirement: Feature-local query key factories
 The frontend SHALL define query key tuples through a query key factory owned by each applicable feature and SHALL use those factories for queries and QueryClient cache operations.

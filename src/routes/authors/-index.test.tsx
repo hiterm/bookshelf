@@ -11,7 +11,7 @@ import { AuthorIndexPage } from "./index";
 vi.mock(import("../../features/authors/api/useCreateAuthor"));
 vi.mock(import("../../features/authors/api/useAuthors"));
 
-vi.mock("../../compoments/mantineTsr", () => ({
+vi.mock("../../components/mantineTsr", () => ({
   Link: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   LinkButton: ({ children }: { children: React.ReactNode }) => (
     <button type="button">{children}</button>

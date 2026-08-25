@@ -64,7 +64,7 @@ The complete user flow is implemented, validated, committed, and available in PR
 
 ## Context and Orientation
 
-The application is a React and TypeScript frontend using Mantine for controls, TanStack Query for remote mutation state, GraphQL Request with generated types, Vitest for logic and component behavior, and Playwright for browser flows. GraphQL source operations live under `src/graphql/`; `scripts/fetch-schema.sh` fetches the bookshelf-api revision named by `bookshelf-api.version`, and `pnpm run generate` writes ignored artifacts under `src/generated/`. Existing mutation hooks such as `src/compoments/hooks/useCreateBook.ts` obtain an authenticated SDK through `src/lib/graphqlClient.ts` and invalidate `['books']` after success.
+The application is a React and TypeScript frontend using Mantine for controls, TanStack Query for remote mutation state, GraphQL Request with generated types, Vitest for logic and component behavior, and Playwright for browser flows. GraphQL source operations live under `src/graphql/`; `scripts/fetch-schema.sh` fetches the bookshelf-api revision named by `bookshelf-api.version`, and `pnpm run generate` writes ignored artifacts under `src/generated/`. Existing mutation hooks such as `src/components/hooks/useCreateBook.ts` obtain an authenticated SDK through `src/lib/graphqlClient.ts` and invalidate `['books']` after success.
 
 The book-list route is `src/routes/books/index.tsx`, its existing add control is `src/features/books/BookAddButton.tsx`, and the bulk-import modules will live under `src/features/books/import/`. “External model” means the untrusted shape in the uploaded exporter file. “Internal model” means the validated `ImportedBook` values used by the UI. Only the converter at the GraphQL boundary creates generated `ImportBookInput` values.
 
@@ -72,7 +72,7 @@ Mocked browser tests use the per-test Node-process `MockStore` in `e2e-mock-api/
 
 ## Plan of Work
 
-First add `src/graphql/importBooks.graphql`, selecting `eventSetId` and each returned book's `id` and `title`, then regenerate the SDK. Add `src/compoments/hooks/useImportBooks.ts` with a mutation accepting generated `ImportBookInput[]`, one `sdk.importBooks({ books })` call, and book-query invalidation on success.
+First add `src/graphql/importBooks.graphql`, selecting `eventSetId` and each returned book's `id` and `title`, then regenerate the SDK. Add `src/components/hooks/useImportBooks.ts` with a mutation accepting generated `ImportBookInput[]`, one `sdk.importBooks({ books })` call, and book-query invalidation on success.
 
 Next create `src/features/books/import/kindleExportSchema.ts`, `parseKindleExport.ts`, `toImportBookInput.ts`, and `filterImportedBooks.ts`. The parser begins with `JSON.parse` into `unknown`, validates with Zod, rejects malformed JSON, missing required data, invalid timestamps, and unsupported statuses with a clear import error, and returns dates plus the source ASIN and optional image URL. Tests use an anonymous minimal fixture matching upstream output. Pure conversion tests prove ASIN never reaches ISBN; pure filter tests prove an unchanged input array and an inclusive local-calendar boundary.
 

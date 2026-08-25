@@ -17,7 +17,7 @@
 
 ## Decisions
 
-- Use the existing `Link` wrapper from `compoments/mantineTsr`, targeting `/authors/$id` with each author's ID. This preserves typed routing, Mantine styling, and intent preloading consistently with the author list.
+- Use the existing `Link` wrapper from `components/mantineTsr`, targeting `/authors/$id` with each author's ID. This preserves typed routing, Mantine styling, and intent preloading consistently with the author list.
 - Render separators as text between links rather than joining names into one string. This keeps the current comma-and-space appearance while giving every author its own accessible link.
 - Extend `BookDetailShow`'s component test to assert link names and destinations, and add a mock-API E2E navigation test because the change is a critical cross-screen interaction.
 

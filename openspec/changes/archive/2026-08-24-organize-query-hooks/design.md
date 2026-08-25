@@ -1,6 +1,6 @@
 ## Context
 
-Book, author, history, and authentication TanStack Query hooks are stored in the shared `src/compoments/hooks` directory. Query keys are repeated inline in query and mutation hooks, making ownership and consistency harder to see. This refactor crosses several frontend features but must preserve all runtime, GraphQL, authentication, and cache behavior.
+Book, author, history, and authentication TanStack Query hooks are stored in the shared `src/components/hooks` directory. Query keys are repeated inline in query and mutation hooks, making ownership and consistency harder to see. This refactor crosses several frontend features but must preserve all runtime, GraphQL, authentication, and cache behavior.
 
 ## Goals / Non-Goals
 
@@ -13,7 +13,7 @@ Book, author, history, and authentication TanStack Query hooks are stored in the
 
 **Non-Goals:**
 
-- Renaming or removing `src/compoments`.
+- Renaming or removing `src/components`.
 - Reorganizing generic hooks such as `useDebouncedEffect`.
 - Redesigning cache key hierarchies or invalidation strategy.
 - Refactoring authenticated SDK creation or GraphQL operations.

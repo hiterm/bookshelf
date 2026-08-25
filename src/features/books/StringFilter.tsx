@@ -1,7 +1,7 @@
 import { TextInput } from "@mantine/core";
 import { Column } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
-import { useDebouncedEffect } from "../../compoments/hooks/useDebouncedEffect";
+import { useDebouncedEffect } from "../../components/hooks/useDebouncedEffect";
 import { bookTableFeatures } from "./bookTable";
 import { Book } from "./entity/Book";
 

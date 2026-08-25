@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AppErrorProvider } from "../../compoments/errors/AppErrorProvider";
+import { AppErrorProvider } from "../../components/errors/AppErrorProvider";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
@@ -26,7 +26,7 @@ vi.mocked(useDeleteAuthor, { partial: true }).mockReturnValue({
   isPending: false,
 });
 
-vi.mock("../../compoments/mantineTsr", () => ({
+vi.mock("../../components/mantineTsr", () => ({
   Link: ({
     children,
     ...props

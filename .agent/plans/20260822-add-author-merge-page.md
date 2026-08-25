@@ -47,7 +47,7 @@ The dedicated merge page, both book previews, API mutation, cache refresh, confi
 
 ## Context and Orientation
 
-GraphQL documents live in `src/graphql/` and `pnpm run generate` downloads the API schema and creates the typed SDK under ignored `src/generated/`. Hooks in `src/compoments/hooks/` authenticate calls and coordinate TanStack Query caches. File routes live under `src/routes/`; the router generator derives its route tree from those files. `src/routes/authors/index.tsx` lists authors, and `src/features/authors/AuthorBookList.tsx` renders an author's book rows and links.
+GraphQL documents live in `src/graphql/` and `pnpm run generate` downloads the API schema and creates the typed SDK under ignored `src/generated/`. Hooks in `src/components/hooks/` authenticate calls and coordinate TanStack Query caches. File routes live under `src/routes/`; the router generator derives its route tree from those files. `src/routes/authors/index.tsx` lists authors, and `src/features/authors/AuthorBookList.tsx` renders an author's book rows and links.
 
 There are two mock implementations. `e2e-mock-api/mockStore.ts` runs in the Playwright Node process and is isolated per test. `src/mocks/mockStore.ts` runs inside the demo-mode browser service worker and is isolated through a fresh browser context. Both must implement identical merge behavior: replace the source ID with the destination ID in every associated book, deduplicate author IDs, delete the source, and return the unchanged destination.
 

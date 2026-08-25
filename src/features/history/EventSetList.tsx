@@ -1,6 +1,6 @@
 import { Paper, Stack, Text, Title } from "@mantine/core";
 import dayjs from "dayjs";
-import { Link } from "../../compoments/mantineTsr";
+import { Link } from "../../components/mantineTsr";
 import type { EventSetsQuery } from "../../generated/graphql-request";
 import { displayEventSetOperation } from "./eventSetOperation";
 

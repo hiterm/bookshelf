@@ -1,7 +1,7 @@
 import { Paper, Table, Text, Title } from "@mantine/core";
 import React from "react";
-import { Link } from "../../compoments/mantineTsr";
-import { BooleanValue } from "../../compoments/utils/BooleanValue";
+import { Link } from "../../components/mantineTsr";
+import { BooleanValue } from "../../components/utils/BooleanValue";
 import type { AuthorQuery } from "../../generated/graphql-request";
 import { displayBookFormat } from "../books/entity/BookFormat";
 

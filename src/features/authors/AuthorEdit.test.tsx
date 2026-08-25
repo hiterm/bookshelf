@@ -7,7 +7,7 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
 import { useUpdateAuthor } from "./api/useUpdateAuthor";
-import { AppErrorProvider } from "../../compoments/errors/AppErrorProvider";
+import { AppErrorProvider } from "../../components/errors/AppErrorProvider";
 import { AuthorEdit } from "./AuthorEdit";
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -27,7 +27,7 @@ vi.mocked(useUpdateAuthor, { partial: true }).mockReturnValue({
   isPending: false,
 });
 
-vi.mock("../../compoments/mantineTsr", () => ({
+vi.mock("../../components/mantineTsr", () => ({
   Link: ({
     children,
     ...props
