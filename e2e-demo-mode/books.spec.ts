@@ -81,24 +81,27 @@ test("imports selected Kindle books", async ({ page }) => {
   await page.goto("/books");
 
   await page.getByRole("button", { name: "一括インポート" }).click();
-  const dialog = page.getByRole("dialog", { name: "書籍一括インポート" });
-  await dialog
+  await expect(page).toHaveURL(/\/books\/import$/);
+  const importPage = page.getByRole("main");
+  await importPage
     .locator('input[type="file"]')
     .setInputFiles("e2e-fixtures/kindle-books.json");
-  await dialog.getByLabel("購入日（指定日以降）").fill("2026-04-25");
-  await dialog
+  await importPage.getByLabel("購入日（指定日以降）").fill("2026-04-25");
+  await importPage
     .getByRole("checkbox", { name: "Kindleインポート翌日をインポート" })
     .uncheck();
+  await expect(importPage.getByText("インポート対象: 2")).toBeVisible();
+  await importPage.getByRole("button", { name: "プレビュー" }).click();
   await expect(
-    dialog.getByRole("button", { name: "インポート" }),
-  ).toBeDisabled();
-  await dialog.getByRole("button", { name: "プレビュー" }).click();
-  await expect(dialog.getByText("インポート内容")).toBeVisible();
-  await expect(dialog.getByText("新規", { exact: true })).toBeVisible();
-  await dialog.getByRole("button", { name: "インポート" }).click();
+    page.getByRole("heading", { name: "インポートプレビュー" }),
+  ).toBeVisible();
+  await expect(
+    importPage.getByText("新規", { exact: true }).first(),
+  ).toBeVisible();
+  await importPage.getByRole("button", { name: "インポート" }).click();
 
-  await expect(page.getByText("1冊をインポートしました")).toBeVisible();
-  await expect(dialog).not.toBeVisible();
+  await expect(page.getByText("2冊をインポートしました")).toBeVisible();
+  await expect(page).toHaveURL(/\/books$/);
   await expect(
     page.getByRole("link", { name: "Kindleインポート当日" }),
   ).toBeVisible();
