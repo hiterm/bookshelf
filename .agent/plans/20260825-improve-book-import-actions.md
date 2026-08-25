@@ -16,7 +16,7 @@ People importing many Kindle books should be able to establish a default author-
 - [x] (2026-08-25 15:02Z) Extended mock-API end-to-end coverage, including a mobile viewport.
 - [x] (2026-08-25 15:12Z) Ran generation, lint fixing, 199 unit tests, type checking, and two focused Book Import E2E tests successfully.
 - [x] (2026-08-25 15:22Z) Synchronized and archived OpenSpec, committed and pushed the change, opened PR #338, and confirmed all CI including both integration jobs passed.
-- [ ] (2026-08-25 15:31Z) Apply requested mobile settings-order correction (completed: implementation, canonical/archive spec updates, 200 unit tests, typecheck, and responsive E2E; remaining: commit, push, PR update, and CI).
+- [x] (2026-08-25 15:35Z) Applied the requested mobile settings-order correction, updated canonical/archive specs and PR #338, and confirmed 200 unit tests, responsive E2E, and all CI including integration passed.
 
 ## Surprises & Discoveries
 
@@ -45,7 +45,7 @@ People importing many Kindle books should be able to establish a default author-
 
 ## Outcomes & Retrospective
 
-The initial change delivered visible-only bulk author splitting with per-book exceptions, a mobile fixed Preview action, and fixed count-aware preview actions while retaining the desktop 8:4 sticky settings UI. A follow-up correction now places normal-flow common settings between source and book controls on mobile through a single responsive grid; its final PR delivery and CI are pending.
+The change delivers visible-only bulk author splitting with per-book exceptions, a mobile fixed Preview action, and fixed count-aware preview actions while retaining the desktop 8:4 sticky settings UI. The follow-up correction places normal-flow common settings between source and book controls on mobile through a single responsive grid. Local validation and all PR #338 CI, including integration, pass without requesting CodeRabbit review.
 
 ## Context and Orientation
 
@@ -98,3 +98,5 @@ Revision note (2026-08-25 15:16Z): Recorded successful archive to `openspec/chan
 Revision note (2026-08-25 15:22Z): Completed the plan with PR #338 and successful CI evidence.
 
 Revision note (2026-08-25 15:31Z): Reopened progress for the requested mobile settings-order correction and recorded the single-grid design.
+
+Revision note (2026-08-25 15:35Z): Completed the mobile settings-order correction after successful PR CI.
