@@ -104,7 +104,7 @@ candidates.
 - **WHEN** a filter and selection are active
 - **THEN** the editor separately displays total, visible, and import-target counts
 
-### Requirement: Preview uses current selected visible inputs
+### Requirement: Preview uses current selected inputs
 The frontend SHALL construct one `ImportBookInput[]` from every selected
 candidate using current per-book and common settings and SHALL pass that array
 once to `previewBookImport`.

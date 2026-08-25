@@ -104,7 +104,7 @@ candidates.
 
 ## MODIFIED Requirements
 
-### Requirement: Preview uses current selected visible inputs
+### Requirement: Preview uses current selected inputs
 The frontend SHALL construct one `ImportBookInput[]` from every selected
 candidate using current per-book and common settings and SHALL pass that array
 once to `previewBookImport`.

@@ -87,11 +87,12 @@ describe("parseKindleExport", () => {
     ).toThrow(/Kindle Bookshelf Exporter/);
   });
 
-  test("rejects author text that cannot produce an author name", () => {
-    expect(() =>
-      parseKindleExport(
-        JSON.stringify([{ ...exporterFixture[0], authors: "   " }]),
-      ),
-    ).toThrow(/Kindle Bookshelf Exporter/);
-  });
+  test.each(["   ", ",", " , "])(
+    "rejects author text that cannot produce an author name: %j",
+    (authors) => {
+      expect(() =>
+        parseKindleExport(JSON.stringify([{ ...exporterFixture[0], authors }])),
+      ).toThrow(/Kindle Bookshelf Exporter/);
+    },
+  );
 });
