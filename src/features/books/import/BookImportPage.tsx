@@ -1,4 +1,4 @@
-import { Grid, Stack, Title } from "@mantine/core";
+import { Button, Grid, Stack, Text, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
@@ -10,6 +10,7 @@ import type {
 import { useImportBooks } from "../api/useImportBooks";
 import { usePreviewBookImport } from "../api/usePreviewBookImport";
 import { BookImportPreview } from "./BookImportPreview";
+import { BookImportActionBar } from "./BookImportActionBar";
 import { BookImportSettings } from "./BookImportSettings";
 import { BookImportSource, type ImportSourceMethod } from "./BookImportSource";
 import { BookImportTable, type IndexedImportedBook } from "./BookImportTable";
@@ -216,6 +217,16 @@ export const BookImportPage = () => {
                     ),
                   );
                 }}
+                onSplitVisible={(split) => {
+                  invalidatePreview();
+                  setSplitAuthors((current) =>
+                    updateVisibleSelection(
+                      current,
+                      visibleBooks.map(({ index }) => index),
+                      split,
+                    ),
+                  );
+                }}
               />
             )}
           </Stack>
@@ -235,6 +246,17 @@ export const BookImportPage = () => {
           />
         </Grid.Col>
       </Grid>
+      <BookImportActionBar mobileOnly>
+        <Text fw={600}>対象 {selectedIndexes.size}冊</Text>
+        <Button
+          aria-label="プレビュー（モバイル固定）"
+          onClick={() => void runPreview()}
+          disabled={busy || selectedIndexes.size === 0}
+          loading={busy}
+        >
+          プレビュー
+        </Button>
+      </BookImportActionBar>
     </Stack>
   );
 };

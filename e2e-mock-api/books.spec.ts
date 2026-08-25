@@ -200,10 +200,11 @@ test.describe("Books BULK IMPORT", () => {
     await importPage.getByLabel("所有している").uncheck();
     await importPage.getByLabel("優先度").fill("75");
     await importPage
-      .getByRole("checkbox", {
-        name: "Kindleインポート当日の著者をカンマで分割",
+      .getByRole("button", {
+        name: "表示中の著者をすべて分割",
+        exact: true,
       })
-      .check();
+      .click();
     await expect(
       importPage.getByText("Kindle共通著者 / 共同著者"),
     ).toBeVisible();
@@ -223,8 +224,11 @@ test.describe("Books BULK IMPORT", () => {
     await expect(
       importPage.getByText("新規", { exact: true }).first(),
     ).toBeVisible();
-    await expect(importPage.getByText("2冊をインポート")).toBeVisible();
-    await importPage.getByRole("button", { name: "インポート" }).click();
+    const importButton = importPage.getByRole("button", {
+      name: "2冊をインポート",
+    });
+    await expect(importButton).toBeInViewport();
+    await importButton.click();
 
     await expect(page.getByText("2冊をインポートしました")).toBeVisible();
     await expect(page).toHaveURL(/\/books$/);
@@ -237,6 +241,28 @@ test.describe("Books BULK IMPORT", () => {
     await expect(
       page.getByRole("link", { name: "Kindleインポート前日" }),
     ).toBeVisible();
+  });
+
+  test("opens preview from the fixed mobile action", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.getByRole("button", { name: "一括インポート" }).click();
+    const importPage = page.getByRole("main");
+    await importPage
+      .locator('input[type="file"]')
+      .setInputFiles("e2e-fixtures/kindle-books.json");
+
+    const fixedPreview = importPage.getByRole("button", {
+      name: "プレビュー（モバイル固定）",
+    });
+    await expect(fixedPreview).toBeInViewport();
+    await expect(importPage.getByText("対象 3冊")).toBeVisible();
+    await fixedPreview.click();
+    await expect(
+      page.getByRole("heading", { name: "インポートプレビュー" }),
+    ).toBeVisible();
+    await expect(
+      importPage.getByRole("button", { name: "3冊をインポート" }),
+    ).toBeInViewport();
   });
 });
 

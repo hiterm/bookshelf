@@ -1,5 +1,6 @@
 import { Badge, Button, Group, Stack, Text, Title } from "@mantine/core";
 import type { PreviewBookImportMutation } from "../../../generated/graphql-request";
+import { BookImportActionBar } from "./BookImportActionBar";
 
 type Props = {
   preview: PreviewBookImportMutation["previewBookImport"];
@@ -57,14 +58,14 @@ export const BookImportPreview = ({
           </Text>
         </Stack>
       ))}
-      <Group justify="flex-end">
+      <BookImportActionBar>
         <Button variant="default" onClick={onBack} disabled={importing}>
           入力・設定に戻る
         </Button>
         <Button onClick={onImport} disabled={importing} loading={importing}>
-          インポート
+          {preview.books.length}冊をインポート
         </Button>
-      </Group>
+      </BookImportActionBar>
     </Stack>
   );
 };

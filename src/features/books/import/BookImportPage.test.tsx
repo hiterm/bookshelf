@@ -212,6 +212,72 @@ describe("BookImportPage", () => {
     expect(screen.getByText("既存著者: 1")).toBeInTheDocument();
   });
 
+  test("bulk-splits only visible authors and allows an individual override", async () => {
+    previewMutateAsync.mockResolvedValue(previewResponse);
+    render(<BookImportPage />, { wrapper });
+    await upload();
+
+    await userEvent.click(
+      screen.getByRole("checkbox", {
+        name: "購入日前の本の著者をカンマで分割",
+      }),
+    );
+    fireEvent.change(screen.getByLabelText("購入日（指定日以降）"), {
+      target: { value: "2026-04-25" },
+    });
+    await userEvent.click(
+      screen.getByRole("button", { name: "表示中の著者をすべて分割" }),
+    );
+    expect(screen.getByText("山田太郎 / 鈴木花子")).toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: "表示中の著者をすべて分割しない",
+      }),
+    );
+    expect(screen.getByText("山田太郎, 鈴木花子")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("購入日（指定日以降）"), {
+      target: { value: "" },
+    });
+    expect(screen.getByText("Smith / John")).toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole("checkbox", {
+        name: "購入日後の本の著者をカンマで分割",
+      }),
+    );
+    await userEvent.click(screen.getByRole("button", { name: "プレビュー" }));
+
+    await waitFor(() => {
+      expect(previewMutateAsync).toHaveBeenCalledOnce();
+    });
+    expect(previewMutateAsync).toHaveBeenCalledWith([
+      expect.objectContaining({ authorNames: ["Smith", "John"] }),
+      expect.objectContaining({ authorNames: ["山田太郎", "鈴木花子"] }),
+    ]);
+  });
+
+  test("bulk author changes invalidate a previous preview", async () => {
+    previewMutateAsync.mockResolvedValue(previewResponse);
+    render(<BookImportPage />, { wrapper });
+    await upload([fixture[1]]);
+    await userEvent.click(screen.getByRole("button", { name: "プレビュー" }));
+    await screen.findByText("インポートプレビュー");
+    await userEvent.click(
+      screen.getByRole("button", { name: "入力・設定に戻る" }),
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: "表示中の著者をすべて分割" }),
+    );
+    expect(screen.queryByText("インポートプレビュー")).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "プレビュー" }));
+    await waitFor(() => {
+      expect(previewMutateAsync).toHaveBeenCalledTimes(2);
+    });
+    expect(previewMutateAsync.mock.calls[1]?.[0]).toEqual([
+      expect.objectContaining({ authorNames: ["山田太郎", "鈴木花子"] }),
+    ]);
+  });
+
   test("imports the exact previewed array and navigates to books", async () => {
     previewMutateAsync.mockResolvedValue(previewResponse);
     importMutateAsync.mockResolvedValue({
@@ -221,7 +287,9 @@ describe("BookImportPage", () => {
     await upload([fixture[0]]);
     await userEvent.click(screen.getByRole("button", { name: "プレビュー" }));
     await screen.findByText("インポートプレビュー");
-    await userEvent.click(screen.getByRole("button", { name: "インポート" }));
+    await userEvent.click(
+      screen.getByRole("button", { name: "1冊をインポート" }),
+    );
     await waitFor(() => {
       expect(importMutateAsync).toHaveBeenCalledOnce();
     });
@@ -245,7 +313,9 @@ describe("BookImportPage", () => {
     importMutateAsync.mockRejectedValueOnce(new Error("import failed"));
     await userEvent.click(screen.getByRole("button", { name: "プレビュー" }));
     await screen.findByText("インポートプレビュー");
-    await userEvent.click(screen.getByRole("button", { name: "インポート" }));
+    await userEvent.click(
+      screen.getByRole("button", { name: "1冊をインポート" }),
+    );
     expect(
       await screen.findByText("書籍のインポートに失敗しました"),
     ).toBeInTheDocument();
