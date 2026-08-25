@@ -12,29 +12,18 @@ import {
   Table,
   ThemeIcon,
 } from "@mantine/core";
-import {
-  Column,
-  ColumnFiltersState,
-  flexRender,
-  OnChangeFn,
-  PaginationState,
-  SortingState,
-  useTable,
-} from "@tanstack/react-table";
+import { Column, flexRender, useTable } from "@tanstack/react-table";
 import {
   IconLayoutColumns,
   IconSortAscending,
   IconSortDescending,
 } from "@tabler/icons-react";
-import { getRouteApi } from "@tanstack/react-router";
 import React from "react";
 import { Book } from "./entity/Book";
 import { ColumnFilter } from "./ColumnFilter";
-import { bookColumnFiltersSchema, bookSortingSchema } from "./bookSearch";
 import { bookColumns } from "./bookColumns";
 import { bookTableFeatures } from "./bookTable";
-
-const DEFAULT_PAGE_SIZE = 20;
+import { useBookTableSearchState } from "./useBookTableSearchState";
 
 type BookListProps = { list: Book[] };
 
@@ -66,78 +55,23 @@ const SortIcon: React.FC<SortIconProps> = ({ isSorted }) => {
 };
 
 export const BookList: React.FC<BookListProps> = ({ list }) => {
-  const routeApi = getRouteApi("/books/");
-  const navigate = routeApi.useNavigate();
-  const search = routeApi.useSearch();
-
-  const columnFilters = search.columnFilters ?? [];
-  const sorting = search.sorting ?? [];
-  const pagination = {
-    pageIndex: search.pageIndex ?? 0,
-    pageSize: search.pageSize ?? DEFAULT_PAGE_SIZE,
-  };
-
-  const handleColumnFiltersChange: OnChangeFn<ColumnFiltersState> = (
-    updater,
-  ) => {
-    const next =
-      typeof updater === "function" ? updater(columnFilters) : updater;
-    if (JSON.stringify(next) === JSON.stringify(columnFilters)) return;
-    const parsed = bookColumnFiltersSchema.safeParse(next);
-    if (!parsed.success) return;
-    void navigate({
-      search: (prev) => ({
-        ...prev,
-        columnFilters: parsed.data.length === 0 ? undefined : parsed.data,
-        pageIndex: undefined,
-      }),
-      replace: true,
-    });
-  };
-
-  const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
-    const next = typeof updater === "function" ? updater(sorting) : updater;
-    if (JSON.stringify(next) === JSON.stringify(sorting)) return;
-    const parsed = bookSortingSchema.safeParse(next);
-    if (!parsed.success) return;
-    void navigate({
-      search: (prev) => ({
-        ...prev,
-        sorting: parsed.data.length === 0 ? undefined : parsed.data,
-        pageIndex: undefined,
-      }),
-      replace: true,
-    });
-  };
-
-  const handlePaginationChange: OnChangeFn<PaginationState> = (updater) => {
-    const next = typeof updater === "function" ? updater(pagination) : updater;
-    if (
-      next.pageIndex === pagination.pageIndex &&
-      next.pageSize === pagination.pageSize
-    )
-      return;
-    void navigate({
-      search: (prev) => ({
-        ...prev,
-        pageIndex: next.pageIndex === 0 ? undefined : next.pageIndex,
-        pageSize:
-          next.pageSize === 50 || next.pageSize === 100
-            ? next.pageSize
-            : undefined,
-      }),
-      replace: true,
-    });
-  };
+  const {
+    state,
+    onColumnFiltersChange,
+    onSortingChange,
+    onPaginationChange,
+    applyUnreadOwnedPreset,
+    resetSearch,
+  } = useBookTableSearchState();
 
   const table = useTable({
     features: bookTableFeatures,
     data: list,
     columns: bookColumns,
-    state: { columnFilters, sorting, pagination },
-    onColumnFiltersChange: handleColumnFiltersChange,
-    onSortingChange: handleSortingChange,
-    onPaginationChange: handlePaginationChange,
+    state,
+    onColumnFiltersChange,
+    onSortingChange,
+    onPaginationChange,
   });
 
   return (
@@ -181,32 +115,12 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
           </Menu.Target>
 
           <Menu.Dropdown>
-            <Menu.Item
-              onClick={() => {
-                void navigate({
-                  search: (prev) => ({
-                    ...prev,
-                    columnFilters: [
-                      { id: "read", value: false },
-                      { id: "owned", value: true },
-                    ],
-                    sorting: [{ id: "priority", desc: true }],
-                    pageIndex: undefined,
-                  }),
-                  replace: true,
-                });
-              }}
-            >
+            <Menu.Item onClick={applyUnreadOwnedPreset}>
               Unread owned, order by priority
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>
-        <Button
-          onClick={() => {
-            void navigate({ search: {}, replace: true });
-          }}
-          color="red"
-        >
+        <Button onClick={resetSearch} color="red">
           Reset filter
         </Button>
       </Group>

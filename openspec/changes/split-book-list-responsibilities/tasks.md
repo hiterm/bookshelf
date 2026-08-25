@@ -1,8 +1,8 @@
 ## 1. Extract Book table logic
 
 - [x] 1.1 Move Book-specific column declarations and helpers to `bookColumns.tsx`
-- [ ] 1.2 Extract URL-backed controlled table state and semantic search actions to `useBookTableSearchState.ts`
-- [ ] 1.3 Preserve synchronization behavior with the existing BookList regression tests and add focused coverage only if needed
+- [x] 1.2 Extract URL-backed controlled table state and semantic search actions to `useBookTableSearchState.ts`
+- [x] 1.3 Preserve synchronization behavior with the existing BookList regression tests and add focused coverage only if needed
 
 ## 2. Split Book table presentation
 
