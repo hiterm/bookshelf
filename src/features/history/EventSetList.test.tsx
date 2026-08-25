@@ -21,7 +21,7 @@ beforeAll(() => {
   });
 });
 
-vi.mock("../../compoments/mantineTsr", () => ({
+vi.mock("../../components/mantineTsr", () => ({
   Link: ({
     children,
     "aria-label": ariaLabel,

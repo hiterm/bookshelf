@@ -5,7 +5,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
-import { AppErrorProvider } from "../../../compoments/errors/AppErrorProvider";
+import { AppErrorProvider } from "../../../components/errors/AppErrorProvider";
 import { useImportBooks } from "../api/useImportBooks";
 import { usePreviewBookImport } from "../api/usePreviewBookImport";
 import { BookImportDialog } from "./BookImportDialog";

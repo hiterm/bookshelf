@@ -15,7 +15,7 @@ components, a shared utility component, routes, consumers, and tests.
 **Non-Goals:**
 
 - Change UI, data fetching, event handling, APIs, routes, or GraphQL schema.
-- Correct the existing `src/compoments` directory spelling.
+- Correct the existing `src/components` directory spelling.
 - Rename components outside the ten scoped mappings.
 
 ## Decisions

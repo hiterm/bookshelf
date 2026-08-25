@@ -5,8 +5,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import React from "react";
 import { useUpdateAuthor } from "./api/useUpdateAuthor";
-import { useAppError } from "../../compoments/errors/AppErrorProvider";
-import { LinkButton } from "../../compoments/mantineTsr";
+import { useAppError } from "../../components/errors/AppErrorProvider";
+import { LinkButton } from "../../components/mantineTsr";
 import { authorFormSchema, type AuthorFormValues } from "./authorFormSchema";
 
 type Author = {

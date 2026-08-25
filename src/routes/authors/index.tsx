@@ -25,7 +25,7 @@ import {
 import { useState } from "react";
 import { useCreateAuthor } from "../../features/authors/api/useCreateAuthor";
 import { useAuthors } from "../../features/authors/api/useAuthors";
-import { Link, LinkButton } from "../../compoments/mantineTsr";
+import { Link, LinkButton } from "../../components/mantineTsr";
 import {
   authorFormSchema,
   type AuthorFormValues,

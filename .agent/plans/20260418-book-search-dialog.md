@@ -85,7 +85,7 @@ This is a React + TypeScript single-page application. The UI is built with Manti
 - `src/features/books/useIsbnLookup.test.ts` — to be deleted
 - `src/features/books/isbnUtils.ts` — keep as-is; no longer used by the new hook but may be used elsewhere
 - `src/features/books/AuthorsCombobox.tsx` — used in the form; author type from `src/features/books/entity/Author.ts`
-- `src/compoments/hooks/useAuthors.ts` — React Query hook fetching all authors from GraphQL
+- `src/components/hooks/useAuthors.ts` — React Query hook fetching all authors from GraphQL
 - `src/features/books/bookFormSchema.ts` — Zod schema for form values
 - `src/features/books/resolvePendingAuthors.ts` — called in `BookAddButton.tsx` on submit; creates authors whose id starts with `__pending__:` via GraphQL mutation
 

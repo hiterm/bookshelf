@@ -75,9 +75,9 @@ Key files:
 
 - `src/features/books/BookAddButton.tsx` — The book creation modal component. Manages `useForm` state and calls `useCreateBook` on submit. Must also be updated to resolve pending authors.
 
-- `src/compoments/hooks/useCreateAuthor.ts` — A React Query mutation hook that calls the `createAuthor` GraphQL mutation and invalidates the `["authors"]` query cache. Returns `{ mutateAsync, isPending, ... }`. The `mutateAsync` function takes `{ name: string }` and returns `{ createAuthor: { id: string } }`.
+- `src/components/hooks/useCreateAuthor.ts` — A React Query mutation hook that calls the `createAuthor` GraphQL mutation and invalidates the `["authors"]` query cache. Returns `{ mutateAsync, isPending, ... }`. The `mutateAsync` function takes `{ name: string }` and returns `{ createAuthor: { id: string } }`.
 
-- `src/compoments/hooks/useAuthors.ts` — A React Query query hook that fetches all authors. Returns `{ data: { authors: Author[] }, isLoading, error }`.
+- `src/components/hooks/useAuthors.ts` — A React Query query hook that fetches all authors. Returns `{ data: { authors: Author[] }, isLoading, error }`.
 
 - `src/features/books/entity/Author.ts` — The `Author` type: `{ id: string; name: string }`.
 
@@ -301,7 +301,7 @@ File: `src/features/books/BookDetailEdit.tsx`
 
 Add imports:
 
-    import { useCreateAuthor } from '../../compoments/hooks/useCreateAuthor';
+    import { useCreateAuthor } from '../../components/hooks/useCreateAuthor';
     import { resolvePendingAuthors } from './resolvePendingAuthors';
 
 Inside `BookDetailEdit`, after the `updateBookMutation` hook call, add:
@@ -341,7 +341,7 @@ File: `src/features/books/BookAddButton.tsx`
 
 Add imports:
 
-    import { useCreateAuthor } from '../../compoments/hooks/useCreateAuthor';
+    import { useCreateAuthor } from '../../components/hooks/useCreateAuthor';
     import { resolvePendingAuthors } from './resolvePendingAuthors';
 
 Inside `BookAddButton`, after the `createBookMutation` hook call, add:
@@ -521,7 +521,7 @@ In `src/features/books/resolvePendingAuthors.ts`, export:
 
 Where `Author` is `import type { Author } from './entity/Author'` (the type `{ id: string; name: string }`).
 
-In `src/compoments/hooks/useCreateAuthor.ts` (unchanged), the existing hook returns:
+In `src/components/hooks/useCreateAuthor.ts` (unchanged), the existing hook returns:
 
     {
       mutateAsync: (input: { name: string }) => Promise<{ createAuthor: { id: string } }>,

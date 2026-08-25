@@ -32,8 +32,8 @@ import {
 } from "@tabler/icons-react";
 import { getRouteApi } from "@tanstack/react-router";
 import React from "react";
-import { Link } from "../../compoments/mantineTsr";
-import { BooleanValue } from "../../compoments/utils/BooleanValue";
+import { Link } from "../../components/mantineTsr";
+import { BooleanValue } from "../../components/utils/BooleanValue";
 import { authorSchema } from "./entity/Author";
 import { Book } from "./entity/Book";
 import { displayBookFormat } from "./entity/BookFormat";

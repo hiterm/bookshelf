@@ -18,8 +18,8 @@ import React, { useState } from "react";
 import { useAuthor } from "./api/useAuthor";
 import { useAuthors } from "./api/useAuthors";
 import { useMergeAuthor } from "./api/useMergeAuthor";
-import { useAppError } from "../../compoments/errors/AppErrorProvider";
-import { LinkButton } from "../../compoments/mantineTsr";
+import { useAppError } from "../../components/errors/AppErrorProvider";
+import { LinkButton } from "../../components/mantineTsr";
 import { AuthorBookList } from "./AuthorBookList";
 
 type AuthorPreviewProps = {

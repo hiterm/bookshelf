@@ -15,7 +15,7 @@ import {
 import { showNotification } from "@mantine/notifications";
 import { useMemo, useRef, useState } from "react";
 import { useImportBooks } from "../api/useImportBooks";
-import { useAppError } from "../../../compoments/errors/AppErrorProvider";
+import { useAppError } from "../../../components/errors/AppErrorProvider";
 import { usePreviewBookImport } from "../api/usePreviewBookImport";
 import type {
   ImportBookInput,

@@ -9,8 +9,8 @@
 - [x] 2.1 Create `src/graphql/bookEvents.graphql` with `bookEvents($bookId: ID!)` query
 - [x] 2.2 Create `src/graphql/authorEvents.graphql` with `authorEvents($authorId: ID!)` query
 - [x] 2.3 Run `npm run generate` to regenerate SDK with new queries
-- [x] 2.4 Create `src/compoments/hooks/useBookEvents.ts` React Query hook
-- [x] 2.5 Create `src/compoments/hooks/useAuthorEvents.ts` React Query hook
+- [x] 2.4 Create `src/components/hooks/useBookEvents.ts` React Query hook
+- [x] 2.5 Create `src/components/hooks/useAuthorEvents.ts` React Query hook
 
 ## 3. Mock Data & MSW Handlers
 

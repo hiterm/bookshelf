@@ -1,7 +1,7 @@
 import { Alert, Center, Loader, Stack, Text } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEventSet } from "../../features/history/api/useEventSet";
-import { Link } from "../../compoments/mantineTsr";
+import { Link } from "../../components/mantineTsr";
 import { EventSetDetail } from "../../features/history/EventSetDetail";
 
 export const Route = createFileRoute("/history/$eventSetId")({

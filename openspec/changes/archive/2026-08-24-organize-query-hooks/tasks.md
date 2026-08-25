@@ -3,7 +3,7 @@
 - [x] 1.1 Inventory all domain-specific hooks, consumers, and TanStack Query key usages across the repository
 - [x] 1.2 Move book, author, history, and authentication hooks into their feature `api` directories without changing hook logic
 - [x] 1.3 Update all route, component, test, and hook imports to use direct feature API paths
-- [x] 1.4 Verify only feature-neutral hooks remain in `src/compoments/hooks`
+- [x] 1.4 Verify only feature-neutral hooks remain in `src/components/hooks`
 - [x] 1.5 Run required generation, lint, unit test, and typecheck checks for the move-only change
 
 ## 2. Centralize Query Keys

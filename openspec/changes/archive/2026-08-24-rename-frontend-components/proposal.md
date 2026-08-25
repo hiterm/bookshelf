@@ -10,7 +10,7 @@ preserving the application's behavior.
   to reflect their current responsibilities.
 - Keep UI behavior, data fetching, event handling, APIs, routes, and GraphQL
   schema unchanged.
-- Keep the existing `src/compoments` directory spelling unchanged.
+- Keep the existing `src/components` directory spelling unchanged.
 
 ## Capabilities
 

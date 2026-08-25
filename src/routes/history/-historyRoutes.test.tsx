@@ -10,7 +10,7 @@ import { HistoryIndexPage } from "./index";
 
 vi.mock(import("../../features/history/api/useEventSet"));
 vi.mock(import("../../features/history/api/useEventSets"));
-vi.mock("../../compoments/mantineTsr", () => ({
+vi.mock("../../components/mantineTsr", () => ({
   Link: ({ children }: { children: React.ReactNode }) => (
     <a href="/history">{children}</a>
   ),

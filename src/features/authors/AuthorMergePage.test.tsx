@@ -8,7 +8,7 @@ import { useAuthor } from "./api/useAuthor";
 import { useAuthors } from "./api/useAuthors";
 import { useMergeAuthor } from "./api/useMergeAuthor";
 import { AuthorMergePage } from "./AuthorMergePage";
-import { AppErrorProvider } from "../../compoments/errors/AppErrorProvider";
+import { AppErrorProvider } from "../../components/errors/AppErrorProvider";
 
 const navigate = vi.fn().mockResolvedValue(undefined);
 const mutateAsync = vi.fn().mockResolvedValue({
@@ -22,7 +22,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => ({
 vi.mock(import("./api/useAuthor"));
 vi.mock(import("./api/useAuthors"));
 vi.mock(import("./api/useMergeAuthor"));
-vi.mock("../../compoments/mantineTsr", () => ({
+vi.mock("../../components/mantineTsr", () => ({
   Link: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   LinkButton: ({ children }: { children: React.ReactNode }) => (
     <button type="button">{children}</button>

@@ -11,7 +11,7 @@ import { IconEye } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { useBookEvents } from "./api/useBookEvents";
-import { BooleanValue } from "../../compoments/utils/BooleanValue";
+import { BooleanValue } from "../../components/utils/BooleanValue";
 import type { BookQuery } from "../../generated/graphql-request";
 
 type BookAuthors = NonNullable<BookQuery["book"]>["authors"];

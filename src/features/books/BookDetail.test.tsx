@@ -5,7 +5,7 @@ import React from "react";
 import { vi } from "vitest";
 import { useDeleteBook } from "./api/useDeleteBook";
 import { BookDetail } from "./BookDetail";
-import { AppErrorProvider } from "../../compoments/errors/AppErrorProvider";
+import { AppErrorProvider } from "../../components/errors/AppErrorProvider";
 import type { Book } from "./entity/Book";
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -19,7 +19,7 @@ vi.mocked(useDeleteBook, { partial: true }).mockReturnValue({
   mutateAsync: vi.fn(),
 });
 
-vi.mock("../../compoments/mantineTsr", () => ({
+vi.mock("../../components/mantineTsr", () => ({
   Link: ({
     children,
     to,
