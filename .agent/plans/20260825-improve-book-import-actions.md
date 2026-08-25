@@ -15,7 +15,7 @@ People importing many Kindle books should be able to establish a default author-
 - [x] (2026-08-25 15:02Z) Implemented the responsive shared action bar and component tests.
 - [x] (2026-08-25 15:02Z) Extended mock-API end-to-end coverage, including a mobile viewport.
 - [x] (2026-08-25 15:12Z) Ran generation, lint fixing, 199 unit tests, type checking, and two focused Book Import E2E tests successfully.
-- [ ] Synchronize and archive the OpenSpec change, commit, push, open the PR, and wait for all CI including integration.
+- [ ] Synchronize and archive the OpenSpec change, commit, push, open the PR, and wait for all CI including integration (completed: synchronized and archived; remaining: commit and delivery).
 
 ## Surprises & Discoveries
 
@@ -35,10 +35,13 @@ People importing many Kindle books should be able to establish a default author-
 - Decision: Give the mobile Preview button a distinct accessible name while keeping its visible text `プレビュー`.
   Rationale: CSS breakpoint hiding leaves both desktop and mobile buttons in the test DOM; the distinct name keeps automation deterministic and explicitly targets the fixed action.
   Date/Author: 2026-08-25 / Codex
+- Decision: Track PR creation and CI in the ExecPlan rather than as OpenSpec implementation tasks.
+  Rationale: The change must be archived before PR delivery, so archive-dependent delivery cannot be an incomplete task inside the change at archive time.
+  Date/Author: 2026-08-25 / Codex
 
 ## Outcomes & Retrospective
 
-Core implementation and local validation are complete. Specification archival, delivery, and CI remain.
+Core implementation, local validation, canonical specification synchronization, and OpenSpec archival are complete. Delivery and CI remain.
 
 ## Context and Orientation
 
@@ -83,3 +86,7 @@ Revision note (2026-08-25): Initial plan created from the approved requirements 
 Revision note (2026-08-25 15:02Z): Recorded completed implementation milestones, Mantine variable discovery, and the accessible-name testing decision.
 
 Revision note (2026-08-25 15:12Z): Recorded successful full local validation and focused E2E results.
+
+Revision note (2026-08-25 15:15Z): Recorded canonical spec synchronization and moved post-archive delivery tracking exclusively to this ExecPlan.
+
+Revision note (2026-08-25 15:16Z): Recorded successful archive to `openspec/changes/archive/2026-08-25-improve-book-import-actions/`.

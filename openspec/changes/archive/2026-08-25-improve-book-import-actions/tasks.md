@@ -18,6 +18,5 @@
 
 ## 4. Specification and delivery
 
-- [ ] 4.1 Reconcile implementation with tasks and delta specification, then synchronize the canonical `book-import` specification
-- [ ] 4.2 Archive the completed OpenSpec change and commit the archive result
-- [ ] 4.3 Push the branch, open a main-targeting PR with requested implementation and test details, and verify all GitHub Actions including integration succeed
+- [x] 4.1 Reconcile implementation with tasks and delta specification, then synchronize the canonical `book-import` specification
+- [x] 4.2 Confirm all OpenSpec artifacts and implementation tasks are complete and ready to archive
