@@ -9,6 +9,7 @@ import {
   filterFn_equalsString,
   filterFn_includesString,
   metaHelper,
+  PaginationState,
   rowPaginationFeature,
   rowSortingFeature,
   sortFn_alphanumeric,
@@ -16,6 +17,8 @@ import {
   sortFn_text,
   tableFeatures,
 } from "@tanstack/react-table";
+import type { Table } from "@tanstack/react-table";
+import type { Book } from "./entity/Book";
 
 type BookColumnMeta = {
   filterType?: "string" | "boolean" | "store" | "format" | "authors";
@@ -42,3 +45,7 @@ export const bookTableFeatures = tableFeatures({
   },
   columnMeta: metaHelper<BookColumnMeta>(),
 });
+
+export type BookTable = Table<typeof bookTableFeatures, Book> & {
+  readonly state: { pagination: PaginationState };
+};
