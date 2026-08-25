@@ -11,7 +11,7 @@ import {
 import { IconSearch } from "@tabler/icons-react";
 import { UseFormReturnType } from "@mantine/form";
 import React, { useState } from "react";
-import { useAuthors } from "../../compoments/hooks/useAuthors";
+import { useAuthors } from "../authors/api/useAuthors";
 import { AuthorsCombobox } from "./AuthorsCombobox";
 import { BookLookupDialog } from "./BookLookupDialog";
 import { BookFormValues } from "./bookFormSchema";

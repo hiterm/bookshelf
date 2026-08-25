@@ -10,7 +10,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import { IconEye } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import React, { useState } from "react";
-import { useBookEvents } from "../../compoments/hooks/useBookEvents";
+import { useBookEvents } from "./api/useBookEvents";
 import { BooleanValue } from "../../compoments/utils/BooleanValue";
 import type { BookQuery } from "../../generated/graphql-request";
 

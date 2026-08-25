@@ -10,7 +10,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import { IconEye } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import React, { useState } from "react";
-import { useAuthorEvents } from "../../compoments/hooks/useAuthorEvents";
+import { useAuthorEvents } from "./api/useAuthorEvents";
 
 export const AuthorHistory: React.FC<{ authorId: string }> = ({ authorId }) => {
   const theme = useMantineTheme();

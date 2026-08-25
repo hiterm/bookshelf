@@ -14,9 +14,9 @@ import {
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useMemo, useRef, useState } from "react";
-import { useImportBooks } from "../../../compoments/hooks/useImportBooks";
+import { useImportBooks } from "../api/useImportBooks";
 import { useAppError } from "../../../compoments/errors/AppErrorProvider";
-import { usePreviewBookImport } from "../../../compoments/hooks/usePreviewBookImport";
+import { usePreviewBookImport } from "../api/usePreviewBookImport";
 import type {
   ImportBookInput,
   PreviewBookImportMutation,

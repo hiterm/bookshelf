@@ -6,7 +6,7 @@ import { BookList } from "../../features/books/BookList";
 import { ImportBooksButton } from "../../features/books/import/ImportBooksButton";
 import { bookSearchSchema } from "../../features/books/bookSearch";
 import { Book, graphQlBookToBook } from "../../features/books/entity/Book";
-import { useBooks } from "../../compoments/hooks/useBooks";
+import { useBooks } from "../../features/books/api/useBooks";
 
 export const Route = createFileRoute("/books/")({
   validateSearch: bookSearchSchema,

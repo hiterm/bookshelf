@@ -12,7 +12,7 @@ import { showNotification } from "@mantine/notifications";
 import { IconArrowBack } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
 import React, { useState } from "react";
-import { useDeleteAuthor } from "../../compoments/hooks/useDeleteAuthor";
+import { useDeleteAuthor } from "./api/useDeleteAuthor";
 import { useAppError } from "../../compoments/errors/AppErrorProvider";
 import { LinkButton } from "../../compoments/mantineTsr";
 import type { AuthorQuery } from "../../generated/graphql-request";

@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 import React, { useState } from "react";
 import { Link, LinkButton } from "../../compoments/mantineTsr";
 import { BooleanValue } from "../../compoments/utils/BooleanValue";
-import { useDeleteBook } from "../../compoments/hooks/useDeleteBook";
+import { useDeleteBook } from "./api/useDeleteBook";
 import { useAppError } from "../../compoments/errors/AppErrorProvider";
 import { Book } from "./entity/Book";
 import { displayBookFormat } from "./entity/BookFormat";

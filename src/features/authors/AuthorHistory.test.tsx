@@ -5,11 +5,11 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
-import { useAuthorEvents } from "../../compoments/hooks/useAuthorEvents";
+import { useAuthorEvents } from "./api/useAuthorEvents";
 import type { AuthorEventsQuery } from "../../generated/graphql-request";
 import { AuthorHistory } from "./AuthorHistory";
 
-vi.mock(import("../../compoments/hooks/useAuthorEvents"));
+vi.mock(import("./api/useAuthorEvents"));
 
 const mockUseAuthorEvents = vi.mocked(useAuthorEvents, { partial: true });
 

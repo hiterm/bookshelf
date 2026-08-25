@@ -6,15 +6,15 @@ import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { AppErrorProvider } from "../../../compoments/errors/AppErrorProvider";
-import { useImportBooks } from "../../../compoments/hooks/useImportBooks";
-import { usePreviewBookImport } from "../../../compoments/hooks/usePreviewBookImport";
+import { useImportBooks } from "../api/useImportBooks";
+import { usePreviewBookImport } from "../api/usePreviewBookImport";
 import { BookImportDialog } from "./BookImportDialog";
 
 const importMutateAsync = vi.fn();
 const previewMutateAsync = vi.fn();
 
-vi.mock(import("../../../compoments/hooks/useImportBooks"));
-vi.mock(import("../../../compoments/hooks/usePreviewBookImport"));
+vi.mock(import("../api/useImportBooks"));
+vi.mock(import("../api/usePreviewBookImport"));
 vi.mocked(useImportBooks, { partial: true }).mockReturnValue({
   mutateAsync: importMutateAsync,
   isPending: false,

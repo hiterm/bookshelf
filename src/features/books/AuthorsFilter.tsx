@@ -1,6 +1,6 @@
 import { Loader, MultiSelect } from "@mantine/core";
 import { Column } from "@tanstack/react-table";
-import { useAuthors } from "../../compoments/hooks/useAuthors";
+import { useAuthors } from "../authors/api/useAuthors";
 import { bookTableFeatures } from "./bookTable";
 import { Book } from "./entity/Book";
 

@@ -15,9 +15,9 @@ import {
 import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "@tanstack/react-router";
 import React, { useState } from "react";
-import { useAuthor } from "../../compoments/hooks/useAuthor";
-import { useAuthors } from "../../compoments/hooks/useAuthors";
-import { useMergeAuthor } from "../../compoments/hooks/useMergeAuthor";
+import { useAuthor } from "./api/useAuthor";
+import { useAuthors } from "./api/useAuthors";
+import { useMergeAuthor } from "./api/useMergeAuthor";
 import { useAppError } from "../../compoments/errors/AppErrorProvider";
 import { LinkButton } from "../../compoments/mantineTsr";
 import { AuthorBookList } from "./AuthorBookList";

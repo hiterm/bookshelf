@@ -4,9 +4,9 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
-import { useAuthor } from "../../compoments/hooks/useAuthor";
-import { useAuthors } from "../../compoments/hooks/useAuthors";
-import { useMergeAuthor } from "../../compoments/hooks/useMergeAuthor";
+import { useAuthor } from "./api/useAuthor";
+import { useAuthors } from "./api/useAuthors";
+import { useMergeAuthor } from "./api/useMergeAuthor";
 import { AuthorMergePage } from "./AuthorMergePage";
 import { AppErrorProvider } from "../../compoments/errors/AppErrorProvider";
 
@@ -19,9 +19,9 @@ vi.mock("@tanstack/react-router", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@tanstack/react-router")>()),
   useNavigate: () => navigate,
 }));
-vi.mock(import("../../compoments/hooks/useAuthor"));
-vi.mock(import("../../compoments/hooks/useAuthors"));
-vi.mock(import("../../compoments/hooks/useMergeAuthor"));
+vi.mock(import("./api/useAuthor"));
+vi.mock(import("./api/useAuthors"));
+vi.mock(import("./api/useMergeAuthor"));
 vi.mock("../../compoments/mantineTsr", () => ({
   Link: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   LinkButton: ({ children }: { children: React.ReactNode }) => (

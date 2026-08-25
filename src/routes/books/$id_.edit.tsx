@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 import { BookEdit } from "../../features/books/BookEdit";
 import { graphQlBookToBook } from "../../features/books/entity/Book";
-import { useBook } from "../../compoments/hooks/useBook";
+import { useBook } from "../../features/books/api/useBook";
 
 export const Route = createFileRoute("/books/$id_/edit")({
   component: RouteComponent,

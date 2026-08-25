@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
-import { createAuthenticatedSdk } from "../../lib/graphqlClient";
-import type { CreateAuthorInput } from "../../generated/graphql-request";
+import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
+import type { CreateAuthorInput } from "../../../generated/graphql-request";
+import { authorQueryKeys } from "./queryKeys";
 
 export const useCreateAuthor = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -13,7 +14,7 @@ export const useCreateAuthor = () => {
       return sdk.createAuthor({ authorData });
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["authors"] });
+      void queryClient.invalidateQueries({ queryKey: authorQueryKeys.all });
     },
   });
 };

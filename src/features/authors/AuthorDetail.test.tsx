@@ -6,7 +6,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
-import { useDeleteAuthor } from "../../compoments/hooks/useDeleteAuthor";
+import { useDeleteAuthor } from "./api/useDeleteAuthor";
 import { AuthorDetail } from "./AuthorDetail";
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -20,7 +20,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 
 const mockMutateAsync = vi.fn().mockResolvedValue({});
 
-vi.mock(import("../../compoments/hooks/useDeleteAuthor"));
+vi.mock(import("./api/useDeleteAuthor"));
 vi.mocked(useDeleteAuthor, { partial: true }).mockReturnValue({
   mutateAsync: mockMutateAsync,
   isPending: false,

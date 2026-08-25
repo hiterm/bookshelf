@@ -1,6 +1,6 @@
 import { Center, Loader, Text } from "@mantine/core";
 import React from "react";
-import { useAuthor } from "../../compoments/hooks/useAuthor";
+import { useAuthor } from "./api/useAuthor";
 import type { AuthorQuery } from "../../generated/graphql-request";
 
 type Author = NonNullable<AuthorQuery["author"]>;

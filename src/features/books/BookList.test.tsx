@@ -21,7 +21,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
-import { useAuthors } from "../../compoments/hooks/useAuthors";
+import { useAuthors } from "../authors/api/useAuthors";
 import { BookList } from "./BookList";
 import { bookSearchSchema } from "./bookSearch";
 import type { Book } from "./entity/Book";
@@ -33,7 +33,7 @@ type BookSearch = {
   pageSize?: 20 | 50 | 100;
 };
 
-vi.mock(import("../../compoments/hooks/useAuthors"));
+vi.mock(import("../authors/api/useAuthors"));
 
 vi.mocked(useAuthors, { partial: true }).mockReturnValue({
   data: {

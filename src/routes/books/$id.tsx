@@ -4,7 +4,7 @@ import React from "react";
 import { BookDetail } from "../../features/books/BookDetail";
 import { BookHistory } from "../../features/books/BookHistory";
 import { graphQlBookToBook } from "../../features/books/entity/Book";
-import { useBook } from "../../compoments/hooks/useBook";
+import { useBook } from "../../features/books/api/useBook";
 
 export const Route = createFileRoute("/books/$id")({
   component: RouteComponent,
