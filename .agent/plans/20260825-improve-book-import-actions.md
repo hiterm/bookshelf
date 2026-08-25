@@ -15,7 +15,7 @@ People importing many Kindle books should be able to establish a default author-
 - [x] (2026-08-25 15:02Z) Implemented the responsive shared action bar and component tests.
 - [x] (2026-08-25 15:02Z) Extended mock-API end-to-end coverage, including a mobile viewport.
 - [x] (2026-08-25 15:12Z) Ran generation, lint fixing, 199 unit tests, type checking, and two focused Book Import E2E tests successfully.
-- [ ] Synchronize and archive the OpenSpec change, commit, push, open the PR, and wait for all CI including integration (completed: synchronized and archived; remaining: commit and delivery).
+- [x] (2026-08-25 15:22Z) Synchronized and archived OpenSpec, committed and pushed the change, opened PR #338, and confirmed all CI including both integration jobs passed.
 
 ## Surprises & Discoveries
 
@@ -41,7 +41,7 @@ People importing many Kindle books should be able to establish a default author-
 
 ## Outcomes & Retrospective
 
-Core implementation, local validation, canonical specification synchronization, and OpenSpec archival are complete. Delivery and CI remain.
+The change delivers visible-only bulk author splitting with per-book exceptions, a mobile fixed Preview action, and fixed count-aware preview actions while retaining the desktop 8:4 sticky settings UI. Local generation, lint, 199 unit tests, type checking, focused mock-API E2E, production build, and all PR CI including integration passed. OpenSpec was synchronized and archived, and PR #338 is ready for human review without a CodeRabbit review request.
 
 ## Context and Orientation
 
@@ -90,3 +90,5 @@ Revision note (2026-08-25 15:12Z): Recorded successful full local validation and
 Revision note (2026-08-25 15:15Z): Recorded canonical spec synchronization and moved post-archive delivery tracking exclusively to this ExecPlan.
 
 Revision note (2026-08-25 15:16Z): Recorded successful archive to `openspec/changes/archive/2026-08-25-improve-book-import-actions/`.
+
+Revision note (2026-08-25 15:22Z): Completed the plan with PR #338 and successful CI evidence.
