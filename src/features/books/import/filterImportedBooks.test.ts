@@ -4,7 +4,7 @@ import { filterImportedBooks } from "./filterImportedBooks";
 
 const bookAt = (title: string, purchasedAt: Date): ImportedBook => ({
   title,
-  authorNames: ["著者"],
+  authorText: "著者",
   purchasedAt,
   read: false,
   asin: title,
