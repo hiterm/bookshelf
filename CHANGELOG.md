@@ -1,5 +1,22 @@
 # Changelog
 
+## [v2.16.0](https://github.com/hiterm/bookshelf/compare/v2.15.0...v2.16.0) - 2026-08-25
+
+### Other Changes
+- Update dependency hiterm/bookshelf-api to v2.13.0 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/322
+- Add Kindle book bulk import by @hiterm in https://github.com/hiterm/bookshelf/pull/325
+- Add author merge workflow by @hiterm in https://github.com/hiterm/bookshelf/pull/324
+- Fix Demo Mode book imports by @hiterm in https://github.com/hiterm/bookshelf/pull/327
+- Add event set history pages by @hiterm in https://github.com/hiterm/bookshelf/pull/328
+- Add persistent error reporting by @hiterm in https://github.com/hiterm/bookshelf/pull/329
+- Use preview for bulk book imports by @hiterm in https://github.com/hiterm/bookshelf/pull/330
+- Update dependency jsdom to v30 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/308
+- Archive completed OpenSpec changes by @hiterm in https://github.com/hiterm/bookshelf/pull/331
+- Rename frontend components by @hiterm in https://github.com/hiterm/bookshelf/pull/332
+- Organize frontend query hooks by @hiterm in https://github.com/hiterm/bookshelf/pull/333
+- Fix components directory typo by @hiterm in https://github.com/hiterm/bookshelf/pull/334
+- Split BookList responsibilities by @hiterm in https://github.com/hiterm/bookshelf/pull/335
+
 ## [v2.15.0](https://github.com/hiterm/bookshelf/compare/v2.14.1...v2.15.0) - 2026-08-21
 
 ### Other Changes
