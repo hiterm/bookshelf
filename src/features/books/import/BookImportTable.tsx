@@ -22,6 +22,7 @@ type Props = {
   onSelectionChange: (index: number, selected: boolean) => void;
   onSplitChange: (index: number, split: boolean) => void;
   onSelectVisible: (selected: boolean) => void;
+  onSplitVisible: (split: boolean) => void;
 };
 
 const formatDate = (date: Date) =>
@@ -41,6 +42,7 @@ export const BookImportTable = ({
   onSelectionChange,
   onSplitChange,
   onSelectVisible,
+  onSplitVisible,
 }: Props) => (
   <Stack>
     <TextInput
@@ -70,6 +72,26 @@ export const BookImportTable = ({
         disabled={busy || books.length === 0}
       >
         表示中をすべて解除
+      </Button>
+    </Group>
+    <Group>
+      <Button
+        variant="default"
+        onClick={() => {
+          onSplitVisible(true);
+        }}
+        disabled={busy || books.length === 0}
+      >
+        表示中の著者をすべて分割
+      </Button>
+      <Button
+        variant="default"
+        onClick={() => {
+          onSplitVisible(false);
+        }}
+        disabled={busy || books.length === 0}
+      >
+        表示中の著者をすべて分割しない
       </Button>
     </Group>
     {books.length === 0 ? (

@@ -1,4 +1,4 @@
-import { Grid, Stack, Title } from "@mantine/core";
+import { Button, Stack, Text, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
@@ -10,6 +10,7 @@ import type {
 import { useImportBooks } from "../api/useImportBooks";
 import { usePreviewBookImport } from "../api/usePreviewBookImport";
 import { BookImportPreview } from "./BookImportPreview";
+import { BookImportActionBar } from "./BookImportActionBar";
 import { BookImportSettings } from "./BookImportSettings";
 import { BookImportSource, type ImportSourceMethod } from "./BookImportSource";
 import { BookImportTable, type IndexedImportedBook } from "./BookImportTable";
@@ -21,6 +22,7 @@ import {
   toImportBookInput,
   type BookImportDefaults,
 } from "./toImportBookInput";
+import classes from "./BookImportPage.module.css";
 
 export const BookImportPage = () => {
   const navigate = useNavigate();
@@ -172,55 +174,21 @@ export const BookImportPage = () => {
   return (
     <Stack>
       <Title order={1}>書籍一括インポート</Title>
-      <Grid gap="xl">
-        <Grid.Col span={{ base: 12, md: 8 }}>
-          <Stack>
-            <BookImportSource
-              method={method}
-              file={file}
-              text={text}
-              error={parseError}
-              busy={busy}
-              onMethodChange={setMethod}
-              onFileChange={(nextFile) => void loadFile(nextFile)}
-              onTextChange={setText}
-              onLoadText={loadText}
-            />
-            {books.length === 0 ? null : (
-              <BookImportTable
-                books={visibleBooks}
-                purchasedOnOrAfter={purchasedOnOrAfter}
-                selectedIndexes={selectedIndexes}
-                splitAuthors={splitAuthors}
-                busy={busy}
-                onDateChange={setPurchasedOnOrAfter}
-                onSelectionChange={(index, selected) => {
-                  invalidatePreview();
-                  setSelectedIndexes((current) =>
-                    updateVisibleSelection(current, [index], selected),
-                  );
-                }}
-                onSplitChange={(index, split) => {
-                  invalidatePreview();
-                  setSplitAuthors((current) =>
-                    updateVisibleSelection(current, [index], split),
-                  );
-                }}
-                onSelectVisible={(selected) => {
-                  invalidatePreview();
-                  setSelectedIndexes((current) =>
-                    updateVisibleSelection(
-                      current,
-                      visibleBooks.map(({ index }) => index),
-                      selected,
-                    ),
-                  );
-                }}
-              />
-            )}
-          </Stack>
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 4 }}>
+      <div className={classes.editor}>
+        <div className={classes.source}>
+          <BookImportSource
+            method={method}
+            file={file}
+            text={text}
+            error={parseError}
+            busy={busy}
+            onMethodChange={setMethod}
+            onFileChange={(nextFile) => void loadFile(nextFile)}
+            onTextChange={setText}
+            onLoadText={loadText}
+          />
+        </div>
+        <div className={classes.settings}>
           <BookImportSettings
             settings={settings}
             total={books.length}
@@ -233,8 +201,63 @@ export const BookImportPage = () => {
             }}
             onPreview={() => void runPreview()}
           />
-        </Grid.Col>
-      </Grid>
+        </div>
+        {books.length === 0 ? null : (
+          <div className={classes.books}>
+            <BookImportTable
+              books={visibleBooks}
+              purchasedOnOrAfter={purchasedOnOrAfter}
+              selectedIndexes={selectedIndexes}
+              splitAuthors={splitAuthors}
+              busy={busy}
+              onDateChange={setPurchasedOnOrAfter}
+              onSelectionChange={(index, selected) => {
+                invalidatePreview();
+                setSelectedIndexes((current) =>
+                  updateVisibleSelection(current, [index], selected),
+                );
+              }}
+              onSplitChange={(index, split) => {
+                invalidatePreview();
+                setSplitAuthors((current) =>
+                  updateVisibleSelection(current, [index], split),
+                );
+              }}
+              onSelectVisible={(selected) => {
+                invalidatePreview();
+                setSelectedIndexes((current) =>
+                  updateVisibleSelection(
+                    current,
+                    visibleBooks.map(({ index }) => index),
+                    selected,
+                  ),
+                );
+              }}
+              onSplitVisible={(split) => {
+                invalidatePreview();
+                setSplitAuthors((current) =>
+                  updateVisibleSelection(
+                    current,
+                    visibleBooks.map(({ index }) => index),
+                    split,
+                  ),
+                );
+              }}
+            />
+          </div>
+        )}
+      </div>
+      <BookImportActionBar mobileOnly>
+        <Text fw={600}>対象 {selectedIndexes.size}冊</Text>
+        <Button
+          aria-label="プレビュー（モバイル固定）"
+          onClick={() => void runPreview()}
+          disabled={busy || selectedIndexes.size === 0}
+          loading={busy}
+        >
+          プレビュー
+        </Button>
+      </BookImportActionBar>
     </Stack>
   );
 };

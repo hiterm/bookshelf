@@ -191,6 +191,16 @@ test.describe("Books BULK IMPORT", () => {
     await expect(importPage.getByText("Kindleインポート当日")).toBeVisible();
     await expect(importPage.getByText("Kindleインポート翌日")).toBeVisible();
 
+    const desktopSettings = importPage.getByText("共通設定").locator("..");
+    await expect(desktopSettings).toHaveCSS("position", "sticky");
+    const [desktopSourceBox, desktopSettingsBox] = await Promise.all([
+      importPage.getByRole("radiogroup", { name: "入力方法" }).boundingBox(),
+      desktopSettings.boundingBox(),
+    ]);
+    expect(desktopSourceBox).not.toBeNull();
+    expect(desktopSettingsBox).not.toBeNull();
+    expect(desktopSettingsBox?.x).toBeGreaterThan(desktopSourceBox?.x ?? 0);
+
     await importPage.getByLabel("購入日（指定日以降）").fill("2026-04-24");
     await expect(importPage.getByText("表示中: 3")).toBeVisible();
     await expect(importPage.getByText("Kindleインポート前日")).toBeVisible();
@@ -200,10 +210,11 @@ test.describe("Books BULK IMPORT", () => {
     await importPage.getByLabel("所有している").uncheck();
     await importPage.getByLabel("優先度").fill("75");
     await importPage
-      .getByRole("checkbox", {
-        name: "Kindleインポート当日の著者をカンマで分割",
+      .getByRole("button", {
+        name: "表示中の著者をすべて分割",
+        exact: true,
       })
-      .check();
+      .click();
     await expect(
       importPage.getByText("Kindle共通著者 / 共同著者"),
     ).toBeVisible();
@@ -223,8 +234,11 @@ test.describe("Books BULK IMPORT", () => {
     await expect(
       importPage.getByText("新規", { exact: true }).first(),
     ).toBeVisible();
-    await expect(importPage.getByText("2冊をインポート")).toBeVisible();
-    await importPage.getByRole("button", { name: "インポート" }).click();
+    const importButton = importPage.getByRole("button", {
+      name: "2冊をインポート",
+    });
+    await expect(importButton).toBeInViewport();
+    await importButton.click();
 
     await expect(page.getByText("2冊をインポートしました")).toBeVisible();
     await expect(page).toHaveURL(/\/books$/);
@@ -237,6 +251,51 @@ test.describe("Books BULK IMPORT", () => {
     await expect(
       page.getByRole("link", { name: "Kindleインポート前日" }),
     ).toBeVisible();
+  });
+
+  test("opens preview from the fixed mobile action", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.getByRole("button", { name: "一括インポート" }).click();
+    const importPage = page.getByRole("main");
+    await importPage
+      .locator('input[type="file"]')
+      .setInputFiles("e2e-fixtures/kindle-books.json");
+
+    const source = importPage.getByRole("radiogroup", { name: "入力方法" });
+    const settings = importPage.getByText("共通設定").locator("..");
+    const filter = importPage.getByLabel("購入日（指定日以降）");
+    const firstBook = importPage.getByText("Kindleインポート前日", {
+      exact: true,
+    });
+    await expect(settings).toHaveCSS("position", "static");
+    const [sourceBox, settingsBox, filterBox, firstBookBox] = await Promise.all(
+      [
+        source.boundingBox(),
+        settings.boundingBox(),
+        filter.boundingBox(),
+        firstBook.boundingBox(),
+      ],
+    );
+    expect(sourceBox).not.toBeNull();
+    expect(settingsBox).not.toBeNull();
+    expect(filterBox).not.toBeNull();
+    expect(firstBookBox).not.toBeNull();
+    expect(settingsBox?.y).toBeGreaterThan(sourceBox?.y ?? 0);
+    expect(filterBox?.y).toBeGreaterThan(settingsBox?.y ?? 0);
+    expect(firstBookBox?.y).toBeGreaterThan(filterBox?.y ?? 0);
+
+    const fixedPreview = importPage.getByRole("button", {
+      name: "プレビュー（モバイル固定）",
+    });
+    await expect(fixedPreview).toBeInViewport();
+    await expect(importPage.getByText("対象 3冊")).toBeVisible();
+    await fixedPreview.click();
+    await expect(
+      page.getByRole("heading", { name: "インポートプレビュー" }),
+    ).toBeVisible();
+    await expect(
+      importPage.getByRole("button", { name: "3冊をインポート" }),
+    ).toBeInViewport();
   });
 });
 
