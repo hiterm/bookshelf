@@ -27,6 +27,8 @@ A `BookImportActionBar` component will own the fixed `Paper` and compact `Group`
 
 The input page will render the bar only below the desktop breakpoint with `対象 N冊` and Preview, wired to the same `runPreview` handler and disabled/loading conditions as settings. The preview will always render a fixed bar with Back and `N冊をインポート`, while its regular summary stays in document flow. Both pages will add bottom padding matching the bar height so final content remains visible.
 
+The editor will use one responsive CSS Grid with source, settings, and books areas. Below the desktop breakpoint those areas appear as source, settings, then books so filtering and bulk controls within the books area follow settings; at the desktop breakpoint source and books share the left column while settings spans the right column. The single settings instance is normal-flow on mobile and sticky only on desktop, avoiding duplicated form controls or state.
+
 Tests will assert behavior through accessible names and mutation payloads. A mock-API Playwright scenario will cover bulk splitting through preview and import, and a mobile viewport scenario will verify the fixed preview action is usable without scrolling to settings.
 
 ## Risks / Trade-offs

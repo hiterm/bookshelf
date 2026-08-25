@@ -16,6 +16,7 @@ People importing many Kindle books should be able to establish a default author-
 - [x] (2026-08-25 15:02Z) Extended mock-API end-to-end coverage, including a mobile viewport.
 - [x] (2026-08-25 15:12Z) Ran generation, lint fixing, 199 unit tests, type checking, and two focused Book Import E2E tests successfully.
 - [x] (2026-08-25 15:22Z) Synchronized and archived OpenSpec, committed and pushed the change, opened PR #338, and confirmed all CI including both integration jobs passed.
+- [ ] (2026-08-25 15:31Z) Apply requested mobile settings-order correction (completed: implementation, canonical/archive spec updates, 200 unit tests, typecheck, and responsive E2E; remaining: commit, push, PR update, and CI).
 
 ## Surprises & Discoveries
 
@@ -38,10 +39,13 @@ People importing many Kindle books should be able to establish a default author-
 - Decision: Track PR creation and CI in the ExecPlan rather than as OpenSpec implementation tasks.
   Rationale: The change must be archived before PR delivery, so archive-dependent delivery cannot be an incomplete task inside the change at archive time.
   Date/Author: 2026-08-25 / Codex
+- Decision: Use one responsive CSS Grid instance instead of rendering separate mobile and desktop settings forms.
+  Rationale: Grid areas provide the requested mobile order and desktop two-column placement while preserving one controlled form, and a media query limits sticky positioning to desktop.
+  Date/Author: 2026-08-25 / Codex
 
 ## Outcomes & Retrospective
 
-The change delivers visible-only bulk author splitting with per-book exceptions, a mobile fixed Preview action, and fixed count-aware preview actions while retaining the desktop 8:4 sticky settings UI. Local generation, lint, 199 unit tests, type checking, focused mock-API E2E, production build, and all PR CI including integration passed. OpenSpec was synchronized and archived, and PR #338 is ready for human review without a CodeRabbit review request.
+The initial change delivered visible-only bulk author splitting with per-book exceptions, a mobile fixed Preview action, and fixed count-aware preview actions while retaining the desktop 8:4 sticky settings UI. A follow-up correction now places normal-flow common settings between source and book controls on mobile through a single responsive grid; its final PR delivery and CI are pending.
 
 ## Context and Orientation
 
@@ -92,3 +96,5 @@ Revision note (2026-08-25 15:15Z): Recorded canonical spec synchronization and m
 Revision note (2026-08-25 15:16Z): Recorded successful archive to `openspec/changes/archive/2026-08-25-improve-book-import-actions/`.
 
 Revision note (2026-08-25 15:22Z): Completed the plan with PR #338 and successful CI evidence.
+
+Revision note (2026-08-25 15:31Z): Reopened progress for the requested mobile settings-order correction and recorded the single-grid design.

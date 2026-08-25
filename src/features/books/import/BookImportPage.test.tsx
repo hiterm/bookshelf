@@ -181,6 +181,25 @@ describe("BookImportPage", () => {
     expect(screen.getByText("インポート対象: 2")).toBeInTheDocument();
   });
 
+  test("orders source, settings, controls, and books for the mobile flow", async () => {
+    render(<BookImportPage />, { wrapper });
+    await upload();
+
+    const source = screen.getByRole("radiogroup", { name: "入力方法" });
+    const settings = screen.getByText("共通設定");
+    const filter = screen.getByLabelText("購入日（指定日以降）");
+    const book = screen.getByText("購入日前の本");
+    const follows = (earlier: Node, later: Node) =>
+      Boolean(
+        earlier.compareDocumentPosition(later) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+
+    expect(follows(source, settings)).toBe(true);
+    expect(follows(settings, filter)).toBe(true);
+    expect(follows(filter, book)).toBe(true);
+  });
+
   test("previews edited settings and per-book author splitting", async () => {
     previewMutateAsync.mockResolvedValue(previewResponse);
     render(<BookImportPage />, { wrapper });

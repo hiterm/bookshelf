@@ -191,6 +191,16 @@ test.describe("Books BULK IMPORT", () => {
     await expect(importPage.getByText("Kindleインポート当日")).toBeVisible();
     await expect(importPage.getByText("Kindleインポート翌日")).toBeVisible();
 
+    const desktopSettings = importPage.getByText("共通設定").locator("..");
+    await expect(desktopSettings).toHaveCSS("position", "sticky");
+    const [desktopSourceBox, desktopSettingsBox] = await Promise.all([
+      importPage.getByRole("radiogroup", { name: "入力方法" }).boundingBox(),
+      desktopSettings.boundingBox(),
+    ]);
+    expect(desktopSourceBox).not.toBeNull();
+    expect(desktopSettingsBox).not.toBeNull();
+    expect(desktopSettingsBox?.x).toBeGreaterThan(desktopSourceBox?.x ?? 0);
+
     await importPage.getByLabel("購入日（指定日以降）").fill("2026-04-24");
     await expect(importPage.getByText("表示中: 3")).toBeVisible();
     await expect(importPage.getByText("Kindleインポート前日")).toBeVisible();
@@ -250,6 +260,29 @@ test.describe("Books BULK IMPORT", () => {
     await importPage
       .locator('input[type="file"]')
       .setInputFiles("e2e-fixtures/kindle-books.json");
+
+    const source = importPage.getByRole("radiogroup", { name: "入力方法" });
+    const settings = importPage.getByText("共通設定").locator("..");
+    const filter = importPage.getByLabel("購入日（指定日以降）");
+    const firstBook = importPage.getByText("Kindleインポート前日", {
+      exact: true,
+    });
+    await expect(settings).toHaveCSS("position", "static");
+    const [sourceBox, settingsBox, filterBox, firstBookBox] = await Promise.all(
+      [
+        source.boundingBox(),
+        settings.boundingBox(),
+        filter.boundingBox(),
+        firstBook.boundingBox(),
+      ],
+    );
+    expect(sourceBox).not.toBeNull();
+    expect(settingsBox).not.toBeNull();
+    expect(filterBox).not.toBeNull();
+    expect(firstBookBox).not.toBeNull();
+    expect(settingsBox?.y).toBeGreaterThan(sourceBox?.y ?? 0);
+    expect(filterBox?.y).toBeGreaterThan(settingsBox?.y ?? 0);
+    expect(firstBookBox?.y).toBeGreaterThan(filterBox?.y ?? 0);
 
     const fixedPreview = importPage.getByRole("button", {
       name: "プレビュー（モバイル固定）",

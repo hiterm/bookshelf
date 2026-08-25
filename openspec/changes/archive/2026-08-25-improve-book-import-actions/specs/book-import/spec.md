@@ -24,7 +24,7 @@ The frontend SHALL provide compact fixed Book Import actions that do not obscure
 
 #### Scenario: Use the input editor on mobile
 - **WHEN** the input editor is displayed below the desktop breakpoint with selected candidates
-- **THEN** a viewport-bottom action displays `対象 N冊` and `プレビュー` while the settings form remains in normal document flow
+- **THEN** the input source, common settings, filtering and bulk actions, and book list appear in that order while the non-fixed settings form remains in normal document flow and a viewport-bottom action displays `対象 N冊` and `プレビュー`
 
 #### Scenario: Use the input editor on desktop
 - **WHEN** the input editor is displayed at the desktop breakpoint

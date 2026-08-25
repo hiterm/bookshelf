@@ -1,0 +1,30 @@
+.editor {
+  display: grid;
+  grid-template-areas:
+    "source"
+    "settings"
+    "books";
+  gap: var(--mantine-spacing-xl);
+}
+
+.source {
+  grid-area: source;
+}
+
+.settings {
+  grid-area: settings;
+}
+
+.books {
+  grid-area: books;
+}
+
+@media (min-width: 62em) {
+  .editor {
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas:
+      "source settings"
+      "books settings";
+    align-items: start;
+  }
+}

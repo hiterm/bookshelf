@@ -9,6 +9,7 @@ import {
 import { BOOK_FORMAT_VALUE, displayBookFormat } from "../entity/BookFormat";
 import { BOOK_STORE_VALUE, displayBookStore } from "../entity/BookStore";
 import type { BookImportDefaults } from "./toImportBookInput";
+import classes from "./BookImportSettings.module.css";
 
 type Props = {
   settings: BookImportDefaults;
@@ -30,12 +31,9 @@ export const BookImportSettings = ({
   onPreview,
 }: Props) => (
   <Stack
+    className={classes.root}
     p="md"
     bd="1px solid var(--mantine-color-gray-3)"
-    style={{
-      position: "sticky",
-      top: "calc(var(--app-shell-header-height) + 1rem)",
-    }}
   >
     <Text fw={700}>共通設定</Text>
     <Select
