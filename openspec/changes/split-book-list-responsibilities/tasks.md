@@ -6,12 +6,12 @@
 
 ## 2. Split Book table presentation
 
-- [ ] 2.1 Extract column visibility, preset, and reset controls to `BookTableToolbar.tsx`
-- [ ] 2.2 Extract table header, filters, body, sorting, and sort icon to `BookTable.tsx`
-- [ ] 2.3 Extract pagination and page-size controls to `BookTablePagination.tsx`
-- [ ] 2.4 Reduce `BookList.tsx` to search-state setup, one table instance, and child-component composition
+- [x] 2.1 Extract column visibility, preset, and reset controls to `BookTableToolbar.tsx`
+- [x] 2.2 Extract table header, filters, body, sorting, and sort icon to `BookTable.tsx`
+- [x] 2.3 Extract pagination and page-size controls to `BookTablePagination.tsx`
+- [x] 2.4 Reduce `BookList.tsx` to search-state setup, one table instance, and child-component composition
 
 ## 3. Verify behavior
 
-- [ ] 3.1 Run generation, formatting/lint, unit tests, and type checking
-- [ ] 3.2 Review the final diff for preserved URL, table, UI, and API behavior and absence of unrelated refactors
+- [x] 3.1 Run generation, formatting/lint, unit tests, and type checking
+- [x] 3.2 Review the final diff for preserved URL, table, UI, and API behavior and absence of unrelated refactors
