@@ -2,7 +2,7 @@ import { kindleExportSchema } from "./kindleExportSchema";
 
 export type ImportedBook = {
   title: string;
-  authorNames: string[];
+  authorText: string;
   purchasedAt: Date;
   read: boolean;
   asin: string;
@@ -44,7 +44,7 @@ export const parseKindleExport = (text: string): ImportedBook[] => {
 
     return {
       title: book.title,
-      authorNames: [book.authors],
+      authorText: book.authors,
       purchasedAt,
       read: book.readStatus === "READ",
       asin: book.asin,

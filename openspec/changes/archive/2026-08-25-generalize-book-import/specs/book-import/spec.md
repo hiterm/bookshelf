@@ -1,23 +1,11 @@
-# book-import Specification
+## MODIFIED Requirements
 
-## Purpose
-Define a safe, configurable frontend workflow for parsing Kindle exporter data,
-previewing the exact selected import inputs, and importing those retained inputs.
-## Requirements
 ### Requirement: Candidate books remain editable before preview
 The frontend SHALL provide `/books/import` as a directly accessible import page,
 parse Kindle Bookshelf Exporter JSON from a file or explicitly loaded text,
 retain raw candidate data, inclusive purchase-date display filtering, import
 selection, per-book author splitting, and common settings, and enable preview
 when at least one valid candidate is selected.
-
-#### Scenario: File produces selectable candidates
-- **WHEN** a valid Kindle JSON file is explicitly loaded
-- **THEN** the candidate list is shown with every candidate selected and Preview enabled
-
-#### Scenario: No visible selection
-- **WHEN** no candidate is selected, regardless of the current display filter
-- **THEN** Preview and Import are disabled
 
 #### Scenario: Navigate from books
 - **WHEN** a user activates the existing import action on `/books`
@@ -26,6 +14,10 @@ when at least one valid candidate is selected.
 #### Scenario: Open import route directly
 - **WHEN** a user opens `/books/import` directly
 - **THEN** the frontend displays a fresh input-and-settings step
+
+#### Scenario: File produces selectable candidates
+- **WHEN** a valid Kindle JSON file is explicitly loaded
+- **THEN** the candidate list is shown with every candidate selected and Preview enabled
 
 #### Scenario: Text produces equivalent candidates
 - **WHEN** the same valid Kindle JSON string is explicitly loaded from the text input
@@ -42,6 +34,12 @@ when at least one valid candidate is selected.
 #### Scenario: Stale file read
 - **WHEN** an older file read finishes after a newer source-loading action
 - **THEN** the older result does not replace the newer candidate state
+
+#### Scenario: No visible selection
+- **WHEN** no candidate is selected, regardless of the current display filter
+- **THEN** Preview and Import are disabled
+
+## ADDED Requirements
 
 ### Requirement: Kindle parsing remains separate from import conversion
 The frontend SHALL parse each Kindle candidate with an unmodified `authorText`
@@ -103,6 +101,8 @@ candidates.
 #### Scenario: Explain counts
 - **WHEN** a filter and selection are active
 - **THEN** the editor separately displays total, visible, and import-target counts
+
+## MODIFIED Requirements
 
 ### Requirement: Preview uses current selected inputs
 The frontend SHALL construct one `ImportBookInput[]` from every selected
@@ -220,18 +220,7 @@ overlapping mutation interactions that could conflict with the active operation.
 - **WHEN** `importBooks` is pending
 - **THEN** all import-input-affecting controls and navigation between steps are disabled and neither preview nor import can be submitted again
 
-### Requirement: Preview does not mutate cached or mock book state
-Preview SHALL neither invalidate the books query nor mutate mock book storage;
-only a successful import SHALL cause the existing books query invalidation and
-mock import state transition.
-
-#### Scenario: Preview completes in the application
-- **WHEN** `previewBookImport` succeeds
-- **THEN** the frontend does not invalidate the books query
-
-#### Scenario: Preview completes against mocks
-- **WHEN** the mock preview handler returns normalized books and author resolutions
-- **THEN** the MockStore book state is unchanged
+## ADDED Requirements
 
 ### Requirement: Import editor remains usable for long lists
 The frontend SHALL present a responsive single-page editor that uses separate

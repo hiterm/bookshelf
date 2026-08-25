@@ -26,7 +26,7 @@ describe("parseKindleExport", () => {
     expect(result).toHaveLength(2);
     expect(result[0]).toEqual({
       title: "テスト技術書",
-      authorNames: ["山田 太郎"],
+      authorText: "山田 太郎",
       purchasedAt: new Date(1_777_075_200_000),
       read: true,
       asin: "B0TEST00001",
@@ -34,7 +34,7 @@ describe("parseKindleExport", () => {
     });
     expect(result[1]).toMatchObject({
       title: "テスト小説",
-      authorNames: ["鈴木 花子, 佐藤 次郎"],
+      authorText: "鈴木 花子, 佐藤 次郎",
       purchasedAt: new Date(1_777_161_600_000),
       read: false,
       asin: "B0TEST00002",
@@ -86,4 +86,13 @@ describe("parseKindleExport", () => {
       ),
     ).toThrow(/Kindle Bookshelf Exporter/);
   });
+
+  test.each(["   ", ",", " , "])(
+    "rejects author text that cannot produce an author name: %j",
+    (authors) => {
+      expect(() =>
+        parseKindleExport(JSON.stringify([{ ...exporterFixture[0], authors }])),
+      ).toThrow(/Kindle Bookshelf Exporter/);
+    },
+  );
 });

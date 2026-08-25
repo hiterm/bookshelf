@@ -1,25 +1,12 @@
 import { Button } from "@mantine/core";
-import { useState } from "react";
-import { BookImportDialog } from "./BookImportDialog";
+import { useNavigate } from "@tanstack/react-router";
 
 export const ImportBooksButton = () => {
-  const [opened, setOpened] = useState(false);
+  const navigate = useNavigate();
 
   return (
-    <>
-      <Button
-        onClick={() => {
-          setOpened(true);
-        }}
-      >
-        一括インポート
-      </Button>
-      <BookImportDialog
-        opened={opened}
-        onClose={() => {
-          setOpened(false);
-        }}
-      />
-    </>
+    <Button onClick={() => void navigate({ to: "/books/import" })}>
+      一括インポート
+    </Button>
   );
 };
