@@ -35,6 +35,12 @@ when at least one valid candidate is selected.
 - **WHEN** an older file read finishes after a newer source-loading action
 - **THEN** the older result does not replace the newer candidate state
 
+#### Scenario: No visible selection
+- **WHEN** no candidate is selected, regardless of the current display filter
+- **THEN** Preview and Import are disabled
+
+## ADDED Requirements
+
 ### Requirement: Kindle parsing remains separate from import conversion
 The frontend SHALL parse each Kindle candidate with an unmodified `authorText`
 value and SHALL apply author interpretation and common book settings only while
@@ -96,7 +102,9 @@ candidates.
 - **WHEN** a filter and selection are active
 - **THEN** the editor separately displays total, visible, and import-target counts
 
-### Requirement: Preview uses current selected inputs
+## MODIFIED Requirements
+
+### Requirement: Preview uses current selected visible inputs
 The frontend SHALL construct one `ImportBookInput[]` from every selected
 candidate using current per-book and common settings and SHALL pass that array
 once to `previewBookImport`.
@@ -135,6 +143,10 @@ that retained input.
 - **WHEN** the user imports after a successful preview
 - **THEN** `importBooks` receives the same `ImportBookInput[]` value retained from that preview without reconstructing it from UI state or response data
 
+#### Scenario: Re-preview unchanged input
+- **WHEN** preview has succeeded and the user requests preview again without editing inputs
+- **THEN** the frontend performs another preview and replaces the retained response and input only after success
+
 ### Requirement: Input changes invalidate preview
 The frontend SHALL discard the preview response and retained preview input and
 disable import whenever source candidates, selection, per-book author splitting,
@@ -145,15 +157,15 @@ preview unless it is followed by a selection action that changes import targets.
 - **WHEN** a user changes an individual selection after returning from preview
 - **THEN** preview is invalidated and import requires another successful preview
 
-#### Scenario: Change visible selections
+#### Scenario: Change all selections
 - **WHEN** a user selects or clears visible candidates after returning from preview
 - **THEN** preview is invalidated if the selected candidate IDs change
 
-#### Scenario: Change purchase-date filter only
+#### Scenario: Change purchase-date filter
 - **WHEN** a user changes a purchase-date filter without changing selection
 - **THEN** retained selection is unchanged and the filter alone does not change import inputs
 
-#### Scenario: Change source data
+#### Scenario: Change or clear file
 - **WHEN** a user successfully loads another file or text source after returning from preview
 - **THEN** preview is invalidated and import requires another successful preview
 
@@ -178,7 +190,7 @@ operation.
 - **WHEN** `importBooks` fails after preview succeeds
 - **THEN** editor state, preview response, and preview input remain available and a persistent import error is reported
 
-### Requirement: Successful import completes the page workflow
+### Requirement: Successful import completes the existing workflow
 The frontend SHALL call `importBooks` only with retained successful-preview
 input and, on success, show the existing success notification, invalidate the
 books query, clear route-local import state, and navigate to `/books`.
@@ -207,6 +219,8 @@ overlapping mutation interactions that could conflict with the active operation.
 #### Scenario: Import is pending
 - **WHEN** `importBooks` is pending
 - **THEN** all import-input-affecting controls and navigation between steps are disabled and neither preview nor import can be submitted again
+
+## ADDED Requirements
 
 ### Requirement: Import editor remains usable for long lists
 The frontend SHALL present a responsive single-page editor that uses separate

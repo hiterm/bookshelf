@@ -6,10 +6,11 @@ parses its authors directly into arrays, builds fixed Kindle-flavored
 inputs. The mutation contract is already safe and sufficient, but parser,
 conversion, modal lifecycle, filtering, and selection concerns are coupled.
 
-The feature must become a route-level workspace without changing the backend
-schema. It must remain usable for long Kindle exports, retain asynchronous file
-read stale-result protection, and continue reporting mutation errors through
-`AppErrorProvider`.
+The generated frontend schema and current `bookshelf-api` schema confirm that
+the feature can become a route-level workspace without changing the backend
+contract. It must remain usable for long Kindle exports, retain asynchronous
+file read stale-result protection, and continue reporting mutation errors
+through `AppErrorProvider`.
 
 ## Goals / Non-Goals
 
@@ -113,8 +114,5 @@ read stale-result protection, and continue reporting mutation errors through
 
 ## Open Questions
 
-- Confirm at implementation start that generated `ImportBookInput` still accepts
-  the existing store, format, owned, priority, ISBN, authors, ASIN, and image
-  fields without an API schema change.
-- Choose Tabs or SegmentedControl after checking existing component conventions;
-  behavior is normative, not the specific control.
+None. The existing API contract was confirmed and SegmentedControl was selected
+for the compact two-method source switch.

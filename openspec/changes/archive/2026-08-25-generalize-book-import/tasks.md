@@ -30,10 +30,8 @@
 
 ## 5. Verification and Delivery
 
-- [ ] 5.1 Regenerate GraphQL, MSW, and route artifacts and pass lint, unit/component tests, and typecheck before each implementation commit
-- [ ] 5.2 Pass the production build and mock-API E2E suite without weakening or skipping unrelated tests
-- [ ] 5.3 Reconcile proposal, design, delta spec, and tasks with the final implementation and mark every task complete
-- [ ] 5.4 Sync the book-import delta into the canonical spec and archive the OpenSpec change
-- [ ] 5.5 Review the final diff and commit history for scope, parser/converter boundaries, exact preview/import inputs, filter/selection independence, route generation, and modal removal
-- [ ] 5.6 Push the branch, create the documented PR, and confirm all GitHub Actions checks including integration succeed
-- [ ] 5.7 Request CodeRabbit review after green CI, address or explain every finding, rerun checks after changes, and obtain CodeRabbit approval
+- [x] 5.1 Regenerate GraphQL, MSW, and route artifacts and pass lint, unit/component tests, and typecheck before each implementation commit
+- [x] 5.2 Pass the production build and mock-API E2E suite without weakening or skipping unrelated tests
+- [x] 5.3 Reconcile proposal, design, delta spec, and tasks with the final implementation and mark every task complete
+- [x] 5.4 Sync the book-import delta into the canonical spec and archive the OpenSpec change
+- [x] 5.5 Review the final diff and commit history for scope, parser/converter boundaries, exact preview/import inputs, filter/selection independence, route generation, and modal removal
