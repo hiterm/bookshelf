@@ -1,0 +1,17 @@
+query bookRevision($bookId: ID!, $revisionNumber: Int!) {
+  bookRevision(bookId: $bookId, revisionNumber: $revisionNumber) {
+    bookId
+    revisionNumber
+    title
+    authorIds
+    isbn
+    read
+    owned
+    priority
+    format
+    store
+    bookCreatedAt
+    bookUpdatedAt
+    createdAt
+  }
+}

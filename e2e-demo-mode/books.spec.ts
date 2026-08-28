@@ -128,8 +128,12 @@ test("displays book history on detail page", async ({ page }) => {
 
   await page.getByRole("link", { name: "テスト書籍1" }).click();
   await expect(page.getByRole("heading", { name: "History" })).toBeVisible();
-  await expect(page.getByText("CREATE")).toBeVisible();
-  await expect(page.getByText("UPDATE")).toBeVisible();
+  await expect(
+    page.getByRole("cell", { name: "1", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("cell", { name: "2", exact: true }),
+  ).toBeVisible();
 });
 
 test("deletes book", async ({ page }) => {

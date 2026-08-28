@@ -7,9 +7,9 @@ test("opens change history from the Navbar and views a detail", async ({
   await page.getByRole("link", { name: "変更履歴" }).click();
   await expect(page.getByRole("heading", { name: "変更履歴" })).toBeVisible();
   await page.getByRole("link", { name: "書籍を更新の詳細" }).click();
-  await expect(page).toHaveURL(/\/history\/event-set-2$/);
+  await expect(page).toHaveURL(/\/history\/operation-2$/);
   await expect(page.getByRole("heading", { name: "書籍を更新" })).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "更新: テスト書籍1（更新）" }),
+    page.getByRole("button", { name: "テスト書籍1（更新）" }),
   ).toBeVisible();
 });

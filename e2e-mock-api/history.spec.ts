@@ -1,7 +1,7 @@
 import { expect } from "@playwright/test";
 import { test } from "./fixtures";
 
-test("navigates from change history list to grouped event detail", async ({
+test("navigates from change history list to operation detail", async ({
   page,
 }) => {
   await page.goto("/books");
@@ -11,11 +11,9 @@ test("navigates from change history list to grouped event detail", async ({
   const historyLink = page.getByRole("link", { name: /の詳細$/ }).first();
   await expect(historyLink).toBeVisible();
   await historyLink.click();
-  await expect(page).toHaveURL(/\/history\/event-set-/);
+  await expect(page).toHaveURL(/\/history\/operation-/);
   await expect(
     page.getByRole("heading", { name: /書籍 \(1\)|著者 \(1\)/ }).first(),
   ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: /追加:/ }).first(),
-  ).toBeVisible();
+  await expect(page.getByRole("button").first()).toBeVisible();
 });

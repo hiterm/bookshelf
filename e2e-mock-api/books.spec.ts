@@ -670,10 +670,12 @@ test.describe("Book History", () => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await expect(page).toHaveURL(/\/books\/book-1$/);
     await expect(page.getByRole("heading", { name: "History" })).toBeVisible();
-    await expect(page.getByText("CREATE")).toBeVisible();
+    await expect(
+      page.getByRole("cell", { name: "1", exact: true }),
+    ).toBeVisible();
   });
 
-  test("displays CREATE and UPDATE after book update", async ({ page }) => {
+  test("displays two revisions after book update", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await expect(page).toHaveURL(/\/books\/book-1$/);
 
@@ -685,7 +687,11 @@ test.describe("Book History", () => {
     await expect(page).toHaveURL(/\/books\/book-1$/);
     await expect(page.getByText("更新しました")).toBeVisible();
     await expect(page.getByRole("heading", { name: "History" })).toBeVisible();
-    await expect(page.getByText("CREATE")).toBeVisible();
-    await expect(page.getByText("UPDATE")).toBeVisible();
+    await expect(
+      page.getByRole("cell", { name: "1", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("cell", { name: "2", exact: true }),
+    ).toBeVisible();
   });
 });

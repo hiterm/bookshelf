@@ -27,12 +27,12 @@ test("book import preview resolves authors without mutating state", () => {
   expect(mockStore.getAllAuthors()).toEqual(authorsBefore);
 });
 
-test("bulk import events share the returned event set", () => {
+test("bulk import revisions share the returned operation", () => {
   const mockStore = new MockStore();
   const result = mockStore.importBooks([
     {
-      title: "イベントセット確認書籍",
-      authorNames: ["イベントセット確認著者"],
+      title: "操作確認書籍",
+      authorNames: ["操作確認著者"],
       isbn: "",
       read: false,
       owned: true,
@@ -44,18 +44,14 @@ test("bulk import events share the returned event set", () => {
 
   const author = mockStore
     .getAllAuthors()
-    .find(({ name }) => name === "イベントセット確認著者");
+    .find(({ name }) => name === "操作確認著者");
   expect(author).toBeDefined();
   expect(
-    mockStore
-      .getAuthorEvents(author?.id ?? "")
-      .map(({ eventSetId }) => eventSetId),
-  ).toEqual([result.eventSetId]);
+    mockStore.getOperation(result.operationId)?.authorChanges[0]?.authorId,
+  ).toBe(author?.id);
   expect(
-    mockStore
-      .getBookEvents(result.books[0].id)
-      .map(({ eventSetId }) => eventSetId),
-  ).toEqual([result.eventSetId]);
+    mockStore.getOperation(result.operationId)?.bookChanges[0]?.bookId,
+  ).toBe(result.books[0].id);
 });
 
 test("bulk import removes duplicate authors from a book", () => {
@@ -93,7 +89,5 @@ test("single-book import with an existing author keeps import operation", () => 
     },
   ]);
 
-  expect(mockStore.getEventSet(result.eventSetId)?.operation).toBe(
-    "import_books",
-  );
+  expect(mockStore.getOperation(result.operationId)?.type).toBe("import_books");
 });

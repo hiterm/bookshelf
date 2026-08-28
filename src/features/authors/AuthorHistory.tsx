@@ -10,13 +10,15 @@ import { useMediaQuery } from "@mantine/hooks";
 import { IconEye } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import React, { useState } from "react";
-import { useAuthorEvents } from "./api/useAuthorEvents";
+import { useAuthorRevisions } from "./api/useAuthorRevisions";
 
 export const AuthorHistory: React.FC<{ authorId: string }> = ({ authorId }) => {
   const theme = useMantineTheme();
   const isMd = useMediaQuery(`(min-width: ${theme.breakpoints.md})`);
-  const { data, isLoading, error } = useAuthorEvents(authorId);
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const { data, isLoading, error } = useAuthorRevisions(authorId);
+  const [selectedRevisionNumber, setSelectedRevisionNumber] = useState<
+    number | null
+  >(null);
 
   if (isLoading) {
     return <Text>Loading...</Text>;
@@ -26,12 +28,12 @@ export const AuthorHistory: React.FC<{ authorId: string }> = ({ authorId }) => {
     return <Text>Error loading history</Text>;
   }
 
-  if (data == null || data.authorEvents.length === 0) {
+  if (data == null || data.authorRevisions.length === 0) {
     return null;
   }
 
-  const selectedEvent = data.authorEvents.find(
-    (e) => e.eventId === selectedEventId,
+  const selectedRevision = data.authorRevisions.find(
+    (revision) => revision.revisionNumber === selectedRevisionNumber,
   );
 
   return (
@@ -42,7 +44,7 @@ export const AuthorHistory: React.FC<{ authorId: string }> = ({ authorId }) => {
       <Table highlightOnHover>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>Operation</Table.Th>
+            <Table.Th>Revision</Table.Th>
             <Table.Th>Date</Table.Th>
             <Table.Th>Name</Table.Th>
             {isMd && <Table.Th>Yomi</Table.Th>}
@@ -50,21 +52,25 @@ export const AuthorHistory: React.FC<{ authorId: string }> = ({ authorId }) => {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {data.authorEvents.map((event) => (
-            <Table.Tr key={event.eventId}>
-              <Table.Td>{event.operation}</Table.Td>
+          {data.authorRevisions.map((revision) => (
+            <Table.Tr key={revision.revisionNumber}>
+              <Table.Td>{revision.revisionNumber}</Table.Td>
               <Table.Td>
-                {dayjs(event.changedAt * 1000).format("YYYY/MM/DD HH:mm:ss")}
+                {dayjs(revision.createdAt).format("YYYY/MM/DD HH:mm:ss")}
               </Table.Td>
-              <Table.Td>{event.name}</Table.Td>
-              {isMd && <Table.Td>{event.yomi ?? "-"}</Table.Td>}
+              <Table.Td>{revision.name}</Table.Td>
+              {isMd && (
+                <Table.Td>
+                  {revision.yomi === "" ? "-" : revision.yomi}
+                </Table.Td>
+              )}
               <Table.Td>
                 <ActionIcon
                   onClick={() => {
-                    setSelectedEventId(event.eventId);
+                    setSelectedRevisionNumber(revision.revisionNumber);
                   }}
                   variant="subtle"
-                  aria-label="View event detail"
+                  aria-label="View revision detail"
                 >
                   <IconEye />
                 </ActionIcon>
@@ -75,34 +81,28 @@ export const AuthorHistory: React.FC<{ authorId: string }> = ({ authorId }) => {
       </Table>
 
       <Modal
-        opened={selectedEventId != null}
+        opened={selectedRevisionNumber != null}
         onClose={() => {
-          setSelectedEventId(null);
+          setSelectedRevisionNumber(null);
         }}
-        title="Event Detail"
+        title="Revision Detail"
       >
-        {selectedEvent != null && (
+        {selectedRevision != null && (
           <div>
             <Text>
-              <strong>Operation:</strong> {selectedEvent.operation}
+              <strong>Revision:</strong> {selectedRevision.revisionNumber}
             </Text>
             <Text>
               <strong>Date:</strong>{" "}
-              {dayjs(selectedEvent.changedAt * 1000).format(
-                "YYYY/MM/DD HH:mm:ss",
-              )}
+              {dayjs(selectedRevision.createdAt).format("YYYY/MM/DD HH:mm:ss")}
             </Text>
             <Text>
-              <strong>Name:</strong> {selectedEvent.name}
+              <strong>Name:</strong> {selectedRevision.name}
             </Text>
             <Text>
-              <strong>Yomi:</strong> {selectedEvent.yomi ?? "-"}
+              <strong>Yomi:</strong>{" "}
+              {selectedRevision.yomi === "" ? "-" : selectedRevision.yomi}
             </Text>
-            {selectedEvent.extra != null && (
-              <Text>
-                <strong>Extra:</strong> {JSON.stringify(selectedEvent.extra)}
-              </Text>
-            )}
           </div>
         )}
       </Modal>

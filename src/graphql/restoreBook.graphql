@@ -1,0 +1,9 @@
+mutation restoreBook($bookId: ID!, $revisionNumber: Int!) {
+  restoreBook(bookId: $bookId, revisionNumber: $revisionNumber) {
+    book {
+      id
+    }
+    operationId
+    revisionNumber
+  }
+}

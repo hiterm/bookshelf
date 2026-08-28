@@ -34,14 +34,12 @@ function resolveBookAuthors(book: { authorIds: string[] }) {
     .map((author) => ({ __typename: "Author", ...author }));
 }
 
-function getBookEvents(bookId: string) {
+function getBookRevisions(bookId: string) {
   if (bookId === "book-1") {
     return [
       {
-        __typename: "BookEventEntry" as const,
-        eventId: "book-event-2",
-        eventSetId: "event-set-2",
-        operation: "UPDATE",
+        __typename: "BookRevision" as const,
+        revisionNumber: 2,
         bookId: "book-1",
         title: "テスト書籍1（更新）",
         authorIds: ["author-1"],
@@ -51,16 +49,13 @@ function getBookEvents(bookId: string) {
         priority: 60,
         format: "PRINTED",
         store: "UNKNOWN",
-        bookCreatedAt: 1609459200,
-        bookUpdatedAt: 1609545600,
-        changedAt: 1609545600,
-        extra: null,
+        bookCreatedAt: "2021-01-01T00:00:00Z",
+        bookUpdatedAt: "2021-01-02T00:00:00Z",
+        createdAt: "2021-01-02T00:00:00Z",
       },
       {
-        __typename: "BookEventEntry" as const,
-        eventId: "book-event-1",
-        eventSetId: "event-set-1",
-        operation: "CREATE",
+        __typename: "BookRevision" as const,
+        revisionNumber: 1,
         bookId: "book-1",
         title: "テスト書籍1",
         authorIds: ["author-1"],
@@ -70,20 +65,17 @@ function getBookEvents(bookId: string) {
         priority: 50,
         format: "PRINTED",
         store: "UNKNOWN",
-        bookCreatedAt: 1609459200,
-        bookUpdatedAt: 1609459200,
-        changedAt: 1609459200,
-        extra: null,
+        bookCreatedAt: "2021-01-01T00:00:00Z",
+        bookUpdatedAt: "2021-01-01T00:00:00Z",
+        createdAt: "2021-01-01T00:00:00Z",
       },
     ];
   }
   if (bookId === "book-2") {
     return [
       {
-        __typename: "BookEventEntry" as const,
-        eventId: "book-event-3",
-        eventSetId: "event-set-3",
-        operation: "CREATE",
+        __typename: "BookRevision" as const,
+        revisionNumber: 1,
         bookId: "book-2",
         title: "テスト書籍2",
         authorIds: ["author-2"],
@@ -93,48 +85,41 @@ function getBookEvents(bookId: string) {
         priority: 80,
         format: "E_BOOK",
         store: "KINDLE",
-        bookCreatedAt: 1609632000,
-        bookUpdatedAt: 1609632000,
-        changedAt: 1609632000,
-        extra: null,
+        bookCreatedAt: "2021-01-03T00:00:00Z",
+        bookUpdatedAt: "2021-01-03T00:00:00Z",
+        createdAt: "2021-01-03T00:00:00Z",
       },
     ];
   }
   return [];
 }
 
-function getAuthorEvents(authorId: string) {
+function getAuthorRevisions(authorId: string) {
   if (authorId === "author-1") {
     return [
       {
-        __typename: "AuthorEventEntry" as const,
-        eventId: "author-event-1",
-        eventSetId: "event-set-1",
-        operation: "CREATE",
+        __typename: "AuthorRevision" as const,
+        revisionNumber: 1,
         authorId: "author-1",
         name: "著者1",
-        yomi: null,
-        authorCreatedAt: 1609459200,
-        authorUpdatedAt: 1609459200,
-        changedAt: 1609459200,
-        extra: null,
+        yomi: "",
+        authorCreatedAt: "2021-01-01T00:00:00Z",
+        authorUpdatedAt: "2021-01-01T00:00:00Z",
+        createdAt: "2021-01-01T00:00:00Z",
       },
     ];
   }
   if (authorId === "author-2") {
     return [
       {
-        __typename: "AuthorEventEntry" as const,
-        eventId: "author-event-2",
-        eventSetId: "event-set-2",
-        operation: "CREATE",
+        __typename: "AuthorRevision" as const,
+        revisionNumber: 1,
         authorId: "author-2",
         name: "著者2",
-        yomi: null,
-        authorCreatedAt: 1609545600,
-        authorUpdatedAt: 1609545600,
-        changedAt: 1609545600,
-        extra: null,
+        yomi: "",
+        authorCreatedAt: "2021-01-02T00:00:00Z",
+        authorUpdatedAt: "2021-01-02T00:00:00Z",
+        createdAt: "2021-01-02T00:00:00Z",
       },
     ];
   }
@@ -150,26 +135,28 @@ export const handlers = [
     });
   }),
 
-  graphqlApi.query("eventSets", () => {
+  graphqlApi.query("operations", () => {
     return HttpResponse.json({
       data: {
-        eventSets: [
+        operations: [
           {
-            id: "event-set-2",
-            operation: "update_book",
-            createdAt: 1609545600,
+            id: "operation-2",
+            type: "update_book",
+            detail: null,
+            createdAt: "2021-01-02T00:00:00Z",
           },
           {
-            id: "event-set-1",
-            operation: "create_book",
-            createdAt: 1609459200,
+            id: "operation-1",
+            type: "create_book",
+            detail: null,
+            createdAt: "2021-01-01T00:00:00Z",
           },
         ],
       },
     });
   }),
 
-  graphqlApi.query("eventSet", ({ variables }) => {
+  graphqlApi.query("operation", ({ variables }) => {
     if (!isObject(variables) || !isString(variables.id)) {
       return HttpResponse.json(
         { errors: [{ message: "Invalid variables" }] },
@@ -177,28 +164,45 @@ export const handlers = [
       );
     }
     const entry =
-      variables.id === "event-set-2"
-        ? { id: variables.id, operation: "update_book", createdAt: 1609545600 }
-        : variables.id === "event-set-1"
+      variables.id === "operation-2"
+        ? {
+            id: variables.id,
+            type: "update_book",
+            detail: null,
+            createdAt: "2021-01-02T00:00:00Z",
+          }
+        : variables.id === "operation-1"
           ? {
               id: variables.id,
-              operation: "create_book",
-              createdAt: 1609459200,
+              type: "create_book",
+              detail: null,
+              createdAt: "2021-01-01T00:00:00Z",
             }
           : null;
     return HttpResponse.json({
       data: {
-        eventSet:
+        operation:
           entry == null
             ? null
             : {
                 ...entry,
-                bookEvents: getBookEvents("book-1").filter(
-                  (event) => event.eventSetId === variables.id,
-                ),
-                authorEvents: getAuthorEvents("author-1").filter(
-                  (event) => event.eventSetId === variables.id,
-                ),
+                bookChanges:
+                  variables.id === "operation-2"
+                    ? [
+                        {
+                          bookId: "book-1",
+                          beforeRevision: getBookRevisions("book-1")[1],
+                          afterRevision: getBookRevisions("book-1")[0],
+                        },
+                      ]
+                    : [
+                        {
+                          bookId: "book-1",
+                          beforeRevision: null,
+                          afterRevision: getBookRevisions("book-1")[1],
+                        },
+                      ],
+                authorChanges: [],
               },
       },
     });
@@ -276,41 +280,63 @@ export const handlers = [
     });
   }),
 
-  graphqlApi.query("bookEvents", ({ variables }) => {
+  graphqlApi.query("bookRevisions", ({ variables }) => {
     if (!isObject(variables) || !isString(variables.bookId)) {
       return HttpResponse.json(
         { errors: [{ message: "Invalid variables" }] },
         { status: 200 },
       );
     }
-    const events = [
-      ...getBookEvents(variables.bookId),
-      ...mockStore.getBookEvents(variables.bookId).map((event) => ({
-        __typename: "BookEventEntry" as const,
-        ...event,
-      })),
-    ].sort((a, b) => b.changedAt - a.changedAt);
     return HttpResponse.json({
-      data: { bookEvents: events },
+      data: { bookRevisions: getBookRevisions(variables.bookId) },
     });
   }),
 
-  graphqlApi.query("authorEvents", ({ variables }) => {
+  graphqlApi.query("authorRevisions", ({ variables }) => {
     if (!isObject(variables) || !isString(variables.authorId)) {
       return HttpResponse.json(
         { errors: [{ message: "Invalid variables" }] },
         { status: 200 },
       );
     }
-    const events = [
-      ...getAuthorEvents(variables.authorId),
-      ...mockStore.getAuthorEvents(variables.authorId).map((event) => ({
-        __typename: "AuthorEventEntry" as const,
-        ...event,
-      })),
-    ].sort((a, b) => b.changedAt - a.changedAt);
     return HttpResponse.json({
-      data: { authorEvents: events },
+      data: { authorRevisions: getAuthorRevisions(variables.authorId) },
+    });
+  }),
+
+  graphqlApi.query("bookRevision", ({ variables }) => {
+    if (
+      !isObject(variables) ||
+      !isString(variables.bookId) ||
+      typeof variables.revisionNumber !== "number"
+    ) {
+      return HttpResponse.json({ errors: [{ message: "Invalid variables" }] });
+    }
+    return HttpResponse.json({
+      data: {
+        bookRevision:
+          getBookRevisions(variables.bookId).find(
+            (revision) => revision.revisionNumber === variables.revisionNumber,
+          ) ?? null,
+      },
+    });
+  }),
+
+  graphqlApi.query("authorRevision", ({ variables }) => {
+    if (
+      !isObject(variables) ||
+      !isString(variables.authorId) ||
+      typeof variables.revisionNumber !== "number"
+    ) {
+      return HttpResponse.json({ errors: [{ message: "Invalid variables" }] });
+    }
+    return HttpResponse.json({
+      data: {
+        authorRevision:
+          getAuthorRevisions(variables.authorId).find(
+            (revision) => revision.revisionNumber === variables.revisionNumber,
+          ) ?? null,
+      },
     });
   }),
 
@@ -426,7 +452,7 @@ export const handlers = [
         mergeAuthor: {
           __typename: "MergeAuthorPayload",
           author: { __typename: "Author", ...result.author },
-          eventSetId: result.eventSetId,
+          operationId: result.operationId,
         },
       },
     });
@@ -569,7 +595,7 @@ export const handlers = [
     return HttpResponse.json({
       data: {
         importBooks: {
-          eventSetId: result.eventSetId,
+          operationId: result.operationId,
           books: result.books.map((book) => ({
             __typename: "Book",
             ...book,
@@ -594,6 +620,46 @@ export const handlers = [
     return HttpResponse.json({
       data: {
         previewBookImport: mockStore.previewBookImport(variables.books),
+      },
+    });
+  }),
+
+  graphqlApi.mutation("restoreBook", ({ variables }) => {
+    if (
+      !isObject(variables) ||
+      !isString(variables.bookId) ||
+      typeof variables.revisionNumber !== "number"
+    ) {
+      return HttpResponse.json({ errors: [{ message: "Invalid variables" }] });
+    }
+    const book = mockStore.getBook(variables.bookId);
+    return HttpResponse.json({
+      data: {
+        restoreBook: {
+          book,
+          operationId: "restore-book-operation",
+          revisionNumber: variables.revisionNumber + 1,
+        },
+      },
+    });
+  }),
+
+  graphqlApi.mutation("restoreAuthor", ({ variables }) => {
+    if (
+      !isObject(variables) ||
+      !isString(variables.authorId) ||
+      typeof variables.revisionNumber !== "number"
+    ) {
+      return HttpResponse.json({ errors: [{ message: "Invalid variables" }] });
+    }
+    const author = mockStore.getAuthor(variables.authorId);
+    return HttpResponse.json({
+      data: {
+        restoreAuthor: {
+          author,
+          operationId: "restore-author-operation",
+          revisionNumber: variables.revisionNumber + 1,
+        },
       },
     });
   }),

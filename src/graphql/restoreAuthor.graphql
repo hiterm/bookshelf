@@ -1,0 +1,9 @@
+mutation restoreAuthor($authorId: ID!, $revisionNumber: Int!) {
+  restoreAuthor(authorId: $authorId, revisionNumber: $revisionNumber) {
+    author {
+      id
+    }
+    operationId
+    revisionNumber
+  }
+}

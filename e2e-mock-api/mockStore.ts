@@ -1,43 +1,6 @@
 import type { ImportBookInput } from "../src/generated/graphql-request";
 
-type AuthorEventEntry = {
-  eventId: string;
-  eventSetId: string;
-  operation: string;
-  authorId: string;
-  name: string | null;
-  yomi: string | null;
-  authorCreatedAt: number | null;
-  authorUpdatedAt: number | null;
-  changedAt: number;
-  extra: Record<string, unknown> | null;
-};
-
-type BookEventEntry = {
-  eventId: string;
-  eventSetId: string;
-  operation: string;
-  bookId: string;
-  title: string | null;
-  authorIds: string[];
-  isbn: string | null;
-  read: boolean | null;
-  owned: boolean | null;
-  priority: number | null;
-  format: string | null;
-  store: string | null;
-  bookCreatedAt: number | null;
-  bookUpdatedAt: number | null;
-  changedAt: number;
-  extra: null;
-};
-
-type Author = {
-  id: string;
-  name: string;
-  yomi: string;
-};
-
+type Author = { id: string; name: string; yomi: string };
 type Book = {
   id: string;
   title: string;
@@ -51,142 +14,153 @@ type Book = {
   createdAt: number;
   updatedAt: number;
 };
+type AuthorRevision = {
+  authorId: string;
+  revisionNumber: number;
+  name: string;
+  yomi: string;
+  authorCreatedAt: string;
+  authorUpdatedAt: string;
+  createdAt: string;
+};
+type BookRevision = {
+  bookId: string;
+  revisionNumber: number;
+  title: string;
+  authorIds: string[];
+  isbn: string;
+  read: boolean;
+  owned: boolean;
+  priority: number;
+  format: string;
+  store: string;
+  bookCreatedAt: string;
+  bookUpdatedAt: string;
+  createdAt: string;
+};
+type Operation = {
+  id: string;
+  type: string;
+  detail: Record<string, unknown> | null;
+  createdAt: string;
+  bookChanges: {
+    bookId: string;
+    beforeRevision: BookRevision | null;
+    afterRevision: BookRevision | null;
+  }[];
+  authorChanges: {
+    authorId: string;
+    beforeRevision: AuthorRevision | null;
+    afterRevision: AuthorRevision | null;
+  }[];
+};
 
 export class MockStore {
-  private authors: Map<string, Author>;
-  private books: Map<string, Book>;
-  private authorEvents: AuthorEventEntry[];
-  private bookEvents: BookEventEntry[];
-  private eventSets: Map<string, { operation: string; createdAt: number }>;
-  private nextAuthorId: number;
-  private nextBookId: number;
-  private nextEventId: number;
-  private nextEventSetId: number;
+  private authors = new Map<string, Author>();
+  private books = new Map<string, Book>();
+  private authorRevisions: AuthorRevision[] = [];
+  private bookRevisions: BookRevision[] = [];
+  private operations: Operation[] = [];
+  private nextAuthorId = 1;
+  private nextBookId = 1;
+  private nextOperationId = 1;
   private _userRegistered: boolean;
 
   constructor(options?: { userRegistered?: boolean }) {
-    this.authors = new Map();
-    this.books = new Map();
-    this.authorEvents = [];
-    this.bookEvents = [];
-    this.eventSets = new Map();
-    this.nextAuthorId = 1;
-    this.nextBookId = 1;
-    this.nextEventId = 1;
-    this.nextEventSetId = 1;
     this._userRegistered = options?.userRegistered ?? true;
-    this.seedData();
-  }
-
-  isUserRegistered(): boolean {
-    return this._userRegistered;
-  }
-
-  registerUser(): void {
-    this._userRegistered = true;
-  }
-
-  private seedData(): void {
     const author1 = this.createAuthor("著者1", "ちょしゃいち");
     const author2 = this.createAuthor("著者2", "ちょしゃに");
-
-    this.createBook({
-      title: "テスト書籍1",
-      authorIds: [author1.id],
-      isbn: "978-4-00-000001-0",
-      read: false,
-      owned: true,
-      priority: 50,
-      format: "PRINTED",
-      store: "UNKNOWN",
-    });
-
-    this.createBook({
-      title: "テスト書籍2",
-      authorIds: [author2.id],
-      isbn: "978-4-00-000002-7",
-      read: true,
-      owned: true,
-      priority: 80,
-      format: "E_BOOK",
-      store: "KINDLE",
-    });
-
-    this.createBook({
-      title: "テスト書籍3",
-      authorIds: [author1.id],
-      isbn: "978-4-00-000003-4",
-      read: false,
-      owned: false,
-      priority: 30,
-      format: "UNKNOWN",
-      store: "UNKNOWN",
-    });
-
-    this.createBook({
-      title: "テスト書籍4",
-      authorIds: [author2.id],
-      isbn: "978-4-00-000004-1",
-      read: true,
-      owned: false,
-      priority: 10,
-      format: "E_BOOK",
-      store: "KINDLE",
-    });
+    for (const data of [
+      {
+        title: "テスト書籍1",
+        authorIds: [author1.id],
+        isbn: "978-4-00-000001-0",
+        read: false,
+        owned: true,
+        priority: 50,
+        format: "PRINTED",
+        store: "UNKNOWN",
+      },
+      {
+        title: "テスト書籍2",
+        authorIds: [author2.id],
+        isbn: "978-4-00-000002-7",
+        read: true,
+        owned: true,
+        priority: 80,
+        format: "E_BOOK",
+        store: "KINDLE",
+      },
+      {
+        title: "テスト書籍3",
+        authorIds: [author1.id],
+        isbn: "978-4-00-000003-4",
+        read: false,
+        owned: false,
+        priority: 30,
+        format: "UNKNOWN",
+        store: "UNKNOWN",
+      },
+      {
+        title: "テスト書籍4",
+        authorIds: [author2.id],
+        isbn: "978-4-00-000004-1",
+        read: true,
+        owned: false,
+        priority: 10,
+        format: "E_BOOK",
+        store: "KINDLE",
+      },
+    ])
+      this.createBook(data);
   }
 
-  private recordAuthorEvent(
-    operation: string,
-    authorId: string,
-    name: string | null,
-    yomi: string | null,
-    authorCreatedAt: number | null,
-    authorUpdatedAt: number | null,
-    eventSetId = this.createEventSetId(`${operation.toLowerCase()}_author`),
-    extra: Record<string, unknown> | null = null,
-  ): void {
-    const now = Math.floor(Date.now() / 1000);
-    const eventId = `event-${String(this.nextEventId)}`;
-    this.nextEventId += 1;
-    this.authorEvents.push({
-      eventId,
-      eventSetId,
-      operation,
-      authorId,
-      name,
-      yomi,
-      authorCreatedAt,
-      authorUpdatedAt,
-      changedAt: now,
-      extra,
-    });
+  isUserRegistered() {
+    return this._userRegistered;
   }
-
-  private recordBookEvent(
-    operation: string,
-    book: {
-      id: string;
-      title: string;
-      authorIds: string[];
-      isbn: string;
-      read: boolean;
-      owned: boolean;
-      priority: number;
-      format: string;
-      store: string;
-      createdAt: number;
-      updatedAt: number;
-    },
-    eventSetId = this.createEventSetId(`${operation.toLowerCase()}_book`),
-  ): void {
-    const now = Math.floor(Date.now() / 1000);
-    const eventId = `event-${String(this.nextEventId)}`;
-    this.nextEventId += 1;
-    this.bookEvents.push({
-      eventId,
-      eventSetId,
-      operation,
+  registerUser() {
+    this._userRegistered = true;
+  }
+  private timestamp() {
+    return new Date().toISOString();
+  }
+  private operation(
+    type: string,
+    detail: Record<string, unknown> | null,
+    bookChanges: Operation["bookChanges"],
+    authorChanges: Operation["authorChanges"],
+  ) {
+    const operation: Operation = {
+      id: `operation-${String(this.nextOperationId)}`,
+      type,
+      detail,
+      createdAt: this.timestamp(),
+      bookChanges,
+      authorChanges,
+    };
+    this.nextOperationId += 1;
+    this.operations.unshift(operation);
+    return operation.id;
+  }
+  private authorSnapshot(author: Author): AuthorRevision {
+    const createdAt = this.timestamp();
+    const revision = {
+      authorId: author.id,
+      revisionNumber: this.getAuthorRevisions(author.id).length + 1,
+      name: author.name,
+      yomi: author.yomi,
+      authorCreatedAt: createdAt,
+      authorUpdatedAt: createdAt,
+      createdAt,
+    };
+    this.authorRevisions.unshift(revision);
+    return revision;
+  }
+  private bookSnapshot(book: Book): BookRevision {
+    const createdAt = this.timestamp();
+    const revision = {
       bookId: book.id,
+      revisionNumber: this.getBookRevisions(book.id).length + 1,
       title: book.title,
       authorIds: [...book.authorIds],
       isbn: book.isbn,
@@ -195,269 +169,210 @@ export class MockStore {
       priority: book.priority,
       format: book.format,
       store: book.store,
-      bookCreatedAt: book.createdAt,
-      bookUpdatedAt: book.updatedAt,
-      changedAt: now,
-      extra: null,
-    });
+      bookCreatedAt: new Date(book.createdAt * 1000).toISOString(),
+      bookUpdatedAt: new Date(book.updatedAt * 1000).toISOString(),
+      createdAt,
+    };
+    this.bookRevisions.unshift(revision);
+    return revision;
   }
 
-  private createEventSetId(operation: string): string {
-    const eventSetId = `event-set-${String(this.nextEventSetId)}`;
-    this.nextEventSetId += 1;
-    this.eventSets.set(eventSetId, {
-      operation,
-      createdAt: Math.floor(Date.now() / 1000),
-    });
-    return eventSetId;
-  }
-
-  private createAuthorInternal(name: string, yomi = ""): Author {
-    const id = `author-${String(this.nextAuthorId)}`;
+  createAuthor(name: string, yomi = "") {
+    const author = { id: `author-${String(this.nextAuthorId)}`, name, yomi };
     this.nextAuthorId += 1;
-    const author: Author = { id, name, yomi };
-    this.authors.set(id, author);
+    this.authors.set(author.id, author);
+    const afterRevision = this.authorSnapshot(author);
+    this.operation(
+      "create_author",
+      null,
+      [],
+      [{ authorId: author.id, beforeRevision: null, afterRevision }],
+    );
     return author;
   }
-
-  private createBookInternal(
-    bookData: Omit<Book, "id" | "createdAt" | "updatedAt">,
-  ): Book {
-    const id = `book-${String(this.nextBookId)}`;
-    this.nextBookId += 1;
+  getAuthor(id: string) {
+    return this.authors.get(id) ?? null;
+  }
+  getAllAuthors() {
+    return [...this.authors.values()];
+  }
+  updateAuthor(id: string, name: string, yomi = "") {
+    const current = this.authors.get(id);
+    if (current == null) return null;
+    const beforeRevision = this.getAuthorRevisions(id)[0] ?? null;
+    const author = { id, name, yomi };
+    this.authors.set(id, author);
+    const afterRevision = this.authorSnapshot(author);
+    this.operation(
+      "update_author",
+      null,
+      [],
+      [{ authorId: id, beforeRevision, afterRevision }],
+    );
+    return author;
+  }
+  deleteAuthor(id: string) {
+    const author = this.authors.get(id);
+    if (author == null) return false;
+    const beforeRevision =
+      this.getAuthorRevisions(id)[0] ?? this.authorSnapshot(author);
+    this.authors.delete(id);
+    this.operation(
+      "delete_author",
+      null,
+      [],
+      [{ authorId: id, beforeRevision, afterRevision: null }],
+    );
+    return true;
+  }
+  mergeAuthor(sourceAuthorId: string, destinationAuthorId: string) {
+    const source = this.authors.get(sourceAuthorId);
+    const author = this.authors.get(destinationAuthorId);
+    if (
+      source == null ||
+      author == null ||
+      sourceAuthorId === destinationAuthorId
+    )
+      return null;
+    const bookChanges: Operation["bookChanges"] = [];
+    for (const [id, book] of this.books) {
+      if (!book.authorIds.includes(sourceAuthorId)) continue;
+      const beforeRevision = this.getBookRevisions(id)[0] ?? null;
+      const updated = {
+        ...book,
+        authorIds: [
+          ...new Set(
+            book.authorIds.map((value) =>
+              value === sourceAuthorId ? destinationAuthorId : value,
+            ),
+          ),
+        ],
+        updatedAt: Math.floor(Date.now() / 1000),
+      };
+      this.books.set(id, updated);
+      bookChanges.push({
+        bookId: id,
+        beforeRevision,
+        afterRevision: this.bookSnapshot(updated),
+      });
+    }
+    const beforeRevision = this.getAuthorRevisions(sourceAuthorId)[0] ?? null;
+    this.authors.delete(sourceAuthorId);
+    const operationId = this.operation(
+      "merge_author",
+      { sourceAuthorId, destinationAuthorId },
+      bookChanges,
+      [{ authorId: sourceAuthorId, beforeRevision, afterRevision: null }],
+    );
+    return { author, operationId };
+  }
+  createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">) {
     const now = Math.floor(Date.now() / 1000);
-    const book: Book = {
+    const book = {
       ...bookData,
-      id,
+      id: `book-${String(this.nextBookId)}`,
       createdAt: now,
       updatedAt: now,
     };
-    this.books.set(id, book);
+    this.nextBookId += 1;
+    this.books.set(book.id, book);
+    const afterRevision = this.bookSnapshot(book);
+    this.operation(
+      "create_book",
+      null,
+      [{ bookId: book.id, beforeRevision: null, afterRevision }],
+      [],
+    );
     return book;
   }
-
-  createAuthor(name: string, yomi = ""): Author {
-    const author = this.createAuthorInternal(name, yomi);
-    this.recordAuthorEvent(
-      "CREATE",
-      author.id,
-      author.name,
-      author.yomi,
+  getBook(id: string) {
+    return this.books.get(id) ?? null;
+  }
+  getAllBooks() {
+    return [...this.books.values()];
+  }
+  updateBook(
+    bookData: { id: string } & Partial<
+      Omit<Book, "id" | "createdAt" | "updatedAt">
+    >,
+  ) {
+    const current = this.books.get(bookData.id);
+    if (current == null) return null;
+    const beforeRevision = this.getBookRevisions(bookData.id)[0] ?? null;
+    const book = {
+      ...current,
+      ...bookData,
+      updatedAt: Math.floor(Date.now() / 1000),
+    };
+    this.books.set(book.id, book);
+    const afterRevision = this.bookSnapshot(book);
+    this.operation(
+      "update_book",
       null,
-      null,
+      [{ bookId: book.id, beforeRevision, afterRevision }],
+      [],
     );
-    return author;
-  }
-
-  getAuthor(id: string): Author | null {
-    return this.authors.get(id) ?? null;
-  }
-
-  getAllAuthors(): Author[] {
-    return Array.from(this.authors.values());
-  }
-
-  updateAuthor(id: string, name: string, yomi = ""): Author | null {
-    const author = this.authors.get(id);
-    if (author == null) return null;
-    const updated: Author = { id, name, yomi };
-    this.authors.set(id, updated);
-    this.recordAuthorEvent("UPDATE", id, name, yomi, null, null);
-    return updated;
-  }
-
-  deleteAuthor(id: string): boolean {
-    const author = this.authors.get(id);
-    if (author == null) return false;
-    this.recordAuthorEvent("DELETE", id, author.name, author.yomi, null, null);
-    const deleted = this.authors.delete(id);
-    if (deleted) {
-      this.books.forEach((book, bookId) => {
-        if (book.authorIds.includes(id)) {
-          this.books.set(bookId, {
-            ...book,
-            authorIds: book.authorIds.filter(
-              (authorId: string) => authorId !== id,
-            ),
-          });
-        }
-      });
-    }
-    return deleted;
-  }
-
-  mergeAuthor(
-    sourceAuthorId: string,
-    destinationAuthorId: string,
-  ): { author: Author; eventSetId: string } | null {
-    if (sourceAuthorId === destinationAuthorId) return null;
-    const source = this.authors.get(sourceAuthorId);
-    const destination = this.authors.get(destinationAuthorId);
-    if (source == null || destination == null) return null;
-    const eventSetId = this.createEventSetId("merge_author");
-
-    this.books.forEach((book, bookId) => {
-      if (!book.authorIds.includes(sourceAuthorId)) return;
-      const authorIds = book.authorIds.map((authorId) =>
-        authorId === sourceAuthorId ? destinationAuthorId : authorId,
-      );
-      const updatedBook = {
-        ...book,
-        authorIds: [...new Set(authorIds)],
-        updatedAt: Math.floor(Date.now() / 1000),
-      };
-      this.books.set(bookId, updatedBook);
-      this.recordBookEvent("UPDATE", updatedBook, eventSetId);
-    });
-    this.recordAuthorEvent(
-      "DELETE",
-      source.id,
-      source.name,
-      source.yomi,
-      null,
-      null,
-      eventSetId,
-      {
-        type: "merge",
-        version: 1,
-        destination_author_id: destinationAuthorId,
-      },
-    );
-    this.recordAuthorEvent(
-      "MERGE_AS_DESTINATION",
-      destination.id,
-      null,
-      null,
-      null,
-      null,
-      eventSetId,
-      { version: 1, source_author_id: sourceAuthorId },
-    );
-    this.authors.delete(sourceAuthorId);
-    return { author: destination, eventSetId };
-  }
-
-  createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">): Book {
-    const book = this.createBookInternal(bookData);
-    this.recordBookEvent("CREATE", book);
     return book;
   }
-
+  deleteBook(id: string) {
+    const book = this.books.get(id);
+    if (book == null) return false;
+    const beforeRevision = this.getBookRevisions(id)[0] ?? null;
+    this.books.delete(id);
+    this.operation(
+      "delete_book",
+      null,
+      [{ bookId: id, beforeRevision, afterRevision: null }],
+      [],
+    );
+    return true;
+  }
+  getAuthorRevisions(authorId: string) {
+    return this.authorRevisions.filter(
+      (revision) => revision.authorId === authorId,
+    );
+  }
+  getBookRevisions(bookId: string) {
+    return this.bookRevisions.filter((revision) => revision.bookId === bookId);
+  }
+  getOperations() {
+    return this.operations;
+  }
+  getOperation(id: string) {
+    return this.operations.find((operation) => operation.id === id) ?? null;
+  }
   previewBookImport(bookInputs: ImportBookInput[]) {
-    const existingAuthorNames = new Set(
-      this.getAllAuthors().map((author) => author.name),
-    );
+    const existing = new Set(this.getAllAuthors().map(({ name }) => name));
     return {
       books: bookInputs.map(({ authorNames, ...book }) => ({
         ...book,
         authors: [...new Set(authorNames)].map((name) => ({
           name,
-          status: existingAuthorNames.has(name)
-            ? ("EXISTING" as const)
-            : ("NEW" as const),
+          status: existing.has(name) ? ("EXISTING" as const) : ("NEW" as const),
         })),
       })),
     };
   }
-
-  importBooks(bookInputs: ImportBookInput[]): {
-    eventSetId: string;
-    books: Book[];
-  } {
-    const eventSetId = this.createEventSetId("import_books");
+  importBooks(bookInputs: ImportBookInput[]) {
+    const start = this.operations.length;
     const books = bookInputs.map(({ authorNames, ...bookData }) => {
-      const authorIds = authorNames.map((name) => {
-        const existing = this.getAllAuthors().find(
-          (author) => author.name === name,
-        );
-        if (existing != null) return existing.id;
-
-        const author = this.createAuthorInternal(name);
-        this.recordAuthorEvent(
-          "CREATE",
-          author.id,
-          author.name,
-          author.yomi,
-          null,
-          null,
-          eventSetId,
-        );
-        return author.id;
-      });
-      const book = this.createBookInternal({
+      const authorIds = authorNames.map(
+        (name) =>
+          this.getAllAuthors().find((author) => author.name === name)?.id ??
+          this.createAuthor(name).id,
+      );
+      return this.createBook({
         ...bookData,
         authorIds: [...new Set(authorIds)],
       });
-      this.recordBookEvent("CREATE", book, eventSetId);
-      return book;
     });
-    return { eventSetId, books };
-  }
-
-  getBook(id: string): Book | null {
-    return this.books.get(id) ?? null;
-  }
-
-  getAllBooks(): Book[] {
-    return Array.from(this.books.values());
-  }
-
-  getAuthorEvents(authorId: string): AuthorEventEntry[] {
-    return this.authorEvents
-      .filter((e) => e.authorId === authorId)
-      .sort((a, b) => b.changedAt - a.changedAt);
-  }
-
-  getBookEvents(bookId: string): BookEventEntry[] {
-    return this.bookEvents
-      .filter((e) => e.bookId === bookId)
-      .sort((a, b) => b.changedAt - a.changedAt);
-  }
-
-  getEventSets(): { id: string; operation: string; createdAt: number }[] {
-    return [...this.eventSets]
-      .map(([id, eventSet]) => ({
-        id,
-        ...eventSet,
-      }))
-      .sort((a, b) => b.createdAt - a.createdAt);
-  }
-
-  getEventSet(id: string) {
-    const entry = this.getEventSets().find((eventSet) => eventSet.id === id);
-    if (entry == null) return null;
-    return {
-      ...entry,
-      bookEvents: this.bookEvents.filter((event) => event.eventSetId === id),
-      authorEvents: this.authorEvents.filter(
-        (event) => event.eventSetId === id,
-      ),
-    };
-  }
-
-  updateBook(
-    bookData: { id: string } & Partial<
-      Omit<Book, "id" | "createdAt" | "updatedAt">
-    >,
-  ): Book | null {
-    const book = this.books.get(bookData.id);
-    if (book == null) return null;
-
-    const now = Math.floor(Date.now() / 1000);
-    const updatedBook: Book = {
-      ...book,
-      ...bookData,
-      updatedAt: now,
-    };
-    this.books.set(bookData.id, updatedBook);
-    this.recordBookEvent("UPDATE", updatedBook);
-    return updatedBook;
-  }
-
-  deleteBook(id: string): boolean {
-    const book = this.books.get(id);
-    if (book == null) return false;
-    this.recordBookEvent("DELETE", book);
-    return this.books.delete(id);
+    const nested = this.operations.splice(0, this.operations.length - start);
+    const operationId = this.operation(
+      "import_books",
+      null,
+      nested.flatMap((entry) => entry.bookChanges),
+      nested.flatMap((entry) => entry.authorChanges),
+    );
+    return { operationId, books };
   }
 }

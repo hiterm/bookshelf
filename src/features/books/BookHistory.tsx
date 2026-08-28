@@ -10,7 +10,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import { IconEye } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import React, { useState } from "react";
-import { useBookEvents } from "./api/useBookEvents";
+import { useBookRevisions } from "./api/useBookRevisions";
 import { BooleanValue } from "../../components/utils/BooleanValue";
 import type { BookQuery } from "../../generated/graphql-request";
 
@@ -28,8 +28,10 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
   const theme = useMantineTheme();
   const isMd = useMediaQuery(`(min-width: ${theme.breakpoints.md})`);
   const isLg = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`);
-  const { data, isLoading, error } = useBookEvents(bookId);
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const { data, isLoading, error } = useBookRevisions(bookId);
+  const [selectedRevisionNumber, setSelectedRevisionNumber] = useState<
+    number | null
+  >(null);
 
   if (isLoading) {
     return <Text>Loading...</Text>;
@@ -39,12 +41,12 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
     return <Text>Error loading history</Text>;
   }
 
-  if (data == null || data.bookEvents.length === 0) {
+  if (data == null || data.bookRevisions.length === 0) {
     return null;
   }
 
-  const selectedEvent = data.bookEvents.find(
-    (e) => e.eventId === selectedEventId,
+  const selectedRevision = data.bookRevisions.find(
+    (revision) => revision.revisionNumber === selectedRevisionNumber,
   );
 
   const authorMap = new Map(authors.map((a) => [a.id, a.name]));
@@ -61,7 +63,7 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
       <Table highlightOnHover>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>Operation</Table.Th>
+            <Table.Th>Revision</Table.Th>
             <Table.Th>Date</Table.Th>
             <Table.Th>Title</Table.Th>
             <Table.Th>Authors</Table.Th>
@@ -74,38 +76,34 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {data.bookEvents.map((event) => (
-            <Table.Tr key={event.eventId}>
-              <Table.Td>{event.operation}</Table.Td>
+          {data.bookRevisions.map((revision) => (
+            <Table.Tr key={revision.revisionNumber}>
+              <Table.Td>{revision.revisionNumber}</Table.Td>
               <Table.Td>
-                {dayjs(event.changedAt * 1000).format("YYYY/MM/DD HH:mm:ss")}
+                {dayjs(revision.createdAt).format("YYYY/MM/DD HH:mm:ss")}
               </Table.Td>
-              <Table.Td>{event.title}</Table.Td>
-              <Table.Td>{resolveAuthorNames(event.authorIds)}</Table.Td>
-              {isMd && <Table.Td>{event.isbn}</Table.Td>}
-              {isMd && <Table.Td>{event.format}</Table.Td>}
-              {isLg && <Table.Td>{event.store}</Table.Td>}
+              <Table.Td>{revision.title}</Table.Td>
+              <Table.Td>{resolveAuthorNames(revision.authorIds)}</Table.Td>
+              {isMd && <Table.Td>{revision.isbn}</Table.Td>}
+              {isMd && <Table.Td>{revision.format}</Table.Td>}
+              {isLg && <Table.Td>{revision.store}</Table.Td>}
               {isLg && (
                 <Table.Td>
-                  {event.read != null ? (
-                    <BooleanValue flag={event.read} />
-                  ) : null}
+                  <BooleanValue flag={revision.read} />
                 </Table.Td>
               )}
               {isLg && (
                 <Table.Td>
-                  {event.owned != null ? (
-                    <BooleanValue flag={event.owned} />
-                  ) : null}
+                  <BooleanValue flag={revision.owned} />
                 </Table.Td>
               )}
               <Table.Td>
                 <ActionIcon
                   onClick={() => {
-                    setSelectedEventId(event.eventId);
+                    setSelectedRevisionNumber(revision.revisionNumber);
                   }}
                   variant="subtle"
-                  aria-label="View event detail"
+                  aria-label="View revision detail"
                 >
                   <IconEye />
                 </ActionIcon>
@@ -116,59 +114,48 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
       </Table>
 
       <Modal
-        opened={selectedEventId != null}
+        opened={selectedRevisionNumber != null}
         onClose={() => {
-          setSelectedEventId(null);
+          setSelectedRevisionNumber(null);
         }}
-        title="Event Detail"
+        title="Revision Detail"
       >
-        {selectedEvent != null && (
+        {selectedRevision != null && (
           <div>
             <Text>
-              <strong>Operation:</strong> {selectedEvent.operation}
+              <strong>Revision:</strong> {selectedRevision.revisionNumber}
             </Text>
             <Text>
               <strong>Date:</strong>{" "}
-              {dayjs(selectedEvent.changedAt * 1000).format(
-                "YYYY/MM/DD HH:mm:ss",
-              )}
+              {dayjs(selectedRevision.createdAt).format("YYYY/MM/DD HH:mm:ss")}
             </Text>
             <Text>
-              <strong>Title:</strong> {selectedEvent.title}
+              <strong>Title:</strong> {selectedRevision.title}
             </Text>
             <Text>
               <strong>Authors:</strong>{" "}
-              {resolveAuthorNames(selectedEvent.authorIds)}
+              {resolveAuthorNames(selectedRevision.authorIds)}
             </Text>
             <Text>
-              <strong>ISBN:</strong> {selectedEvent.isbn}
+              <strong>ISBN:</strong> {selectedRevision.isbn}
             </Text>
             <Text>
-              <strong>Format:</strong> {selectedEvent.format}
+              <strong>Format:</strong> {selectedRevision.format}
             </Text>
             <Text>
-              <strong>Store:</strong> {selectedEvent.store}
+              <strong>Store:</strong> {selectedRevision.store}
             </Text>
             <Text>
               <strong>Read:</strong>{" "}
-              {selectedEvent.read != null ? (
-                <BooleanValue flag={selectedEvent.read} />
-              ) : null}
+              <BooleanValue flag={selectedRevision.read} />
             </Text>
             <Text>
               <strong>Owned:</strong>{" "}
-              {selectedEvent.owned != null ? (
-                <BooleanValue flag={selectedEvent.owned} />
-              ) : null}
+              <BooleanValue flag={selectedRevision.owned} />
             </Text>
             <Text>
-              <strong>Priority:</strong> {selectedEvent.priority ?? "-"}
+              <strong>Priority:</strong> {selectedRevision.priority}
             </Text>
-            {selectedEvent.extra != null && (
-              <Text>
-                <strong>Extra:</strong> {JSON.stringify(selectedEvent.extra)}
-              </Text>
-            )}
           </div>
         )}
       </Modal>
