@@ -1,6 +1,12 @@
 import type { ImportBookInput } from "../generated/graphql-request";
 
-type Author = { id: string; name: string; yomi: string };
+type Author = {
+  id: string;
+  name: string;
+  yomi: string;
+  createdAt: string;
+  updatedAt: string;
+};
 type Book = {
   id: string;
   title: string;
@@ -14,10 +20,53 @@ type Book = {
   createdAt: number;
   updatedAt: number;
 };
+type AuthorRevision = {
+  authorId: string;
+  revisionNumber: number;
+  name: string;
+  yomi: string;
+  authorCreatedAt: string;
+  authorUpdatedAt: string;
+  createdAt: string;
+};
+type BookRevision = {
+  bookId: string;
+  revisionNumber: number;
+  title: string;
+  authorIds: string[];
+  isbn: string;
+  read: boolean;
+  owned: boolean;
+  priority: number;
+  format: string;
+  store: string;
+  bookCreatedAt: string;
+  bookUpdatedAt: string;
+  createdAt: string;
+};
+type Operation = {
+  id: string;
+  type: string;
+  detail: Record<string, unknown> | null;
+  createdAt: string;
+  bookChanges: {
+    bookId: string;
+    beforeRevision: BookRevision | null;
+    afterRevision: BookRevision | null;
+  }[];
+  authorChanges: {
+    authorId: string;
+    beforeRevision: AuthorRevision | null;
+    afterRevision: AuthorRevision | null;
+  }[];
+};
 
-class MockStore {
+export class MockStore {
   private authors = new Map<string, Author>();
   private books = new Map<string, Book>();
+  private authorRevisions: AuthorRevision[] = [];
+  private bookRevisions: BookRevision[] = [];
+  private operations: Operation[] = [];
   private nextAuthorId = 1;
   private nextBookId = 1;
   private nextOperationId = 1;
@@ -27,26 +76,29 @@ class MockStore {
     this._userRegistered = options?.userRegistered ?? true;
     const author1 = this.createAuthor("著者1", "ちょしゃいち");
     const author2 = this.createAuthor("著者2", "ちょしゃに");
-    this.createBook({
-      title: "テスト書籍1",
-      authorIds: [author1.id],
-      isbn: "978-4-00-000001-0",
-      read: false,
-      owned: true,
-      priority: 50,
-      format: "PRINTED",
-      store: "UNKNOWN",
-    });
-    this.createBook({
-      title: "テスト書籍2",
-      authorIds: [author2.id],
-      isbn: "978-4-00-000002-7",
-      read: true,
-      owned: true,
-      priority: 80,
-      format: "E_BOOK",
-      store: "KINDLE",
-    });
+    for (const data of [
+      {
+        title: "テスト書籍1",
+        authorIds: [author1.id],
+        isbn: "978-4-00-000001-0",
+        read: false,
+        owned: true,
+        priority: 50,
+        format: "PRINTED",
+        store: "UNKNOWN",
+      },
+      {
+        title: "テスト書籍2",
+        authorIds: [author2.id],
+        isbn: "978-4-00-000002-7",
+        read: true,
+        owned: true,
+        priority: 80,
+        format: "E_BOOK",
+        store: "KINDLE",
+      },
+    ])
+      this.createBook(data);
   }
 
   isUserRegistered() {
@@ -55,10 +107,80 @@ class MockStore {
   registerUser() {
     this._userRegistered = true;
   }
-  createAuthor(name: string, yomi = ""): Author {
-    const author = { id: `author-${String(this.nextAuthorId)}`, name, yomi };
+  private timestamp() {
+    return new Date().toISOString();
+  }
+  private operation(
+    type: string,
+    detail: Record<string, unknown> | null,
+    bookChanges: Operation["bookChanges"],
+    authorChanges: Operation["authorChanges"],
+  ) {
+    const operation: Operation = {
+      id: `operation-${String(this.nextOperationId)}`,
+      type,
+      detail,
+      createdAt: this.timestamp(),
+      bookChanges,
+      authorChanges,
+    };
+    this.nextOperationId += 1;
+    this.operations.unshift(operation);
+    return operation.id;
+  }
+  private authorSnapshot(author: Author): AuthorRevision {
+    const createdAt = this.timestamp();
+    const revision = {
+      authorId: author.id,
+      revisionNumber: this.getAuthorRevisions(author.id).length + 1,
+      name: author.name,
+      yomi: author.yomi,
+      authorCreatedAt: author.createdAt,
+      authorUpdatedAt: author.updatedAt,
+      createdAt,
+    };
+    this.authorRevisions.unshift(revision);
+    return revision;
+  }
+  private bookSnapshot(book: Book): BookRevision {
+    const createdAt = this.timestamp();
+    const revision = {
+      bookId: book.id,
+      revisionNumber: this.getBookRevisions(book.id).length + 1,
+      title: book.title,
+      authorIds: [...book.authorIds],
+      isbn: book.isbn,
+      read: book.read,
+      owned: book.owned,
+      priority: book.priority,
+      format: book.format,
+      store: book.store,
+      bookCreatedAt: new Date(book.createdAt * 1000).toISOString(),
+      bookUpdatedAt: new Date(book.updatedAt * 1000).toISOString(),
+      createdAt,
+    };
+    this.bookRevisions.unshift(revision);
+    return revision;
+  }
+
+  createAuthor(name: string, yomi = "") {
+    const createdAt = this.timestamp();
+    const author = {
+      id: `author-${String(this.nextAuthorId)}`,
+      name,
+      yomi,
+      createdAt,
+      updatedAt: createdAt,
+    };
     this.nextAuthorId += 1;
     this.authors.set(author.id, author);
+    const afterRevision = this.authorSnapshot(author);
+    this.operation(
+      "create_author",
+      null,
+      [],
+      [{ authorId: author.id, beforeRevision: null, afterRevision }],
+    );
     return author;
   }
   getAuthor(id: string) {
@@ -68,38 +190,81 @@ class MockStore {
     return [...this.authors.values()];
   }
   updateAuthor(id: string, name: string, yomi = "") {
-    if (!this.authors.has(id)) return null;
-    const author = { id, name, yomi };
+    const current = this.authors.get(id);
+    if (current == null) return null;
+    const beforeRevision = this.getAuthorRevisions(id)[0] ?? null;
+    const author = {
+      ...current,
+      name,
+      yomi,
+      updatedAt: this.timestamp(),
+    };
     this.authors.set(id, author);
+    const afterRevision = this.authorSnapshot(author);
+    this.operation(
+      "update_author",
+      null,
+      [],
+      [{ authorId: id, beforeRevision, afterRevision }],
+    );
     return author;
   }
   deleteAuthor(id: string) {
-    return this.authors.delete(id);
+    const author = this.authors.get(id);
+    if (author == null) return false;
+    const beforeRevision =
+      this.getAuthorRevisions(id)[0] ?? this.authorSnapshot(author);
+    this.authors.delete(id);
+    this.operation(
+      "delete_author",
+      null,
+      [],
+      [{ authorId: id, beforeRevision, afterRevision: null }],
+    );
+    return true;
   }
   mergeAuthor(sourceAuthorId: string, destinationAuthorId: string) {
-    if (sourceAuthorId === destinationAuthorId) return null;
     const source = this.authors.get(sourceAuthorId);
     const author = this.authors.get(destinationAuthorId);
-    if (source == null || author == null) return null;
+    if (
+      source == null ||
+      author == null ||
+      sourceAuthorId === destinationAuthorId
+    )
+      return null;
+    const bookChanges: Operation["bookChanges"] = [];
     for (const [id, book] of this.books) {
-      if (book.authorIds.includes(sourceAuthorId)) {
-        this.books.set(id, {
-          ...book,
-          authorIds: [
-            ...new Set(
-              book.authorIds.map((authorId) =>
-                authorId === sourceAuthorId ? destinationAuthorId : authorId,
-              ),
+      if (!book.authorIds.includes(sourceAuthorId)) continue;
+      const beforeRevision = this.getBookRevisions(id)[0] ?? null;
+      const updated = {
+        ...book,
+        authorIds: [
+          ...new Set(
+            book.authorIds.map((value) =>
+              value === sourceAuthorId ? destinationAuthorId : value,
             ),
-          ],
-          updatedAt: Math.floor(Date.now() / 1000),
-        });
-      }
+          ),
+        ],
+        updatedAt: Math.floor(Date.now() / 1000),
+      };
+      this.books.set(id, updated);
+      bookChanges.push({
+        bookId: id,
+        beforeRevision,
+        afterRevision: this.bookSnapshot(updated),
+      });
     }
+    const beforeRevision = this.getAuthorRevisions(sourceAuthorId)[0] ?? null;
     this.authors.delete(sourceAuthorId);
-    return { author, operationId: this.newOperationId("merge-author") };
+    const operationId = this.operation(
+      "merge_author",
+      { sourceAuthorId, destinationAuthorId },
+      bookChanges,
+      [{ authorId: sourceAuthorId, beforeRevision, afterRevision: null }],
+    );
+    return { author, operationId };
   }
-  createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">): Book {
+  createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">) {
     const now = Math.floor(Date.now() / 1000);
     const book = {
       ...bookData,
@@ -109,6 +274,13 @@ class MockStore {
     };
     this.nextBookId += 1;
     this.books.set(book.id, book);
+    const afterRevision = this.bookSnapshot(book);
+    this.operation(
+      "create_book",
+      null,
+      [{ bookId: book.id, beforeRevision: null, afterRevision }],
+      [],
+    );
     return book;
   }
   getBook(id: string) {
@@ -122,18 +294,106 @@ class MockStore {
       Omit<Book, "id" | "createdAt" | "updatedAt">
     >,
   ) {
-    const book = this.books.get(bookData.id);
-    if (book == null) return null;
-    const updated = {
-      ...book,
+    const current = this.books.get(bookData.id);
+    if (current == null) return null;
+    const beforeRevision = this.getBookRevisions(bookData.id)[0] ?? null;
+    const book = {
+      ...current,
       ...bookData,
       updatedAt: Math.floor(Date.now() / 1000),
     };
-    this.books.set(bookData.id, updated);
-    return updated;
+    this.books.set(book.id, book);
+    const afterRevision = this.bookSnapshot(book);
+    this.operation(
+      "update_book",
+      null,
+      [{ bookId: book.id, beforeRevision, afterRevision }],
+      [],
+    );
+    return book;
   }
   deleteBook(id: string) {
-    return this.books.delete(id);
+    const book = this.books.get(id);
+    if (book == null) return false;
+    const beforeRevision = this.getBookRevisions(id)[0] ?? null;
+    this.books.delete(id);
+    this.operation(
+      "delete_book",
+      null,
+      [{ bookId: id, beforeRevision, afterRevision: null }],
+      [],
+    );
+    return true;
+  }
+  getAuthorRevisions(authorId: string) {
+    return this.authorRevisions.filter(
+      (revision) => revision.authorId === authorId,
+    );
+  }
+  getBookRevisions(bookId: string) {
+    return this.bookRevisions.filter((revision) => revision.bookId === bookId);
+  }
+  getOperations() {
+    return this.operations;
+  }
+  getOperation(id: string) {
+    return this.operations.find((operation) => operation.id === id) ?? null;
+  }
+  restoreAuthor(authorId: string, revisionNumber: number) {
+    const source = this.getAuthorRevisions(authorId).find(
+      (revision) => revision.revisionNumber === revisionNumber,
+    );
+    if (source == null) return null;
+    const beforeRevision = this.getAuthorRevisions(authorId)[0] ?? null;
+    const author: Author = {
+      id: authorId,
+      name: source.name,
+      yomi: source.yomi,
+      createdAt: source.authorCreatedAt,
+      updatedAt: this.timestamp(),
+    };
+    this.authors.set(authorId, author);
+    const afterRevision = this.authorSnapshot(author);
+    const operationId = this.operation(
+      "restore_author",
+      { authorId, revisionNumber },
+      [],
+      [{ authorId, beforeRevision, afterRevision }],
+    );
+    return {
+      author,
+      operationId,
+      revisionNumber: afterRevision.revisionNumber,
+    };
+  }
+  restoreBook(bookId: string, revisionNumber: number) {
+    const source = this.getBookRevisions(bookId).find(
+      (revision) => revision.revisionNumber === revisionNumber,
+    );
+    if (source == null) return null;
+    const beforeRevision = this.getBookRevisions(bookId)[0] ?? null;
+    const book: Book = {
+      id: bookId,
+      title: source.title,
+      authorIds: [...source.authorIds],
+      isbn: source.isbn,
+      read: source.read,
+      owned: source.owned,
+      priority: source.priority,
+      format: source.format,
+      store: source.store,
+      createdAt: Math.floor(Date.parse(source.bookCreatedAt) / 1000),
+      updatedAt: Math.floor(Date.now() / 1000),
+    };
+    this.books.set(bookId, book);
+    const afterRevision = this.bookSnapshot(book);
+    const operationId = this.operation(
+      "restore_book",
+      { bookId, revisionNumber },
+      [{ bookId, beforeRevision, afterRevision }],
+      [],
+    );
+    return { book, operationId, revisionNumber: afterRevision.revisionNumber };
   }
   previewBookImport(bookInputs: ImportBookInput[]) {
     const existing = new Set(this.getAllAuthors().map(({ name }) => name));
@@ -148,6 +408,7 @@ class MockStore {
     };
   }
   importBooks(bookInputs: ImportBookInput[]) {
+    const start = this.operations.length;
     const books = bookInputs.map(({ authorNames, ...bookData }) => {
       const authorIds = authorNames.map(
         (name) =>
@@ -159,12 +420,14 @@ class MockStore {
         authorIds: [...new Set(authorIds)],
       });
     });
-    return { operationId: this.newOperationId("import-books"), books };
-  }
-  private newOperationId(prefix: string) {
-    const operationId = `${prefix}-operation-${String(this.nextOperationId)}`;
-    this.nextOperationId += 1;
-    return operationId;
+    const nested = this.operations.splice(0, this.operations.length - start);
+    const operationId = this.operation(
+      "import_books",
+      null,
+      nested.flatMap((entry) => entry.bookChanges),
+      nested.flatMap((entry) => entry.authorChanges),
+    );
+    return { operationId, books };
   }
 }
 

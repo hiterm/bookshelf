@@ -110,22 +110,22 @@ export const createResolvers = (mockStore: MockStore) => ({
     restoreBook: (
       _: unknown,
       { bookId, revisionNumber }: { bookId: string; revisionNumber: number },
-    ) => ({
-      book: mockStore.getBook(bookId),
-      operationId: "restore-book-operation",
-      revisionNumber: revisionNumber + 1,
-    }),
+    ) => {
+      const result = mockStore.restoreBook(bookId, revisionNumber);
+      if (result == null) throw new Error("Book revision not found");
+      return result;
+    },
     restoreAuthor: (
       _: unknown,
       {
         authorId,
         revisionNumber,
       }: { authorId: string; revisionNumber: number },
-    ) => ({
-      author: mockStore.getAuthor(authorId),
-      operationId: "restore-author-operation",
-      revisionNumber: revisionNumber + 1,
-    }),
+    ) => {
+      const result = mockStore.restoreAuthor(authorId, revisionNumber);
+      if (result == null) throw new Error("Author revision not found");
+      return result;
+    },
   },
   Book: {
     authors: (book: { authorIds: string[] }) => {

@@ -91,3 +91,39 @@ test("single-book import with an existing author keeps import operation", () => 
 
   expect(mockStore.getOperation(result.operationId)?.type).toBe("import_books");
 });
+
+test("author revisions retain the entity creation time", () => {
+  const mockStore = new MockStore();
+  const before = mockStore.getAuthorRevisions("author-1")[0];
+  mockStore.updateAuthor("author-1", "更新著者", "こうしんちょしゃ");
+  const after = mockStore.getAuthorRevisions("author-1")[0];
+
+  expect(after.authorCreatedAt).toBe(before.authorCreatedAt);
+  expect(after.revisionNumber).toBe(2);
+});
+
+test("restores a prior book revision and records its operation", () => {
+  const mockStore = new MockStore();
+  mockStore.updateBook({ id: "book-1", title: "更新タイトル" });
+
+  const result = mockStore.restoreBook("book-1", 1);
+
+  expect(result?.book.title).toBe("テスト書籍1");
+  expect(result?.revisionNumber).toBe(3);
+  expect(mockStore.getOperation(result?.operationId ?? "")).toMatchObject({
+    type: "restore_book",
+    bookChanges: [
+      {
+        bookId: "book-1",
+        beforeRevision: { revisionNumber: 2 },
+        afterRevision: { revisionNumber: 3 },
+      },
+    ],
+  });
+});
+
+test("rejects a missing revision", () => {
+  const mockStore = new MockStore();
+  expect(mockStore.restoreAuthor("author-1", 99)).toBeNull();
+  expect(mockStore.restoreBook("book-1", 99)).toBeNull();
+});

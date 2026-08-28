@@ -120,7 +120,9 @@ test("updates book", async ({ page }) => {
   await page.getByRole("button", { name: "Save" }).click();
 
   await expect(page.getByText("更新しました")).toBeVisible();
-  await expect(page.getByText("更新済みテスト書籍1")).toBeVisible();
+  await expect(
+    page.getByTestId("book-detail").getByText("更新済みテスト書籍1"),
+  ).toBeVisible();
 });
 
 test("displays book history on detail page", async ({ page }) => {
@@ -130,9 +132,6 @@ test("displays book history on detail page", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "History" })).toBeVisible();
   await expect(
     page.getByRole("cell", { name: "1", exact: true }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("cell", { name: "2", exact: true }),
   ).toBeVisible();
 });
 
