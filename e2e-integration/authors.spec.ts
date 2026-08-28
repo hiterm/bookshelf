@@ -90,7 +90,9 @@ test.describe
       await expect(
         page.getByRole("heading", { name: "History" }),
       ).toBeVisible();
-      await expect(page.getByText("CREATE")).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "1", exact: true }),
+      ).toBeVisible();
     });
   });
 

@@ -218,10 +218,12 @@ test.describe
       await expect(
         page.getByRole("heading", { name: "History" }),
       ).toBeVisible();
-      await expect(page.getByText("CREATE")).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "1", exact: true }),
+      ).toBeVisible();
     });
 
-    test("displays CREATE and UPDATE after book update", async ({ page }) => {
+    test("displays two revisions after book update", async ({ page }) => {
       await loginAndRegister(page);
 
       // Create author
@@ -262,11 +264,15 @@ test.describe
       await expect(page).toHaveURL(/\/books\/.+$/);
       await expect(page.getByText("更新しました")).toBeVisible();
 
-      // Verify history shows both CREATE and UPDATE
+      // Verify history shows both revisions
       await expect(
         page.getByRole("heading", { name: "History" }),
       ).toBeVisible();
-      await expect(page.getByText("CREATE")).toBeVisible();
-      await expect(page.getByText("UPDATE")).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "1", exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "2", exact: true }),
+      ).toBeVisible();
     });
   });
