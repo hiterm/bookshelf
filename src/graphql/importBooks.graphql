@@ -1,6 +1,6 @@
 mutation importBooks($books: [ImportBookInput!]!) {
   importBooks(books: $books) {
-    eventSetId
+    operationId
     books {
       id
       title

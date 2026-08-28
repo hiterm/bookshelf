@@ -228,39 +228,21 @@ test.describe("Authors MERGE", () => {
     await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
     await expect(page.getByRole("link", { name: "テスト書籍4" })).toBeVisible();
 
-    const sourceDeleteEvent = mockStore
-      .getAuthorEvents("author-1")
-      .find((event) => event.operation === "DELETE");
-    const movedBookEvents = ["book-1", "book-3"].map((bookId) =>
-      mockStore
-        .getBookEvents(bookId)
-        .find((event) => event.operation === "UPDATE"),
-    );
-    expect(sourceDeleteEvent).toBeDefined();
-    if (sourceDeleteEvent == null) {
-      throw new Error("Source delete event was not recorded");
-    }
-    expect(sourceDeleteEvent.extra).toEqual({
-      type: "merge",
-      version: 1,
-      destination_author_id: "author-2",
+    const mergeOperation = mockStore
+      .getOperations()
+      .find((operation) => operation.type === "merge_author");
+    expect(mergeOperation?.detail).toEqual({
+      sourceAuthorId: "author-1",
+      destinationAuthorId: "author-2",
     });
-    const destinationMergeEvent = mockStore
-      .getAuthorEvents("author-2")
-      .find((event) => event.operation === "MERGE_AS_DESTINATION");
-    expect(destinationMergeEvent?.extra).toEqual({
-      version: 1,
-      source_author_id: "author-1",
+    expect(mergeOperation?.bookChanges.map(({ bookId }) => bookId)).toEqual([
+      "book-1",
+      "book-3",
+    ]);
+    expect(mergeOperation?.authorChanges[0]).toMatchObject({
+      authorId: "author-1",
+      afterRevision: null,
     });
-    expect(destinationMergeEvent?.eventSetId).toBe(
-      sourceDeleteEvent.eventSetId,
-    );
-    expect(movedBookEvents).not.toContain(undefined);
-    expect(
-      movedBookEvents.every(
-        (event) => event?.eventSetId === sourceDeleteEvent.eventSetId,
-      ),
-    ).toBe(true);
 
     await page.goto("/authors/author-1");
     await expect(page.getByText("Not found.")).toBeVisible();
@@ -278,6 +260,8 @@ test.describe("Author History", () => {
     await page.goto("/authors");
     await page.getByRole("link", { name: "著者1" }).click();
     await expect(page.getByRole("heading", { name: "History" })).toBeVisible();
-    await expect(page.getByText("CREATE")).toBeVisible();
+    await expect(
+      page.getByRole("cell", { name: "1", exact: true }),
+    ).toBeVisible();
   });
 });

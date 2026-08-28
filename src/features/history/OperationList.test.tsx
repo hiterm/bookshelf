@@ -3,20 +3,15 @@ import { MantineProvider } from "@mantine/core";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import { beforeAll, vi } from "vitest";
-import { EventSetList } from "./EventSetList";
+import { OperationList } from "./OperationList";
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: vi.fn().mockImplementation(() => ({
       matches: false,
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
     })),
   });
 });
@@ -35,16 +30,26 @@ vi.mock("../../components/mantineTsr", () => ({
   ),
 }));
 
-const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MantineProvider env="test">{children}</MantineProvider>
 );
 
-test("renders multiple labeled EventSets and timestamps", () => {
+test("renders operations with labels and timestamps", () => {
   render(
-    <EventSetList
-      eventSets={[
-        { id: "set-1", operation: "create_book", createdAt: 1609459200 },
-        { id: "set-2", operation: "future_operation", createdAt: 1609545600 },
+    <OperationList
+      operations={[
+        {
+          id: "operation-1",
+          type: "create_book",
+          detail: null,
+          createdAt: "2021-01-01T00:00:00Z",
+        },
+        {
+          id: "operation-2",
+          type: "future_operation",
+          detail: null,
+          createdAt: "2021-01-02T00:00:00Z",
+        },
       ]}
     />,
     { wrapper },
@@ -57,6 +62,6 @@ test("renders multiple labeled EventSets and timestamps", () => {
 });
 
 test("renders an empty state", () => {
-  render(<EventSetList eventSets={[]} />, { wrapper });
+  render(<OperationList operations={[]} />, { wrapper });
   expect(screen.getByText("変更履歴はありません")).toBeInTheDocument();
 });

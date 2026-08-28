@@ -12,7 +12,7 @@ import { AppErrorProvider } from "../../components/errors/AppErrorProvider";
 
 const navigate = vi.fn().mockResolvedValue(undefined);
 const mutateAsync = vi.fn().mockResolvedValue({
-  mergeAuthor: { author: { id: "author-2" }, eventSetId: "event-set-1" },
+  mergeAuthor: { author: { id: "author-2" }, operationId: "operation-1" },
 });
 
 vi.mock("@tanstack/react-router", async (importOriginal) => ({

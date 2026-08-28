@@ -8,12 +8,30 @@ export const createResolvers = (mockStore: MockStore) => ({
     author: (_: unknown, { id }: { id: string }) => mockStore.getAuthor(id),
     books: () => mockStore.getAllBooks(),
     book: (_: unknown, { id }: { id: string }) => mockStore.getBook(id),
-    authorEvents: (_: unknown, { authorId }: { authorId: string }) =>
-      mockStore.getAuthorEvents(authorId),
-    bookEvents: (_: unknown, { bookId }: { bookId: string }) =>
-      mockStore.getBookEvents(bookId),
-    eventSets: () => mockStore.getEventSets(),
-    eventSet: (_: unknown, { id }: { id: string }) => mockStore.getEventSet(id),
+    authorRevisions: (_: unknown, { authorId }: { authorId: string }) =>
+      mockStore.getAuthorRevisions(authorId),
+    authorRevision: (
+      _: unknown,
+      {
+        authorId,
+        revisionNumber,
+      }: { authorId: string; revisionNumber: number },
+    ) =>
+      mockStore
+        .getAuthorRevisions(authorId)
+        .find((revision) => revision.revisionNumber === revisionNumber) ?? null,
+    bookRevisions: (_: unknown, { bookId }: { bookId: string }) =>
+      mockStore.getBookRevisions(bookId),
+    bookRevision: (
+      _: unknown,
+      { bookId, revisionNumber }: { bookId: string; revisionNumber: number },
+    ) =>
+      mockStore
+        .getBookRevisions(bookId)
+        .find((revision) => revision.revisionNumber === revisionNumber) ?? null,
+    operations: () => mockStore.getOperations(),
+    operation: (_: unknown, { id }: { id: string }) =>
+      mockStore.getOperation(id),
   },
   Mutation: {
     registerUser: () => {
@@ -88,6 +106,25 @@ export const createResolvers = (mockStore: MockStore) => ({
         throw new Error(`Book not found: ${bookId}`);
       }
       return { bookId };
+    },
+    restoreBook: (
+      _: unknown,
+      { bookId, revisionNumber }: { bookId: string; revisionNumber: number },
+    ) => {
+      const result = mockStore.restoreBook(bookId, revisionNumber);
+      if (result == null) throw new Error("Book revision not found");
+      return result;
+    },
+    restoreAuthor: (
+      _: unknown,
+      {
+        authorId,
+        revisionNumber,
+      }: { authorId: string; revisionNumber: number },
+    ) => {
+      const result = mockStore.restoreAuthor(authorId, revisionNumber);
+      if (result == null) throw new Error("Author revision not found");
+      return result;
     },
   },
   Book: {

@@ -1,9 +1,4 @@
-# book-history Specification
-
-## Purpose
-Define book Revision history displayed on the book detail page.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: View book edit history
 The system SHALL display the backend-provided list of Revisions for a book on the book detail page.

@@ -34,113 +34,6 @@ function resolveBookAuthors(book: { authorIds: string[] }) {
     .map((author) => ({ __typename: "Author", ...author }));
 }
 
-function getBookEvents(bookId: string) {
-  if (bookId === "book-1") {
-    return [
-      {
-        __typename: "BookEventEntry" as const,
-        eventId: "book-event-2",
-        eventSetId: "event-set-2",
-        operation: "UPDATE",
-        bookId: "book-1",
-        title: "テスト書籍1（更新）",
-        authorIds: ["author-1"],
-        isbn: "978-4-00-000001-0",
-        read: true,
-        owned: true,
-        priority: 60,
-        format: "PRINTED",
-        store: "UNKNOWN",
-        bookCreatedAt: 1609459200,
-        bookUpdatedAt: 1609545600,
-        changedAt: 1609545600,
-        extra: null,
-      },
-      {
-        __typename: "BookEventEntry" as const,
-        eventId: "book-event-1",
-        eventSetId: "event-set-1",
-        operation: "CREATE",
-        bookId: "book-1",
-        title: "テスト書籍1",
-        authorIds: ["author-1"],
-        isbn: "978-4-00-000001-0",
-        read: false,
-        owned: true,
-        priority: 50,
-        format: "PRINTED",
-        store: "UNKNOWN",
-        bookCreatedAt: 1609459200,
-        bookUpdatedAt: 1609459200,
-        changedAt: 1609459200,
-        extra: null,
-      },
-    ];
-  }
-  if (bookId === "book-2") {
-    return [
-      {
-        __typename: "BookEventEntry" as const,
-        eventId: "book-event-3",
-        eventSetId: "event-set-3",
-        operation: "CREATE",
-        bookId: "book-2",
-        title: "テスト書籍2",
-        authorIds: ["author-2"],
-        isbn: "978-4-00-000002-7",
-        read: true,
-        owned: true,
-        priority: 80,
-        format: "E_BOOK",
-        store: "KINDLE",
-        bookCreatedAt: 1609632000,
-        bookUpdatedAt: 1609632000,
-        changedAt: 1609632000,
-        extra: null,
-      },
-    ];
-  }
-  return [];
-}
-
-function getAuthorEvents(authorId: string) {
-  if (authorId === "author-1") {
-    return [
-      {
-        __typename: "AuthorEventEntry" as const,
-        eventId: "author-event-1",
-        eventSetId: "event-set-1",
-        operation: "CREATE",
-        authorId: "author-1",
-        name: "著者1",
-        yomi: null,
-        authorCreatedAt: 1609459200,
-        authorUpdatedAt: 1609459200,
-        changedAt: 1609459200,
-        extra: null,
-      },
-    ];
-  }
-  if (authorId === "author-2") {
-    return [
-      {
-        __typename: "AuthorEventEntry" as const,
-        eventId: "author-event-2",
-        eventSetId: "event-set-2",
-        operation: "CREATE",
-        authorId: "author-2",
-        name: "著者2",
-        yomi: null,
-        authorCreatedAt: 1609545600,
-        authorUpdatedAt: 1609545600,
-        changedAt: 1609545600,
-        extra: null,
-      },
-    ];
-  }
-  return [];
-}
-
 export const handlers = [
   graphqlApi.query("loggedInUser", () => {
     return HttpResponse.json({
@@ -150,57 +43,18 @@ export const handlers = [
     });
   }),
 
-  graphqlApi.query("eventSets", () => {
+  graphqlApi.query("operations", () => {
     return HttpResponse.json({
-      data: {
-        eventSets: [
-          {
-            id: "event-set-2",
-            operation: "update_book",
-            createdAt: 1609545600,
-          },
-          {
-            id: "event-set-1",
-            operation: "create_book",
-            createdAt: 1609459200,
-          },
-        ],
-      },
+      data: { operations: mockStore.getOperations() },
     });
   }),
 
-  graphqlApi.query("eventSet", ({ variables }) => {
+  graphqlApi.query("operation", ({ variables }) => {
     if (!isObject(variables) || !isString(variables.id)) {
-      return HttpResponse.json(
-        { errors: [{ message: "Invalid variables" }] },
-        { status: 200 },
-      );
+      return HttpResponse.json({ errors: [{ message: "Invalid variables" }] });
     }
-    const entry =
-      variables.id === "event-set-2"
-        ? { id: variables.id, operation: "update_book", createdAt: 1609545600 }
-        : variables.id === "event-set-1"
-          ? {
-              id: variables.id,
-              operation: "create_book",
-              createdAt: 1609459200,
-            }
-          : null;
     return HttpResponse.json({
-      data: {
-        eventSet:
-          entry == null
-            ? null
-            : {
-                ...entry,
-                bookEvents: getBookEvents("book-1").filter(
-                  (event) => event.eventSetId === variables.id,
-                ),
-                authorEvents: getAuthorEvents("author-1").filter(
-                  (event) => event.eventSetId === variables.id,
-                ),
-              },
-      },
+      data: { operation: mockStore.getOperation(variables.id) },
     });
   }),
 
@@ -276,41 +130,71 @@ export const handlers = [
     });
   }),
 
-  graphqlApi.query("bookEvents", ({ variables }) => {
+  graphqlApi.query("bookRevisions", ({ variables }) => {
     if (!isObject(variables) || !isString(variables.bookId)) {
       return HttpResponse.json(
         { errors: [{ message: "Invalid variables" }] },
         { status: 200 },
       );
     }
-    const events = [
-      ...getBookEvents(variables.bookId),
-      ...mockStore.getBookEvents(variables.bookId).map((event) => ({
-        __typename: "BookEventEntry" as const,
-        ...event,
-      })),
-    ].sort((a, b) => b.changedAt - a.changedAt);
     return HttpResponse.json({
-      data: { bookEvents: events },
+      data: { bookRevisions: mockStore.getBookRevisions(variables.bookId) },
     });
   }),
 
-  graphqlApi.query("authorEvents", ({ variables }) => {
+  graphqlApi.query("authorRevisions", ({ variables }) => {
     if (!isObject(variables) || !isString(variables.authorId)) {
       return HttpResponse.json(
         { errors: [{ message: "Invalid variables" }] },
         { status: 200 },
       );
     }
-    const events = [
-      ...getAuthorEvents(variables.authorId),
-      ...mockStore.getAuthorEvents(variables.authorId).map((event) => ({
-        __typename: "AuthorEventEntry" as const,
-        ...event,
-      })),
-    ].sort((a, b) => b.changedAt - a.changedAt);
     return HttpResponse.json({
-      data: { authorEvents: events },
+      data: {
+        authorRevisions: mockStore.getAuthorRevisions(variables.authorId),
+      },
+    });
+  }),
+
+  graphqlApi.query("bookRevision", ({ variables }) => {
+    if (
+      !isObject(variables) ||
+      !isString(variables.bookId) ||
+      typeof variables.revisionNumber !== "number"
+    ) {
+      return HttpResponse.json({ errors: [{ message: "Invalid variables" }] });
+    }
+    return HttpResponse.json({
+      data: {
+        bookRevision:
+          mockStore
+            .getBookRevisions(variables.bookId)
+            .find(
+              (revision) =>
+                revision.revisionNumber === variables.revisionNumber,
+            ) ?? null,
+      },
+    });
+  }),
+
+  graphqlApi.query("authorRevision", ({ variables }) => {
+    if (
+      !isObject(variables) ||
+      !isString(variables.authorId) ||
+      typeof variables.revisionNumber !== "number"
+    ) {
+      return HttpResponse.json({ errors: [{ message: "Invalid variables" }] });
+    }
+    return HttpResponse.json({
+      data: {
+        authorRevision:
+          mockStore
+            .getAuthorRevisions(variables.authorId)
+            .find(
+              (revision) =>
+                revision.revisionNumber === variables.revisionNumber,
+            ) ?? null,
+      },
     });
   }),
 
@@ -426,7 +310,7 @@ export const handlers = [
         mergeAuthor: {
           __typename: "MergeAuthorPayload",
           author: { __typename: "Author", ...result.author },
-          eventSetId: result.eventSetId,
+          operationId: result.operationId,
         },
       },
     });
@@ -569,7 +453,7 @@ export const handlers = [
     return HttpResponse.json({
       data: {
         importBooks: {
-          eventSetId: result.eventSetId,
+          operationId: result.operationId,
           books: result.books.map((book) => ({
             __typename: "Book",
             ...book,
@@ -596,5 +480,45 @@ export const handlers = [
         previewBookImport: mockStore.previewBookImport(variables.books),
       },
     });
+  }),
+
+  graphqlApi.mutation("restoreBook", ({ variables }) => {
+    if (
+      !isObject(variables) ||
+      !isString(variables.bookId) ||
+      typeof variables.revisionNumber !== "number"
+    ) {
+      return HttpResponse.json({ errors: [{ message: "Invalid variables" }] });
+    }
+    const result = mockStore.restoreBook(
+      variables.bookId,
+      variables.revisionNumber,
+    );
+    if (result == null) {
+      return HttpResponse.json({
+        errors: [{ message: "Book revision not found" }],
+      });
+    }
+    return HttpResponse.json({ data: { restoreBook: result } });
+  }),
+
+  graphqlApi.mutation("restoreAuthor", ({ variables }) => {
+    if (
+      !isObject(variables) ||
+      !isString(variables.authorId) ||
+      typeof variables.revisionNumber !== "number"
+    ) {
+      return HttpResponse.json({ errors: [{ message: "Invalid variables" }] });
+    }
+    const result = mockStore.restoreAuthor(
+      variables.authorId,
+      variables.revisionNumber,
+    );
+    if (result == null) {
+      return HttpResponse.json({
+        errors: [{ message: "Author revision not found" }],
+      });
+    }
+    return HttpResponse.json({ data: { restoreAuthor: result } });
   }),
 ];

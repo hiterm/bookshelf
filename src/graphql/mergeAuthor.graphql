@@ -6,6 +6,6 @@ mutation mergeAuthor($sourceAuthorId: ID!, $destinationAuthorId: ID!) {
     author {
       id
     }
-    eventSetId
+    operationId
   }
 }

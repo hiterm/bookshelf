@@ -3,13 +3,13 @@ import { MantineProvider } from "@mantine/core";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import { beforeAll, beforeEach, test, vi } from "vitest";
-import { useEventSet } from "../../features/history/api/useEventSet";
-import { useEventSets } from "../../features/history/api/useEventSets";
-import { HistoryDetailPage } from "./$eventSetId";
+import { useOperation } from "../../features/history/api/useOperation";
+import { useOperations } from "../../features/history/api/useOperations";
+import { HistoryDetailPage } from "./$operationId";
 import { HistoryIndexPage } from "./index";
 
-vi.mock(import("../../features/history/api/useEventSet"));
-vi.mock(import("../../features/history/api/useEventSets"));
+vi.mock(import("../../features/history/api/useOperation"));
+vi.mock(import("../../features/history/api/useOperations"));
 vi.mock("../../components/mantineTsr", () => ({
   Link: ({ children }: { children: React.ReactNode }) => (
     <a href="/history">{children}</a>
@@ -41,12 +41,12 @@ const renderPage = (node: React.ReactNode) =>
   });
 
 test("shows list loading and error states", () => {
-  vi.mocked(useEventSets, { partial: true }).mockReturnValue({
+  vi.mocked(useOperations, { partial: true }).mockReturnValue({
     isLoading: true,
   });
   const { rerender } = renderPage(<HistoryIndexPage />);
   expect(screen.getByLabelText("変更履歴を読み込み中")).toBeInTheDocument();
-  vi.mocked(useEventSets, { partial: true }).mockReturnValue({
+  vi.mocked(useOperations, { partial: true }).mockReturnValue({
     isLoading: false,
     error: new Error("failure"),
   });
@@ -57,25 +57,26 @@ test("shows list loading and error states", () => {
 });
 
 test("shows detail not-found and success states", () => {
-  vi.mocked(useEventSet, { partial: true }).mockReturnValue({
+  vi.mocked(useOperation, { partial: true }).mockReturnValue({
     isLoading: false,
-    data: { eventSet: null },
+    data: { operation: null },
   });
-  const { rerender } = renderPage(<HistoryDetailPage eventSetId="missing" />);
+  const { rerender } = renderPage(<HistoryDetailPage operationId="missing" />);
   expect(screen.getByText("変更履歴が見つかりません")).toBeInTheDocument();
-  vi.mocked(useEventSet, { partial: true }).mockReturnValue({
+  vi.mocked(useOperation, { partial: true }).mockReturnValue({
     isLoading: false,
     data: {
-      eventSet: {
-        id: "set-1",
-        operation: "create_book",
-        createdAt: 1609459200,
-        bookEvents: [],
-        authorEvents: [],
+      operation: {
+        id: "operation-1",
+        type: "create_book",
+        detail: null,
+        createdAt: "2021-01-01T00:00:00Z",
+        bookChanges: [],
+        authorChanges: [],
       },
     },
   });
-  rerender(<HistoryDetailPage eventSetId="set-1" />);
+  rerender(<HistoryDetailPage operationId="operation-1" />);
   expect(
     screen.getByRole("heading", { name: "書籍を追加" }),
   ).toBeInTheDocument();

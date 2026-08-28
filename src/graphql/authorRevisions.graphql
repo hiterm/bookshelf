@@ -1,0 +1,11 @@
+query authorRevisions($authorId: ID!) {
+  authorRevisions(authorId: $authorId) {
+    authorId
+    revisionNumber
+    name
+    yomi
+    authorCreatedAt
+    authorUpdatedAt
+    createdAt
+  }
+}

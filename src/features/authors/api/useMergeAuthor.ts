@@ -27,12 +27,12 @@ export const useMergeAuthor = () => {
         queryKey: authorQueryKeys.detail(input.destinationAuthorId),
       });
       void queryClient.invalidateQueries({
-        queryKey: authorQueryKeys.allEvents,
+        queryKey: authorQueryKeys.allRevisions,
       });
       void queryClient.invalidateQueries({ queryKey: bookQueryKeys.all });
       void queryClient.invalidateQueries({ queryKey: bookQueryKeys.details });
       void queryClient.invalidateQueries({
-        queryKey: bookQueryKeys.allEvents,
+        queryKey: bookQueryKeys.allRevisions,
       });
     },
   });

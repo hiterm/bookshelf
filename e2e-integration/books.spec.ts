@@ -16,7 +16,7 @@ async function loginAndRegister(page: Page) {
   await expect(page).toHaveURL(/\/books$/);
 }
 
-test("follows a real author creation EventSet into its detail", async ({
+test("follows a real author creation Operation into its detail", async ({
   page,
 }) => {
   await loginAndRegister(page);
@@ -32,9 +32,7 @@ test("follows a real author creation EventSet into its detail", async ({
   await page.getByRole("link", { name: "変更履歴" }).click();
   await page.getByRole("link", { name: "著者を追加の詳細" }).first().click();
   await expect(page.getByRole("heading", { name: "著者を追加" })).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: `追加: ${historyAuthor}` }),
-  ).toBeVisible();
+  await expect(page.getByRole("button", { name: historyAuthor })).toBeVisible();
 });
 
 test.describe
@@ -220,10 +218,12 @@ test.describe
       await expect(
         page.getByRole("heading", { name: "History" }),
       ).toBeVisible();
-      await expect(page.getByText("CREATE")).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "1", exact: true }),
+      ).toBeVisible();
     });
 
-    test("displays CREATE and UPDATE after book update", async ({ page }) => {
+    test("displays two revisions after book update", async ({ page }) => {
       await loginAndRegister(page);
 
       // Create author
@@ -264,11 +264,15 @@ test.describe
       await expect(page).toHaveURL(/\/books\/.+$/);
       await expect(page.getByText("更新しました")).toBeVisible();
 
-      // Verify history shows both CREATE and UPDATE
+      // Verify history shows both revisions
       await expect(
         page.getByRole("heading", { name: "History" }),
       ).toBeVisible();
-      await expect(page.getByText("CREATE")).toBeVisible();
-      await expect(page.getByText("UPDATE")).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "1", exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "2", exact: true }),
+      ).toBeVisible();
     });
   });

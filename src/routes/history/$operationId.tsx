@@ -1,20 +1,20 @@
 import { Alert, Center, Loader, Stack, Text } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEventSet } from "../../features/history/api/useEventSet";
 import { Link } from "../../components/mantineTsr";
-import { EventSetDetail } from "../../features/history/EventSetDetail";
+import { useOperation } from "../../features/history/api/useOperation";
+import { OperationDetail } from "../../features/history/OperationDetail";
 
-export const Route = createFileRoute("/history/$eventSetId")({
+export const Route = createFileRoute("/history/$operationId")({
   component: HistoryDetailRoute,
 });
 
 function HistoryDetailRoute() {
-  const { eventSetId } = Route.useParams();
-  return <HistoryDetailPage eventSetId={eventSetId} />;
+  const { operationId } = Route.useParams();
+  return <HistoryDetailPage operationId={operationId} />;
 }
 
-export function HistoryDetailPage({ eventSetId }: { eventSetId: string }) {
-  const { data, isLoading, error } = useEventSet(eventSetId);
+export function HistoryDetailPage({ operationId }: { operationId: string }) {
+  const { data, isLoading, error } = useOperation(operationId);
   if (error != null) {
     return <Alert color="red">変更履歴を読み込めませんでした</Alert>;
   }
@@ -25,7 +25,7 @@ export function HistoryDetailPage({ eventSetId }: { eventSetId: string }) {
       </Center>
     );
   }
-  if (data.eventSet == null) {
+  if (data.operation == null) {
     return (
       <Stack>
         <Text>変更履歴が見つかりません</Text>
@@ -36,7 +36,7 @@ export function HistoryDetailPage({ eventSetId }: { eventSetId: string }) {
   return (
     <Stack>
       <Link to="/history">変更履歴へ戻る</Link>
-      <EventSetDetail eventSet={data.eventSet} />
+      <OperationDetail operation={data.operation} />
     </Stack>
   );
 }

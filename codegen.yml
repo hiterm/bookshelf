@@ -1,6 +1,14 @@
 overwrite: true
 schema: "src/graphql/schema.graphql"
 documents: "src/**/*.graphql"
+config:
+  scalars:
+    DateTime:
+      input: string
+      output: string
+    JSON:
+      input: unknown
+      output: unknown
 generates:
   src/generated/graphql-schema.ts:
     config:

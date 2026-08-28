@@ -1,7 +1,0 @@
-query eventSets {
-  eventSets {
-    id
-    operation
-    createdAt
-  }
-}

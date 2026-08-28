@@ -1,9 +1,4 @@
-# author-history Specification
-
-## Purpose
-Define author Revision history displayed on the author detail page.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: View author edit history
 The system SHALL display the backend-provided list of Revisions for an author on the author detail page.

@@ -1,14 +1,14 @@
 import { Alert, Center, Loader, Paper, Stack, Title } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEventSets } from "../../features/history/api/useEventSets";
-import { EventSetList } from "../../features/history/EventSetList";
+import { useOperations } from "../../features/history/api/useOperations";
+import { OperationList } from "../../features/history/OperationList";
 
 export const Route = createFileRoute("/history/")({
   component: HistoryIndexPage,
 });
 
 export function HistoryIndexPage() {
-  const { data, isLoading, error } = useEventSets();
+  const { data, isLoading, error } = useOperations();
 
   if (error != null) {
     return <Alert color="red">変更履歴を読み込めませんでした</Alert>;
@@ -24,7 +24,7 @@ export function HistoryIndexPage() {
     <Stack>
       <Title order={1}>変更履歴</Title>
       <Paper shadow="xs" p="lg">
-        <EventSetList eventSets={data.eventSets} />
+        <OperationList operations={data.operations} />
       </Paper>
     </Stack>
   );

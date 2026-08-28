@@ -1,4 +1,4 @@
 export const historyQueryKeys = {
-  all: ["eventSets"] as const,
-  detail: (id: string) => ["eventSet", id] as const,
+  all: ["operations"] as const,
+  detail: (id: string) => ["operation", id] as const,
 };

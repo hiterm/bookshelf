@@ -27,12 +27,12 @@ test("book import preview resolves authors without mutating state", () => {
   expect(mockStore.getAllAuthors()).toEqual(authorsBefore);
 });
 
-test("bulk import events share the returned event set", () => {
+test("bulk import revisions share the returned operation", () => {
   const mockStore = new MockStore();
   const result = mockStore.importBooks([
     {
-      title: "イベントセット確認書籍",
-      authorNames: ["イベントセット確認著者"],
+      title: "操作確認書籍",
+      authorNames: ["操作確認著者"],
       isbn: "",
       read: false,
       owned: true,
@@ -44,18 +44,14 @@ test("bulk import events share the returned event set", () => {
 
   const author = mockStore
     .getAllAuthors()
-    .find(({ name }) => name === "イベントセット確認著者");
+    .find(({ name }) => name === "操作確認著者");
   expect(author).toBeDefined();
   expect(
-    mockStore
-      .getAuthorEvents(author?.id ?? "")
-      .map(({ eventSetId }) => eventSetId),
-  ).toEqual([result.eventSetId]);
+    mockStore.getOperation(result.operationId)?.authorChanges[0]?.authorId,
+  ).toBe(author?.id);
   expect(
-    mockStore
-      .getBookEvents(result.books[0].id)
-      .map(({ eventSetId }) => eventSetId),
-  ).toEqual([result.eventSetId]);
+    mockStore.getOperation(result.operationId)?.bookChanges[0]?.bookId,
+  ).toBe(result.books[0].id);
 });
 
 test("bulk import removes duplicate authors from a book", () => {
@@ -93,7 +89,41 @@ test("single-book import with an existing author keeps import operation", () => 
     },
   ]);
 
-  expect(mockStore.getEventSet(result.eventSetId)?.operation).toBe(
-    "import_books",
-  );
+  expect(mockStore.getOperation(result.operationId)?.type).toBe("import_books");
+});
+
+test("author revisions retain the entity creation time", () => {
+  const mockStore = new MockStore();
+  const before = mockStore.getAuthorRevisions("author-1")[0];
+  mockStore.updateAuthor("author-1", "更新著者", "こうしんちょしゃ");
+  const after = mockStore.getAuthorRevisions("author-1")[0];
+
+  expect(after.authorCreatedAt).toBe(before.authorCreatedAt);
+  expect(after.revisionNumber).toBe(2);
+});
+
+test("restores a prior book revision and records its operation", () => {
+  const mockStore = new MockStore();
+  mockStore.updateBook({ id: "book-1", title: "更新タイトル" });
+
+  const result = mockStore.restoreBook("book-1", 1);
+
+  expect(result?.book.title).toBe("テスト書籍1");
+  expect(result?.revisionNumber).toBe(3);
+  expect(mockStore.getOperation(result?.operationId ?? "")).toMatchObject({
+    type: "restore_book",
+    bookChanges: [
+      {
+        bookId: "book-1",
+        beforeRevision: { revisionNumber: 2 },
+        afterRevision: { revisionNumber: 3 },
+      },
+    ],
+  });
+});
+
+test("rejects a missing revision", () => {
+  const mockStore = new MockStore();
+  expect(mockStore.restoreAuthor("author-1", 99)).toBeNull();
+  expect(mockStore.restoreBook("book-1", 99)).toBeNull();
 });

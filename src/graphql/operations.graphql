@@ -1,0 +1,8 @@
+query operations {
+  operations {
+    id
+    type
+    detail
+    createdAt
+  }
+}

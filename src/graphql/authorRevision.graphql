@@ -1,0 +1,11 @@
+query authorRevision($authorId: ID!, $revisionNumber: Int!) {
+  authorRevision(authorId: $authorId, revisionNumber: $revisionNumber) {
+    authorId
+    revisionNumber
+    name
+    yomi
+    authorCreatedAt
+    authorUpdatedAt
+    createdAt
+  }
+}

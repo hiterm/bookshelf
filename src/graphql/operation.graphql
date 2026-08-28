@@ -1,0 +1,62 @@
+query operation($id: ID!) {
+  operation(id: $id) {
+    id
+    type
+    detail
+    createdAt
+    bookChanges {
+      bookId
+      beforeRevision {
+        bookId
+        revisionNumber
+        title
+        authorIds
+        isbn
+        read
+        owned
+        priority
+        format
+        store
+        bookCreatedAt
+        bookUpdatedAt
+        createdAt
+      }
+      afterRevision {
+        bookId
+        revisionNumber
+        title
+        authorIds
+        isbn
+        read
+        owned
+        priority
+        format
+        store
+        bookCreatedAt
+        bookUpdatedAt
+        createdAt
+      }
+    }
+    authorChanges {
+      authorId
+      beforeRevision {
+        authorId
+        revisionNumber
+        name
+        yomi
+        authorCreatedAt
+        authorUpdatedAt
+        createdAt
+      }
+      afterRevision {
+        authorId
+        revisionNumber
+        name
+        yomi
+        authorCreatedAt
+        authorUpdatedAt
+        createdAt
+      }
+    }
+  }
+}
