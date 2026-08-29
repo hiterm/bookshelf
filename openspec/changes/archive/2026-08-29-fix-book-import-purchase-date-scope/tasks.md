@@ -14,3 +14,4 @@
 
 - [x] 3.1 Run generated-artifact, formatting/lint, unit-test, typecheck, build, and OpenSpec validation checks
 - [x] 3.2 Sync the completed delta spec to the canonical book-import spec and archive the change
+- [x] 3.3 Run Demo Mode E2E checks (`pnpm run test:e2e:demo-mode`) for effective target counts and the import completion message
