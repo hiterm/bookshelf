@@ -84,13 +84,18 @@ keeping ISBN empty.
 
 ### Requirement: Display filtering and import selection remain independent
 The frontend SHALL derive visible candidates from the inclusive purchase-date
-filter without removing source candidates or changing their selected state,
-and visible bulk-selection controls SHALL modify only currently visible
-candidates.
+filter, SHALL treat those candidates as the current import-eligible scope without
+removing source candidates or changing their selected state, and visible
+bulk-selection controls SHALL modify only currently visible candidates. Effective
+import targets SHALL be the candidates in that scope that are also selected.
 
 #### Scenario: Hide a selected candidate
 - **WHEN** a purchase-date filter hides a selected candidate
-- **THEN** the candidate remains selected and remains an import target
+- **THEN** the candidate remains selected but is not an effective import target
+
+#### Scenario: Widen the purchase-date scope
+- **WHEN** the purchase-date range is widened to show a previously hidden selected candidate
+- **THEN** the candidate becomes an effective import target again without requiring reselection
 
 #### Scenario: Clear visible selection
 - **WHEN** the user activates `表示中をすべて解除`
@@ -102,20 +107,32 @@ candidates.
 
 #### Scenario: Explain counts
 - **WHEN** a filter and selection are active
-- **THEN** the editor separately displays total, visible, and import-target counts
+- **THEN** the editor separately displays total, visible, and effective import-target counts
+
+#### Scenario: Inclusive boundary
+- **WHEN** a candidate purchase date equals the purchase-date threshold and the candidate is selected
+- **THEN** the candidate is an effective import target
+
+#### Scenario: Manual deselection within scope
+- **WHEN** a candidate matches the purchase-date scope but is not selected
+- **THEN** the candidate is not an effective import target
 
 ### Requirement: Preview uses current selected inputs
-The frontend SHALL construct one `ImportBookInput[]` from every selected
-candidate using current per-book and common settings and SHALL pass that array
-once to `previewBookImport`.
+The frontend SHALL construct one `ImportBookInput[]` from every effective import
+target using current per-book and common settings and SHALL pass that array once
+to `previewBookImport`.
 
 #### Scenario: Preview a filtered selection
 - **WHEN** selected books exist both inside and outside the visible date range
-- **THEN** `previewBookImport` receives all selected books regardless of visibility
+- **THEN** `previewBookImport` receives only selected books inside the visible date range
+
+#### Scenario: No purchase-date filter
+- **WHEN** no purchase-date filter is specified
+- **THEN** every selected candidate is eligible for Preview
 
 #### Scenario: No selection
-- **WHEN** no candidate is selected
-- **THEN** Preview and Import remain disabled
+- **WHEN** no visible candidate is selected
+- **THEN** Preview and Import remain disabled even if hidden candidates remain selected
 
 #### Scenario: Duplicate preview request
 - **WHEN** a preview request is already pending and the user attempts another preview
@@ -149,9 +166,8 @@ that retained input.
 
 ### Requirement: Input changes invalidate preview
 The frontend SHALL discard the preview response and retained preview input and
-disable import whenever source candidates, selection, per-book author splitting,
-or common settings change; a display-filter change alone SHALL NOT invalidate
-preview unless it is followed by a selection action that changes import targets.
+disable import whenever source candidates, effective import targets, per-book
+author splitting, common settings, or the purchase-date filter change.
 
 #### Scenario: Change individual selection
 - **WHEN** a user changes an individual selection after returning from preview
@@ -162,8 +178,8 @@ preview unless it is followed by a selection action that changes import targets.
 - **THEN** preview is invalidated if the selected candidate IDs change
 
 #### Scenario: Change purchase-date filter
-- **WHEN** a user changes a purchase-date filter without changing selection
-- **THEN** retained selection is unchanged and the filter alone does not change import inputs
+- **WHEN** a user changes the purchase-date filter after returning from preview
+- **THEN** retained selection remains unchanged and preview is invalidated
 
 #### Scenario: Change or clear file
 - **WHEN** a user successfully loads another file or text source after returning from preview
@@ -267,11 +283,14 @@ The frontend SHALL provide controls that enable or disable comma-based author sp
 - **THEN** preview is invalidated and the next preview input contains author names derived from the updated splitting state
 
 ### Requirement: Primary import actions remain reachable in long workflows
-The frontend SHALL provide compact fixed Book Import actions that do not obscure page content, respect the AppShell content region and mobile bottom safe area, and preserve existing disabled and loading behavior during busy operations.
+The frontend SHALL provide compact fixed Book Import actions that do not obscure
+page content, respect the AppShell content region and mobile bottom safe area,
+display effective import-target counts, and preserve existing disabled and loading
+behavior during busy operations.
 
 #### Scenario: Use the input editor on mobile
-- **WHEN** the input editor is displayed below the desktop breakpoint with selected candidates
-- **THEN** the input source, common settings, filtering and bulk actions, and book list appear in that order while the non-fixed settings form remains in normal document flow and a viewport-bottom action displays `対象 N冊` and `プレビュー`
+- **WHEN** the input editor is displayed below the desktop breakpoint
+- **THEN** the input source, common settings, filtering and bulk actions, and book list appear in that order while the non-fixed settings form remains in normal document flow and a viewport-bottom action displays the effective `対象 N冊` count and `プレビュー`
 
 #### Scenario: Use the input editor on desktop
 - **WHEN** the input editor is displayed at the desktop breakpoint

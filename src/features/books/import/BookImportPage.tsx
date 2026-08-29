@@ -61,7 +61,7 @@ export const BookImportPage = () => {
     const visible = new Set(filterImportedBooks(books, purchasedOnOrAfter));
     return indexedBooks.filter(({ book }) => visible.has(book));
   }, [books, indexedBooks, purchasedOnOrAfter]);
-  const selectedBooks = indexedBooks.filter(({ index }) =>
+  const importTargets = visibleBooks.filter(({ index }) =>
     selectedIndexes.has(index),
   );
   const busy =
@@ -112,10 +112,10 @@ export const BookImportPage = () => {
   };
 
   const runPreview = async () => {
-    if (busy || previewLock.current || selectedBooks.length === 0) return;
+    if (busy || previewLock.current || importTargets.length === 0) return;
     previewLock.current = true;
     invalidatePreview();
-    const inputs = selectedBooks.map(({ book, index }) =>
+    const inputs = importTargets.map(({ book, index }) =>
       toImportBookInput(
         book,
         { splitAuthorsByComma: splitAuthors.has(index) },
@@ -193,7 +193,7 @@ export const BookImportPage = () => {
             settings={settings}
             total={books.length}
             visible={visibleBooks.length}
-            selected={selectedIndexes.size}
+            selected={importTargets.length}
             busy={busy}
             onChange={(next) => {
               invalidatePreview();
@@ -210,7 +210,10 @@ export const BookImportPage = () => {
               selectedIndexes={selectedIndexes}
               splitAuthors={splitAuthors}
               busy={busy}
-              onDateChange={setPurchasedOnOrAfter}
+              onDateChange={(date) => {
+                invalidatePreview();
+                setPurchasedOnOrAfter(date);
+              }}
               onSelectionChange={(index, selected) => {
                 invalidatePreview();
                 setSelectedIndexes((current) =>
@@ -248,11 +251,11 @@ export const BookImportPage = () => {
         )}
       </div>
       <BookImportActionBar mobileOnly>
-        <Text fw={600}>対象 {selectedIndexes.size}冊</Text>
+        <Text fw={600}>対象 {importTargets.length}冊</Text>
         <Button
           aria-label="プレビュー（モバイル固定）"
           onClick={() => void runPreview()}
-          disabled={busy || selectedIndexes.size === 0}
+          disabled={busy || importTargets.length === 0}
           loading={busy}
         >
           プレビュー

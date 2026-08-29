@@ -163,22 +163,92 @@ describe("BookImportPage", () => {
     });
   });
 
-  test("keeps hidden selection and changes only visible selection", async () => {
+  test("previews only selected books in the purchase-date scope", async () => {
+    previewMutateAsync.mockResolvedValue(previewResponse);
     render(<BookImportPage />, { wrapper });
     await upload();
     fireEvent.change(screen.getByLabelText("購入日（指定日以降）"), {
       target: { value: "2026-04-25" },
     });
     expect(screen.queryByText("購入日前の本")).not.toBeInTheDocument();
+    expect(screen.getByText("インポート対象: 1")).toBeInTheDocument();
+    expect(screen.getByText("対象 1冊")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "プレビュー" }));
+    await waitFor(() => {
+      expect(previewMutateAsync).toHaveBeenCalledOnce();
+    });
+    expect(previewMutateAsync.mock.calls[0]?.[0]).toEqual([
+      expect.objectContaining({ title: "購入日後の本" }),
+    ]);
+
+    await userEvent.click(
+      screen.getByRole("button", { name: "入力・設定に戻る" }),
+    );
+    fireEvent.change(screen.getByLabelText("購入日（指定日以降）"), {
+      target: { value: "2026-04-24" },
+    });
     expect(screen.getByText("インポート対象: 2")).toBeInTheDocument();
+    expect(screen.getByText("対象 2冊")).toBeInTheDocument();
+  });
+
+  test("combines the inclusive date boundary with manual selection", async () => {
+    render(<BookImportPage />, { wrapper });
+    await upload();
+    fireEvent.change(screen.getByLabelText("購入日（指定日以降）"), {
+      target: { value: "2026-04-24" },
+    });
+    expect(screen.getByText("インポート対象: 2")).toBeInTheDocument();
+
+    await userEvent.click(
+      screen.getByRole("checkbox", { name: "購入日後の本をインポート" }),
+    );
+    expect(screen.getByText("インポート対象: 1")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("購入日（指定日以降）"), {
+      target: { value: "2026-04-25" },
+    });
+    expect(screen.getByText("インポート対象: 0")).toBeInTheDocument();
+    expect(screen.getByText("対象 0冊")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "プレビュー" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "プレビュー（モバイル固定）" }),
+    ).toBeDisabled();
+  });
+
+  test("keeps hidden selection while changing only visible selection", async () => {
+    render(<BookImportPage />, { wrapper });
+    await upload();
+    fireEvent.change(screen.getByLabelText("購入日（指定日以降）"), {
+      target: { value: "2026-04-25" },
+    });
     await userEvent.click(
       screen.getByRole("button", { name: "表示中をすべて解除" }),
     );
-    expect(screen.getByText("インポート対象: 1")).toBeInTheDocument();
+    expect(screen.getByText("インポート対象: 0")).toBeInTheDocument();
     await userEvent.click(
       screen.getByRole("button", { name: "表示中をすべて選択" }),
     );
-    expect(screen.getByText("インポート対象: 2")).toBeInTheDocument();
+    expect(screen.getByText("インポート対象: 1")).toBeInTheDocument();
+  });
+
+  test("changing the purchase date invalidates a successful preview", async () => {
+    previewMutateAsync.mockResolvedValue(previewResponse);
+    render(<BookImportPage />, { wrapper });
+    await upload();
+    await userEvent.click(screen.getByRole("button", { name: "プレビュー" }));
+    await screen.findByText("インポートプレビュー");
+    await userEvent.click(
+      screen.getByRole("button", { name: "入力・設定に戻る" }),
+    );
+    fireEvent.change(screen.getByLabelText("購入日（指定日以降）"), {
+      target: { value: "2026-04-25" },
+    });
+    await userEvent.click(screen.getByRole("button", { name: "プレビュー" }));
+    await waitFor(() => {
+      expect(previewMutateAsync).toHaveBeenCalledTimes(2);
+    });
+    expect(previewMutateAsync.mock.calls[1]?.[0]).toEqual([
+      expect.objectContaining({ title: "購入日後の本" }),
+    ]);
   });
 
   test("orders source, settings, controls, and books for the mobile flow", async () => {
