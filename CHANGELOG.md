@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.17.0](https://github.com/hiterm/bookshelf/compare/v2.16.0...v2.17.0) - 2026-08-29
+
+### Other Changes
+- Generalize book import workflow by @hiterm in https://github.com/hiterm/bookshelf/pull/336
+- Improve Book Import actions by @hiterm in https://github.com/hiterm/bookshelf/pull/338
+- Migrate history to operations by @hiterm in https://github.com/hiterm/bookshelf/pull/339
+- Update API version to 2.15.0 by @hiterm in https://github.com/hiterm/bookshelf/pull/341
+
 ## [v2.16.0](https://github.com/hiterm/bookshelf/compare/v2.15.0...v2.16.0) - 2026-08-25
 
 ### Other Changes
