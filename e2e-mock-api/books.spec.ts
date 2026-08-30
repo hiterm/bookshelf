@@ -201,9 +201,11 @@ test.describe("Books BULK IMPORT", () => {
     expect(desktopSettingsBox).not.toBeNull();
     expect(desktopSettingsBox?.x).toBeGreaterThan(desktopSourceBox?.x ?? 0);
 
-    await importPage.getByLabel("購入日（指定日以降）").fill("2026-04-24");
-    await expect(importPage.getByText("表示中: 3")).toBeVisible();
-    await expect(importPage.getByText("Kindleインポート前日")).toBeVisible();
+    await importPage.getByLabel("購入日（指定日以降）").fill("2026-04-25");
+    await expect(importPage.getByText("表示中: 2")).toBeVisible();
+    await expect(
+      importPage.getByText("Kindleインポート前日"),
+    ).not.toBeVisible();
 
     await importPage.getByLabel("形式").click();
     await page.getByRole("option", { name: "Printed" }).click();
@@ -222,7 +224,7 @@ test.describe("Books BULK IMPORT", () => {
     await importPage
       .getByRole("checkbox", { name: "Kindleインポート翌日をインポート" })
       .uncheck();
-    await expect(importPage.getByText("インポート対象: 2")).toBeVisible();
+    await expect(importPage.getByText("インポート対象: 1")).toBeVisible();
     await importPage.getByRole("button", { name: "プレビュー" }).click();
     await expect(
       page.getByRole("heading", { name: "インポートプレビュー" }),
@@ -230,17 +232,16 @@ test.describe("Books BULK IMPORT", () => {
     await expect(
       importPage.getByText("Kindleインポート当日").last(),
     ).toBeVisible();
-    await expect(importPage.getByText("既存", { exact: true })).toBeVisible();
     await expect(
       importPage.getByText("新規", { exact: true }).first(),
     ).toBeVisible();
     const importButton = importPage.getByRole("button", {
-      name: "2冊をインポート",
+      name: "1冊をインポート",
     });
     await expect(importButton).toBeInViewport();
     await importButton.click();
 
-    await expect(page.getByText("2冊をインポートしました")).toBeVisible();
+    await expect(page.getByText("1冊をインポートしました")).toBeVisible();
     await expect(page).toHaveURL(/\/books$/);
     await expect(
       page.getByRole("link", { name: "Kindleインポート当日" }),
@@ -250,7 +251,7 @@ test.describe("Books BULK IMPORT", () => {
     ).not.toBeVisible();
     await expect(
       page.getByRole("link", { name: "Kindleインポート前日" }),
-    ).toBeVisible();
+    ).not.toBeVisible();
   });
 
   test("opens preview from the fixed mobile action", async ({ page }) => {

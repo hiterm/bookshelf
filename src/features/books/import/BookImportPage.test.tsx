@@ -163,7 +163,7 @@ describe("BookImportPage", () => {
     });
   });
 
-  test("previews only selected books in the purchase-date scope", async () => {
+  test("limits import targets to selected books within the purchase-date range", async () => {
     previewMutateAsync.mockResolvedValue(previewResponse);
     render(<BookImportPage />, { wrapper });
     await upload();

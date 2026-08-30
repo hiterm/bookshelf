@@ -106,6 +106,9 @@ test("imports selected Kindle books", async ({ page }) => {
     page.getByRole("link", { name: "Kindleインポート当日" }),
   ).toBeVisible();
   await expect(
+    page.getByRole("link", { name: "Kindleインポート前日" }),
+  ).not.toBeVisible();
+  await expect(
     page.getByRole("link", { name: "Kindleインポート翌日" }),
   ).not.toBeVisible();
 });
