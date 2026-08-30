@@ -1,5 +1,10 @@
 # Changelog
 
+## [v2.17.1](https://github.com/hiterm/bookshelf/compare/v2.17.0...v2.17.1) - 2026-08-30
+
+### Other Changes
+- Fix book import purchase-date scope by @hiterm in https://github.com/hiterm/bookshelf/pull/342
+
 ## [v2.17.0](https://github.com/hiterm/bookshelf/compare/v2.16.0...v2.17.0) - 2026-08-29
 
 ### Other Changes
