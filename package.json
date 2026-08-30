@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p e2e-mock-api/tsconfig.json && tsc --noEmit -p e2e-demo-mode/tsconfig.json && tsc --noEmit -p e2e-integration/tsconfig.json",
     "generate": "bash scripts/fetch-schema.sh && pnpm run generate:without-fetch",
     "generate:without-fetch": "graphql-codegen --config codegen.yml && msw init && tsr generate",
+    "generate:msw": "msw init",
     "test:e2e:mock-api": "playwright test",
     "test:e2e:demo-mode": "playwright test --config=playwright.demo.config.ts",
     "test:e2e:mock-api:ui": "playwright test --ui",
