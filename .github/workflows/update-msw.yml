@@ -8,6 +8,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
@@ -103,3 +104,9 @@ jobs:
             --title "Update MSW to $msw_version" \
             --body-file "$body_file"
         shell: bash
+      - name: Run frontend CI for update branch
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPDATE_BRANCH: chore/update-msw
+        run: gh workflow run ci.yml --ref "$UPDATE_BRANCH"
