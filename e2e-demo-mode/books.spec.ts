@@ -90,7 +90,7 @@ test("imports selected Kindle books", async ({ page }) => {
   await importPage
     .getByRole("checkbox", { name: "Kindleインポート翌日をインポート" })
     .uncheck();
-  await expect(importPage.getByText("インポート対象: 2")).toBeVisible();
+  await expect(importPage.getByText("インポート対象: 1")).toBeVisible();
   await importPage.getByRole("button", { name: "プレビュー" }).click();
   await expect(
     page.getByRole("heading", { name: "インポートプレビュー" }),
@@ -100,11 +100,14 @@ test("imports selected Kindle books", async ({ page }) => {
   ).toBeVisible();
   await importPage.getByRole("button", { name: "インポート" }).click();
 
-  await expect(page.getByText("2冊をインポートしました")).toBeVisible();
+  await expect(page.getByText("1冊をインポートしました")).toBeVisible();
   await expect(page).toHaveURL(/\/books$/);
   await expect(
     page.getByRole("link", { name: "Kindleインポート当日" }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Kindleインポート前日" }),
+  ).not.toBeVisible();
   await expect(
     page.getByRole("link", { name: "Kindleインポート翌日" }),
   ).not.toBeVisible();
