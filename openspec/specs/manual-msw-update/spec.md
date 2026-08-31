@@ -97,7 +97,7 @@ permission.
 - **WHEN** the workflow pushes a changed MSW update and an open pull request already uses `chore/update-msw`
 - **THEN** it reuses that pull request and frontend CI validates the updated pull request revision
 
-#### Scenario: Frontend CI checks out the dispatched ref
+#### Scenario: Frontend CI checks out the pull request revision
 - **WHEN** the update pull request event starts frontend CI for `chore/update-msw`
 - **THEN** frontend CI runs against the generated pull request's revision without an explicit workflow dispatch
 

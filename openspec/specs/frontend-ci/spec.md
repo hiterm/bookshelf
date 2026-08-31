@@ -1,7 +1,7 @@
 # frontend-ci Specification
 
 ## Purpose
-TBD - created by archiving change pr-centered-frontend-ci. Update Purpose after archive.
+Define frontend validation for pull requests and pushes to `main`.
 ## Requirements
 ### Requirement: Frontend CI validates pull requests
 The frontend CI workflow SHALL run its normal jobs for pull request events so
