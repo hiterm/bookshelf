@@ -2,8 +2,10 @@
 
 Playwright currently rebuilds the application with `vite-plugin-checker`, even
 though type checking is already covered separately. Skipping the redundant
-checker reduces the measured build time from 15.46 seconds to 4.24 seconds
-(11.23 seconds, or 72.6%, faster) while preserving normal validation.
+checker reduces the provided benchmark from 15.46 seconds to 4.24 seconds
+(a reported 11.23 seconds, or 72.6%, faster) while preserving normal
+validation. These independently rounded figures come from the benchmark that
+motivated the change; implementation verification uses a separate local run.
 
 ## What Changes
 

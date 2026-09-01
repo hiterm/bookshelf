@@ -48,9 +48,10 @@ that is covered by the standalone typecheck command and normal build path.
 
 ## Verification Results
 
-- `pnpm build`: passed with the checker enabled (15.96 seconds locally).
-- `pnpm build:without-check`: passed with the checker omitted (5.65 seconds
-  locally).
+- A separate implementation-verification run measured `pnpm build` at 15.96
+  seconds locally with the checker enabled.
+- The same implementation-verification run measured
+  `pnpm build:without-check` at 5.65 seconds locally with the checker omitted.
 - `pnpm typecheck`, `pnpm lint`, and `pnpm test`: passed.
 - All three Playwright configurations use `build:without-check` and contain no
   reference to `SKIP_VITE_CHECKER`.
