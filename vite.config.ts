@@ -61,7 +61,7 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     react(),
-    process.env.VITEST === "true"
+    process.env.VITEST === "true" || process.env.SKIP_VITE_CHECKER === "true"
       ? undefined
       : vitePluginChecker({ typescript: true }),
     excludeMockServiceWorker(),
