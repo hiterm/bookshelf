@@ -7,6 +7,7 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
+    "build:without-check": "SKIP_VITE_CHECKER=true vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
