@@ -31,4 +31,6 @@ None.
 - A focused component regression test for `BooleanValue`
 - Existing consumers including BookHistory, BookDetail, book table columns,
   and AuthorBookList remain unchanged.
-- No API, dependency, visual, or behavioral changes are introduced.
+- No caller-facing API or dependency changes are introduced. Existing
+  appearance and boolean semantics are preserved; the DOM root changes from
+  `div` to `span` to support inline usage.
