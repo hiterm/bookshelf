@@ -3,6 +3,7 @@ import { MantineProvider } from "@mantine/core";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import { beforeAll, vi } from "vitest";
+import { formatLocalTimestamp } from "../../test-utils/formatLocalTimestamp";
 import { OperationList } from "./OperationList";
 
 beforeAll(() => {
@@ -34,6 +35,8 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MantineProvider env="test">{children}</MantineProvider>
 );
 
+const firstOperationCreatedAt = "2021-01-01T00:00:00Z";
+
 test("renders operations with labels and timestamps", () => {
   render(
     <OperationList
@@ -42,7 +45,7 @@ test("renders operations with labels and timestamps", () => {
           id: "operation-1",
           type: "create_book",
           detail: null,
-          createdAt: "2021-01-01T00:00:00Z",
+          createdAt: firstOperationCreatedAt,
         },
         {
           id: "operation-2",
@@ -58,7 +61,9 @@ test("renders operations with labels and timestamps", () => {
     screen.getByRole("link", { name: "書籍を追加の詳細" }),
   ).toBeInTheDocument();
   expect(screen.getByText("future_operation")).toBeInTheDocument();
-  expect(screen.getByText("2021/01/01 00:00:00")).toBeInTheDocument();
+  expect(
+    screen.getByText(formatLocalTimestamp(firstOperationCreatedAt)),
+  ).toBeInTheDocument();
 });
 
 test("renders an empty state", () => {

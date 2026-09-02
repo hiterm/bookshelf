@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeAll, vi } from "vitest";
 import type { BookRevisionsQuery } from "../../generated/graphql-request";
+import { formatLocalTimestamp } from "../../test-utils/formatLocalTimestamp";
 import { BookHistory } from "./BookHistory";
 import { useBookRevisions } from "./api/useBookRevisions";
 
@@ -58,7 +59,7 @@ test("renders revision history and detail", async () => {
     { wrapper },
   );
   expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
-  expect(screen.getByText("2021/01/01 00:00:00")).toBeInTheDocument();
+  expect(screen.getByText(formatLocalTimestamp(createdAt))).toBeInTheDocument();
   await userEvent.click(
     screen.getByRole("button", { name: "View revision detail" }),
   );
