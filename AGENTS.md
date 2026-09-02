@@ -38,6 +38,16 @@
   explaining why it is safe to ignore. Place the comment on the line immediately
   before the ignore directive.
 
+## Architecture Documentation
+
+- Before making architectural or structural changes, check `docs/` for
+  relevant design documentation.
+- Architecture-level conventions are documented under `docs/architecture/`.
+- Follow existing design documentation when relevant, and update it in the
+  same pull request when implementation decisions change.
+- Keep detailed design rules in `docs/` rather than duplicating them here.
+- For TanStack Router route design, see `docs/architecture/routing.md`.
+
 ## Environment / Tooling Restrictions
 
 - **Never modify `.npmrc` or global npm config** (e.g., `before`, `registry`, `min-release-age`).

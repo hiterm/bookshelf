@@ -5,8 +5,8 @@ import React from "react";
 import { beforeAll, beforeEach, test, vi } from "vitest";
 import { useOperation } from "../../features/history/api/useOperation";
 import { useOperations } from "../../features/history/api/useOperations";
-import { HistoryDetailPage } from "./$operationId";
-import { HistoryIndexPage } from "./index";
+import { HistoryDetailPage } from "./-HistoryDetailPage";
+import { HistoryIndexPage } from "./-HistoryIndexPage";
 
 vi.mock(import("../../features/history/api/useOperation"));
 vi.mock(import("../../features/history/api/useOperations"));
