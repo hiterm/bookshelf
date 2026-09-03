@@ -1,5 +1,22 @@
 # Changelog
 
+## [v2.17.2](https://github.com/hiterm/bookshelf/compare/v2.17.1...v2.17.2) - 2026-09-03
+
+### Other Changes
+- Update dependency hiterm/bookshelf-api to v2.15.2 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/326
+- Update npm non-major by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/317
+- Update dependency @testing-library/jest-dom to v7 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/307
+- Add manual MSW update workflow by @hiterm in https://github.com/hiterm/bookshelf/pull/345
+- Dispatch CI for MSW updates by @hiterm in https://github.com/hiterm/bookshelf/pull/347
+- Run frontend CI for PRs and main pushes by @hiterm in https://github.com/hiterm/bookshelf/pull/350
+- Update MSW to 2.15.0 by @github-actions[bot] in https://github.com/hiterm/bookshelf/pull/346
+- Align Actions validation triggers by @hiterm in https://github.com/hiterm/bookshelf/pull/351
+- Skip checker for Playwright builds by @hiterm in https://github.com/hiterm/bookshelf/pull/352
+- Make BooleanValue inline-safe by @hiterm in https://github.com/hiterm/bookshelf/pull/353
+- Fix route component code splitting by @hiterm in https://github.com/hiterm/bookshelf/pull/355
+- Fix timezone-dependent timestamp tests by @hiterm in https://github.com/hiterm/bookshelf/pull/356
+- Update dependency hiterm/bookshelf-api to v2.15.3 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/354
+
 ## [v2.17.1](https://github.com/hiterm/bookshelf/compare/v2.17.0...v2.17.1) - 2026-08-30
 
 ### Other Changes
