@@ -21,7 +21,13 @@ import type { Table } from "@tanstack/react-table";
 import type { Book } from "./entity/Book";
 
 type BookColumnMeta = {
-  filterType?: "string" | "boolean" | "store" | "format" | "authors";
+  filterType?:
+    | "string"
+    | "boolean"
+    | "store"
+    | "format"
+    | "authors"
+    | "dateRange";
 };
 
 export const bookTableFeatures = tableFeatures({

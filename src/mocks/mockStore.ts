@@ -17,6 +17,7 @@ type Book = {
   priority: number;
   format: string;
   store: string;
+  purchaseDate: string | null;
   createdAt: number;
   updatedAt: number;
 };
@@ -40,6 +41,7 @@ type BookRevision = {
   priority: number;
   format: string;
   store: string;
+  purchaseDate: string | null;
   bookCreatedAt: string;
   bookUpdatedAt: string;
   createdAt: string;
@@ -86,6 +88,7 @@ export class MockStore {
         priority: 50,
         format: "PRINTED",
         store: "UNKNOWN",
+        purchaseDate: "2024-01-15",
       },
       {
         title: "テスト書籍2",
@@ -96,6 +99,7 @@ export class MockStore {
         priority: 80,
         format: "E_BOOK",
         store: "KINDLE",
+        purchaseDate: null,
       },
     ])
       this.createBook(data);
@@ -155,6 +159,7 @@ export class MockStore {
       priority: book.priority,
       format: book.format,
       store: book.store,
+      purchaseDate: book.purchaseDate,
       bookCreatedAt: new Date(book.createdAt * 1000).toISOString(),
       bookUpdatedAt: new Date(book.updatedAt * 1000).toISOString(),
       createdAt,
@@ -264,10 +269,14 @@ export class MockStore {
     );
     return { author, operationId };
   }
-  createBook(bookData: Omit<Book, "id" | "createdAt" | "updatedAt">) {
+  createBook(
+    bookData: Omit<Book, "id" | "createdAt" | "updatedAt" | "purchaseDate"> &
+      Pick<Partial<Book>, "purchaseDate">,
+  ) {
     const now = Math.floor(Date.now() / 1000);
     const book = {
       ...bookData,
+      purchaseDate: bookData.purchaseDate ?? null,
       id: `book-${String(this.nextBookId)}`,
       createdAt: now,
       updatedAt: now,
@@ -382,6 +391,7 @@ export class MockStore {
       priority: source.priority,
       format: source.format,
       store: source.store,
+      purchaseDate: source.purchaseDate,
       createdAt: Math.floor(Date.parse(source.bookCreatedAt) / 1000),
       updatedAt: Math.floor(Date.now() / 1000),
     };
@@ -417,6 +427,7 @@ export class MockStore {
       );
       return this.createBook({
         ...bookData,
+        purchaseDate: bookData.purchaseDate ?? null,
         authorIds: [...new Set(authorIds)],
       });
     });

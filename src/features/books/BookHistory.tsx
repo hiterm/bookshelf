@@ -72,6 +72,7 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
             {isLg && <Table.Th>Store</Table.Th>}
             {isLg && <Table.Th>Read</Table.Th>}
             {isLg && <Table.Th>Owned</Table.Th>}
+            {isLg && <Table.Th>Purchase date</Table.Th>}
             <Table.Th>Detail</Table.Th>
           </Table.Tr>
         </Table.Thead>
@@ -92,6 +93,7 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
                   <BooleanValue flag={revision.read} />
                 </Table.Td>
               )}
+              {isLg && <Table.Td>{revision.purchaseDate ?? "-"}</Table.Td>}
               {isLg && (
                 <Table.Td>
                   <BooleanValue flag={revision.owned} />
@@ -155,6 +157,10 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
             </Text>
             <Text>
               <strong>Priority:</strong> {selectedRevision.priority}
+            </Text>
+            <Text>
+              <strong>Purchase date:</strong>{" "}
+              {selectedRevision.purchaseDate ?? "-"}
             </Text>
           </div>
         )}

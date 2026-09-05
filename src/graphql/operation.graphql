@@ -17,6 +17,7 @@ query operation($id: ID!) {
         priority
         format
         store
+        purchaseDate
         bookCreatedAt
         bookUpdatedAt
         createdAt
@@ -32,6 +33,7 @@ query operation($id: ID!) {
         priority
         format
         store
+        purchaseDate
         bookCreatedAt
         bookUpdatedAt
         createdAt

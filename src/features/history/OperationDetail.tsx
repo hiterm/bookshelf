@@ -50,6 +50,7 @@ const BookRevision: React.FC<{
           ["優先度", value(revision.priority)],
           ["形式", value(revision.format)],
           ["ストア", value(revision.store)],
+          ["購入日", value(revision.purchaseDate)],
           ["書籍作成日時", formatOperationTime(revision.bookCreatedAt)],
           ["書籍更新日時", formatOperationTime(revision.bookUpdatedAt)],
           ["履歴作成日時", formatOperationTime(revision.createdAt)],

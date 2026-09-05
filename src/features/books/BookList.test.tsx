@@ -90,6 +90,7 @@ const testBooks: Book[] = [
     priority: 50,
     format: "PRINTED",
     store: "UNKNOWN",
+    purchaseDate: "2024-01-15",
     createdAt: now,
     updatedAt: now,
   },
@@ -103,6 +104,7 @@ const testBooks: Book[] = [
     priority: 80,
     format: "E_BOOK",
     store: "KINDLE",
+    purchaseDate: null,
     createdAt: now,
     updatedAt: now,
   },
@@ -116,6 +118,7 @@ const testBooks: Book[] = [
     priority: 30,
     format: "UNKNOWN",
     store: "UNKNOWN",
+    purchaseDate: "2024-03-20",
     createdAt: now,
     updatedAt: now,
   },
@@ -129,6 +132,7 @@ const testBooks: Book[] = [
     priority: 10,
     format: "E_BOOK",
     store: "KINDLE",
+    purchaseDate: "2024-02-10",
     createdAt: now,
     updatedAt: now,
   },
@@ -703,6 +707,52 @@ describe("BookList preset and reset", () => {
 
     await waitFor(() => {
       expect(titleInput).toHaveValue("");
+    });
+  });
+
+  test("restores and applies inclusive purchase date range from route search", async () => {
+    const { router } = await renderBookList({
+      columnFilters: [
+        {
+          id: "purchaseDate",
+          value: { from: "2024-02-10", to: "2024-03-20" },
+        },
+      ],
+    });
+
+    expect(screen.getByLabelText("購入日 From")).toHaveValue("2024-02-10");
+    expect(screen.getByLabelText("購入日 To")).toHaveValue("2024-03-20");
+    expect(screen.getByText("テスト書籍3")).toBeInTheDocument();
+    expect(screen.getByText("テスト書籍4")).toBeInTheDocument();
+    expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
+    expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
+    expect(router.state.location.search.columnFilters).toEqual([
+      {
+        id: "purchaseDate",
+        value: { from: "2024-02-10", to: "2024-03-20" },
+      },
+    ]);
+  });
+
+  test("sorts purchase dates in both directions", async () => {
+    const user = userEvent.setup();
+    await renderBookList();
+    const purchaseDateHeader = screen.getByText("購入日");
+
+    await user.click(purchaseDateHeader);
+    await waitFor(() => {
+      const rows = screen
+        .getAllByRole("row")
+        .filter((row) => row.closest("tbody") != null);
+      expect(within(rows[0]).getByText("テスト書籍1")).toBeInTheDocument();
+    });
+
+    await user.click(purchaseDateHeader);
+    await waitFor(() => {
+      const rows = screen
+        .getAllByRole("row")
+        .filter((row) => row.closest("tbody") != null);
+      expect(within(rows[0]).getByText("テスト書籍3")).toBeInTheDocument();
     });
   });
 });
