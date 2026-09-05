@@ -10,6 +10,7 @@ query bookRevision($bookId: ID!, $revisionNumber: Int!) {
     priority
     format
     store
+    purchaseDate
     bookCreatedAt
     bookUpdatedAt
     createdAt

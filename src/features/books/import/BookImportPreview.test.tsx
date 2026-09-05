@@ -15,6 +15,7 @@ const preview = {
       priority: 50,
       format: "E_BOOK" as const,
       store: "KINDLE" as const,
+      purchaseDate: "2024-05-01",
     },
     {
       title: "2冊目",
@@ -25,6 +26,7 @@ const preview = {
       priority: 50,
       format: "E_BOOK" as const,
       store: "KINDLE" as const,
+      purchaseDate: null,
     },
   ],
 };
@@ -62,6 +64,7 @@ describe("BookImportPreview", () => {
     expect(
       screen.getByRole("button", { name: "2冊をインポート" }),
     ).toBeEnabled();
+    expect(screen.getByText("購入日: 2024-05-01")).toBeInTheDocument();
   });
 
   test("disables back and import while importing", () => {

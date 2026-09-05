@@ -9,6 +9,7 @@ import { Book } from "./entity/Book";
 import { displayBookFormat } from "./entity/BookFormat";
 import { displayBookStore } from "./entity/BookStore";
 import { bookTableFeatures } from "./bookTable";
+import type { DateRangeFilterValue } from "./DateRangeFilter";
 
 const authorsFilter: FilterFn<typeof bookTableFeatures, Book> = (
   row,
@@ -29,6 +30,19 @@ const authorsFilter: FilterFn<typeof bookTableFeatures, Book> = (
 };
 
 const formatDate = (date: Date) => dayjs(date).format("YYYY/MM/DD HH:mm Z");
+
+const purchaseDateFilter: FilterFn<typeof bookTableFeatures, Book> = (
+  row,
+  columnId,
+  filterValue: DateRangeFilterValue,
+) => {
+  const date = row.getValue(columnId);
+  if (typeof date !== "string") return false;
+  return (
+    (filterValue.from == null || date >= filterValue.from) &&
+    (filterValue.to == null || date <= filterValue.to)
+  );
+};
 
 const columnHelper = createColumnHelper<typeof bookTableFeatures, Book>();
 
@@ -95,6 +109,15 @@ export const bookColumns = columnHelper.columns([
     filterFn: "equals",
     meta: { filterType: "boolean" },
     minSize: 100,
+  }),
+  columnHelper.accessor((book) => book.purchaseDate ?? undefined, {
+    id: "purchaseDate",
+    header: "購入日",
+    cell: (info) => info.getValue() ?? "-",
+    filterFn: purchaseDateFilter,
+    meta: { filterType: "dateRange" },
+    sortUndefined: "last",
+    minSize: 220,
   }),
   columnHelper.accessor("createdAt", {
     header: "追加日時",

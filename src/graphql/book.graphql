@@ -13,6 +13,7 @@ query book($bookId: ID!) {
     priority
     format
     store
+    purchaseDate
     createdAt
     updatedAt
   }

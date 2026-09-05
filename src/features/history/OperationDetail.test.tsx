@@ -38,6 +38,7 @@ const operation: NonNullable<OperationQuery["operation"]> = {
         priority: 50,
         format: "PRINTED",
         store: "UNKNOWN",
+        purchaseDate: "2020-12-31",
         bookCreatedAt: createdAt,
         bookUpdatedAt: createdAt,
         createdAt,

@@ -62,6 +62,11 @@ export const BookUpdateForm: React.FC<BookUpdateFormProps> = ({ form }) => {
       />
       <NumberInput label="優先度" {...form.getInputProps("priority")} />
       <TextInput label="ISBN" {...form.getInputProps("isbn")} />
+      <TextInput
+        type="date"
+        label="購入日"
+        {...form.getInputProps("purchaseDate")}
+      />
       <Checkbox
         label="既読"
         {...form.getInputProps("read", { type: "checkbox" })}

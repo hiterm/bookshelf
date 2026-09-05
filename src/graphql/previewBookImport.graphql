@@ -12,6 +12,7 @@ mutation previewBookImport($books: [ImportBookInput!]!) {
       priority
       format
       store
+      purchaseDate
     }
   }
 }

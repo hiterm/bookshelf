@@ -49,9 +49,10 @@ export const AddBookButton: React.FC = () => {
 
     form.setFieldValue("authors", resolvedAuthors);
 
-    const { authors: _authors, ...rest } = value;
+    const { authors: _authors, purchaseDate, ...rest } = value;
     const bookData = {
       ...rest,
+      purchaseDate: purchaseDate === "" ? null : purchaseDate,
       authorIds: resolvedAuthors.map((a) => a.id),
     };
 
@@ -94,6 +95,7 @@ export const AddBookButton: React.FC = () => {
     priority: 50,
     format: "UNKNOWN",
     store: "UNKNOWN",
+    purchaseDate: "",
   };
 
   const form = useForm({

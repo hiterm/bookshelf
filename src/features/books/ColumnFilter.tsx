@@ -6,6 +6,7 @@ import { StoreFilter } from "./StoreFilter";
 import { StringFilter } from "./StringFilter";
 import { bookTableFeatures } from "./bookTable";
 import { Book } from "./entity/Book";
+import { DateRangeFilter } from "./DateRangeFilter";
 
 type ColumnFilterProps = {
   column: Column<typeof bookTableFeatures, Book>;
@@ -26,6 +27,8 @@ export const ColumnFilter = ({
         return <StoreFilter column={column} />;
       case "authors":
         return <AuthorsFilter column={column} />;
+      case "dateRange":
+        return <DateRangeFilter column={column} />;
       default:
         return <></>;
     }
