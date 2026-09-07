@@ -99,7 +99,11 @@ test.each(["UTC", "America/Los_Angeles", "Asia/Tokyo"])(
         ).purchaseDate,
       ).toBe("2026-01-02");
     } finally {
-      process.env.TZ = originalTimeZone;
+      if (originalTimeZone == null) {
+        delete process.env.TZ;
+      } else {
+        process.env.TZ = originalTimeZone;
+      }
     }
   },
 );
