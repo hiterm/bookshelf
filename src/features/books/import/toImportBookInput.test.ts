@@ -79,3 +79,27 @@ test("keeps current Kindle behavior in one default object", () => {
     purchaseDate: "2026-04-25",
   });
 });
+
+test.each(["UTC", "America/Los_Angeles", "Asia/Tokyo"])(
+  "preserves the local purchase date in %s",
+  (timeZone) => {
+    const originalTimeZone = process.env.TZ;
+    process.env.TZ = timeZone;
+    try {
+      const boundaryBook: ImportedBook = {
+        ...book,
+        purchasedAt: new Date(2026, 0, 2, 0, 30),
+      };
+
+      expect(
+        toImportBookInput(
+          boundaryBook,
+          { splitAuthorsByComma: false },
+          KINDLE_BOOK_IMPORT_DEFAULTS,
+        ).purchaseDate,
+      ).toBe("2026-01-02");
+    } finally {
+      process.env.TZ = originalTimeZone;
+    }
+  },
+);

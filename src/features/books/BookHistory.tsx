@@ -93,12 +93,12 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
                   <BooleanValue flag={revision.read} />
                 </Table.Td>
               )}
-              {isLg && <Table.Td>{revision.purchaseDate ?? "-"}</Table.Td>}
               {isLg && (
                 <Table.Td>
                   <BooleanValue flag={revision.owned} />
                 </Table.Td>
               )}
+              {isLg && <Table.Td>{revision.purchaseDate ?? "-"}</Table.Td>}
               <Table.Td>
                 <ActionIcon
                   onClick={() => {

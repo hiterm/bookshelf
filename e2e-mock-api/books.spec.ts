@@ -403,8 +403,10 @@ test.describe("Books UPDATE", () => {
 
     await expect(page).toHaveURL(/\/books\/book-1$/);
     const detail = page.getByTestId("book-detail");
-    await expect(detail.getByText("購入日")).toBeVisible();
-    await expect(detail.getByText("-", { exact: true })).toBeVisible();
+    const purchaseDateValue = detail
+      .getByText("購入日")
+      .locator("xpath=following-sibling::*[1]");
+    await expect(purchaseDateValue).toHaveText("-");
   });
 
   test("keeps update errors visible after the notification closes", async ({

@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeAll, vi } from "vitest";
 import type { BookRevisionsQuery } from "../../generated/graphql-request";
@@ -39,7 +39,7 @@ beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: vi.fn().mockImplementation(() => ({
-      matches: false,
+      matches: true,
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
     })),
@@ -61,6 +61,23 @@ test("renders revision history and detail", async () => {
   );
   expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
   expect(screen.getByText(formatLocalTimestamp(createdAt))).toBeInTheDocument();
+  const headers = screen.getAllByRole("columnheader");
+  expect(headers.map((header) => header.textContent)).toEqual([
+    "Revision",
+    "Date",
+    "Title",
+    "Authors",
+    "ISBN",
+    "Format",
+    "Store",
+    "Read",
+    "Owned",
+    "Purchase date",
+    "Detail",
+  ]);
+  const cells = within(screen.getAllByRole("row")[1]).getAllByRole("cell");
+  expect(cells[8].querySelector("svg")).toBeInTheDocument();
+  expect(cells[9]).toHaveTextContent("2020-12-31");
   await userEvent.click(
     screen.getByRole("button", { name: "View revision detail" }),
   );

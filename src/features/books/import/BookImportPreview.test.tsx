@@ -65,6 +65,7 @@ describe("BookImportPreview", () => {
       screen.getByRole("button", { name: "2冊をインポート" }),
     ).toBeEnabled();
     expect(screen.getByText("購入日: 2024-05-01")).toBeInTheDocument();
+    expect(screen.getByText("購入日: -")).toBeInTheDocument();
   });
 
   test("disables back and import while importing", () => {

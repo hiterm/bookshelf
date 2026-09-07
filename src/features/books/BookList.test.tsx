@@ -734,6 +734,17 @@ describe("BookList preset and reset", () => {
     ]);
   });
 
+  test("restores an empty purchase date range without hiding undated books", async () => {
+    await renderBookList({
+      columnFilters: [{ id: "purchaseDate", value: {} }],
+    });
+
+    expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
+    expect(screen.getByText("テスト書籍2")).toBeInTheDocument();
+    expect(screen.getByText("テスト書籍3")).toBeInTheDocument();
+    expect(screen.getByText("テスト書籍4")).toBeInTheDocument();
+  });
+
   test("sorts purchase dates in both directions", async () => {
     const user = userEvent.setup();
     await renderBookList();

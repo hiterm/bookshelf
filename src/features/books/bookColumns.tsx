@@ -36,6 +36,7 @@ const purchaseDateFilter: FilterFn<typeof bookTableFeatures, Book> = (
   columnId,
   filterValue: DateRangeFilterValue,
 ) => {
+  if (filterValue.from == null && filterValue.to == null) return true;
   const date = row.getValue(columnId);
   if (typeof date !== "string") return false;
   return (

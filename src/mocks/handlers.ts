@@ -401,7 +401,7 @@ export const handlers = [
       update.priority = bookData.priority;
     if (isString(bookData.format)) update.format = bookData.format;
     if (isString(bookData.store)) update.store = bookData.store;
-    if (bookData.purchaseDate == null || isString(bookData.purchaseDate)) {
+    if (bookData.purchaseDate === null || isString(bookData.purchaseDate)) {
       update.purchaseDate = bookData.purchaseDate;
     }
     const book = mockStore.updateBook(update);
