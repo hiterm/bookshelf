@@ -114,7 +114,7 @@ test.describe("Books CREATE", () => {
     await page.keyboard.press("Enter");
 
     await page.getByLabel("ISBN").fill("9784000000010");
-    await page.getByLabel("購入日").fill("2024-05-01");
+    await page.getByLabel("購入日", { exact: true }).fill("2024-05-01");
 
     // Set format (Select)
     const formatSelect = page.getByRole("combobox", { name: "形式" });
@@ -396,9 +396,11 @@ test.describe("Books UPDATE", () => {
   test("clears a purchase date", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await page.getByRole("link", { name: "変更", exact: true }).click();
-    await expect(page.getByLabel("購入日")).toHaveValue("2024-01-15");
+    await expect(page.getByLabel("購入日", { exact: true })).toHaveValue(
+      "2024-01-15",
+    );
 
-    await page.getByLabel("購入日").fill("");
+    await page.getByLabel("購入日", { exact: true }).fill("");
     await page.getByRole("button", { name: "Save" }).click();
 
     await expect(page).toHaveURL(/\/books\/book-1$/);
