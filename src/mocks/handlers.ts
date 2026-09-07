@@ -12,6 +12,15 @@ function isObject(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null;
 }
 
+export const assignPurchaseDateUpdate = (
+  update: { purchaseDate?: string | null },
+  purchaseDate: unknown,
+) => {
+  if (purchaseDate === null || isString(purchaseDate)) {
+    update.purchaseDate = purchaseDate;
+  }
+};
+
 function isImportBookInput(v: unknown): v is ImportBookInput {
   return (
     isObject(v) &&
@@ -401,9 +410,7 @@ export const handlers = [
       update.priority = bookData.priority;
     if (isString(bookData.format)) update.format = bookData.format;
     if (isString(bookData.store)) update.store = bookData.store;
-    if (bookData.purchaseDate === null || isString(bookData.purchaseDate)) {
-      update.purchaseDate = bookData.purchaseDate;
-    }
+    assignPurchaseDateUpdate(update, bookData.purchaseDate);
     const book = mockStore.updateBook(update);
     if (book == null) {
       return HttpResponse.json(
