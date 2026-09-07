@@ -21,6 +21,6 @@
 
 ## 4. Verification
 
-- [ ] 4.1 Run generation, lint, tests, typecheck, build, and mock E2E
+- [x] 4.1 Run generation, lint, tests, typecheck, build, and mock E2E
 - [x] 4.2 Validate OpenSpec
 - [x] 4.3 Sync canonical specs and archive the completed change
