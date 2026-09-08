@@ -9,7 +9,7 @@ import {
 const book: ImportedBook = {
   title: "テスト書籍",
   authorText: "著者1, 著者2",
-  purchasedAt: new Date("2026-04-25T00:00:00.000Z"),
+  purchasedAt: new Date(2026, 3, 25, 12),
   read: true,
   asin: "B0NOTANISBN",
   imageUrl: "https://example.com/cover.jpg",
@@ -52,6 +52,7 @@ test("maps per-book and common settings to the generated GraphQL input", () => {
     priority: 75,
     format: "PRINTED",
     store: "UNKNOWN",
+    purchaseDate: "2026-04-25",
   });
 });
 
@@ -75,5 +76,34 @@ test("keeps current Kindle behavior in one default object", () => {
     priority: 50,
     format: "E_BOOK",
     store: "KINDLE",
+    purchaseDate: "2026-04-25",
   });
 });
+
+test.each(["UTC", "America/Los_Angeles", "Asia/Tokyo"])(
+  "preserves the local purchase date in %s",
+  (timeZone) => {
+    const originalTimeZone = process.env.TZ;
+    process.env.TZ = timeZone;
+    try {
+      const boundaryBook: ImportedBook = {
+        ...book,
+        purchasedAt: new Date(2026, 0, 2, 0, 30),
+      };
+
+      expect(
+        toImportBookInput(
+          boundaryBook,
+          { splitAuthorsByComma: false },
+          KINDLE_BOOK_IMPORT_DEFAULTS,
+        ).purchaseDate,
+      ).toBe("2026-01-02");
+    } finally {
+      if (originalTimeZone == null) {
+        delete process.env.TZ;
+      } else {
+        process.env.TZ = originalTimeZone;
+      }
+    }
+  },
+);

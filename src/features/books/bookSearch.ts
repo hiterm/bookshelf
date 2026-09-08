@@ -11,6 +11,13 @@ const columnFilterSchema = z.discriminatedUnion("id", [
   z.object({ id: z.literal("store"), value: z.enum(BOOK_STORE_VALUE) }),
   z.object({ id: z.literal("read"), value: z.boolean() }),
   z.object({ id: z.literal("owned"), value: z.boolean() }),
+  z.object({
+    id: z.literal("purchaseDate"),
+    value: z.object({
+      from: z.iso.date().optional(),
+      to: z.iso.date().optional(),
+    }),
+  }),
 ]);
 
 export const bookColumnFiltersSchema = z.array(columnFilterSchema);
@@ -26,6 +33,7 @@ const sortingItemSchema = z.object({
     "priority",
     "read",
     "owned",
+    "purchaseDate",
     "createdAt",
     "updatedAt",
   ]),

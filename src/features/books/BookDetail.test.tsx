@@ -47,6 +47,7 @@ const book: Book = {
   priority: 50,
   format: "PRINTED",
   store: "UNKNOWN",
+  purchaseDate: "2024-05-01",
   createdAt: new Date(0),
   updatedAt: new Date(0),
 };
@@ -90,6 +91,8 @@ test("shows authors and author readings as separate items", () => {
   expect(firstAuthorLink.parentElement).toHaveTextContent("山田太郎, 鈴木花子");
   expect(detail).toHaveTextContent("山田太郎, 鈴木花子");
   expect(within(detail).getByText("著者読み仮名")).toBeInTheDocument();
+  expect(within(detail).getByText("購入日")).toBeInTheDocument();
+  expect(within(detail).getByText("2024-05-01")).toBeInTheDocument();
   expect(
     within(detail).getByText("やまだたろう, すずきはなこ"),
   ).toBeInTheDocument();

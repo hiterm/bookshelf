@@ -21,6 +21,7 @@ export const bookFormSchema = z.object({
   format: z.enum(BOOK_FORMAT_VALUE),
   store: z.enum(BOOK_STORE_VALUE),
   owned: z.boolean().default(false),
+  purchaseDate: z.union([z.literal(""), z.iso.date()]),
 });
 
 export type BookFormValues = z.infer<typeof bookFormSchema>;

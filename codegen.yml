@@ -3,6 +3,9 @@ schema: "src/graphql/schema.graphql"
 documents: "src/**/*.graphql"
 config:
   scalars:
+    Date:
+      input: string
+      output: string
     DateTime:
       input: string
       output: string

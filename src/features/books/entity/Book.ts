@@ -16,6 +16,7 @@ export type Book = {
   priority: number;
   format: BookFormat;
   store: BookStore;
+  purchaseDate: string | null;
   createdAt: Date;
   updatedAt: Date;
 };

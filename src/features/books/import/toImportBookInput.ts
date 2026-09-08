@@ -51,4 +51,9 @@ export const toImportBookInput = (
   priority: commonSettings.priority,
   format: commonSettings.format,
   store: commonSettings.store,
+  purchaseDate: [
+    book.purchasedAt.getFullYear(),
+    String(book.purchasedAt.getMonth() + 1).padStart(2, "0"),
+    String(book.purchasedAt.getDate()).padStart(2, "0"),
+  ].join("-"),
 });

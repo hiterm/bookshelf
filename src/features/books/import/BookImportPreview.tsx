@@ -56,6 +56,7 @@ export const BookImportPreview = ({
             {book.read ? "既読" : "未読"} / {book.owned ? "所有" : "未所有"} /
             優先度: {book.priority} / {book.format} / {book.store}
           </Text>
+          <Text size="sm">購入日: {book.purchaseDate ?? "-"}</Text>
         </Stack>
       ))}
       <BookImportActionBar>

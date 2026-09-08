@@ -50,6 +50,7 @@ const emptyBook: BookFormValues = {
   priority: 50,
   format: "UNKNOWN",
   store: "UNKNOWN",
+  purchaseDate: "",
 };
 
 type TestFormProps = { onSubmit: (values: BookFormValues) => void };
@@ -107,6 +108,7 @@ describe("BookCreateForm", () => {
 
     expect(await findByRole("textbox", { name: "書名" })).toBeInTheDocument();
     expect(await findByRole("textbox", { name: "ISBN" })).toBeInTheDocument();
+    expect(screen.getByLabelText("購入日")).toBeInTheDocument();
     expect(await findByRole("checkbox", { name: "既読" })).toBeInTheDocument();
     expect(await findByRole("checkbox", { name: "所有" })).toBeInTheDocument();
     expect(
@@ -147,5 +149,16 @@ describe("BookCreateForm", () => {
       ...emptyBook,
       title: "valid title",
     });
+  });
+
+  test("submits an optional purchase date", async () => {
+    mockMatchMedia();
+    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
+    render(<TestForm onSubmit={mockSubmit} />, { wrapper: createWrapper() });
+    const user = userEvent.setup();
+    await user.type(screen.getByRole("textbox", { name: "書名" }), "book");
+    await user.type(screen.getByLabelText("購入日"), "2024-05-01");
+    await user.click(screen.getByRole("button", { name: "送信" }));
+    expect(mockSubmit.mock.calls[0]?.[0].purchaseDate).toBe("2024-05-01");
   });
 });

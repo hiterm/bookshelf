@@ -2,9 +2,7 @@
 
 ## Purpose
 Define book Revision history displayed on the book detail page.
-
 ## Requirements
-
 ### Requirement: View book edit history
 The system SHALL display the backend-provided list of Revisions for a book on the book detail page.
 
@@ -37,3 +35,15 @@ The system SHALL display ISBN, read status, owned status, and priority in each `
 #### Scenario: Restore a book revision
 - **WHEN** a user confirms restoration from a selected book Revision
 - **THEN** the frontend calls `restoreBook` with that Revision's `bookId` and `revisionNumber`
+
+### Requirement: Book revisions display purchase dates
+The frontend SHALL query and display the nullable purchase date captured by each
+book revision and operation-history snapshot.
+
+#### Scenario: View a dated revision
+- **WHEN** a historical revision contains a purchase date
+- **THEN** the revision view displays that calendar date
+
+#### Scenario: View a revision without a purchase date
+- **WHEN** a historical revision has no purchase date
+- **THEN** the existing optional-value placeholder is displayed

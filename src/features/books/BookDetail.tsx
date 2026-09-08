@@ -171,6 +171,7 @@ export const BookDetail: React.FC<{ book: Book }> = (props) => {
           halfWidth
         />
         <BookDetailField field="ISBN" value={book.isbn} />
+        <BookDetailField field="購入日" value={book.purchaseDate ?? "-"} />
         <BookDetailField
           field="作成日時"
           value={dayjs(book.createdAt).format("YYYY/MM/DD HH:mm:ss")}

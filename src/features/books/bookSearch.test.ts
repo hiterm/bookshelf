@@ -12,6 +12,10 @@ describe("bookSearchSchema", () => {
       { id: "store", value: "KINDLE" },
       { id: "read", value: false },
       { id: "owned", value: true },
+      {
+        id: "purchaseDate",
+        value: { from: "2024-01-01", to: "2024-12-31" },
+      },
     ];
 
     expect(bookSearchSchema.parse({ columnFilters })).toEqual({
@@ -38,6 +42,7 @@ describe("bookSearchSchema", () => {
       { id: "authorYomis", desc: false },
       { id: "priority", desc: true },
       { id: "createdAt", desc: false },
+      { id: "purchaseDate", desc: true },
     ];
 
     expect(bookSearchSchema.parse({ sorting })).toEqual({ sorting });

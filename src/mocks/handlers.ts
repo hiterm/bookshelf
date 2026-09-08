@@ -12,6 +12,15 @@ function isObject(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null;
 }
 
+export const assignPurchaseDateUpdate = (
+  update: { purchaseDate?: string | null },
+  purchaseDate: unknown,
+) => {
+  if (purchaseDate === null || isString(purchaseDate)) {
+    update.purchaseDate = purchaseDate;
+  }
+};
+
 function isImportBookInput(v: unknown): v is ImportBookInput {
   return (
     isObject(v) &&
@@ -333,7 +342,8 @@ export const handlers = [
       typeof bookData.owned !== "boolean" ||
       typeof bookData.priority !== "number" ||
       !isString(bookData.format) ||
-      !isString(bookData.store)
+      !isString(bookData.store) ||
+      !(bookData.purchaseDate == null || isString(bookData.purchaseDate))
     ) {
       return HttpResponse.json(
         { errors: [{ message: "Invalid variables" }] },
@@ -349,6 +359,7 @@ export const handlers = [
       priority: bookData.priority,
       format: bookData.format,
       store: bookData.store,
+      purchaseDate: bookData.purchaseDate ?? null,
     });
     return HttpResponse.json({
       data: {
@@ -399,6 +410,7 @@ export const handlers = [
       update.priority = bookData.priority;
     if (isString(bookData.format)) update.format = bookData.format;
     if (isString(bookData.store)) update.store = bookData.store;
+    assignPurchaseDateUpdate(update, bookData.purchaseDate);
     const book = mockStore.updateBook(update);
     if (book == null) {
       return HttpResponse.json(

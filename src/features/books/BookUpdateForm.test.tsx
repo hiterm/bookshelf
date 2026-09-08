@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import React from "react";
@@ -47,6 +47,7 @@ const emptyBook: BookFormValues = {
   priority: 50,
   format: "UNKNOWN",
   store: "UNKNOWN",
+  purchaseDate: "",
 };
 
 type TestFormProps = { onSubmit: (values: BookFormValues) => void };
@@ -128,6 +129,7 @@ describe("BookUpdateForm", () => {
 
     expect(await findByRole("textbox", { name: "書名" })).toBeInTheDocument();
     expect(await findByRole("textbox", { name: "ISBN" })).toBeInTheDocument();
+    expect(screen.getByLabelText("購入日")).toBeInTheDocument();
     expect(await findByRole("checkbox", { name: "既読" })).toBeInTheDocument();
     expect(await findByRole("checkbox", { name: "所有" })).toBeInTheDocument();
   });

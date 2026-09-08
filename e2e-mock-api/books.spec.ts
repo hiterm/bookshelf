@@ -114,6 +114,7 @@ test.describe("Books CREATE", () => {
     await page.keyboard.press("Enter");
 
     await page.getByLabel("ISBN").fill("9784000000010");
+    await page.getByLabel("購入日", { exact: true }).fill("2024-05-01");
 
     // Set format (Select)
     const formatSelect = page.getByRole("combobox", { name: "形式" });
@@ -157,6 +158,9 @@ test.describe("Books CREATE", () => {
       page.getByTestId("book-detail").getByText("9784000000010"),
     ).toBeVisible();
     await expect(page.locator("text=著者1").first()).toBeVisible();
+    await expect(
+      page.getByTestId("book-detail").getByText("2024-05-01"),
+    ).toBeVisible();
   });
 });
 
@@ -387,6 +391,24 @@ test.describe("Books UPDATE", () => {
     await expect(
       page.getByTestId("book-detail").getByText("978-4-00-000001-0"),
     ).toBeVisible();
+  });
+
+  test("clears a purchase date", async ({ page }) => {
+    await page.getByRole("link", { name: "テスト書籍1" }).click();
+    await page.getByRole("link", { name: "変更", exact: true }).click();
+    await expect(page.getByLabel("購入日", { exact: true })).toHaveValue(
+      "2024-01-15",
+    );
+
+    await page.getByLabel("購入日", { exact: true }).fill("");
+    await page.getByRole("button", { name: "Save" }).click();
+
+    await expect(page).toHaveURL(/\/books\/book-1$/);
+    const detail = page.getByTestId("book-detail");
+    const purchaseDateValue = detail
+      .getByText("購入日")
+      .locator("xpath=following-sibling::*[1]");
+    await expect(purchaseDateValue).toHaveText("-");
   });
 
   test("keeps update errors visible after the notification closes", async ({

@@ -10,6 +10,7 @@ const baseGraphQLBook = {
   priority: 50,
   format: "PRINTED" as const,
   store: "KINDLE" as const,
+  purchaseDate: null,
   createdAt: 1000,
   updatedAt: 2000,
 };

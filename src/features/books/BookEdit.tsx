@@ -52,6 +52,7 @@ export const BookEdit: React.FC<{ book: Book }> = (props) => {
       priority: values.priority,
       format: values.format,
       store: values.store,
+      purchaseDate: values.purchaseDate === "" ? null : values.purchaseDate,
       authorIds: resolvedAuthors.map((a) => a.id),
     };
 
@@ -69,7 +70,7 @@ export const BookEdit: React.FC<{ book: Book }> = (props) => {
   };
 
   const form = useForm<BookFormValues>({
-    initialValues: book,
+    initialValues: { ...book, purchaseDate: book.purchaseDate ?? "" },
     validate: zod4Resolver(bookFormSchema),
     validateInputOnBlur: true,
   });
