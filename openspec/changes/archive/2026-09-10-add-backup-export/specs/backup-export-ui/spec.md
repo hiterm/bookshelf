@@ -11,7 +11,9 @@ The frontend SHALL expose `設定` linking directly to `/settings/backup`, whose
 ### Requirement: Users can download snapshot and full backups
 The frontend SHALL issue authenticated GET requests to `/backup/snapshot` and
 `/backup/full`, treat successful responses as Blobs, and trigger downloads using
-a safe backend `Content-Disposition` filename when available.
+a safe backend `Content-Disposition` filename when available. The backend SHALL
+expose that response header cross-origin with
+`Access-Control-Expose-Headers: Content-Disposition`.
 
 #### Scenario: Export either backup
 - **WHEN** the user activates an export action

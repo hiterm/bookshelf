@@ -1,4 +1,7 @@
-import { filenameFromContentDisposition } from "./backupDownload";
+import {
+  filenameFromContentDisposition,
+  validateBackupRequestUrl,
+} from "./backupDownload";
 
 describe("filenameFromContentDisposition", () => {
   test("uses a quoted server filename", () => {
@@ -27,4 +30,33 @@ describe("filenameFromContentDisposition", () => {
       );
     },
   );
+});
+
+describe("validateBackupRequestUrl", () => {
+  test("accepts HTTPS", () => {
+    expect(() => {
+      validateBackupRequestUrl(
+        new URL("https://api.example.com/backup/full"),
+        false,
+      );
+    }).not.toThrow();
+  });
+
+  test("rejects public cleartext destinations", () => {
+    expect(() => {
+      validateBackupRequestUrl(
+        new URL("http://api.example.com/backup/full"),
+        false,
+      );
+    }).toThrow("HTTPS");
+  });
+
+  test("allows loopback HTTP for local development", () => {
+    expect(() => {
+      validateBackupRequestUrl(
+        new URL("http://localhost:4000/backup/full"),
+        false,
+      );
+    }).not.toThrow();
+  });
 });

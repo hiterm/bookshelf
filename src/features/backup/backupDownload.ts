@@ -51,12 +51,30 @@ const responseError = async (response: Response): Promise<Error> => {
   );
 };
 
+export const validateBackupRequestUrl = (
+  requestUrl: URL,
+  demoMode: boolean,
+): void => {
+  const isLoopback =
+    requestUrl.hostname === "localhost" ||
+    requestUrl.hostname === "127.0.0.1" ||
+    requestUrl.hostname === "[::1]";
+  if (!demoMode && requestUrl.protocol !== "https:" && !isLoopback) {
+    throw new Error("バックアップ API は HTTPS である必要があります");
+  }
+};
+
 export const downloadBackup = async (
   scope: BackupScope,
   getAccessTokenSilently: () => Promise<string>,
 ): Promise<void> => {
+  const requestUrl = new URL(
+    `${apiBaseUrl}/backup/${scope}`,
+    window.location.origin,
+  );
+  validateBackupRequestUrl(requestUrl, isDemoMode);
   const token = isDemoMode ? "" : await getAccessTokenSilently();
-  const response = await fetch(`${apiBaseUrl}/backup/${scope}`, {
+  const response = await fetch(requestUrl, {
     method: "GET",
     headers: token === "" ? {} : { authorization: `Bearer ${token}` },
   });
