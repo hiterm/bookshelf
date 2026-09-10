@@ -17,5 +17,5 @@
 ## 4. Delivery
 
 - [x] 4.1 Run generation, lint, tests, typecheck, build, and mock E2E
-- [ ] 4.2 Sync specs, archive, and commit archive separately
+- [x] 4.2 Sync specs, archive, and commit archive separately
 - [ ] 4.3 Create PR, verify CI, and obtain CodeRabbit approval
