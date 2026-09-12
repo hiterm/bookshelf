@@ -9,23 +9,21 @@ test.beforeEach(async ({ page }) => {
   await expect(page).toHaveURL(/\/settings\/backup$/);
 });
 
-test("downloads snapshot with authentication and server filename", async ({
+test("downloads snapshot with authentication and a generated filename", async ({
   page,
 }) => {
   let authorization: string | undefined;
-  await page.route("http://localhost:4000/backup/snapshot", async (route) => {
-    authorization = route.request().headers().authorization;
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      headers: {
-        "Access-Control-Expose-Headers": "Content-Disposition",
-        "Content-Disposition":
-          'attachment; filename="bookshelf-backup-snapshot-2026-09-11T020000Z.json"',
-      },
-      body: JSON.stringify({ format: "bookshelf-backup", version: 1 }),
-    });
-  });
+  await page.route(
+    "http://localhost:4000/v1/backup/snapshot",
+    async (route) => {
+      authorization = route.request().headers().authorization;
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ format: "bookshelf-backup", version: 1 }),
+      });
+    },
+  );
 
   const downloadPromise = page.waitForEvent("download");
   await page
@@ -34,15 +32,40 @@ test("downloads snapshot with authentication and server filename", async ({
   const download = await downloadPromise;
 
   expect(authorization).toBe("Bearer mock-access-token");
-  expect(download.suggestedFilename()).toBe(
-    "bookshelf-backup-snapshot-2026-09-11T020000Z.json",
+  expect(download.suggestedFilename()).toMatch(
+    /^bookshelf-backup-snapshot-\d{4}-\d{2}-\d{2}T\d{6}Z\.json$/,
+  );
+});
+
+test("downloads full with authentication and a generated filename", async ({
+  page,
+}) => {
+  let authorization: string | undefined;
+  await page.route("http://localhost:4000/v1/backup/full", async (route) => {
+    authorization = route.request().headers().authorization;
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ format: "bookshelf-backup", version: 1 }),
+    });
+  });
+
+  const downloadPromise = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "完全バックアップをエクスポート" })
+    .click();
+  const download = await downloadPromise;
+
+  expect(authorization).toBe("Bearer mock-access-token");
+  expect(download.suggestedFilename()).toMatch(
+    /^bookshelf-backup-full-\d{4}-\d{2}-\d{2}T\d{6}Z\.json$/,
   );
 });
 
 test("reports a full backup HTTP error without a download", async ({
   page,
 }) => {
-  await page.route("http://localhost:4000/backup/full", async (route) => {
+  await page.route("http://localhost:4000/v1/backup/full", async (route) => {
     await route.fulfill({
       status: 500,
       contentType: "application/json",

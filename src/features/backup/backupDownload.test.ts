@@ -1,42 +1,26 @@
-import {
-  filenameFromContentDisposition,
-  validateBackupRequestUrl,
-} from "./backupDownload";
+import { backupFilename, validateBackupRequestUrl } from "./backupDownload";
 
-describe("filenameFromContentDisposition", () => {
-  test("uses a quoted server filename", () => {
-    expect(
-      filenameFromContentDisposition(
-        'attachment; filename="bookshelf-backup-full-2026-09-11T020000Z.json"',
-        "full",
-      ),
-    ).toBe("bookshelf-backup-full-2026-09-11T020000Z.json");
+describe("backupFilename", () => {
+  const date = new Date("2026-09-13T01:23:45.678Z");
+
+  test("generates a safe snapshot filename", () => {
+    expect(backupFilename("snapshot", date)).toBe(
+      "bookshelf-backup-snapshot-2026-09-13T012345Z.json",
+    );
   });
 
-  test("decodes an RFC 5987 filename", () => {
-    expect(
-      filenameFromContentDisposition(
-        "attachment; filename*=UTF-8''bookshelf-backup-snapshot.json",
-        "snapshot",
-      ),
-    ).toBe("bookshelf-backup-snapshot.json");
+  test("generates a safe full filename", () => {
+    expect(backupFilename("full", date)).toBe(
+      "bookshelf-backup-full-2026-09-13T012345Z.json",
+    );
   });
-
-  test.each([null, "attachment", 'attachment; filename="../secret.json"'])(
-    "uses a safe fallback for %s",
-    (header) => {
-      expect(filenameFromContentDisposition(header, "snapshot")).toBe(
-        "bookshelf-backup-snapshot.json",
-      );
-    },
-  );
 });
 
 describe("validateBackupRequestUrl", () => {
   test("accepts HTTPS", () => {
     expect(() => {
       validateBackupRequestUrl(
-        new URL("https://api.example.com/backup/full"),
+        new URL("https://api.example.com/v1/backup/full"),
         false,
       );
     }).not.toThrow();
@@ -45,7 +29,7 @@ describe("validateBackupRequestUrl", () => {
   test("rejects public cleartext destinations", () => {
     expect(() => {
       validateBackupRequestUrl(
-        new URL("http://api.example.com/backup/full"),
+        new URL("http://api.example.com/v1/backup/full"),
         false,
       );
     }).toThrow("HTTPS");
@@ -54,7 +38,7 @@ describe("validateBackupRequestUrl", () => {
   test("allows loopback HTTP for local development", () => {
     expect(() => {
       validateBackupRequestUrl(
-        new URL("http://localhost:4000/backup/full"),
+        new URL("http://localhost:4000/v1/backup/full"),
         false,
       );
     }).not.toThrow();
