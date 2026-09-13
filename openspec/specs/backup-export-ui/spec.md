@@ -13,14 +13,17 @@ The frontend SHALL expose `設定` linking directly to `/settings/backup`, whose
 
 ### Requirement: Users can download snapshot and full backups
 Outside demo mode, the frontend SHALL issue authenticated GET requests to
-`/v1/backup/snapshot` and `/v1/backup/full`, treat successful responses as
-opaque Blobs, generate a safe deterministic filename locally, and trigger downloads through a Blob
-object URL without depending on `Content-Disposition`. The HTTP `/v1` version
+`/v1/backup/snapshot` and `/v1/backup/full`, treat successful JSON-compatible
+responses as opaque Blobs, generate a safe deterministic filename locally, and
+trigger downloads through a Blob object URL without depending on
+`Content-Disposition`. A successful response whose media type is not JSON
+compatible SHALL fail without creating a download. The HTTP `/v1` version
 namespace SHALL be treated independently of backup body format `version: 1`.
-Demo mode SHALL use its local mock API without requesting an Auth0 token.
-The real-backend integration suite SHALL verify both download paths, generated
-filenames, and their minimum versioned JSON response contract using data
-created through normal frontend writes.
+Demo mode SHALL serve `/api/v1/backup/snapshot` and `/api/v1/backup/full` from
+its local mock API without requesting an Auth0 token, using the same backup v1
+contract as the real backend. The real-backend integration suite SHALL verify
+both download paths, generated filenames, and their minimum versioned JSON
+response contract using data created through normal frontend writes.
 
 #### Scenario: Export either backup
 - **WHEN** the user activates an export action
@@ -36,6 +39,18 @@ created through normal frontend writes.
   and full backups
 - **THEN** both real backend responses download with frontend-generated scoped
   filenames and minimum backup format version 1 JSON structures
+
+#### Scenario: Export a demo snapshot backup
+- **WHEN** a demo user exports a snapshot backup
+- **THEN** the downloaded file parses as backup v1 JSON with current authors and books and without history
+
+#### Scenario: Export a demo full backup
+- **WHEN** a demo user exports a full backup
+- **THEN** the downloaded file parses as backup v1 JSON with current data and history collections
+
+#### Scenario: Successful response contains a non-JSON media type
+- **WHEN** a backup endpoint returns a successful response with a non-JSON media type
+- **THEN** no file is downloaded and the user sees an error
 
 ### Requirement: Backup download state and errors are visible
 Each action SHALL be disabled and loading while its request is pending, and
