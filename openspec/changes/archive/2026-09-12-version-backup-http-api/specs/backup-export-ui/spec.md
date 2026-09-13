@@ -1,18 +1,21 @@
 ## MODIFIED Requirements
 
 ### Requirement: Users can download snapshot and full backups
-The frontend SHALL issue authenticated GET requests to `/v1/backup/snapshot`
-and `/v1/backup/full`, treat successful responses as opaque Blobs, generate a
-safe deterministic filename locally, and trigger downloads through a Blob
+Outside demo mode, the frontend SHALL issue authenticated GET requests to
+`/v1/backup/snapshot` and `/v1/backup/full`, treat successful responses as
+opaque Blobs, generate a safe deterministic filename locally, and trigger
+downloads through a Blob
 object URL without depending on `Content-Disposition`. The HTTP `/v1` version
 namespace SHALL be treated independently of backup body format `version: 1`.
+Demo mode SHALL use its local mock API without requesting an Auth0 token.
 The real-backend integration suite SHALL verify both download paths, generated
 filenames, and their minimum versioned JSON response contract using data
 created through normal frontend writes.
 
 #### Scenario: Export either backup
 - **WHEN** the user activates an export action
-- **THEN** the corresponding authenticated versioned endpoint response is downloaded
+- **THEN** the corresponding versioned endpoint response is downloaded with
+  authentication outside demo mode
 
 #### Scenario: Generate the download filename
 - **WHEN** a successful backup response is received
