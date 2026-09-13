@@ -1,5 +1,10 @@
 # Changelog
 
+## [v2.18.0](https://github.com/hiterm/bookshelf/compare/v2.17.2...v2.18.0) - 2026-09-13
+
+### Other Changes
+- Add backup export settings by @hiterm in https://github.com/hiterm/bookshelf/pull/360
+
 ## [v2.17.2](https://github.com/hiterm/bookshelf/compare/v2.17.1...v2.17.2) - 2026-09-08
 
 ### Other Changes
