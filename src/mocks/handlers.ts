@@ -1,8 +1,68 @@
-import { graphql, HttpResponse } from "msw";
+import { graphql, http, HttpResponse } from "msw";
 import type { ImportBookInput } from "../generated/graphql-request";
 import { mockStore } from "./mockStore";
 
 const graphqlApi = graphql.link("/api/graphql");
+
+const backupCurrentData = () => ({
+  authors: mockStore.getAllAuthors().map((author) => ({ ...author })),
+  books: mockStore.getAllBooks().map((book) => ({
+    ...book,
+    createdAt: new Date(book.createdAt * 1000).toISOString(),
+    updatedAt: new Date(book.updatedAt * 1000).toISOString(),
+  })),
+});
+
+const backupHistory = () => ({
+  operations: mockStore.getOperations().map((operation) => ({
+    id: operation.id,
+    type: operation.type,
+    detail: operation.detail,
+    undoOfOperationId: null,
+    createdAt: operation.createdAt,
+    changes: {
+      books: operation.bookChanges.map((change) => ({
+        bookId: change.bookId,
+        beforeRevisionNumber: change.beforeRevision?.revisionNumber ?? null,
+        afterRevisionNumber: change.afterRevision?.revisionNumber ?? null,
+      })),
+      authors: operation.authorChanges.map((change) => ({
+        authorId: change.authorId,
+        beforeRevisionNumber: change.beforeRevision?.revisionNumber ?? null,
+        afterRevisionNumber: change.afterRevision?.revisionNumber ?? null,
+      })),
+    },
+  })),
+  bookRevisions: mockStore.getAllBookRevisions().map((revision) => ({
+    bookId: revision.bookId,
+    revisionNumber: revision.revisionNumber,
+    snapshot: {
+      title: revision.title,
+      authorIds: revision.authorIds,
+      isbn: revision.isbn,
+      read: revision.read,
+      owned: revision.owned,
+      priority: revision.priority,
+      format: revision.format,
+      store: revision.store,
+      purchaseDate: revision.purchaseDate,
+      createdAt: revision.bookCreatedAt,
+      updatedAt: revision.bookUpdatedAt,
+    },
+    recordedAt: revision.createdAt,
+  })),
+  authorRevisions: mockStore.getAllAuthorRevisions().map((revision) => ({
+    authorId: revision.authorId,
+    revisionNumber: revision.revisionNumber,
+    snapshot: {
+      name: revision.name,
+      yomi: revision.yomi,
+      createdAt: revision.authorCreatedAt,
+      updatedAt: revision.authorUpdatedAt,
+    },
+    recordedAt: revision.createdAt,
+  })),
+});
 
 function isString(v: unknown): v is string {
   return typeof v === "string";
@@ -44,6 +104,26 @@ function resolveBookAuthors(book: { authorIds: string[] }) {
 }
 
 export const handlers = [
+  http.get("/api/v1/backup/snapshot", () =>
+    HttpResponse.json({
+      format: "bookshelf-backup",
+      version: 1,
+      scope: "snapshot",
+      exportedAt: new Date().toISOString(),
+      data: backupCurrentData(),
+    }),
+  ),
+
+  http.get("/api/v1/backup/full", () =>
+    HttpResponse.json({
+      format: "bookshelf-backup",
+      version: 1,
+      scope: "full",
+      exportedAt: new Date().toISOString(),
+      data: { ...backupCurrentData(), history: backupHistory() },
+    }),
+  ),
+
   graphqlApi.query("loggedInUser", () => {
     return HttpResponse.json({
       data: mockStore.isUserRegistered()

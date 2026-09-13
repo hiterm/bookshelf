@@ -1,13 +1,13 @@
 import type { ImportBookInput } from "../generated/graphql-request";
 
-type Author = {
+export type Author = {
   id: string;
   name: string;
   yomi: string;
   createdAt: string;
   updatedAt: string;
 };
-type Book = {
+export type Book = {
   id: string;
   title: string;
   authorIds: string[];
@@ -21,7 +21,7 @@ type Book = {
   createdAt: number;
   updatedAt: number;
 };
-type AuthorRevision = {
+export type AuthorRevision = {
   authorId: string;
   revisionNumber: number;
   name: string;
@@ -30,7 +30,7 @@ type AuthorRevision = {
   authorUpdatedAt: string;
   createdAt: string;
 };
-type BookRevision = {
+export type BookRevision = {
   bookId: string;
   revisionNumber: number;
   title: string;
@@ -46,7 +46,7 @@ type BookRevision = {
   bookUpdatedAt: string;
   createdAt: string;
 };
-type Operation = {
+export type Operation = {
   id: string;
   type: string;
   detail: Record<string, unknown> | null;
@@ -339,8 +339,14 @@ export class MockStore {
       (revision) => revision.authorId === authorId,
     );
   }
+  getAllAuthorRevisions() {
+    return [...this.authorRevisions];
+  }
   getBookRevisions(bookId: string) {
     return this.bookRevisions.filter((revision) => revision.bookId === bookId);
+  }
+  getAllBookRevisions() {
+    return [...this.bookRevisions];
   }
   getOperations() {
     return this.operations;
