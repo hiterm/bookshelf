@@ -2,6 +2,12 @@ import { apiBaseUrl, isDemoMode } from "../../config";
 
 export type BackupScope = "snapshot" | "full";
 
+export const isJsonContentType = (contentType: string | null): boolean => {
+  if (contentType == null) return false;
+  const mediaType = contentType.split(";", 1)[0].trim().toLowerCase();
+  return mediaType === "application/json" || mediaType.endsWith("+json");
+};
+
 export const backupFilename = (scope: BackupScope, date: Date): string =>
   `bookshelf-backup-${scope}-${date
     .toISOString()
@@ -55,6 +61,9 @@ export const downloadBackup = async (
     headers: token === "" ? {} : { authorization: `Bearer ${token}` },
   });
   if (!response.ok) throw await responseError(response);
+  if (!isJsonContentType(response.headers.get("content-type"))) {
+    throw new Error("バックアップ API が JSON 以外の応答を返しました");
+  }
 
   const blob = await response.blob();
   const objectUrl = URL.createObjectURL(blob);

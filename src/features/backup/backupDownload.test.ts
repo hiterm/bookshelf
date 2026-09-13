@@ -1,4 +1,8 @@
-import { backupFilename, validateBackupRequestUrl } from "./backupDownload";
+import {
+  backupFilename,
+  isJsonContentType,
+  validateBackupRequestUrl,
+} from "./backupDownload";
 
 describe("backupFilename", () => {
   const date = new Date("2026-09-13T01:23:45.678Z");
@@ -14,6 +18,23 @@ describe("backupFilename", () => {
       "bookshelf-backup-full-2026-09-13T012345Z.json",
     );
   });
+});
+
+describe("isJsonContentType", () => {
+  test.each([
+    "application/json",
+    "application/json; charset=utf-8",
+    "application/problem+json",
+  ])("accepts %s", (contentType) => {
+    expect(isJsonContentType(contentType)).toBe(true);
+  });
+
+  test.each([null, "", "text/html", "text/plain; charset=utf-8"])(
+    "rejects %s",
+    (contentType) => {
+      expect(isJsonContentType(contentType)).toBe(false);
+    },
+  );
 });
 
 describe("validateBackupRequestUrl", () => {

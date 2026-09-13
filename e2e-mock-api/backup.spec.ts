@@ -86,3 +86,29 @@ test("reports a full backup HTTP error without a download", async ({
   ).toBeVisible();
   expect(downloaded).toBe(false);
 });
+
+test("rejects an HTML fallback without a download", async ({ page }) => {
+  await page.route(
+    "http://localhost:4000/v1/backup/snapshot",
+    async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "text/html",
+        body: "<!doctype html><title>SPA fallback</title>",
+      });
+    },
+  );
+  let downloaded = false;
+  page.on("download", () => {
+    downloaded = true;
+  });
+
+  await page
+    .getByRole("button", { name: "スナップショットをエクスポート" })
+    .click();
+
+  await expect(
+    page.getByText("バックアップのエクスポートに失敗しました").first(),
+  ).toBeVisible();
+  expect(downloaded).toBe(false);
+});
