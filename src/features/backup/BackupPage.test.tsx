@@ -102,6 +102,9 @@ describe("BackupPage", () => {
     expect(snapshot).toBeDisabled();
     expect(full).toBeEnabled();
     finish?.();
+    await waitFor(() => {
+      expect(snapshot).toBeEnabled();
+    });
   });
 
   test("reports errors", async () => {
