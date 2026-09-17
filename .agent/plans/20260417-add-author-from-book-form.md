@@ -428,7 +428,7 @@ Edit files as described in Plan of Work above.
 
 ## Validation and Acceptance
 
-Start the dev server (`npm start`) and open the app in a browser.
+Start the dev server (`npm run dev`) and open the app in a browser.
 
 Scenario A — Book edit:
 
