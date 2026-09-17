@@ -109,7 +109,7 @@ function RootComponent() {
       }}
       padding="md"
     >
-      {/* 
+      {/*
         Notifications is placed inside RouterProvider context so that
         components like LinkButton inside notifications can access router.
         App.tsx's MantineProvider is outside Auth0Provider/RouterProvider,

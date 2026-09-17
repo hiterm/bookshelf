@@ -4,13 +4,11 @@ This ExecPlan is a living document. The sections `Progress`, `Surprises & Discov
 
 PLANS.md is checked into the repo at `bookshelf/.agent/PLANS.md`. This document must be maintained in accordance with that file.
 
-
 ## Purpose / Big Picture
 
 The repository ships a "demo mode" that lets anyone try the app without a real backend or Auth0 account. In demo mode, a browser-based request interceptor called MSW (Mock Service Worker — a library that registers a service worker in the browser to intercept `fetch` calls and return fake responses, eliminating the need for a real server) handles all GraphQL API calls. A separate Playwright E2E test suite in `e2e-demo/` validates this demo experience end-to-end by building the app, serving it with `vite preview`, and running browser automation against it.
 
 Previously `npm run test:e2e:demo` (Playwright config: `playwright.demo.config.ts`) failed on every test. Users could not trust that the demo mode works correctly, and CI could not catch regressions. After this plan is complete, running the demo test suite with `--workers=4` produces all 6 tests passing, giving confidence that the demo experience is functional.
-
 
 ## Progress
 
@@ -19,7 +17,6 @@ Previously `npm run test:e2e:demo` (Playwright config: `playwright.demo.config.t
 - [x] (2026-03-27 15:20Z) Milestone 3: Verify all demo E2E tests pass with `--workers=4`.
 
 Note on worker counts: diagnostic and intermediate runs used `--workers=1` to minimise overhead and make logs easier to read. The final verification run in Milestone 3 used `--workers=4`, as required by the project's test execution rules.
-
 
 ## Surprises & Discoveries
 
@@ -38,7 +35,6 @@ Note on worker counts: diagnostic and intermediate runs used `--workers=1` to mi
 - Observation: Playwright's accessibility snapshot (ARIA tree) does not show `<Center><Loader /></Center>` in the `<main>` region, even when the component is rendering it. Mantine's `<Loader />` renders as an SVG with `aria-hidden` or equivalent, which is excluded from the accessibility tree. `<Center>` is a plain `<div>` with no accessible role or label, so if its only child is aria-hidden it too is invisible to the accessibility snapshot. The main content area appearing "empty" in the snapshot was a misleading signal — the Loader was visually present.
   Evidence: DOM snapshot showed `- main [ref=e18]` with no children, but the screenshot (11 KB PNG) confirmed the Mantine AppShell was rendered correctly with a spinner in the content area.
 
-
 ## Decision Log
 
 - Decision: Used `window.location.origin` to construct an absolute URL for `graphqlApiUrl` in demo mode (`src/config.ts`), changing `/api/graphql` to `` `${window.location.origin}/api/graphql` ``.
@@ -53,7 +49,6 @@ Note on worker counts: diagnostic and intermediate runs used `--workers=1` to mi
   Rationale: Standard Playwright `page.on('request')` and `page.route()` cannot intercept service-worker-handled requests. The only way to observe an MSW-intercepted response in the Playwright layer is via `page.evaluate`, which runs in the same browser context as the app. The debug test was deleted after root cause was confirmed.
   Date/Author: 2026-03-27
 
-
 ## Outcomes & Retrospective
 
 All 6 demo E2E tests now pass in a single run with `--workers=4` in approximately 7 seconds total (including a 4-second build). The fix is a one-line change in `src/config.ts`.
@@ -65,7 +60,6 @@ The key diagnostic breakthrough was writing a `page.evaluate` test that made a r
 Lesson learned: when debugging MSW + Playwright, the standard Playwright network tooling is blind to service-worker-intercepted traffic. The correct diagnostic tool is `page.evaluate` with a raw fetch.
 
 No follow-up work is required. The fix does not affect the non-demo code path (non-demo uses an absolute URL from `VITE_BOOKSHELF_API`).
-
 
 ## Context and Orientation
 
@@ -111,11 +105,9 @@ This section explains every relevant part of the repository so a complete beginn
 
 **Previously observed failure mode.** Every test timed out. The app rendered a `<Loader />` spinner (invisible in the accessibility tree due to Mantine's aria-hidden markup) and never transitioned to showing data. No GraphQL requests appeared in the Playwright network trace (because Playwright's CDP network log does not capture service-worker-intercepted requests). MSW was correctly enabled. The root cause was that `graphql-request` v7 calls `new URL(params.url)` internally, which throws `TypeError: Invalid URL` for relative paths like `/api/graphql`. This caused TanStack Query to silently retry the query three times with exponential backoff (~7 s total), and the 5 s test timeout expired before all retries exhausted and the error state became visible.
 
-
 ## Plan of Work
 
 The work was divided into three milestones. Milestone 1 gathered evidence. Milestone 2 applied the fix. Milestone 3 verified all tests pass.
-
 
 ### Milestone 1: Reproduce failure and collect diagnostic evidence
 
@@ -130,7 +122,6 @@ The goal was to confirm which hypothesis was correct. Steps taken:
 7. Inspected `graphql-request` v7 source (`node_modules/graphql-request/build/legacy/helpers/runRequest.js`) and found `let url = new URL(params.url)`. Confirmed with `node -e "new URL('/api/graphql')"` → `TypeError: Invalid URL`.
 
 By the end of Milestone 1, the root cause was confirmed: `graphql-request` v7 cannot accept relative URLs; the `URL` constructor requires an absolute URL.
-
 
 ### Milestone 2: Identify root cause and apply fix
 
@@ -151,7 +142,6 @@ To:
 Then removed all diagnostic code: reverted `RegisterCheck` and the MSW handler to their original forms, deleted `e2e-demo/debug.spec.ts`, and restored `playwright.demo.config.ts` to `trace: "off"` and `screenshot: "only-on-failure"`.
 
 Ran `npm run typecheck` and `npm run lint` — both passed with no errors or warnings.
-
 
 ### Milestone 3: Verify all demo E2E tests pass
 
@@ -175,7 +165,6 @@ Output:
       6 passed (7.0s)
 
 All 6 tests pass.
-
 
 ## Concrete Steps
 
@@ -244,7 +233,6 @@ Removed all diagnostic code: reverted `src/routes/__root.tsx`, `src/mocks/handle
 
 All changes are ready. Waiting for user instruction before committing.
 
-
 ## Validation and Acceptance
 
 Acceptance criteria met: running `npm run test:e2e:demo -- --workers=4` from the `bookshelf/` directory produced `6 passed` with no failures.
@@ -262,7 +250,6 @@ Unit tests (`npm run test`) also pass: `1 passed`.
 Typecheck (`npm run typecheck`) passes: no errors.
 Lint (`npm run lint`) passes: no errors or warnings.
 
-
 ## Idempotence and Recovery
 
 All steps are safe to repeat. Running `npm run build` multiple times produces the same output. Running the test suite multiple times does not modify any source files.
@@ -272,7 +259,6 @@ If a fix attempt makes things worse, revert using:
     git checkout -- .
 
 and restart from Step 1 of the Concrete Steps.
-
 
 ## Artifacts and Notes
 
@@ -310,7 +296,6 @@ Final test run:
       ✓  [chromium] › e2e-demo/books.spec.ts:78:1 › deletes book (823ms)
       ✓  [chromium] › e2e-demo/books.spec.ts:12:1 › creates book and displays in list (1.4s)
       6 passed (7.0s)
-
 
 ## Interfaces and Dependencies
 

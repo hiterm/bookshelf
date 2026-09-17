@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "useTabs": false,
+  "tabWidth": 2,
+  "printWidth": 80,
+  "singleQuote": false,
+  "jsxSingleQuote": false,
+  "quoteProps": "as-needed",
+  "trailingComma": "all",
+  "semi": true,
+  "arrowParens": "always",
+  "bracketSameLine": false,
+  "bracketSpacing": true,
+  "ignorePatterns": [
+    "build/**",
+    "dist/**",
+    "src/generated/**",
+    "openspec/changes/archive/**",
+    ".yarn/**",
+    "src/routeTree.gen.ts",
+    "node_modules/**",
+    "public/mockServiceWorker.js",
+    "test-results/**",
+    "playwright-report/**"
+  ]
+}

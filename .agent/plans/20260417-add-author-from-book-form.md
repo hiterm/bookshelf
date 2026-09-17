@@ -4,7 +4,6 @@ This ExecPlan is a living document. The sections `Progress`, `Surprises & Discov
 
 Refer to `.agent/PLANS.md` for the full requirements this document must satisfy.
 
-
 ## Purpose / Big Picture
 
 Currently, when a user edits or creates a book and cannot find the desired author in the author selection field, they must navigate away to the `/authors` page, create the author there, and come back to the book form. This is disruptive.
@@ -12,7 +11,6 @@ Currently, when a user edits or creates a book and cannot find the desired autho
 After this change, users will be able to type an author name in the author field of the book form. If no existing author matches, a "+ Create <name>" option will appear in the dropdown. Selecting it marks the author as "pending" (no API call yet). When the user submits the book form (either "Save" in the edit view or "追加" in the add modal), any pending authors are created via the GraphQL `createAuthor` mutation first, and then the book is saved with the resulting real author IDs.
 
 To see it working: open a book's edit page (`/books/:id/edit`) or the book-add modal on `/books/`. Type a new author name in the author field. Select "+ Create <name>". The author appears as a pill. Press Save / 追加. The book is saved and the new author now exists.
-
 
 ## Progress
 
@@ -27,11 +25,9 @@ To see it working: open a book's edit page (`/books/:id/edit`) or the book-add m
 - [x] (2026-04-17) Run `npm run test && npm run typecheck && npm run lint` and fix any issues
 - [x] (2026-04-17) Commit
 
-
 ## Surprises & Discoveries
 
 - (2026-04-17) After rebasing, `BookForm.tsx` (the old custom hook `useBookForm`) no longer exists. It was split into two pure UI components: `BookCreateForm.tsx` and `BookUpdateForm.tsx`. Both receive a `form: UseFormReturnType<BookFormValues>` prop. The Combobox replacement must be applied to both files independently.
-
 
 ## Decision Log
 
@@ -55,11 +51,9 @@ To see it working: open a book's edit page (`/books/:id/edit`) or the book-add m
   Rationale: CLAUDE.md now prohibits `as` type assertions (added in the refactor-form PR merged to main).
   Date/Author: 2026-04-17
 
-
 ## Outcomes & Retrospective
 
 Completed 2026-04-17. All 5 files modified as planned; `resolvePendingAuthors.ts` created. No test changes were needed — existing tests passed without mocking `useCreateAuthor` (pending author resolution is in `BookDetailEdit`/`BookAddButton`, not the form components). Two rounds of linter fixes were needed: ESLint required braces on void-returning arrow functions, and Biome then reformatted those to multi-line style.
-
 
 ## Context and Orientation
 
@@ -85,30 +79,29 @@ Key files:
 
 The Mantine Combobox API (relevant to this plan):
 
-  `useCombobox(options)` — creates a combobox store. Options include `onDropdownClose` and `onDropdownOpen` callbacks.
+`useCombobox(options)` — creates a combobox store. Options include `onDropdownClose` and `onDropdownOpen` callbacks.
 
-  `<Combobox store={...} onOptionSubmit={handler}>` — wraps the entire combobox. `onOptionSubmit` receives the `value` string of the selected option.
+`<Combobox store={...} onOptionSubmit={handler}>` — wraps the entire combobox. `onOptionSubmit` receives the `value` string of the selected option.
 
-  `<Combobox.DropdownTarget>` — wraps the trigger element (the input).
+`<Combobox.DropdownTarget>` — wraps the trigger element (the input).
 
-  `<PillsInput label="..." error={...}>` — a text input that renders pills inside it. Acts as the visible input for the combobox.
+`<PillsInput label="..." error={...}>` — a text input that renders pills inside it. Acts as the visible input for the combobox.
 
-  `<Pill.Group>` — container for pills inside `PillsInput`.
+`<Pill.Group>` — container for pills inside `PillsInput`.
 
-  `<Pill withRemoveButton onRemove={...}>` — a removable pill (chip).
+`<Pill withRemoveButton onRemove={...}>` — a removable pill (chip).
 
-  `<Combobox.EventsTarget>` — wraps the actual text field inside `PillsInput`.
+`<Combobox.EventsTarget>` — wraps the actual text field inside `PillsInput`.
 
-  `<PillsInput.Field>` — the text input element. Accepts `value`, `onChange`, `onFocus`, `onBlur`, `onKeyDown`.
+`<PillsInput.Field>` — the text input element. Accepts `value`, `onChange`, `onFocus`, `onBlur`, `onKeyDown`.
 
-  `<Combobox.Dropdown>` — the dropdown container.
+`<Combobox.Dropdown>` — the dropdown container.
 
-  `<Combobox.Options>` — the options list container.
+`<Combobox.Options>` — the options list container.
 
-  `<Combobox.Option value="...">` — a single option. The `value` string is passed to `onOptionSubmit`.
+`<Combobox.Option value="...">` — a single option. The `value` string is passed to `onOptionSubmit`.
 
-  `<CheckIcon size={12} />` — imported from `@mantine/core`, used to mark active (already-selected) options.
-
+`<CheckIcon size={12} />` — imported from `@mantine/core`, used to mark active (already-selected) options.
 
 ## Plan of Work
 
@@ -255,7 +248,6 @@ Note: `form.errors.authors` uses `typeof` narrowing (not `as`) to satisfy CLAUDE
 
 The `bookFormSchema` Zod schema validates `authors` as `z.array(z.object({ id: z.string(), name: z.string() })).min(1)`. The `__pending__:` prefix is a plain string so validation passes unchanged.
 
-
 ### Step 2 — Replace the author field in `BookCreateForm.tsx`
 
 File: `src/features/books/BookCreateForm.tsx`
@@ -267,7 +259,6 @@ Merge the new Mantine imports (`CheckIcon, Combobox, Group, Pill, PillsInput, us
 Add `useState` to the React import (currently `import React from 'react'`).
 
 The handler functions and JSX are identical to Step 1.
-
 
 ### Step 3 — Create `resolvePendingAuthors.ts`
 
@@ -293,7 +284,6 @@ Create a new file `src/features/books/resolvePendingAuthors.ts`:
 `Author` is `{ id: string; name: string }` from `src/features/books/entity/Author.ts`.
 
 `createAuthor` is an async callback that creates one author by name and returns its real ID (a string). This keeps the utility free of any React hooks, making it easy to unit-test independently.
-
 
 ### Step 4 — Update `BookDetailEdit.tsx`
 
@@ -333,7 +323,6 @@ Replace the `handleSubmit` function body with:
       await navigate({ to: `/books/$id`, params: { id: book.id } });
       showNotification({ message: '更新しました', color: 'teal' });
     };
-
 
 ### Step 5 — Update `BookAddButton.tsx`
 
@@ -391,7 +380,6 @@ Replace the `submitBook` function body with:
       }
     };
 
-
 ### Step 6 — Update `BookForm.test.tsx`
 
 The test file (`src/features/books/BookForm.test.tsx`) currently tests `BookUpdateForm` and mocks `useAuthors`. Since `BookUpdateForm.tsx` does not import `useCreateAuthor` (pending author resolution happens in `BookDetailEdit.tsx`), no additional mock is needed.
@@ -399,7 +387,6 @@ The test file (`src/features/books/BookForm.test.tsx`) currently tests `BookUpda
 After Step 1, the author field in `BookUpdateForm` changes from `MultiSelect` to a `PillsInput`-based Combobox. The existing tests do not query the author field directly (they query by "書名", "ISBN", checkboxes, and the submit button). Verify all existing tests still pass. If any test breaks due to the `MultiSelect` → `PillsInput` change, update the query to use `findByRole` or `findByLabelText` consistent with the new component.
 
 The test for `combobox` (portals) in Mantine may require `userEvent` interactions; refer to `CLAUDE.md` for Mantine testing docs links if needed.
-
 
 ### Step 7 — Run checks and commit
 
@@ -418,7 +405,6 @@ Fix any errors. Then commit:
             src/features/books/BookAddButton.tsx \
             src/features/books/BookForm.test.tsx
     git commit -m "Add author creation from book form"
-
 
 ## Concrete Steps
 
@@ -440,12 +426,12 @@ Edit files as described in Plan of Work above.
     git add <files>
     git commit -m "Add author creation from book form"
 
-
 ## Validation and Acceptance
 
 Start the dev server (`npm start`) and open the app in a browser.
 
 Scenario A — Book edit:
+
 1. Navigate to an existing book's edit page (`/books/:id/edit`).
 2. In the "著者" field, type a name that does not exist (e.g., "テスト著者").
 3. The dropdown shows "+ Create テスト著者".
@@ -454,6 +440,7 @@ Scenario A — Book edit:
 6. Navigate to `/authors` and confirm "テスト著者" now appears in the author list.
 
 Scenario B — Book add:
+
 1. Click the "追加" button on `/books/`.
 2. In the author field, type a name that does not exist.
 3. The dropdown shows "+ Create <name>".
@@ -462,18 +449,17 @@ Scenario B — Book add:
 6. Navigate to `/authors` and confirm the new author exists.
 
 Scenario C — Existing author:
+
 1. In either form, type an existing author's name.
 2. Confirm the "+ Create" option does NOT appear, only the existing author option.
 
 Scenario D — Tests:
-    npm run test
+npm run test
 All tests pass.
-
 
 ## Idempotence and Recovery
 
 Each file edit is a direct replacement; re-applying the same change is safe. If `npm run test` fails, read the error output, fix the relevant file, and re-run. No database migrations or destructive operations are involved.
-
 
 ## Artifacts and Notes
 
@@ -508,7 +494,6 @@ Official Mantine MultiSelectCreatable example (provided by user, Mantine 8 compa
     }
 
 Key adaptation for this project: instead of `setValue` directly with the search string, we set `form.values.authors` with `{ id: '__pending__:<name>', name }` and defer the actual `createAuthor` API call to submit time.
-
 
 ## Interfaces and Dependencies
 

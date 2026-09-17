@@ -66,6 +66,7 @@ To see it working: open the app, click "本を追加", click "書籍を検索", 
 All steps completed successfully. 3 commits on `book-search` branch.
 
 Notable surprises:
+
 - ESLint's `no-unnecessary-condition` rule treated `Element.textContent` as always `string` (not `string | null`), requiring removal of `?? ""` guards and `?.` optional chains on textContent.
 - `HTMLCollectionOf<Element>[0]` is typed as `Element` (not `Element | undefined`), so `.at(0)` was used instead to get the proper `Element | undefined` type for the publisher element.
 - `SegmentedControl.onChange` gives `string`, requiring a type guard instead of `as BookSearchBackend` (per the no-`as`-assertions rule).
@@ -80,6 +81,7 @@ This is a React + TypeScript single-page application. The UI is built with Manti
 4. Currently, an `ActionIcon` next to the ISBN field triggers `useIsbnLookup`, which calls NDL then Google Books as fallback and auto-fills title and authors.
 
 **Key files:**
+
 - `src/features/books/BookCreateForm.tsx` — form component to be modified
 - `src/features/books/useIsbnLookup.ts` — to be deleted (replaced by `useBookSearch.ts`)
 - `src/features/books/useIsbnLookup.test.ts` — to be deleted
@@ -99,6 +101,7 @@ Google Books search (no proxy needed; supports CORS):
         "industryIdentifiers": [{ "type": "ISBN_13", "identifier": "978..." }] } }] }
 
 Build the `query` string from non-empty fields using Google Books operators:
+
 - 書名: `intitle:{value}`
 - 著者名: `inauthor:{value}`
 - 出版社: `inpublisher:{value}`
@@ -164,6 +167,7 @@ Define and export these types:
     } => { ... };
 
 The `search` function:
+
 1. If all four fields are empty, set state to `idle` and return.
 2. Set state to `loading`.
 3. Call `searchGoogleBooks(query)` or `searchNdl(query)` based on `backend`.
@@ -172,6 +176,7 @@ The `search` function:
 6. Use a `latestRequestIdRef` to discard stale responses (same pattern as `useIsbnLookup.ts`).
 
 `searchGoogleBooks(query: BookSearchQuery): Promise<BookSearchResult[]>`:
+
 - Build query parts array. For each non-empty field: 書名 → `intitle:{title}`, 著者名 → `inauthor:{authorName}`, 出版社 → `inpublisher:{publisher}`, ISBN → `isbn:{isbn.replace(/-/g, "")}`.
 - Combine: `encodeURIComponent(parts.join("+"))`.
 - Fetch `https://www.googleapis.com/books/v1/volumes?q={encoded}&maxResults=10`.
@@ -181,6 +186,7 @@ The `search` function:
 - Filter out items where `title` is falsy.
 
 `searchNdl(query: BookSearchQuery): Promise<BookSearchResult[]>`:
+
 - Build `URLSearchParams` adding only non-empty fields: `title`, `creator` (from authorName), `publisher`, `isbn` (strip hyphens).
 - Fetch `/ndl-proxy/api/opensearch?${params}`.
 - If `response.ok` is false, throw an error.
@@ -231,12 +237,14 @@ Layout inside the Mantine `Modal` (title: "書籍を検索"):
       [results area]
 
 The results area:
+
 - `state.status === "loading"` → `<Loader />`
 - `state.status === "error"` → `<Text c="red">{state.message}</Text>`
 - `state.status === "success" && results.length === 0` → `<Text>見つかりませんでした</Text>`
 - `state.status === "success" && results.length > 0` → scrollable list of result rows
 
 Each result row uses `UnstyledButton` or `Paper` showing:
+
 - Title (bold)
 - Authors joined with "、"
 - Publisher and ISBN on a secondary line (smaller, dimmed color)
@@ -289,6 +297,7 @@ In `src/features/books/BookCreateForm.tsx`:
         />
 
 `data` comes from the existing `useAuthors()` call in the component. Author matching logic:
+
 - First try exact case-insensitive match: `a.name.trim().toLowerCase() === name.trim().toLowerCase()`.
 - Then try fuzzy match by collapsing all whitespace: `normalize(a.name) === normalize(name)`.
 - If still no match: create pending author `{ id: "__pending__:{name}", name }`.
@@ -321,6 +330,7 @@ All commands run from the repository root (`/home/hiterm/ghq/github.com/hiterm/b
 All four commands must exit 0 before committing.
 
 Commit in logical units:
+
 1. Add `useBookSearch.ts` + `useBookSearch.test.ts`
 2. Add `BookSearchDialog.tsx` + `BookSearchDialog.test.tsx`
 3. Modify `BookCreateForm.tsx` + delete `useIsbnLookup.ts` + `useIsbnLookup.test.ts`
@@ -340,25 +350,30 @@ Run the development server:
 Verify these scenarios manually (app typically at `http://localhost:5173`):
 
 Scenario A — Google Books title search:
+
 1. Open "本を追加" form, click "書籍を検索".
 2. Type "Rust プログラミング" in 書名. Click 検索.
 3. Results appear with titles, authors, ISBNs.
 4. Click a result: dialog closes, form fills in.
 
 Scenario B — NDL search:
+
 1. Open dialog, switch SegmentedControl to "NDL（国立国会図書館）".
 2. Type "プログラミング" in 書名. Click 検索.
 3. Results from NDL appear.
 
 Scenario C — ISBN search via Google Books:
+
 1. Open dialog (Google Books selected), type `9784065362433` in ISBN. Click 検索.
 2. Results appear.
 
 Scenario D — Not found:
+
 1. Open dialog, type a nonsense query. Click 検索.
 2. "見つかりませんでした" shown.
 
 Scenario E — Manual ISBN entry:
+
 1. Without using the dialog, type an ISBN directly into the form's ISBN field and submit.
 2. Submission succeeds with the manually entered ISBN.
 
@@ -402,5 +417,6 @@ In `src/features/books/BookSearchDialog.tsx`:
     export const BookSearchDialog: React.FC<BookSearchDialogProps> = (...) => { ... };
 
 Dependencies:
+
 - `useBookSearch` from `./useBookSearch`
 - Mantine `Modal`, `SegmentedControl`, `TextInput`, `Button`, `Stack`, `Text`, `Loader`, `UnstyledButton` from `@mantine/core`
