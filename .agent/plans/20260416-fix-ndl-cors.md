@@ -10,7 +10,7 @@ The ISBN auto-fill button on the book registration form (the "自動入力" butt
 
 After this change, the browser no longer makes a cross-origin request to NDL at all. Instead, it requests a same-origin path (`/ndl-proxy/...`) which is transparently forwarded to NDL by the server:
 
-- In development (`npm run dev`, which runs `vite`): the Vite development server proxies the request.
+- In development (`npm start`, which runs `vite`): the Vite development server proxies the request.
 - In E2E tests (`npm run test:e2e`, which builds and runs `vite preview`): the Vite preview server proxies the request.
 - In production (Vercel): a rewrite rule in `vercel.json` proxies the request.
 
@@ -177,7 +177,7 @@ Step 7 — Commit. Follow the 50/72 rule and present-tense English. A suitable t
 
 Unit tests: run `npm run test`. The suite must pass. The test "calls NDL URL with normalized ISBN" must assert the new relative URL `/ndl-proxy/api/opensearch?isbn=9784065362433` and pass.
 
-Manual verification in dev: run `npm run dev`, navigate to the book registration page, type ISBN `9784065362433` in the ISBN field, and click "自動入力". The title field should populate with the book title and the author field should populate with the author. The browser console must show no CORS errors.
+Manual verification in dev: run `npm start`, navigate to the book registration page, type ISBN `9784065362433` in the ISBN field, and click "自動入力". The title field should populate with the book title and the author field should populate with the author. The browser console must show no CORS errors.
 
 E2E tests are not expected to cover the ISBN auto-fill interaction (the existing E2E tests only fill in the ISBN text field manually and do not click the auto-fill button). If E2E tests are run (`npm run test:e2e`), they should continue to pass without regression.
 
