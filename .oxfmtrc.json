@@ -12,6 +12,7 @@
   "bracketSameLine": false,
   "bracketSpacing": true,
   "ignorePatterns": [
+    "CHANGELOG.md",
     "build/**",
     "dist/**",
     "src/generated/**",

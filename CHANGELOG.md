@@ -3,7 +3,6 @@
 ## [v2.17.2](https://github.com/hiterm/bookshelf/compare/v2.17.1...v2.17.2) - 2026-09-08
 
 ### Other Changes
-
 - Update dependency hiterm/bookshelf-api to v2.15.2 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/326
 - Update npm non-major by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/317
 - Update dependency @testing-library/jest-dom to v7 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/307
@@ -22,13 +21,11 @@
 ## [v2.17.1](https://github.com/hiterm/bookshelf/compare/v2.17.0...v2.17.1) - 2026-08-30
 
 ### Other Changes
-
 - Fix book import purchase-date scope by @hiterm in https://github.com/hiterm/bookshelf/pull/342
 
 ## [v2.17.0](https://github.com/hiterm/bookshelf/compare/v2.16.0...v2.17.0) - 2026-08-29
 
 ### Other Changes
-
 - Generalize book import workflow by @hiterm in https://github.com/hiterm/bookshelf/pull/336
 - Improve Book Import actions by @hiterm in https://github.com/hiterm/bookshelf/pull/338
 - Migrate history to operations by @hiterm in https://github.com/hiterm/bookshelf/pull/339
@@ -37,7 +34,6 @@
 ## [v2.16.0](https://github.com/hiterm/bookshelf/compare/v2.15.0...v2.16.0) - 2026-08-25
 
 ### Other Changes
-
 - Update dependency hiterm/bookshelf-api to v2.13.0 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/322
 - Add Kindle book bulk import by @hiterm in https://github.com/hiterm/bookshelf/pull/325
 - Add author merge workflow by @hiterm in https://github.com/hiterm/bookshelf/pull/324
@@ -55,13 +51,11 @@
 ## [v2.15.0](https://github.com/hiterm/bookshelf/compare/v2.14.1...v2.15.0) - 2026-08-21
 
 ### Other Changes
-
 - Show books on author pages by @hiterm in https://github.com/hiterm/bookshelf/pull/320
 
 ## [v2.14.1](https://github.com/hiterm/bookshelf/compare/v2.14.0...v2.14.1) - 2026-08-16
 
 ### Other Changes
-
 - Update Biome to 2.5.8 by @hiterm in https://github.com/hiterm/bookshelf/pull/313
 - Update npm non-major by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/279
 - Update Node.js to v24.19.0 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/309
@@ -73,14 +67,12 @@
 ## [v2.14.0](https://github.com/hiterm/bookshelf/compare/v2.13.0...v2.14.0) - 2026-08-15
 
 ### Other Changes
-
 - Update TanStack Table to v9 by @hiterm in https://github.com/hiterm/bookshelf/pull/310
 - Add author reading filter and sorting by @hiterm in https://github.com/hiterm/bookshelf/pull/312
 
 ## [v2.13.0](https://github.com/hiterm/bookshelf/compare/v2.12.1...v2.13.0) - 2026-08-13
 
 ### Other Changes
-
 - Clarify testing policy by @hiterm in https://github.com/hiterm/bookshelf/pull/300
 - Document PR description update guidance by @hiterm in https://github.com/hiterm/bookshelf/pull/303
 - Show author readings on book views by @hiterm in https://github.com/hiterm/bookshelf/pull/299
@@ -91,7 +83,6 @@
 ## [v2.12.1](https://github.com/hiterm/bookshelf/compare/v2.12.0...v2.12.1) - 2026-07-21
 
 ### Other Changes
-
 - Adopt tagpr release flow by @hiterm in https://github.com/hiterm/bookshelf/pull/297
 
 ## [v2.12.0](https://github.com/hiterm/bookshelf/compare/v2.11.1...v2.12.0) - 2026-07-21
