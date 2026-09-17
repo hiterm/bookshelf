@@ -14,12 +14,10 @@ bookshelf-api 2.5.0 introduces event history queries (`bookEvents`, `authorEvent
 ## Capabilities
 
 ### New Capabilities
-
 - `book-history`: Display chronological edit history for a single book on its detail page
 - `author-history`: Display chronological edit history for a single author on its detail page
 
 ### Modified Capabilities
-
 <!-- No existing spec-level requirement changes -->
 
 ## Impact

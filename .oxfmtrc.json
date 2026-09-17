@@ -11,11 +11,11 @@
   "arrowParens": "always",
   "bracketSameLine": false,
   "bracketSpacing": true,
-  "sortPackageJson": false,
   "ignorePatterns": [
     "build/**",
     "dist/**",
     "src/generated/**",
+    "openspec/changes/archive/**",
     ".yarn/**",
     "src/routeTree.gen.ts",
     "node_modules/**",

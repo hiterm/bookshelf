@@ -14,11 +14,9 @@ Existing history views explain how one book or author changed, but they do not s
 ## Capabilities
 
 ### New Capabilities
-
 - `event-set-history`: Browse logical-operation history and inspect the book and author events grouped within an EventSet.
 
 ### Modified Capabilities
-
 <!-- No existing spec-level requirement changes -->
 
 ## Impact

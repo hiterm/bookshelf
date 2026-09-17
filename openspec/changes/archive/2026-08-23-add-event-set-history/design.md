@@ -5,14 +5,12 @@ bookshelf already displays entity-scoped BookEvent and AuthorEvent history. The 
 ## Goals / Non-Goals
 
 **Goals:**
-
 - Let users browse logical operations and inspect their grouped event snapshots.
 - Remain usable for large imports by loading the EventSet once while initially collapsing individual event details.
 - Tolerate unknown operation strings, nullable snapshots, absent EventSets, and empty histories.
 - Preserve the existing authenticated SDK, routing, UI, mocking, and testing conventions.
 
 **Non-Goals:**
-
 - Pagination, searching, filtering, EventSet deletion, restoration, or editing.
 - Operation-specific renderers or strong frontend typing for `extra`.
 - Links that probe whether affected books or authors still exist.

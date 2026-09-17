@@ -5,7 +5,6 @@ The frontend is a React application using TanStack Router, TanStack Query, Manti
 ## Goals / Non-Goals
 
 **Goals:**
-
 - Display chronological edit history on the book detail page
 - Display chronological edit history on the author detail page
 - Add GraphQL documents, generated types, and React Query hooks for the new queries
@@ -13,7 +12,6 @@ The frontend is a React application using TanStack Router, TanStack Query, Manti
 - Add unit and E2E test coverage for the new UI sections
 
 **Non-Goals:**
-
 - Restore functionality (`restoreBook`, `restoreAuthor`) — out of scope for this change
 - Real-time or live updates for history entries
 - Pagination or filtering of history entries
@@ -21,7 +19,6 @@ The frontend is a React application using TanStack Router, TanStack Query, Manti
 ## Decisions
 
 ### History displayed as a detail-page section
-
 We will add the history list below the existing detail content on `/books/$id` and `/authors/$id`, rather than creating new sub-routes. This keeps the UX simple and avoids extra navigation.
 
 **Rationale:** Users are likely checking history in the context of the item they are already viewing. A separate page would add friction.
@@ -29,7 +26,6 @@ We will add the history list below the existing detail content on `/books/$id` a
 **Alternative considered:** A dedicated `/books/$id/history` route. Rejected because it adds complexity for a read-only list that fits naturally at the bottom of the existing page.
 
 ### Use simple Mantine Table for history lists
-
 We will use a plain Mantine `Table` component for history entries instead of TanStack React Table.
 
 **Rationale:** TanStack React Table is powerful but adds boilerplate for sorting, filtering, and pagination state. History entries are append-only and typically short; full table features are unnecessary.
@@ -37,11 +33,9 @@ We will use a plain Mantine `Table` component for history entries instead of Tan
 **Alternative considered:** TanStack React Table. Rejected to avoid over-engineering.
 
 ### Reuse existing date formatting
-
 History timestamps will be formatted with `dayjs` in `YYYY/MM/DD HH:mm:ss`, matching the existing `createdAt`/`updatedAt` display in `BookDetailShow`.
 
 ### Resolve author names from IDs in history entries
-
 `BookEventEntry` stores `authorIds`, not resolved author names. We will display the names by looking them up from the existing author cache or using a simple join, following the same pattern used for resolving book authors in mock handlers.
 
 ## Risks / Trade-offs
@@ -52,3 +46,4 @@ History timestamps will be formatted with `dayjs` in `YYYY/MM/DD HH:mm:ss`, matc
   → Mitigation: Keep mock entries minimal (2-3 events per entity) to reduce maintenance burden while still covering test scenarios.
 - [Risk] `BookEventEntry.authorIds` resolution requires author data to be available.
   → Mitigation: In the detail page, authors are already loaded; we can reuse that data. In mocks, ensure mock authors exist for the IDs referenced in history entries.
+
