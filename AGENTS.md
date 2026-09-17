@@ -156,14 +156,15 @@ failures before proceeding:
 
 ```bash
 pnpm run generate   # Regenerate GraphQL types, MSW worker, and route tree
-pnpm run lint:fix    # Auto-fix ESLint and oxfmt format issues
+pnpm run lint:fix    # Auto-fix ESLint issues
+pnpm run format      # Format files with oxfmt
 pnpm run test       # Run unit tests
 pnpm run typecheck  # Run TypeScript type checking
 ```
 
 Never skip these unless the user explicitly instructs you to, or
 the changes are documentation-only (in which case only `pnpm run lint:fix`
-is required).
+and `pnpm run format` are required).
 
 # ExecPlans
 

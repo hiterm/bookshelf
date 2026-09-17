@@ -35,7 +35,7 @@ Start the development server:
 
 ```bash
 npm run generate
-npm start
+npm run dev
 ```
 
 This requires [Bookshelf API](https://github.com/hiterm/bookshelf-api) to be running separately.
@@ -45,7 +45,7 @@ This requires [Bookshelf API](https://github.com/hiterm/bookshelf-api) to be run
 To run the demo locally (without Auth0 and using MSW):
 
 ```bash
-VITE_DEMO_MODE=true npm start
+VITE_DEMO_MODE=true npm run dev
 ```
 
 ## Environment variables
@@ -118,6 +118,6 @@ The book registration form's ISBN auto-fill fetches metadata from the National D
 
 To work around this, the hook calls the relative path `/ndl-proxy/api/opensearch?isbn=...`, which each environment forwards to `https://ndlsearch.ndl.go.jp/api/opensearch?isbn=...`:
 
-- **Development** (`npm start`): Vite dev server proxy configured in `vite.config.ts` under `server.proxy`.
+- **Development** (`npm run dev`): Vite dev server proxy configured in `vite.config.ts` under `server.proxy`.
 - **E2E tests** (`npm run test:e2e:mock-api`): Vite preview server proxy configured in `vite.config.ts` under `preview.proxy`.
 - **Production** (Vercel): Rewrite rule in `vercel.json` forwards `/ndl-proxy/:path*` to `https://ndlsearch.ndl.go.jp/:path*`.
