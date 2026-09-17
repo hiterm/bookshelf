@@ -19,7 +19,6 @@
   },
   "include": [
     "src",
-    "eslint.config.mjs",
     "playwright.config.ts",
     "playwright.demo.config.ts",
     "playwright.integration.config.ts"

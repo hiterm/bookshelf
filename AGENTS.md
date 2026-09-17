@@ -156,7 +156,7 @@ failures before proceeding:
 
 ```bash
 pnpm run generate   # Regenerate GraphQL types, MSW worker, and route tree
-pnpm run lint:fix    # Auto-fix ESLint issues
+pnpm run lint:fix    # Auto-fix Oxlint issues
 pnpm run format      # Format files with oxfmt
 pnpm run test       # Run unit tests
 pnpm run typecheck  # Run TypeScript type checking
