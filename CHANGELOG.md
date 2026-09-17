@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.18.0](https://github.com/hiterm/bookshelf/compare/v2.17.2...v2.18.0) - 2026-09-17
+
+### Other Changes
+- Add backup export settings by @hiterm in https://github.com/hiterm/bookshelf/pull/360
+- Fix backup export test state wait by @hiterm in https://github.com/hiterm/bookshelf/pull/362
+- Migrate frontend formatter to oxfmt by @hiterm in https://github.com/hiterm/bookshelf/pull/363
+- Restore tagpr changelog formatting by @hiterm in https://github.com/hiterm/bookshelf/pull/365
+
 ## [v2.17.2](https://github.com/hiterm/bookshelf/compare/v2.17.1...v2.17.2) - 2026-09-08
 
 ### Other Changes
