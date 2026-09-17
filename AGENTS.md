@@ -110,7 +110,7 @@ the sandbox.
   - Use `e2e-mock-api` (`pnpm run test:e2e:mock-api`) for flows with a mocked
     API.
   - Use `e2e-demo-mode` (`pnpm run test:e2e:demo-mode`) for Demo Mode behavior.
-  - Use `e2e-integration` (`pnpm run test:integration`) for integration with the
+  - Use `e2e-integration` (`pnpm run test:e2e:integration`) for integration with the
     real backend.
 - Test types are not substitutes for one another. Test the same feature at
   multiple layers or in multiple E2E suites when they cover different
