@@ -38,4 +38,3 @@ assertions disagree with production behavior when the test process uses JST.
   format; the purpose of these tests is rendering integration, not Day.js itself.
 - [A shared test helper may be over-generalized later] → Keep its API narrow and
   name it for local timestamp display expectations.
-

@@ -44,4 +44,3 @@ books selected and unintentionally eligible for import.
   predictable safety invariant over comparing reconstructed input arrays.
 - [Retained hidden selections can surprise users when widening the range] → Show
   the effective target count and restore only choices the user previously made.
-

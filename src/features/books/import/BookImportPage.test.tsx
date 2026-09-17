@@ -262,7 +262,7 @@ describe("BookImportPage", () => {
     const follows = (earlier: Node, later: Node) =>
       Boolean(
         earlier.compareDocumentPosition(later) &
-          Node.DOCUMENT_POSITION_FOLLOWING,
+        Node.DOCUMENT_POSITION_FOLLOWING,
       );
 
     expect(follows(source, settings)).toBe(true);

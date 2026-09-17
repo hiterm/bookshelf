@@ -50,13 +50,13 @@ VITE_DEMO_MODE=true npm start
 
 ## Environment variables
 
-| name                 | description                                                                                                                                  |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| VITE_AUTH0_DOMAIN    | Auth0 domain. See https://auth0.com/docs/quickstart/spa/react/interactive.                                                                   |
-| VITE_AUTH0_CLIENT_ID | Auth0 client id. See https://auth0.com/docs/quickstart/spa/react/interactive.                                                                |
-| VITE_AUTH0_AUDIENCE  | The identifier of Bookshelf API. See https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#parameters.                        |
-| VITE_BOOKSHELF_API   | An URL of Bookshelf API endpoint.                                                                                                            |
-| VITE_DEMO_MODE       | If it is 'true', sign-in will be skipped and MSW will intercept GraphQL requests. |
+| name                 | description                                                                                                           |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| VITE_AUTH0_DOMAIN    | Auth0 domain. See https://auth0.com/docs/quickstart/spa/react/interactive.                                            |
+| VITE_AUTH0_CLIENT_ID | Auth0 client id. See https://auth0.com/docs/quickstart/spa/react/interactive.                                         |
+| VITE_AUTH0_AUDIENCE  | The identifier of Bookshelf API. See https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#parameters. |
+| VITE_BOOKSHELF_API   | An URL of Bookshelf API endpoint.                                                                                     |
+| VITE_DEMO_MODE       | If it is 'true', sign-in will be skipped and MSW will intercept GraphQL requests.                                     |
 
 ## Deploy to production
 

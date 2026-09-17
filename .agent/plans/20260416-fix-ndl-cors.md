@@ -4,7 +4,6 @@ This ExecPlan is a living document. The sections `Progress`, `Surprises & Discov
 
 Refer to `.agent/PLANS.md` for the full authoring and maintenance rules that govern this document.
 
-
 ## Purpose / Big Picture
 
 The ISBN auto-fill button on the book registration form (the "自動入力" button) fetches book metadata from the National Diet Library (NDL) OpenSearch API at `https://ndlsearch.ndl.go.jp/api/opensearch`. Browsers enforce the Same-Origin Policy: they will block any cross-origin request whose response does not carry permissive CORS headers. NDL does not send those headers, so the browser refuses the response before the JavaScript code ever sees it. The result is that clicking "自動入力" always fails with a CORS error, and the title/author fields are never populated.
@@ -17,18 +16,15 @@ After this change, the browser no longer makes a cross-origin request to NDL at 
 
 A human can verify the fix by opening the book registration form, typing a real ISBN such as `9784065362433`, clicking "自動入力", and observing that the title and author fields are populated without a CORS error in the browser console.
 
-
 ## Progress
 
 - [x] Milestone 1 — Proxy configuration and hook URL change
 - [x] Milestone 2 — Update unit tests
 - [x] Milestone 3 — Update README.md
 
-
 ## Surprises & Discoveries
 
 (None yet.)
-
 
 ## Decision Log
 
@@ -48,11 +44,9 @@ A human can verify the fix by opening the book registration form, typing a real 
   Rationale: The proxy configuration is non-obvious. A future contributor who sees `/ndl-proxy` paths in the code needs to understand why they exist and what sets them up.
   Date/Author: 2026-04-16
 
-
 ## Outcomes & Retrospective
 
 Completed 2026-04-16. All three milestones landed in a single commit (`1850a15`). The only surprise was a Biome formatter failure: the plan used single quotes and a multi-line `fetch(...)` call, but the project enforces double quotes and Biome collapsed the short call to one line. Fixed before committing.
-
 
 ## Context and Orientation
 
@@ -68,7 +62,6 @@ Key files relevant to this plan:
 - `README.md` — Project documentation. The "How to run locally" section describes the development workflow.
 
 "Proxy" in this context means: the Vite (or Vercel) server intercepts a request from the browser to `/ndl-proxy/...`, strips the `/ndl-proxy` prefix, and forwards the request to `https://ndlsearch.ndl.go.jp/...`. From the browser's perspective the request is same-origin, so no CORS policy applies.
-
 
 ## Plan of Work
 
@@ -134,7 +127,6 @@ Add a new top-level section "NDL Proxy" to `README.md` after the existing "E2E T
 - Where each environment sets up the proxy: Vite dev server and preview server (`vite.config.ts`), Vercel production deployment (`vercel.json`).
 - That the hook calls `/ndl-proxy/api/opensearch?isbn=...`, which each environment forwards to `https://ndlsearch.ndl.go.jp/api/opensearch?isbn=...`.
 
-
 ## Concrete Steps
 
 All commands are run from the repository root (`/home/hiterm/ghq/github.com/hiterm/bookshelf`).
@@ -181,7 +173,6 @@ All four commands must exit with code 0 before committing.
 
 Step 7 — Commit. Follow the 50/72 rule and present-tense English. A suitable title: `Proxy NDL API requests to fix CORS error`. No body is required.
 
-
 ## Validation and Acceptance
 
 Unit tests: run `npm run test`. The suite must pass. The test "calls NDL URL with normalized ISBN" must assert the new relative URL `/ndl-proxy/api/opensearch?isbn=9784065362433` and pass.
@@ -190,11 +181,9 @@ Manual verification in dev: run `npm start`, navigate to the book registration p
 
 E2E tests are not expected to cover the ISBN auto-fill interaction (the existing E2E tests only fill in the ISBN text field manually and do not click the auto-fill button). If E2E tests are run (`npm run test:e2e`), they should continue to pass without regression.
 
-
 ## Idempotence and Recovery
 
 All edits are additive changes to existing files. If something goes wrong mid-way, `git diff` will show the partial state and `git restore <file>` can reset any individual file to the last committed state. Running `npm run test` after each file edit confirms no regression was introduced.
-
 
 ## Artifacts and Notes
 
@@ -223,7 +212,6 @@ The current URL assertion in the unit test (line 67–69):
     expect(mockFetch).toHaveBeenCalledWith(
       "https://ndlsearch.ndl.go.jp/api/opensearch?isbn=9784065362433",
     );
-
 
 ## Interfaces and Dependencies
 

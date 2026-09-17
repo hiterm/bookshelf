@@ -2,7 +2,6 @@
 
 This ExecPlan is a living document. The sections `Progress`, `Surprises & Discoveries`, `Decision Log`, and `Outcomes & Retrospective` must be kept up to date as work proceeds. Maintain this document in accordance with `.agent/PLANS.md`.
 
-
 ## Purpose / Big Picture
 
 Currently all tests in this repository (unit tests, Playwright e2e tests) run against mocked data. The Playwright e2e tests mock both the Auth0 endpoints and the GraphQL API endpoint at the Playwright network level, so they never exercise the real bookshelf-api server.
@@ -11,7 +10,6 @@ After this change, a new CI job called `test-integration` will check out the rea
 
 To see it working: open a pull request and observe the `test-integration` job succeeding in GitHub Actions alongside the existing `test`, `test-e2e`, and `test-e2e-demo` jobs.
 
-
 ## Progress
 
 - [x] Milestone 1 — Copy bookshelf-api test private key and write integration test fixtures
@@ -19,7 +17,6 @@ To see it working: open a pull request and observe the `test-integration` job su
 - [x] Milestone 3 — Add playwright.integration.config.ts and package.json script
 - [x] Milestone 4 — Add test-integration CI job to .github/workflows/ci.yml
 - [x] Milestone 5 — Validate locally (manual run) and verify CI passes
-
 
 ## Surprises & Discoveries
 
@@ -30,7 +27,6 @@ To see it working: open a pull request and observe the `test-integration` job su
 - **`docker run --rm` prevents crash-log collection**: Starting the container with `--rm -d` means a crashed container is auto-removed before `docker logs` can capture output. Removed `--rm` to preserve logs on failure.
 - **bookshelf-api image has no curl/wget**: The production image is based on `debian:trixie-slim` with only `ca-certificates` installed. Docker Compose healthchecks cannot use curl/wget inside the bookshelf-api container; the startup script polls from the host instead.
 - **actionlint/zizmor flag template injection**: Using `${{ steps.api-version.outputs.version }}` directly inside a `run:` block is flagged as a potential injection vector. Fixed by passing the value through `env:` and referencing `$API_VERSION` in the shell command.
-
 
 ## Decision Log
 
@@ -78,12 +74,12 @@ To see it working: open a pull request and observe the `test-integration` job su
   Rationale: While UUID-based isolation avoids data conflicts, starting multiple browser contexts that each register a new user and issue concurrent writes against a single SQLite/Postgres server can cause flakiness in CI. Serial execution is safer as a starting point; parallelism can be re-enabled later once the suite is proven stable.
   Date/Author: 2026-04-23 / Claude
 
-
 ## Outcomes & Retrospective
 
 All 5 milestones completed. PR #224 opened on branch `claude/integration-tests-ci-aokPO`.
 
 **What was built:**
+
 - `e2e-integration/` — fixtures, specs, JWKS server, PEM key, JWKS JSON, tsconfig
 - `playwright.integration.config.ts` — Playwright config pointing at real bookshelf-api
 - `docker-compose.integration.yml` — local dev setup (postgres + jwks-server + bookshelf-api)
@@ -91,6 +87,7 @@ All 5 milestones completed. PR #224 opened on branch `claude/integration-tests-c
 - `.github/workflows/ci.yml` — `test-integration` job added
 
 **CI fixes applied during execution (post-PR):**
+
 1. Removed `--rm` from `docker run` to preserve crash logs
 2. Removed manual psql migration steps (double-migration crash)
 3. Restored `JWKS_URL` env var (needed for HTTP override)
@@ -98,7 +95,6 @@ All 5 milestones completed. PR #224 opened on branch `claude/integration-tests-c
 5. Fixed shellcheck warnings (useless cat, unquoted `$GITHUB_OUTPUT`)
 
 **What remains:** CI green status pending final run. Local validation requires Docker (not available in gVisor cloud environment).
-
 
 ## Context and Orientation
 
@@ -169,7 +165,6 @@ The GraphQL endpoint on bookshelf-api is at `POST /graphql`. The schema used by 
 
 All data belongs to a user identified by the JWT `sub` claim. On first login the frontend must call the `registerUser` mutation (which creates the user row). Subsequent GraphQL queries/mutations are scoped to that user's ID. Because integration tests each generate a new UUID as `sub`, every test run creates a fresh user with no data — providing natural isolation.
 
-
 ## Plan of Work
 
 ### Milestone 1 — Integration test fixtures
@@ -187,24 +182,26 @@ Copy the content of `/home/hiterm/ghq/github.com/hiterm/bookshelf-api/testdata/t
 A minimal Node.js ESM HTTP server that serves `test_jwks.json` on `http://localhost:9999/.well-known/jwks.json`. Example:
 
 ```js
-import http from 'node:http';
-import fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
+import http from "node:http";
+import fs from "node:fs";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
-const jwks = fs.readFileSync(path.join(dir, 'test_jwks.json'), 'utf-8');
+const jwks = fs.readFileSync(path.join(dir, "test_jwks.json"), "utf-8");
 
 const port = process.env.JWKS_SERVER_PORT ?? 9999;
-http.createServer((req, res) => {
-  if (req.url === '/.well-known/jwks.json') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(jwks);
-  } else {
-    res.writeHead(404);
-    res.end();
-  }
-}).listen(port, () => console.log(`JWKS server listening on :${port}`));
+http
+  .createServer((req, res) => {
+    if (req.url === "/.well-known/jwks.json") {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(jwks);
+    } else {
+      res.writeHead(404);
+      res.end();
+    }
+  })
+  .listen(port, () => console.log(`JWKS server listening on :${port}`));
 ```
 
 **Create `e2e-integration/fixtures.ts`**
@@ -374,7 +371,6 @@ Add a new job `test-integration` after the existing jobs. The job must:
         - run: npx playwright install --with-deps chromium
         - run: npm run test:integration
 
-
 ## Concrete Steps
 
 All commands are run from the repository root (`/home/hiterm/ghq/github.com/hiterm/bookshelf`) unless stated otherwise.
@@ -432,7 +428,6 @@ Each step ends with a commit. Run `npm run generate && npm run test && npm run t
 
 The `test-integration` job should pass alongside the other jobs. Inspect the Actions log to confirm the JWKS server started, the API became healthy, and the Playwright tests ran to completion.
 
-
 ## Validation and Acceptance
 
 Run `npm run test:integration` locally with a running bookshelf-api instance. Prerequisites for local validation:
@@ -457,13 +452,11 @@ Expected outcome: all tests in `e2e-integration/` pass. The tests that should ex
 
 In CI, acceptance is the `test-integration` job showing green in GitHub Actions.
 
-
 ## Idempotence and Recovery
 
 Re-running the CI job is safe. Docker pulls are idempotent; the image is pulled by tag and cached by the runner. If the API fails to start within the polling loop, the step exits non-zero and runs `docker logs bookshelf-api` to dump the container log for diagnosis.
 
 The PostgreSQL `CREATE USER` step will fail if the user already exists, but on `ubuntu-latest` runners each job starts with a clean OS image, so this is never a problem in CI.
-
 
 ## Artifacts and Notes
 
@@ -486,7 +479,6 @@ The PostgreSQL `CREATE USER` step will fail if the user already exists, but on `
 **Node.js JWKS server** (`e2e-integration/jwks-server.mjs`) serves `e2e-integration/test_jwks.json` (the public key for `test-key-id`) on port 9999. bookshelf-api validates the `access_token` against this.
 
 **Auth0 JWKS mock** (Playwright route) returns `TEST_PRIVATE_KEY_JWK` public fields. Auth0 browser SDK validates the `id_token` against this.
-
 
 ## Interfaces and Dependencies
 

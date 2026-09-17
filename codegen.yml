@@ -21,8 +21,8 @@ generates:
   src/generated/graphql-request.ts:
     config:
       enumsAsTypes: true
-      importSchemaTypesFrom: 'src/generated/graphql-schema'
-      namespacedImportName: 'Types'
+      importSchemaTypesFrom: "src/generated/graphql-schema"
+      namespacedImportName: "Types"
     plugins:
       - add:
           content: "export * from './graphql-schema';"

@@ -11,8 +11,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "concurrently --group 'eslint_d --max-warnings=0 .' 'biome check --assist-enabled false .'",
-    "lint:fix": "eslint_d --fix . && biome format . --write",
+    "lint": "concurrently --group 'eslint_d --max-warnings=0 .' \"oxfmt --check '**/*.{js,jsx,ts,tsx,mjs,cjs,json,jsonc,md,css,html,yaml,yml}'\"",
+    "lint:fix": "eslint_d --fix . && oxfmt --write '**/*.{js,jsx,ts,tsx,mjs,cjs,json,jsonc,md,css,html,yaml,yml}'",
     "typecheck": "tsc --noEmit && tsc --noEmit -p e2e-mock-api/tsconfig.json && tsc --noEmit -p e2e-demo-mode/tsconfig.json && tsc --noEmit -p e2e-integration/tsconfig.json",
     "generate": "bash scripts/fetch-schema.sh && pnpm run generate:without-fetch",
     "generate:without-fetch": "graphql-codegen --config codegen.yml && msw init && tsr generate",
@@ -55,7 +55,6 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.10",
     "@eslint/js": "9.39.5",
     "@graphql-codegen/cli": "7.3.1",
     "@graphql-codegen/typescript": "6.1.0",
@@ -85,6 +84,7 @@
     "jose": "6.2.10",
     "jsdom": "30.0.1",
     "msw": "2.15.0",
+    "oxfmt": "0.68.0",
     "typescript": "6.0.3",
     "typescript-eslint": "8.68.0",
     "vite": "8.2.2",

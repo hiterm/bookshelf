@@ -11,7 +11,7 @@
 ## 3. Tests
 
 - [x] 3.1 Cover navigation, content, endpoints, authentication, filename,
-  pending state, and failure behavior
+      pending state, and failure behavior
 - [x] 3.2 Add mock API E2E coverage for navigation and download
 
 ## 4. Delivery
