@@ -11,5 +11,7 @@ export const displayBookStore = (store: BookStore): string => {
       return "Kindle";
     case "UNKNOWN":
       return "Unknown";
+    default:
+      return "Unknown";
   }
 };

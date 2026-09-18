@@ -7,6 +7,8 @@ fixes. Both commands use Oxlint. Warnings fail the check.
 native ESLint, TypeScript, React, and import plugins. Selected strict and style
 rules, plus bookshelf's rule options, are listed individually. A small set of
 category rules is disabled to retain the project's existing conventions.
+Side-effect imports are limited to CSS and `@testing-library/jest-dom` matcher
+registration.
 
 Type-aware TypeScript rules run through `oxlint-tsgolint`; keep
 `options.typeAware` enabled and run `pnpm run generate` before linting. Build

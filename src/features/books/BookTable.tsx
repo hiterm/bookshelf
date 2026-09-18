@@ -27,8 +27,8 @@ const SortIcon: React.FC<SortIconProps> = ({ isSorted }) => {
         </ThemeIcon>
       );
     default: {
-      const _exhaustivenessCheck: never = isSorted;
-      throw new Error("Not exhaustive");
+      const exhaustivenessCheck: never = isSorted;
+      throw new Error(`Not exhaustive: ${String(exhaustivenessCheck)}`);
     }
   }
 };

@@ -14,5 +14,7 @@ export const displayBookFormat = (format: BookFormat): string => {
       return "Printed";
     case "UNKNOWN":
       return "Unknown";
+    default:
+      return "Unknown";
   }
 };

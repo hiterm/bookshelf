@@ -58,7 +58,6 @@
         }
       }
     ],
-    "typescript/no-unsafe-type-assertion": "error",
     "typescript/strict-boolean-expressions": [
       "error",
       {
@@ -136,13 +135,13 @@
     "typescript/prefer-promise-reject-errors": "error",
     "typescript/require-await": "error",
     "typescript/use-unknown-in-catch-callback-variable": "error",
-    // Narrow exceptions to the standard categories.
+    // React Compiler is unused, and the JSX transform does not need React in scope.
     "react/incompatible-library": "off",
     "react/react-in-jsx-scope": "off",
-    "import/no-unassigned-import": "off",
-    "no-underscore-dangle": "off",
-    "no-useless-rename": "off",
-    "typescript/consistent-return": "off",
-    "no-shadow": "off"
+    // CSS loads styles; jest-dom registers matchers for component tests.
+    "import/no-unassigned-import": [
+      "error",
+      { "allow": ["**/*.css", "@testing-library/jest-dom"] }
+    ]
   }
 }

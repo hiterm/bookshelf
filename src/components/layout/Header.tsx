@@ -8,7 +8,7 @@ type HeaderProps = { onBurgerClick: () => void; burgerOpened: boolean };
 
 export const HeaderContents: React.FC<HeaderProps> = ({
   onBurgerClick,
-  burgerOpened: burgerOpened,
+  burgerOpened,
 }) => {
   const { isAuthenticated, user, logout } = useAuth0();
 
