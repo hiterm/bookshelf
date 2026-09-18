@@ -39,7 +39,7 @@ type MantineNavLinkProps = Omit<NavLinkProps, "href">;
 const MantineNavLinkComponent = React.forwardRef<
   HTMLAnchorElement,
   MantineNavLinkProps
->(function MantineLinkComponent(props, ref) {
+>(function MantineNavLinkRoot(props, ref) {
   return <NavLink ref={ref} {...props} />;
 });
 
@@ -66,7 +66,7 @@ export function LinkButton<TRouter extends RegisteredRouter, TOptions>(
   props: LinkButtonProps<TRouter, TOptions>,
 ): React.ReactNode;
 export function LinkButton(props: LinkButtonProps): React.ReactNode {
-  const { linkOptions: linkOptions, ...buttonProps } = props;
+  const { linkOptions, ...buttonProps } = props;
   return (
     <Button
       {...buttonProps}

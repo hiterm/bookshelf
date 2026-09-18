@@ -72,10 +72,10 @@ export class MockStore {
   private nextAuthorId = 1;
   private nextBookId = 1;
   private nextOperationId = 1;
-  private _userRegistered: boolean;
+  private userRegistered: boolean;
 
   constructor(options?: { userRegistered?: boolean }) {
-    this._userRegistered = options?.userRegistered ?? true;
+    this.userRegistered = options?.userRegistered ?? true;
     const author1 = this.createAuthor("著者1", "ちょしゃいち");
     const author2 = this.createAuthor("著者2", "ちょしゃに");
     for (const data of [
@@ -106,10 +106,10 @@ export class MockStore {
   }
 
   isUserRegistered() {
-    return this._userRegistered;
+    return this.userRegistered;
   }
   registerUser() {
-    this._userRegistered = true;
+    this.userRegistered = true;
   }
   private timestamp() {
     return new Date().toISOString();
