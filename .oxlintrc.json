@@ -138,6 +138,8 @@
     // React Compiler is unused, and the JSX transform does not need React in scope.
     "react/incompatible-library": "off",
     "react/react-in-jsx-scope": "off",
+    // TypeScript's noImplicitReturns checks return paths using control-flow types.
+    "typescript/consistent-return": "off",
     // CSS loads styles; jest-dom registers matchers for component tests.
     "import/no-unassigned-import": [
       "error",
