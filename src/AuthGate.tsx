@@ -15,7 +15,7 @@ import { router } from "./router";
  * その場合も isLoading が false になった時点で RouterProvider をマウントする。
  * BranchingSignInCheck が Fragment に差し替えられるため認証チェックはスキップされる。
  */
-function AuthGate() {
+function AuthGate(): React.JSX.Element {
   const auth = useAuth0();
   // DEMO モード時は Auth0 初期化エラーになっても RouterProvider をマウントする
   if (auth.isLoading && !isDemoMode) {

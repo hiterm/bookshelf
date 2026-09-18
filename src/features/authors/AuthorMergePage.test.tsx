@@ -35,7 +35,9 @@ const authors = [
   { id: "author-2", name: "統合先", yomi: "とうごうさき" },
 ];
 
-function findAuthor(id: string) {
+function findAuthor(
+  id: string,
+): { id: string; name: string; yomi: string } | null {
   return authors.find((author) => author.id === id) ?? null;
 }
 
@@ -124,7 +126,7 @@ beforeEach(() => {
   });
 });
 
-const renderPage = () =>
+const renderPage = (): ReturnType<typeof render> =>
   render(<AuthorMergePage />, {
     wrapper: ({ children }) => (
       <MantineProvider env="test">
@@ -133,7 +135,7 @@ const renderPage = () =>
     ),
   });
 
-const selectAuthor = async (label: string, option: string) => {
+const selectAuthor = async (label: string, option: string): Promise<void> => {
   await userEvent.click(screen.getByRole("combobox", { name: label }));
   await userEvent.click(screen.getByRole("option", { name: option }));
 };

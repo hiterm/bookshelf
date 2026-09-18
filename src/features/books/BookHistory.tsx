@@ -51,7 +51,7 @@ export const BookHistory: React.FC<BookHistoryProps> = ({
 
   const authorMap = new Map(authors.map((a) => [a.id, a.name]));
 
-  const resolveAuthorNames = (authorIds: string[]) => {
+  const resolveAuthorNames = (authorIds: string[]): string => {
     return authorIds.map((id) => authorMap.get(id) ?? id).join(", ");
   };
 

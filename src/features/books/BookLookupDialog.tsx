@@ -29,7 +29,7 @@ export const BookLookupDialog = ({
   opened,
   onClose,
   onSelect,
-}: BookLookupDialogProps) => {
+}: BookLookupDialogProps): React.JSX.Element => {
   const [backend, setBackend] = useState<BookLookupBackend>("ndl");
   const [title, setTitle] = useState("");
   const [authorName, setAuthorName] = useState("");
@@ -50,7 +50,7 @@ export const BookLookupDialog = ({
     trimmedPublisher === "" &&
     trimmedIsbn === "";
 
-  const handleSearch = () => {
+  const handleSearch = (): void => {
     void search(
       {
         title: trimmedTitle,

@@ -33,7 +33,7 @@ beforeAll(() => {
 
 beforeEach(() => vi.resetAllMocks());
 
-const renderPage = (node: React.ReactNode) =>
+const renderPage = (node: React.ReactNode): ReturnType<typeof render> =>
   render(node, {
     wrapper: ({ children }) => (
       <MantineProvider env="test">{children}</MantineProvider>

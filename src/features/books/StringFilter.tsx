@@ -9,7 +9,9 @@ export type StringFilterProps = {
   column: Column<typeof bookTableFeatures, Book>;
 };
 
-export const StringFilter = ({ column }: StringFilterProps) => {
+export const StringFilter = ({
+  column,
+}: StringFilterProps): React.JSX.Element => {
   const initial = column.getFilterValue();
   const [value, setValue] = useState(
     typeof initial === "string" ? initial : "",

@@ -4,7 +4,7 @@ import { App } from "./App";
 import { isDemoMode } from "./config";
 import "./index.css";
 
-async function main() {
+async function main(): Promise<void> {
   if (isDemoMode) {
     const { worker } = await import("./mocks/browser");
     await worker.start({ onUnhandledRequest: "bypass" });

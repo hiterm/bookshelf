@@ -51,7 +51,7 @@ beforeAll(() => {
   });
 });
 
-const renderPage = () =>
+const renderPage = (): ReturnType<typeof render> =>
   render(<AuthorIndexPage />, {
     wrapper: ({ children }) => (
       <MantineProvider env="test">{children}</MantineProvider>

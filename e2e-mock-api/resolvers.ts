@@ -1,6 +1,11 @@
+import type { makeExecutableSchema } from "@graphql-tools/schema";
 import type { MockStore } from "./mockStore";
 
-export const createResolvers = (mockStore: MockStore) => ({
+type SchemaResolvers = NonNullable<
+  Parameters<typeof makeExecutableSchema>[0]["resolvers"]
+>;
+
+export const createResolvers = (mockStore: MockStore): SchemaResolvers => ({
   Query: {
     loggedInUser: () =>
       mockStore.isUserRegistered() ? { id: "test-user-id" } : null,

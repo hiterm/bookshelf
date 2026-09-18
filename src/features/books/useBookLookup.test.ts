@@ -5,10 +5,10 @@ import { useBookLookup } from "./useBookLookup";
 const DC_NS = "http://purl.org/dc/elements/1.1/";
 const XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
 
-const makeTextResponse = (text: string, ok = true) =>
+const makeTextResponse = (text: string, ok = true): Promise<Response> =>
   Promise.resolve(new Response(text, { status: ok ? 200 : 500 }));
 
-const makeJsonResponse = (body: unknown, ok = true) =>
+const makeJsonResponse = (body: unknown, ok = true): Promise<Response> =>
   Promise.resolve(
     new Response(JSON.stringify(body), {
       status: ok ? 200 : 500,
@@ -16,7 +16,12 @@ const makeJsonResponse = (body: unknown, ok = true) =>
     }),
   );
 
-const ndlXml = (title: string, creators: string[], isbn = "", publisher = "") =>
+const ndlXml = (
+  title: string,
+  creators: string[],
+  isbn = "",
+  publisher = "",
+): string =>
   `<?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:dc="${DC_NS}" xmlns:xsi="${XSI_NS}">
   <channel>
@@ -35,7 +40,7 @@ const googleBooksResponse = (
   authors: string[],
   isbn = "9784065362433",
   publisher = "出版社",
-) =>
+): Promise<Response> =>
   makeJsonResponse({
     items: [
       {

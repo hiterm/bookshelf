@@ -10,7 +10,7 @@ export const Route = createFileRoute("/books/$id")({
   component: RouteComponent,
 });
 
-function RouteComponent() {
+function RouteComponent(): React.JSX.Element {
   return <BookDetailPage />;
 }
 

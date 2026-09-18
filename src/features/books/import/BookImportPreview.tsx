@@ -14,7 +14,7 @@ export const BookImportPreview = ({
   importing,
   onBack,
   onImport,
-}: Props) => {
+}: Props): React.JSX.Element => {
   const authors = preview.books.flatMap((book) => book.authors);
   const existing = authors.filter(
     (author) => author.status === "EXISTING",

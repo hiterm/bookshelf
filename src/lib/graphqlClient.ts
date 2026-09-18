@@ -2,7 +2,7 @@ import { GraphQLClient } from "graphql-request";
 import { getSdk } from "../generated/graphql-request";
 import { graphqlApiUrl, isDemoMode } from "../config";
 
-export const createGraphQLClient = (accessToken?: string) => {
+export const createGraphQLClient = (accessToken?: string): GraphQLSdk => {
   const client = new GraphQLClient(graphqlApiUrl, {
     headers:
       accessToken !== undefined && accessToken !== ""
@@ -14,7 +14,7 @@ export const createGraphQLClient = (accessToken?: string) => {
 
 export const createAuthenticatedSdk = async (
   getAccessTokenSilently: () => Promise<string>,
-) => {
+): Promise<GraphQLSdk> => {
   if (isDemoMode) {
     return createGraphQLClient();
   }

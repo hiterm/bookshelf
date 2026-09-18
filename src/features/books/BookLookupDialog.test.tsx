@@ -23,14 +23,14 @@ beforeAll(() => {
   // Test stub; methods are intentionally no-ops.
   /* eslint-disable @typescript-eslint/no-empty-function */
   global.ResizeObserver = class ResizeObserver {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
   };
   /* eslint-enable @typescript-eslint/no-empty-function */
 });
 
-const mockMatchMedia = () => {
+const mockMatchMedia = (): void => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: vi.fn().mockImplementation((query: string) => ({
@@ -50,7 +50,7 @@ const renderDialog = (props: {
   opened?: boolean;
   onClose?: () => void;
   onSelect?: (result: BookLookupResult) => void;
-}) => {
+}): ReturnType<typeof render> => {
   mockMatchMedia();
   return render(
     <MantineProvider>

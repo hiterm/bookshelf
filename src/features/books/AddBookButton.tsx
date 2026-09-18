@@ -14,11 +14,11 @@ import { resolvePendingAuthors } from "./resolvePendingAuthors";
 export const AddBookButton: React.FC = () => {
   const [open, setOpen] = useState(false);
 
-  const handleDialogOpenClick = () => {
+  const handleDialogOpenClick = (): void => {
     setOpen(true);
   };
 
-  const handleDialogCloseClick = () => {
+  const handleDialogCloseClick = (): void => {
     setOpen(false);
   };
 
@@ -26,7 +26,7 @@ export const AddBookButton: React.FC = () => {
   const createAuthorMutation = useCreateAuthor();
   const { reportError } = useAppError();
 
-  const submitBook = async (value: BookFormValues) => {
+  const submitBook = async (value: BookFormValues): Promise<void> => {
     if (createBookMutation.isPending) return;
 
     let resolvedAuthors: Awaited<ReturnType<typeof resolvePendingAuthors>>;

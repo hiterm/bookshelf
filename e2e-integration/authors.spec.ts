@@ -6,7 +6,7 @@ const AUTHOR_YOMI = "とうごうてすとちょしゃ";
 const UPDATED_AUTHOR_NAME = "更新された統合テスト著者";
 const UPDATED_AUTHOR_YOMI = "こうしんされたとうごうてすとちょしゃ";
 
-async function loginAndRegister(page: Page) {
+async function loginAndRegister(page: Page): Promise<void> {
   await page.goto("/books");
   await page.getByRole("button", { name: "Login" }).click();
   await expect(

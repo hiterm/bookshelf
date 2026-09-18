@@ -5,11 +5,25 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { getRouteApi } from "@tanstack/react-router";
+import type { z } from "zod";
 import { bookColumnFiltersSchema, bookSortingSchema } from "./bookSearch";
 
 const DEFAULT_PAGE_SIZE = 20;
 
-export const useBookTableSearchState = () => {
+type BookTableSearchState = {
+  state: {
+    columnFilters: z.infer<typeof bookColumnFiltersSchema>;
+    sorting: z.infer<typeof bookSortingSchema>;
+    pagination: PaginationState;
+  };
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
+  onSortingChange: OnChangeFn<SortingState>;
+  onPaginationChange: OnChangeFn<PaginationState>;
+  applyUnreadOwnedPreset: () => void;
+  resetSearch: () => void;
+};
+
+export const useBookTableSearchState = (): BookTableSearchState => {
   const routeApi = getRouteApi("/books/");
   const navigate = routeApi.useNavigate();
   const search = routeApi.useSearch();
@@ -72,7 +86,7 @@ export const useBookTableSearchState = () => {
     });
   };
 
-  const applyUnreadOwnedPreset = () => {
+  const applyUnreadOwnedPreset = (): void => {
     void navigate({
       search: (prev) => ({
         ...prev,
@@ -87,7 +101,7 @@ export const useBookTableSearchState = () => {
     });
   };
 
-  const resetSearch = () => {
+  const resetSearch = (): void => {
     void navigate({ search: {}, replace: true });
   };
 

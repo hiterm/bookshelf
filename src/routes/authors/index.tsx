@@ -64,7 +64,7 @@ export const Route = createFileRoute("/authors/")({
   component: RouteComponent,
 });
 
-function RouteComponent() {
+function RouteComponent(): React.JSX.Element {
   return <AuthorIndexPage />;
 }
 
@@ -74,7 +74,7 @@ const RegisterAuthorForm: React.FC = () => {
     initialValues: { name: "", yomi: "" },
     validate: zod4Resolver(authorFormSchema),
   });
-  const handleSubmit = (data: AuthorFormValues) => {
+  const handleSubmit = (data: AuthorFormValues): void => {
     if (createAuthorMutation.isPending) return;
     createAuthorMutation.mutate({ name: data.name, yomi: data.yomi });
   };

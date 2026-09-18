@@ -11,6 +11,11 @@ Side-effect imports are limited to CSS and `@testing-library/jest-dom` matcher
 registration.
 TypeScript's `noImplicitReturns` checks return paths; Oxlint's
 `typescript/consistent-return` is disabled for this purpose.
+The `typescript/explicit-function-return-type` rule requires a return type on
+function declarations, named functions, and methods. Its `allowExpressions`
+option leaves inline callbacks and other contextually typed expressions to
+TypeScript inference. Use a meaningful domain or library type for exported
+functions and hooks rather than widening their return contracts.
 
 Type-aware TypeScript rules run through `oxlint-tsgolint`; keep
 `options.typeAware` enabled and run `pnpm run generate` before linting. Build

@@ -5,6 +5,6 @@ export const Route = createFileRoute("/signin")({
   component: RouteComponent,
 });
 
-function RouteComponent() {
+function RouteComponent(): React.JSX.Element {
   return <SignInScreen />;
 }

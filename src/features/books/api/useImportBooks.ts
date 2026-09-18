@@ -1,10 +1,18 @@
+import type {
+  ImportBooksMutation,
+  ImportBookInput,
+} from "../../../generated/graphql-request";
+import type { UseMutationResult } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { ImportBookInput } from "../../../generated/graphql-request";
 import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
 import { bookQueryKeys } from "./queryKeys";
 
-export const useImportBooks = () => {
+export const useImportBooks = (): UseMutationResult<
+  ImportBooksMutation,
+  Error,
+  ImportBookInput[]
+> => {
   const { getAccessTokenSilently } = useAuth0();
   const queryClient = useQueryClient();
 

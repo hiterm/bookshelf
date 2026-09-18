@@ -15,7 +15,7 @@ const envelopeSchema = z.object({
   data: z.unknown(),
 });
 
-const backupFilename = (scope: "snapshot" | "full") =>
+const backupFilename = (scope: "snapshot" | "full"): RegExp =>
   new RegExp(`^bookshelf-backup-${scope}-\\d{4}-\\d{2}-\\d{2}T\\d{6}Z\\.json$`);
 
 async function readDownloadedJson(download: Download): Promise<unknown> {

@@ -1,5 +1,13 @@
 import type { ImportBookInput } from "../generated/graphql-request";
 
+type ImportPreview = {
+  books: Array<
+    Omit<ImportBookInput, "authorNames"> & {
+      authors: Array<{ name: string; status: "EXISTING" | "NEW" }>;
+    }
+  >;
+};
+
 export type Author = {
   id: string;
   name: string;
@@ -105,13 +113,13 @@ export class MockStore {
       this.createBook(data);
   }
 
-  isUserRegistered() {
+  isUserRegistered(): boolean {
     return this.userRegistered;
   }
-  registerUser() {
+  registerUser(): void {
     this.userRegistered = true;
   }
-  private timestamp() {
+  private timestamp(): string {
     return new Date().toISOString();
   }
   private operation(
@@ -119,7 +127,7 @@ export class MockStore {
     detail: Record<string, unknown> | null,
     bookChanges: Operation["bookChanges"],
     authorChanges: Operation["authorChanges"],
-  ) {
+  ): string {
     const operation: Operation = {
       id: `operation-${String(this.nextOperationId)}`,
       type,
@@ -168,7 +176,7 @@ export class MockStore {
     return revision;
   }
 
-  createAuthor(name: string, yomi = "") {
+  createAuthor(name: string, yomi = ""): Author {
     const createdAt = this.timestamp();
     const author = {
       id: `author-${String(this.nextAuthorId)}`,
@@ -188,13 +196,13 @@ export class MockStore {
     );
     return author;
   }
-  getAuthor(id: string) {
+  getAuthor(id: string): Author | null {
     return this.authors.get(id) ?? null;
   }
-  getAllAuthors() {
+  getAllAuthors(): Author[] {
     return [...this.authors.values()];
   }
-  updateAuthor(id: string, name: string, yomi = "") {
+  updateAuthor(id: string, name: string, yomi = ""): Author | null {
     const current = this.authors.get(id);
     if (current == null) return null;
     const beforeRevision = this.getAuthorRevisions(id)[0] ?? null;
@@ -214,7 +222,7 @@ export class MockStore {
     );
     return author;
   }
-  deleteAuthor(id: string) {
+  deleteAuthor(id: string): boolean {
     const author = this.authors.get(id);
     if (author == null) return false;
     const beforeRevision =
@@ -228,7 +236,10 @@ export class MockStore {
     );
     return true;
   }
-  mergeAuthor(sourceAuthorId: string, destinationAuthorId: string) {
+  mergeAuthor(
+    sourceAuthorId: string,
+    destinationAuthorId: string,
+  ): { author: Author; operationId: string } | null {
     const source = this.authors.get(sourceAuthorId);
     const author = this.authors.get(destinationAuthorId);
     if (
@@ -272,7 +283,7 @@ export class MockStore {
   createBook(
     bookData: Omit<Book, "id" | "createdAt" | "updatedAt" | "purchaseDate"> &
       Pick<Partial<Book>, "purchaseDate">,
-  ) {
+  ): Book {
     const now = Math.floor(Date.now() / 1000);
     const book = {
       ...bookData,
@@ -292,17 +303,17 @@ export class MockStore {
     );
     return book;
   }
-  getBook(id: string) {
+  getBook(id: string): Book | null {
     return this.books.get(id) ?? null;
   }
-  getAllBooks() {
+  getAllBooks(): Book[] {
     return [...this.books.values()];
   }
   updateBook(
     bookData: { id: string } & Partial<
       Omit<Book, "id" | "createdAt" | "updatedAt">
     >,
-  ) {
+  ): Book | null {
     const current = this.books.get(bookData.id);
     if (current == null) return null;
     const beforeRevision = this.getBookRevisions(bookData.id)[0] ?? null;
@@ -321,7 +332,7 @@ export class MockStore {
     );
     return book;
   }
-  deleteBook(id: string) {
+  deleteBook(id: string): boolean {
     const book = this.books.get(id);
     if (book == null) return false;
     const beforeRevision = this.getBookRevisions(id)[0] ?? null;
@@ -334,27 +345,30 @@ export class MockStore {
     );
     return true;
   }
-  getAuthorRevisions(authorId: string) {
+  getAuthorRevisions(authorId: string): AuthorRevision[] {
     return this.authorRevisions.filter(
       (revision) => revision.authorId === authorId,
     );
   }
-  getAllAuthorRevisions() {
+  getAllAuthorRevisions(): AuthorRevision[] {
     return [...this.authorRevisions];
   }
-  getBookRevisions(bookId: string) {
+  getBookRevisions(bookId: string): BookRevision[] {
     return this.bookRevisions.filter((revision) => revision.bookId === bookId);
   }
-  getAllBookRevisions() {
+  getAllBookRevisions(): BookRevision[] {
     return [...this.bookRevisions];
   }
-  getOperations() {
+  getOperations(): Operation[] {
     return this.operations;
   }
-  getOperation(id: string) {
+  getOperation(id: string): Operation | null {
     return this.operations.find((operation) => operation.id === id) ?? null;
   }
-  restoreAuthor(authorId: string, revisionNumber: number) {
+  restoreAuthor(
+    authorId: string,
+    revisionNumber: number,
+  ): { author: Author; operationId: string; revisionNumber: number } | null {
     const source = this.getAuthorRevisions(authorId).find(
       (revision) => revision.revisionNumber === revisionNumber,
     );
@@ -381,7 +395,10 @@ export class MockStore {
       revisionNumber: afterRevision.revisionNumber,
     };
   }
-  restoreBook(bookId: string, revisionNumber: number) {
+  restoreBook(
+    bookId: string,
+    revisionNumber: number,
+  ): { book: Book; operationId: string; revisionNumber: number } | null {
     const source = this.getBookRevisions(bookId).find(
       (revision) => revision.revisionNumber === revisionNumber,
     );
@@ -411,7 +428,7 @@ export class MockStore {
     );
     return { book, operationId, revisionNumber: afterRevision.revisionNumber };
   }
-  previewBookImport(bookInputs: ImportBookInput[]) {
+  previewBookImport(bookInputs: ImportBookInput[]): ImportPreview {
     const existing = new Set(this.getAllAuthors().map(({ name }) => name));
     return {
       books: bookInputs.map(({ authorNames, ...book }) => ({
@@ -423,7 +440,10 @@ export class MockStore {
       })),
     };
   }
-  importBooks(bookInputs: ImportBookInput[]) {
+  importBooks(bookInputs: ImportBookInput[]): {
+    operationId: string;
+    books: Book[];
+  } {
     const start = this.operations.length;
     const books = bookInputs.map(({ authorNames, ...bookData }) => {
       const authorIds = authorNames.map(

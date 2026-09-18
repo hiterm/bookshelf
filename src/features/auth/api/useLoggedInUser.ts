@@ -1,9 +1,11 @@
+import type { LoggedInUserQuery } from "../../../generated/graphql-request";
+import type { UseQueryResult } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
 import { authQueryKeys } from "./queryKeys";
 
-export const useLoggedInUser = () => {
+export const useLoggedInUser = (): UseQueryResult<LoggedInUserQuery> => {
   const { getAccessTokenSilently } = useAuth0();
 
   return useQuery({

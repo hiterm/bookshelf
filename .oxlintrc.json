@@ -95,6 +95,12 @@
       }
     ],
     "typescript/return-await": ["error", "error-handling-correctness-only"],
+    "typescript/explicit-function-return-type": [
+      "error",
+      {
+        "allowExpressions": true
+      }
+    ],
     // Selected checks outside the standard categories.
     "import/export": "error",
     "import/no-duplicates": "warn",

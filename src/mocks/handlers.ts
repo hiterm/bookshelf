@@ -1,10 +1,72 @@
 import { graphql, http, HttpResponse } from "msw";
 import type { ImportBookInput } from "../generated/graphql-request";
 import { mockStore } from "./mockStore";
+import type { Author, Book } from "./mockStore";
 
 const graphqlApi = graphql.link("/api/graphql");
 
-const backupCurrentData = () => ({
+type BackupSnapshot = {
+  authors: Author[];
+  books: Array<
+    Omit<Book, "createdAt" | "updatedAt"> & {
+      createdAt: string;
+      updatedAt: string;
+    }
+  >;
+};
+
+type BackupHistory = {
+  operations: Array<{
+    id: string;
+    type: string;
+    detail: Record<string, unknown> | null;
+    undoOfOperationId: null;
+    createdAt: string;
+    changes: {
+      books: Array<{
+        bookId: string;
+        beforeRevisionNumber: number | null;
+        afterRevisionNumber: number | null;
+      }>;
+      authors: Array<{
+        authorId: string;
+        beforeRevisionNumber: number | null;
+        afterRevisionNumber: number | null;
+      }>;
+    };
+  }>;
+  bookRevisions: Array<{
+    bookId: string;
+    revisionNumber: number;
+    snapshot: {
+      title: string;
+      authorIds: string[];
+      isbn: string;
+      read: boolean;
+      owned: boolean;
+      priority: number;
+      format: string;
+      store: string;
+      purchaseDate: string | null;
+      createdAt: string;
+      updatedAt: string;
+    };
+    recordedAt: string;
+  }>;
+  authorRevisions: Array<{
+    authorId: string;
+    revisionNumber: number;
+    snapshot: {
+      name: string;
+      yomi: string;
+      createdAt: string;
+      updatedAt: string;
+    };
+    recordedAt: string;
+  }>;
+};
+
+const backupCurrentData = (): BackupSnapshot => ({
   authors: mockStore.getAllAuthors().map((author) => ({ ...author })),
   books: mockStore.getAllBooks().map((book) => ({
     ...book,
@@ -13,7 +75,7 @@ const backupCurrentData = () => ({
   })),
 });
 
-const backupHistory = () => ({
+const backupHistory = (): BackupHistory => ({
   operations: mockStore.getOperations().map((operation) => ({
     id: operation.id,
     type: operation.type,
@@ -75,7 +137,7 @@ function isObject(v: unknown): v is Record<string, unknown> {
 export const assignPurchaseDateUpdate = (
   update: { purchaseDate?: string | null },
   purchaseDate: unknown,
-) => {
+): void => {
   if (purchaseDate === null || isString(purchaseDate)) {
     update.purchaseDate = purchaseDate;
   }
@@ -96,7 +158,9 @@ function isImportBookInput(v: unknown): v is ImportBookInput {
   );
 }
 
-function resolveBookAuthors(book: { authorIds: string[] }) {
+function resolveBookAuthors(book: {
+  authorIds: string[];
+}): Array<Author & { __typename: string }> {
   return book.authorIds
     .map((id) => mockStore.getAuthor(id))
     .filter((author): author is NonNullable<typeof author> => author !== null)

@@ -9,7 +9,7 @@ type Props = {
 export const BookImportActionBar = ({
   children,
   mobileOnly = false,
-}: Props) => (
+}: Props): React.JSX.Element => (
   <>
     <Paper
       aria-hidden="true"

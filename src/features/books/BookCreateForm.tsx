@@ -56,7 +56,8 @@ export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
         onSelect={(result) => {
           form.setFieldValue("title", result.title);
           form.setFieldValue("isbn", result.isbn);
-          const normalize = (s: string) => s.replace(/\s+/g, "").toLowerCase();
+          const normalize = (s: string): string =>
+            s.replace(/\s+/g, "").toLowerCase();
           const resolvedAuthors = result.authorNames
             .map((name) => name.trim().replace(/\s+/g, " "))
             .filter((name) => name !== "")

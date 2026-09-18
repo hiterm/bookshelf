@@ -29,7 +29,7 @@ export const BookImportSettings = ({
   busy,
   onChange,
   onPreview,
-}: Props) => (
+}: Props): React.JSX.Element => (
   <Stack
     className={classes.root}
     p="md"

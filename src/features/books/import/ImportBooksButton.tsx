@@ -1,7 +1,7 @@
 import { Button } from "@mantine/core";
 import { useNavigate } from "@tanstack/react-router";
 
-export const ImportBooksButton = () => {
+export const ImportBooksButton = (): React.JSX.Element => {
   const navigate = useNavigate();
 
   return (
