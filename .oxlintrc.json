@@ -3,9 +3,7 @@
   "plugins": ["eslint", "typescript", "react", "import"],
   "categories": {
     "correctness": "error",
-    "suspicious": "error",
-    "pedantic": "error",
-    "style": "error"
+    "suspicious": "error"
   },
   "options": {
     "typeAware": true
@@ -28,7 +26,7 @@
     }
   },
   "rules": {
-    // Bookshelf conventions and strict options that differ from category defaults.
+    // Project options and strict type-aware behavior.
     "eqeqeq": ["error", "smart"],
     "no-plusplus": [
       "error",
@@ -51,8 +49,6 @@
         "additionalHooks": "useDebouncedEffect"
       }
     ],
-    "react/incompatible-library": "off",
-    "react/unsupported-syntax": "warn",
     "typescript/no-misused-promises": [
       "error",
       {
@@ -72,7 +68,12 @@
       }
     ],
     "typescript/consistent-type-definitions": ["warn", "type"],
-    "typescript/ban-ts-comment": ["error", { "minimumDescriptionLength": 10 }],
+    "typescript/ban-ts-comment": [
+      "error",
+      {
+        "minimumDescriptionLength": 10
+      }
+    ],
     "typescript/restrict-plus-operands": [
       "error",
       {
@@ -95,86 +96,53 @@
       }
     ],
     "typescript/return-await": ["error", "error-handling-correctness-only"],
-    // Checks from the previous policy that the selected categories do not enable.
-    "import/no-duplicates": "warn",
+    // Selected checks outside the standard categories.
     "import/export": "error",
+    "import/no-duplicates": "warn",
+    "no-case-declarations": "error",
     "no-empty": "error",
     "no-empty-function": "error",
+    "no-fallthrough": "error",
+    "no-prototype-builtins": "error",
+    "no-redeclare": "error",
     "no-regex-spaces": "error",
     "no-var": "error",
+    "react/jsx-no-target-blank": "error",
     "react/no-unknown-property": "error",
     "react/require-render-return": "error",
+    "react/rules-of-hooks": "error",
+    "react/unsupported-syntax": "warn",
+    "typescript/no-confusing-void-expression": "error",
+    "typescript/no-deprecated": "error",
     "typescript/no-dynamic-delete": "error",
     "typescript/no-empty-object-type": "error",
     "typescript/no-explicit-any": "error",
     "typescript/no-invalid-void-type": "error",
+    "typescript/no-mixed-enums": "error",
     "typescript/no-namespace": "error",
     "typescript/no-non-null-asserted-nullish-coalescing": "error",
     "typescript/no-non-null-assertion": "error",
     "typescript/no-require-imports": "error",
     "typescript/no-unnecessary-condition": "error",
-    "typescript/non-nullable-type-assertion-style": "error",
-    "typescript/prefer-literal-enum-member": "error",
+    "typescript/no-unsafe-argument": "error",
+    "typescript/no-unsafe-assignment": "error",
+    "typescript/no-unsafe-call": "error",
+    "typescript/no-unsafe-function-type": "error",
+    "typescript/no-unsafe-member-access": "error",
+    "typescript/no-unsafe-return": "error",
+    "typescript/only-throw-error": "error",
+    "typescript/prefer-nullish-coalescing": "error",
     "typescript/prefer-optional-chain": "error",
+    "typescript/prefer-promise-reject-errors": "error",
+    "typescript/require-await": "error",
     "typescript/use-unknown-in-catch-callback-variable": "error",
-    // Broad categories also include policies this repository does not adopt.
-    "arrow-body-style": "off",
-    "capitalized-comments": "off",
-    "curly": "off",
-    "func-style": "off",
-    "id-length": "off",
-    "import/consistent-type-specifier-style": "off",
-    "import/default": "off",
-    "import/exports-last": "off",
-    "import/first": "off",
-    "import/group-exports": "off",
-    "import/max-dependencies": "off",
-    "import/named": "off",
-    "import/namespace": "off",
-    "import/no-named-as-default": "off",
-    "import/no-named-as-default-member": "off",
-    "import/no-named-export": "off",
-    "import/no-namespace": "off",
-    "import/no-nodejs-modules": "off",
+    // Narrow exceptions to the standard categories.
+    "react/incompatible-library": "off",
+    "react/react-in-jsx-scope": "off",
     "import/no-unassigned-import": "off",
-    "import/prefer-default-export": "off",
-    "init-declarations": "off",
-    "max-lines": "off",
-    "max-lines-per-function": "off",
-    "max-params": "off",
-    "max-statements": "off",
-    "no-continue": "off",
-    "no-duplicate-imports": "off",
-    "no-inline-comments": "off",
-    "no-magic-numbers": "off",
-    "no-negated-condition": "off",
-    "no-nested-ternary": "off",
-    "no-promise-executor-return": "off",
-    "no-shadow": "off",
-    "no-ternary": "off",
     "no-underscore-dangle": "off",
     "no-useless-rename": "off",
-    "one-var": "off",
-    "prefer-arrow-callback": "off",
-    "prefer-destructuring": "off",
-    "prefer-named-capture-group": "off",
-    "react/function-component-definition": "off",
-    "react/jsx-boolean-value": "off",
-    "react/jsx-curly-brace-presence": "off",
-    "react/jsx-fragments": "off",
-    "react/jsx-handler-names": "off",
-    "react/jsx-max-depth": "off",
-    "react/jsx-no-useless-fragment": "off",
-    "react/jsx-props-no-spreading": "off",
-    "react/react-in-jsx-scope": "off",
-    "require-unicode-regexp": "off",
-    "sort-imports": "off",
-    "sort-keys": "off",
     "typescript/consistent-return": "off",
-    "typescript/consistent-type-imports": "off",
-    "typescript/prefer-readonly": "off",
-    "typescript/prefer-readonly-parameter-types": "off",
-    "typescript/strict-void-return": "off",
-    "typescript/switch-exhaustiveness-check": "off"
+    "no-shadow": "off"
   }
 }
