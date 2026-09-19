@@ -145,4 +145,3 @@ describe("ErrorPanel", () => {
     });
   });
 });
-import "@testing-library/jest-dom";

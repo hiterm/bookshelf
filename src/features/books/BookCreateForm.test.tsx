@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
