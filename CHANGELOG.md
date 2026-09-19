@@ -1,5 +1,12 @@
 # Changelog
 
+## [v2.18.2](https://github.com/hiterm/bookshelf/compare/v2.18.1...v2.18.2) - 2026-09-19
+
+### Other Changes
+- Update dependency typescript to v7 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/280
+- Upgrade Vitest to version 5 by @hiterm in https://github.com/hiterm/bookshelf/pull/372
+- Update Node.js to v24.20.0 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/349
+
 ## [v2.18.1](https://github.com/hiterm/bookshelf/compare/v2.18.0...v2.18.1) - 2026-09-19
 
 ### Other Changes
