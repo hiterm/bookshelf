@@ -1,10 +1,18 @@
+import type {
+  UpdateAuthorMutation,
+  UpdateAuthorInput,
+} from "../../../generated/graphql-request";
+import type { UseMutationResult } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { UpdateAuthorInput } from "../../../generated/graphql-request";
 import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
 import { authorQueryKeys } from "./queryKeys";
 
-export const useUpdateAuthor = () => {
+export const useUpdateAuthor = (): UseMutationResult<
+  UpdateAuthorMutation,
+  Error,
+  UpdateAuthorInput
+> => {
   const { getAccessTokenSilently } = useAuth0();
   const queryClient = useQueryClient();
 

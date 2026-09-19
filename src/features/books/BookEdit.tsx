@@ -22,7 +22,7 @@ export const BookEdit: React.FC<{ book: Book }> = (props) => {
   const createAuthorMutation = useCreateAuthor();
   const { reportError } = useAppError();
 
-  const handleSubmit = async (values: BookFormValues) => {
+  const handleSubmit = async (values: BookFormValues): Promise<void> => {
     let resolvedAuthors: Awaited<ReturnType<typeof resolvePendingAuthors>>;
     try {
       resolvedAuthors = await resolvePendingAuthors(

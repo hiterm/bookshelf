@@ -5,7 +5,7 @@ export const Route = createFileRoute("/history/$operationId")({
   component: HistoryDetailRoute,
 });
 
-function HistoryDetailRoute() {
+function HistoryDetailRoute(): React.JSX.Element {
   const { operationId } = Route.useParams();
   return <HistoryDetailPage operationId={operationId} />;
 }

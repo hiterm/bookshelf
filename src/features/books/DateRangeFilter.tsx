@@ -9,9 +9,9 @@ export const DateRangeFilter = ({
   column,
 }: {
   column: Column<typeof bookTableFeatures, Book>;
-}) => {
+}): React.JSX.Element => {
   const value = (column.getFilterValue() ?? {}) as DateRangeFilterValue;
-  const update = (key: keyof DateRangeFilterValue, next: string) => {
+  const update = (key: keyof DateRangeFilterValue, next: string): void => {
     const range = { ...value, [key]: next === "" ? undefined : next };
     column.setFilterValue(
       range.from == null && range.to == null ? undefined : range,

@@ -23,7 +23,7 @@ beforeAll(() => {
   });
 });
 
-const Reporter = () => {
+const Reporter = (): React.JSX.Element => {
   const { reportError } = useAppError();
   return (
     <>
@@ -51,7 +51,7 @@ const Reporter = () => {
   );
 };
 
-const renderPanel = () =>
+const renderPanel = (): ReturnType<typeof render> =>
   render(
     <MantineProvider env="test">
       <AppErrorProvider>

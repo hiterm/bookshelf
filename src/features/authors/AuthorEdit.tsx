@@ -26,7 +26,7 @@ export const AuthorEdit: React.FC<{ author: Author }> = ({ author }) => {
     validateInputOnBlur: true,
   });
 
-  const handleSubmit = async (values: AuthorFormValues) => {
+  const handleSubmit = async (values: AuthorFormValues): Promise<void> => {
     try {
       await updateAuthorMutation.mutateAsync({
         id: author.id,

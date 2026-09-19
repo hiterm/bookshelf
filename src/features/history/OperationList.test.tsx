@@ -31,7 +31,11 @@ vi.mock("../../components/mantineTsr", () => ({
   ),
 }));
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
+const wrapper = ({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.JSX.Element => (
   <MantineProvider env="test">{children}</MantineProvider>
 );
 

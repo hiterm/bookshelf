@@ -8,7 +8,7 @@ const selectFilterOption = async (
   page: Page,
   testId: string,
   optionName: string,
-) => {
+): Promise<void> => {
   await page.getByTestId(testId).getByRole("combobox").click();
   await page.getByRole("option", { name: optionName }).click();
 };

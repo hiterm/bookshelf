@@ -26,13 +26,13 @@ vi.mocked(useAuthors, { partial: true }).mockReturnValue({
 // mock ResizeObserver
 beforeAll(() => {
   global.ResizeObserver = class ResizeObserver {
-    observe() {
+    observe(): void {
       // do nothing
     }
-    unobserve() {
+    unobserve(): void {
       // do nothing
     }
-    disconnect() {
+    disconnect(): void {
       // do nothing
     }
   };
@@ -67,7 +67,7 @@ const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
   );
 };
 
-const mockMatchMedia = () => {
+const mockMatchMedia = (): void => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: vi.fn().mockImplementation((query: string) => ({

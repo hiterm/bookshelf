@@ -16,10 +16,10 @@ const backupEnvelopeSchema = z.object({
   data: z.unknown(),
 });
 
-const backupFilename = (scope: "snapshot" | "full") =>
+const backupFilename = (scope: "snapshot" | "full"): RegExp =>
   new RegExp(`^bookshelf-backup-${scope}-\\d{4}-\\d{2}-\\d{2}T\\d{6}Z\\.json$`);
 
-async function loginAndRegister(page: Page) {
+async function loginAndRegister(page: Page): Promise<void> {
   await page.goto("/books");
   await page.getByRole("button", { name: "Login" }).click();
   await expect(
@@ -29,7 +29,9 @@ async function loginAndRegister(page: Page) {
   await expect(page).toHaveURL(/\/books$/);
 }
 
-async function createLibraryData(page: Page) {
+async function createLibraryData(
+  page: Page,
+): Promise<{ authorName: string; bookTitle: string }> {
   const suffix = crypto.randomUUID();
   const authorName = `バックアップ統合著者-${suffix}`;
   const bookTitle = `バックアップ統合書籍-${suffix}`;

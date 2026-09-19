@@ -1,9 +1,15 @@
+import type { RegisterUserMutation } from "../../../generated/graphql-request";
+import type { UseMutationResult } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
 import { authQueryKeys } from "./queryKeys";
 
-export const useRegisterUser = () => {
+export const useRegisterUser = (): UseMutationResult<
+  RegisterUserMutation,
+  Error,
+  void
+> => {
   const { getAccessTokenSilently } = useAuth0();
   const queryClient = useQueryClient();
 

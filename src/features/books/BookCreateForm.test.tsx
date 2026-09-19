@@ -33,11 +33,11 @@ vi.mocked(useBookLookup).mockReturnValue({
 beforeAll(() => {
   global.ResizeObserver = class ResizeObserver {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    observe() {}
+    observe(): void {}
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    unobserve() {}
+    unobserve(): void {}
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    disconnect() {}
+    disconnect(): void {}
   };
 });
 
@@ -69,7 +69,7 @@ const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
   );
 };
 
-const mockMatchMedia = () => {
+const mockMatchMedia = (): void => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: vi.fn().mockImplementation((query: string) => ({

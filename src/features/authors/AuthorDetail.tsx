@@ -26,7 +26,7 @@ const DeleteButton: React.FC<{ author: Author }> = ({ author }) => {
   const { reportError } = useAppError();
   const navigate = useNavigate();
 
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     try {
       await mutation.mutateAsync(author.id);
       await navigate({ to: "/authors" });

@@ -3,7 +3,11 @@ import { Link } from "../../components/mantineTsr";
 import { useOperation } from "../../features/history/api/useOperation";
 import { OperationDetail } from "../../features/history/OperationDetail";
 
-export function HistoryDetailPage({ operationId }: { operationId: string }) {
+export function HistoryDetailPage({
+  operationId,
+}: {
+  operationId: string;
+}): React.JSX.Element {
   const { data, isLoading, error } = useOperation(operationId);
   if (error != null) {
     return <Alert color="red">変更履歴を読み込めませんでした</Alert>;

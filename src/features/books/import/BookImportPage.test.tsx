@@ -38,9 +38,9 @@ beforeAll(() => {
   // Test stub; methods are intentionally no-ops.
   /* eslint-disable @typescript-eslint/no-empty-function */
   global.ResizeObserver = class ResizeObserver {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
   };
   /* eslint-enable @typescript-eslint/no-empty-function */
 });
@@ -82,7 +82,7 @@ const previewResponse = {
   },
 };
 
-const wrapper = ({ children }: { children: ReactNode }) => (
+const wrapper = ({ children }: { children: ReactNode }): React.JSX.Element => (
   <MantineProvider env="test">
     <AppErrorProvider>
       <ErrorPanel />
@@ -91,13 +91,13 @@ const wrapper = ({ children }: { children: ReactNode }) => (
   </MantineProvider>
 );
 
-const getFileInput = () => {
+const getFileInput = (): HTMLInputElement => {
   const input = document.querySelector<HTMLInputElement>('input[type="file"]');
   if (input == null) throw new Error("File input was not rendered");
   return input;
 };
 
-const upload = async (contents: unknown = fixture) => {
+const upload = async (contents: unknown = fixture): Promise<void> => {
   const text = JSON.stringify(contents);
   const file = new File([text], "kindle.json", { type: "application/json" });
   Object.defineProperty(file, "text", {
@@ -259,7 +259,7 @@ describe("BookImportPage", () => {
     const settings = screen.getByText("共通設定");
     const filter = screen.getByLabelText("購入日（指定日以降）");
     const book = screen.getByText("購入日前の本");
-    const follows = (earlier: Node, later: Node) =>
+    const follows = (earlier: Node, later: Node): boolean =>
       Boolean(
         earlier.compareDocumentPosition(later) &
         Node.DOCUMENT_POSITION_FOLLOWING,

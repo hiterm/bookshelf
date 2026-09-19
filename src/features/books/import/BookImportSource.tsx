@@ -31,7 +31,7 @@ export const BookImportSource = ({
   onFileChange,
   onTextChange,
   onLoadText,
-}: Props) => (
+}: Props): React.JSX.Element => (
   <Stack>
     <SegmentedControl
       aria-label="入力方法"

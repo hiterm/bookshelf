@@ -25,7 +25,7 @@ type Props = {
   onSplitVisible: (split: boolean) => void;
 };
 
-const formatDate = (date: Date) =>
+const formatDate = (date: Date): string =>
   [
     date.getFullYear(),
     String(date.getMonth() + 1).padStart(2, "0"),
@@ -43,7 +43,7 @@ export const BookImportTable = ({
   onSplitChange,
   onSelectVisible,
   onSplitVisible,
-}: Props) => (
+}: Props): React.JSX.Element => (
   <Stack>
     <TextInput
       type="date"

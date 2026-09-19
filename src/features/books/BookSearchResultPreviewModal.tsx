@@ -23,7 +23,7 @@ export const BookSearchResultPreviewModal = ({
   onClose,
   searchResult,
   onSelect,
-}: BookSearchResultPreviewModalProps) => {
+}: BookSearchResultPreviewModalProps): React.JSX.Element => {
   const { state, fetch, reset } = useOpenBdDetail();
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export const BookSearchResultPreviewModal = ({
     .filter((value) => value !== undefined && value !== "")
     .join(" ");
 
-  const handleSelect = () => {
+  const handleSelect = (): void => {
     onSelect(searchResult);
     onClose();
   };

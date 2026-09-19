@@ -12,7 +12,7 @@ export const BackupPage: React.FC = () => {
     full: false,
   });
 
-  const runExport = async (scope: BackupScope) => {
+  const runExport = async (scope: BackupScope): Promise<void> => {
     if (pending[scope]) return;
     setPending((current) => ({ ...current, [scope]: true }));
     try {

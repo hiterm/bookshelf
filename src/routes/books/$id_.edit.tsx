@@ -9,7 +9,7 @@ export const Route = createFileRoute("/books/$id_/edit")({
   component: RouteComponent,
 });
 
-function RouteComponent() {
+function RouteComponent(): React.JSX.Element {
   return <BookEditPage />;
 }
 

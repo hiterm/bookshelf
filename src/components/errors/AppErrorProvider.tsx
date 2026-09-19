@@ -33,7 +33,7 @@ export const AppErrorProvider = ({
 }: {
   children: ReactNode;
   queryClient?: QueryClient;
-}) => {
+}): React.JSX.Element => {
   const [errors, setErrors] = useState<AppError[]>([]);
 
   const reportError = useCallback((input: ReportErrorInput) => {

@@ -7,7 +7,7 @@ export const Route = createFileRoute("/authors/$id")({
   component: RouteComponent,
 });
 
-function RouteComponent() {
+function RouteComponent(): React.JSX.Element {
   const { id } = Route.useParams();
   return (
     <AuthorLoader id={id}>

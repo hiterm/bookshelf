@@ -2,7 +2,7 @@ import { Alert, Center, Loader, Paper, Stack, Title } from "@mantine/core";
 import { useOperations } from "../../features/history/api/useOperations";
 import { OperationList } from "../../features/history/OperationList";
 
-export function HistoryIndexPage() {
+export function HistoryIndexPage(): React.JSX.Element {
   const { data, isLoading, error } = useOperations();
 
   if (error != null) {

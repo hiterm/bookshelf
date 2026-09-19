@@ -12,11 +12,11 @@ import { useState } from "react";
 import { formatErrorForClipboard, type AppError } from "./appError";
 import { useAppError } from "./AppErrorProvider";
 
-const ErrorEntry = ({ error }: { error: AppError }) => {
+const ErrorEntry = ({ error }: { error: AppError }): React.JSX.Element => {
   const { dismissError } = useAppError();
   const [expanded, setExpanded] = useState(false);
 
-  const copyDetails = async () => {
+  const copyDetails = async (): Promise<void> => {
     try {
       await navigator.clipboard.writeText(formatErrorForClipboard(error));
       showNotification({
@@ -78,7 +78,7 @@ const ErrorEntry = ({ error }: { error: AppError }) => {
   );
 };
 
-export const ErrorPanel = () => {
+export const ErrorPanel = (): React.JSX.Element | null => {
   const { errors, dismissAllErrors } = useAppError();
   if (errors.length === 0) return null;
 

@@ -29,7 +29,8 @@ const authorsFilter: FilterFn<typeof bookTableFeatures, Book> = (
   });
 };
 
-const formatDate = (date: Date) => dayjs(date).format("YYYY/MM/DD HH:mm Z");
+const formatDate = (date: Date): string =>
+  dayjs(date).format("YYYY/MM/DD HH:mm Z");
 
 const purchaseDateFilter: FilterFn<typeof bookTableFeatures, Book> = (
   row,

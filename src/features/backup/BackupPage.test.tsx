@@ -37,7 +37,7 @@ vi.mock("./backupDownload", async (importOriginal) => ({
   downloadBackup: vi.fn(),
 }));
 
-const renderPage = () =>
+const renderPage = (): ReturnType<typeof render> =>
   render(<BackupPage />, {
     wrapper: ({ children }) => (
       <MantineProvider env="test">{children}</MantineProvider>

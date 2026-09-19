@@ -20,6 +20,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
+import type { z } from "zod";
 import { vi } from "vitest";
 import { useAuthors } from "../authors/api/useAuthors";
 import { BookList } from "./BookList";
@@ -161,7 +162,15 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
 const renderBookList = async (
   initialSearch: BookSearch = {},
   books: Book[] = testBooks,
-) => {
+): Promise<{
+  router: {
+    state: { location: { search: BookSearch } };
+    navigate: (options: {
+      to: "/books";
+      search: z.infer<typeof bookSearchSchema>;
+    }) => Promise<void>;
+  };
+}> => {
   const rootRoute = createRootRoute({ component: Outlet });
   const booksRoute = createRoute({
     getParentRoute: () => rootRoute,
@@ -435,7 +444,7 @@ describe("BookList filters", () => {
 describe("BookList sorting", () => {
   // The sort onClick is on the inner Group div, not the <th>.
   // Clicking the text element itself bubbles up to the Group handler.
-  const getHeaderText = (name: string) => {
+  const getHeaderText = (name: string): HTMLElement => {
     const el = screen
       .getAllByText(name)
       .find((e) => e.closest("thead") !== null);

@@ -1,3 +1,5 @@
+import type { MergeAuthorMutation } from "../../../generated/graphql-request";
+import type { UseMutationResult } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
@@ -9,7 +11,11 @@ export type MergeAuthorInput = {
   destinationAuthorId: string;
 };
 
-export const useMergeAuthor = () => {
+export const useMergeAuthor = (): UseMutationResult<
+  MergeAuthorMutation,
+  Error,
+  MergeAuthorInput
+> => {
   const { getAccessTokenSilently } = useAuth0();
   const queryClient = useQueryClient();
 

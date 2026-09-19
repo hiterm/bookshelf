@@ -49,7 +49,7 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
           a.name.toLowerCase() === normalizedSearch,
       ));
 
-  const handleAuthorSelect = (val: string) => {
+  const handleAuthorSelect = (val: string): void => {
     setAuthorSearch("");
     if (val === "$create") {
       const name = authorSearch.trim();
@@ -67,16 +67,16 @@ export const AuthorsCombobox: React.FC<AuthorsComboboxProps> = ({
     }
   };
 
-  const handleAuthorRemove = (id: string) => {
+  const handleAuthorRemove = (id: string): void => {
     onChange(value.filter((a) => a.id !== id));
   };
 
-  const handlePendingAuthorEdit = (author: BookFormAuthor) => {
+  const handlePendingAuthorEdit = (author: BookFormAuthor): void => {
     setEditingAuthorId(author.id);
     setEditingName(author.name);
   };
 
-  const commitPendingAuthorEdit = () => {
+  const commitPendingAuthorEdit = (): void => {
     if (editingAuthorId == null) return;
     const newName = editingName.trim();
     if (newName !== "") {

@@ -5,7 +5,7 @@ export const useDebouncedEffect = (
   effect: EffectCallback,
   deps: DependencyList,
   delay: number,
-) => {
+): void => {
   useEffect(() => {
     const handler = setTimeout(() => effect(), delay);
 

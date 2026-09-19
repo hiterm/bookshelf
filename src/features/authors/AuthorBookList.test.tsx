@@ -24,13 +24,13 @@ beforeAll(() => {
   global.ResizeObserver = class ResizeObserver {
     // No-op stub: DOM layout is not needed in this unit test.
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    observe() {}
+    observe(): void {}
     // No-op stub: DOM layout is not needed in this unit test.
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    unobserve() {}
+    unobserve(): void {}
     // No-op stub: DOM layout is not needed in this unit test.
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    disconnect() {}
+    disconnect(): void {}
   };
 });
 
@@ -67,7 +67,7 @@ const books: Books = [
   },
 ];
 
-const renderList = (list: Books) => {
+const renderList = (list: Books): void => {
   render(<AuthorBookList books={list} />, {
     wrapper: ({ children }) => (
       <MantineProvider env="test">{children}</MantineProvider>

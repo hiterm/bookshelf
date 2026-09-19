@@ -17,9 +17,9 @@ beforeAll(() => {
   // Test stub; methods are intentionally no-ops.
   /* eslint-disable @typescript-eslint/no-empty-function */
   global.ResizeObserver = class ResizeObserver {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
   };
   /* eslint-enable @typescript-eslint/no-empty-function */
   HTMLElement.prototype.scrollIntoView = vi.fn();
@@ -33,7 +33,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-const mockMatchMedia = () => {
+const mockMatchMedia = (): void => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: vi.fn().mockImplementation((query: string) => ({

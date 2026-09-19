@@ -49,16 +49,16 @@ const DeleteButton: React.FC<{ book: Book }> = ({ book }) => {
   const mutation = useDeleteBook();
   const { reportError } = useAppError();
 
-  const handleClickOpen = () => {
+  const handleClickOpen = (): void => {
     setOpen(true);
   };
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     setOpen(false);
   };
 
   const navigate = useNavigate();
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     try {
       await mutation.mutateAsync(book.id);
       await navigate({ to: "/books" });

@@ -96,7 +96,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
 });
 
-function RootComponent() {
+function RootComponent(): React.JSX.Element {
   const [opened, handlers] = useDisclosure(false);
 
   return (

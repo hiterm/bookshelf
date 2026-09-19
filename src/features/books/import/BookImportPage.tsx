@@ -24,7 +24,7 @@ import {
 } from "./toImportBookInput";
 import classes from "./BookImportPage.module.css";
 
-export const BookImportPage = () => {
+export const BookImportPage = (): React.JSX.Element => {
   const navigate = useNavigate();
   const [method, setMethod] = useState<ImportSourceMethod>("file");
   const [file, setFile] = useState<File | null>(null);
@@ -67,12 +67,12 @@ export const BookImportPage = () => {
   const busy =
     isReading || previewMutation.isPending || importMutation.isPending;
 
-  const invalidatePreview = () => {
+  const invalidatePreview = (): void => {
     setPreview(null);
     setPreviewedInputs(null);
   };
 
-  const installSource = (source: string) => {
+  const installSource = (source: string): void => {
     const parsed = parseKindleExport(source);
     setBooks(parsed);
     setSelectedIndexes(new Set(parsed.map((_, index) => index)));
@@ -81,7 +81,7 @@ export const BookImportPage = () => {
     invalidatePreview();
   };
 
-  const loadFile = async (nextFile: File | null) => {
+  const loadFile = async (nextFile: File | null): Promise<void> => {
     if (previewMutation.isPending || importMutation.isPending) return;
     const readId = fileReadId.current + 1;
     fileReadId.current = readId;
@@ -101,7 +101,7 @@ export const BookImportPage = () => {
     }
   };
 
-  const loadText = () => {
+  const loadText = (): void => {
     if (busy) return;
     fileReadId.current += 1;
     try {
@@ -111,7 +111,7 @@ export const BookImportPage = () => {
     }
   };
 
-  const runPreview = async () => {
+  const runPreview = async (): Promise<void> => {
     if (busy || previewLock.current || importTargets.length === 0) return;
     previewLock.current = true;
     invalidatePreview();
@@ -137,7 +137,7 @@ export const BookImportPage = () => {
     }
   };
 
-  const runImport = async () => {
+  const runImport = async (): Promise<void> => {
     if (busy || importLock.current || previewedInputs == null) return;
     importLock.current = true;
     try {

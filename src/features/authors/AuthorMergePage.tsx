@@ -85,7 +85,7 @@ export const AuthorMergePage: React.FC = () => {
     sourceAuthorId !== "" && sourceAuthorId === destinationAuthorId;
   const canMerge = source != null && destination != null && !isSameAuthor;
 
-  const handleMerge = async () => {
+  const handleMerge = async (): Promise<void> => {
     if (!canMerge || mergeMutation.isPending) return;
     try {
       const result = await mergeMutation.mutateAsync({
