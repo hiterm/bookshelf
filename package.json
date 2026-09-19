@@ -21,7 +21,7 @@
     "generate:msw": "msw init",
     "test:e2e:mock-api": "playwright test",
     "test:e2e:demo-mode": "playwright test --config=playwright.demo.config.ts",
-    "test:integration": "playwright test --config=playwright.integration.config.ts",
+    "test:e2e:integration": "playwright test --config=playwright.integration.config.ts",
     "integration:up": "bash scripts/integration-up.sh",
     "integration:down": "bash scripts/integration-down.sh"
   },

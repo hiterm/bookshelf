@@ -103,7 +103,7 @@ npm run integration:up
 Run the tests:
 
 ```bash
-npm run test:integration
+npm run test:e2e:integration
 ```
 
 Stop all services when done:

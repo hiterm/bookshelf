@@ -136,7 +136,7 @@ jobs:
           done
           docker logs bookshelf-api; exit 1
       - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm run test:integration
+      - run: pnpm run test:e2e:integration
 
   test-integration-api-main:
     runs-on: ubuntu-latest
@@ -216,4 +216,4 @@ jobs:
           done
           cat /tmp/api.log; exit 1
       - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm run test:integration
+      - run: pnpm run test:e2e:integration
