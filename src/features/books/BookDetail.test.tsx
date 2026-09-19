@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
 import { render, screen, within } from "@testing-library/react";
 import React from "react";

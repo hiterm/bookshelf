@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom";
 import { MantineProvider } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
