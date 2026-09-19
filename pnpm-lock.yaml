@@ -124,10 +124,10 @@ importers:
         specifier: 0.68.0
         version: 0.68.0
       oxlint:
-        specifier: ^1.83.0
+        specifier: 1.83.0
         version: 1.83.0(oxlint-tsgolint@7.0.2001)
       oxlint-tsgolint:
-        specifier: ^7.0.2001
+        specifier: 7.0.2001
         version: 7.0.2001
       typescript:
         specifier: 6.0.3
