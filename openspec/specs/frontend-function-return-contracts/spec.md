@@ -20,14 +20,16 @@ through Oxlint's `typescript/explicit-function-return-type` rule at error level.
 
 ### Requirement: Contextually typed expressions remain concise
 
-The frontend SHALL allow function expressions and arrow functions used
-directly as callbacks to use their contextual return type without an explicit
-annotation. Functions directly assigned to variables, exported as defaults,
-or defined as class properties SHALL require an explicit return type.
+With `allowExpressions: true`, the frontend SHALL allow function expressions
+and arrow functions whose immediate parent is not a variable declarator,
+method definition, default export, or class property to omit an explicit
+return type. This exemption includes callbacks, array elements, object
+properties, parenthesized function expressions, and IIFEs.
 
-#### Scenario: An inline callback relies on contextual typing
+#### Scenario: An eligible function expression relies on inference
 
-- **WHEN** lint checks a function expression used as an inline callback
+- **WHEN** lint checks a function expression whose immediate parent is not a
+  variable declarator, method definition, default export, or class property
 - **THEN** the return-type rule does not require an annotation
 
 #### Scenario: A function expression is bound to a variable

@@ -13,11 +13,12 @@ TypeScript's `noImplicitReturns` checks return paths; Oxlint's
 `typescript/consistent-return` is disabled for this purpose.
 The `typescript/explicit-function-return-type` rule requires a return type on
 function declarations and methods. With `allowExpressions: true`, function
-expressions and arrow functions used directly as callbacks can keep their
-contextually inferred return type. Functions directly assigned to variables,
-exported as defaults, or defined as class properties still require an explicit
-return type. Use a meaningful domain or library type for exported functions
-and hooks rather than widening their return contracts.
+expressions and arrow functions can omit the annotation when their immediate
+parent is not a variable declarator, method definition, default export, or
+class property. This exemption includes callbacks, array elements, object
+properties, parenthesized function expressions, and IIFEs. Use a meaningful
+domain or library type for exported functions and hooks rather than widening
+their return contracts.
 
 Type-aware TypeScript rules run through `oxlint-tsgolint`; keep
 `options.typeAware` enabled and run `pnpm run generate` before linting. Build
