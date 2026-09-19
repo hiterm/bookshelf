@@ -1,5 +1,14 @@
 # Changelog
 
+## [v2.18.1](https://github.com/hiterm/bookshelf/compare/v2.18.0...v2.18.1) - 2026-09-19
+
+### Other Changes
+- Organize npm scripts and checks by @hiterm in https://github.com/hiterm/bookshelf/pull/364
+- Migrate ESLint to Oxlint by @hiterm in https://github.com/hiterm/bookshelf/pull/368
+- Require explicit function return types by @hiterm in https://github.com/hiterm/bookshelf/pull/370
+- Rename integration E2E npm script by @hiterm in https://github.com/hiterm/bookshelf/pull/367
+- Pin dependencies by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/369
+
 ## [v2.18.0](https://github.com/hiterm/bookshelf/compare/v2.17.2...v2.18.0) - 2026-09-17
 
 ### Other Changes
