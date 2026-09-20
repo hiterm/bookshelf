@@ -173,6 +173,12 @@ Never skip these unless the user explicitly instructs you to, or
 the changes are documentation-only (in which case only `pnpm run lint:fix`
 and `pnpm run format` are required).
 
+## Historical artifacts
+
+Preserve historical artifacts as records of their time, including archived OpenSpec changes,
+completed ExecPlans, and changelog entries. Do not update them to match current conventions
+unless the task explicitly requires it.
+
 # ExecPlans
 
 When writing complex features or significant refactors, use an ExecPlan (as described in `.agent/PLANS.md`) from design to implementation.
