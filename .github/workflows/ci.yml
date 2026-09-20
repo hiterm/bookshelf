@@ -68,7 +68,6 @@ jobs:
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - run: pnpm run generate
-      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm run test:e2e:mock-api
 
   test-e2e-demo-mode:
@@ -84,7 +83,6 @@ jobs:
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - run: pnpm run generate
-      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm run test:e2e:demo-mode
 
   test-integration:
@@ -149,7 +147,6 @@ jobs:
             sleep 1
           done
           docker logs bookshelf-api; exit 1
-      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm run test:e2e:integration
 
   test-integration-api-main:
@@ -214,5 +211,4 @@ jobs:
             sleep 1
           done
           docker logs bookshelf-api; exit 1
-      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm run test:e2e:integration
