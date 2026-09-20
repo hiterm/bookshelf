@@ -1,3 +1,8 @@
+## Purpose
+
+Define descriptive frontend component names that communicate each component's
+responsibility while preserving existing behavior.
+
 ## Requirements
 
 ### Requirement: Descriptive frontend component names
