@@ -11,5 +11,5 @@
 ## 3. Validate the Change
 
 - [x] 3.1 Run OpenSpec validation and lightweight frontend and workflow checks.
-- [ ] 3.2 Verify all four Playwright jobs in GitHub Actions and compare key job
+- [x] 3.2 Verify all four Playwright jobs in GitHub Actions and compare key job
       durations with the recorded baseline.
