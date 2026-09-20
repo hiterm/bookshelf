@@ -118,6 +118,13 @@ the sandbox.
   failure modes. Do not mechanically duplicate identical assertions.
 - When fixing a bug, add a reproducible regression test whenever possible.
 
+### Environment-specific test settings
+
+Do not change shared test concurrency, worker counts, or timeouts solely because
+the current local, sandbox, or agent environment is resource-constrained.
+Prefer environment-local overrides unless the same issue is reproduced in CI
+or another representative environment.
+
 ## E2E Test Isolation
 
 This project has three E2E test suites with different isolation mechanisms:
