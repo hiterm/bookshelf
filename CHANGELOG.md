@@ -1,5 +1,14 @@
 # Changelog
 
+## [v2.18.3](https://github.com/hiterm/bookshelf/compare/v2.18.2...v2.18.3) - 2026-09-21
+
+### Other Changes
+- Add historical artifact guidance by @hiterm in https://github.com/hiterm/bookshelf/pull/377
+- Add OpenSpec validation to CI by @hiterm in https://github.com/hiterm/bookshelf/pull/379
+- Separate OpenSpec validation job by @hiterm in https://github.com/hiterm/bookshelf/pull/380
+- Optimize Playwright shell installation by @hiterm in https://github.com/hiterm/bookshelf/pull/382
+- Speed up integration CI setup by @hiterm in https://github.com/hiterm/bookshelf/pull/383
+
 ## [v2.18.2](https://github.com/hiterm/bookshelf/compare/v2.18.1...v2.18.2) - 2026-09-20
 
 ### Other Changes
