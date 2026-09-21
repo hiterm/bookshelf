@@ -1,4 +1,8 @@
-import { ReadableStream, TransformStream, WritableStream } from "node:stream/web";
+import {
+  ReadableStream,
+  TransformStream,
+  WritableStream,
+} from "node:stream/web";
 import "@testing-library/jest-dom/vitest";
 
 Object.defineProperties(globalThis, {
