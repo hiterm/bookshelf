@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { NavbarContents } from "./Navbar";
 
-vi.mock("../mantineTsr", () => ({
+rs.mock("../mantineTsr", () => ({
   NavLink: ({ label, to }: { label: string; to: string }) => (
     <a href={to}>{label}</a>
   ),

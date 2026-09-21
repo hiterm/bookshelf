@@ -5,22 +5,21 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import React from "react";
-import { vi } from "vitest";
+import { rs } from "@rstest/core";
 import { useAuthors } from "../authors/api/useAuthors";
+import { querySuccess } from "../../test/reactQueryResults";
 import { bookFormSchema, BookFormValues } from "./bookFormSchema";
 import { BookUpdateForm } from "./BookUpdateForm";
 
-vi.mock(import("../authors/api/useAuthors"));
-vi.mocked(useAuthors, { partial: true }).mockReturnValue({
-  data: {
+rs.mock(import("../authors/api/useAuthors"));
+rs.mocked(useAuthors).mockReturnValue(
+  querySuccess({
     authors: [
       { id: "1", name: "name1", yomi: "" },
       { id: "2", name: "name2", yomi: "" },
     ],
-  },
-  isLoading: false,
-  error: null,
-});
+  }),
+);
 
 // mock ResizeObserver
 beforeAll(() => {
@@ -69,15 +68,15 @@ const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
 const mockMatchMedia = (): void => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(), // deprecated
-      removeListener: vi.fn(), // deprecated
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: rs.fn(), // deprecated
+      removeListener: rs.fn(), // deprecated
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
+      dispatchEvent: rs.fn(),
     })),
   });
 };
@@ -99,7 +98,7 @@ describe("BookUpdateForm", () => {
     // https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
     mockMatchMedia();
 
-    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
+    const mockSubmit = rs.fn<(values: BookFormValues) => void>();
     const { getByRole, findByRole } = render(
       <TestForm onSubmit={mockSubmit} />,
       { wrapper: createWrapper() },
@@ -121,7 +120,7 @@ describe("BookUpdateForm", () => {
   test("renders all form fields", async () => {
     mockMatchMedia();
 
-    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
+    const mockSubmit = rs.fn<(values: BookFormValues) => void>();
     const { findByRole } = render(<TestForm onSubmit={mockSubmit} />, {
       wrapper: createWrapper(),
     });
@@ -136,7 +135,7 @@ describe("BookUpdateForm", () => {
   test("submits with read checkbox checked", async () => {
     mockMatchMedia();
 
-    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
+    const mockSubmit = rs.fn<(values: BookFormValues) => void>();
     const { getByRole, findByRole } = render(
       <TestForm onSubmit={mockSubmit} />,
       { wrapper: createWrapper() },
@@ -162,7 +161,7 @@ describe("BookUpdateForm", () => {
   test("submits with empty ISBN (ISBN is optional)", async () => {
     mockMatchMedia();
 
-    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
+    const mockSubmit = rs.fn<(values: BookFormValues) => void>();
     const { getByRole, findByRole } = render(
       <TestForm onSubmit={mockSubmit} />,
       { wrapper: createWrapper() },

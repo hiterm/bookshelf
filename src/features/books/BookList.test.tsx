@@ -20,8 +20,9 @@ import {
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import type { z } from "zod";
-import { vi } from "vitest";
+import { rs } from "@rstest/core";
 import { useAuthors } from "../authors/api/useAuthors";
+import { querySuccess } from "../../test/reactQueryResults";
 import { BookList } from "./BookList";
 import { bookSearchSchema } from "./bookSearch";
 import type { Book } from "./entity/Book";
@@ -33,20 +34,18 @@ type BookSearch = {
   pageSize?: 20 | 50 | 100;
 };
 
-vi.mock(import("../authors/api/useAuthors"));
+rs.mock(import("../authors/api/useAuthors"));
 
-vi.mocked(useAuthors, { partial: true }).mockReturnValue({
-  data: {
+rs.mocked(useAuthors).mockReturnValue(
+  querySuccess({
     authors: [
       { id: "author-1", name: "著者1", yomi: "ちょしゃいち" },
       { id: "author-2", name: "著者2", yomi: "ちょしゃに" },
     ],
-  },
-  isLoading: false,
-  error: null,
-});
+  }),
+);
 
-vi.mock("../../components/mantineTsr", () => ({
+rs.mock("../../components/mantineTsr", () => ({
   Link: ({ children }: { children: React.ReactNode }) => (
     <span>{children}</span>
   ),
@@ -54,25 +53,25 @@ vi.mock("../../components/mantineTsr", () => ({
 
 beforeAll(() => {
   global.ResizeObserver = class ResizeObserver {
-    observe = vi.fn();
-    unobserve = vi.fn();
-    disconnect = vi.fn();
+    observe = rs.fn();
+    unobserve = rs.fn();
+    disconnect = rs.fn();
   };
 
-  HTMLElement.prototype.scrollIntoView = vi.fn();
-  window.scrollTo = vi.fn();
+  HTMLElement.prototype.scrollIntoView = rs.fn();
+  window.scrollTo = rs.fn();
 
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
+      dispatchEvent: rs.fn(),
     })),
   });
 });

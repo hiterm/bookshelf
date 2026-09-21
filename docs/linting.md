@@ -7,9 +7,8 @@ fixes. Both commands use Oxlint. Warnings fail the check.
 native ESLint, TypeScript, React, and import plugins. Selected strict and style
 rules, plus bookshelf's rule options, are listed individually. Three category
 rules are disabled for project-specific reasons.
-Side-effect imports are limited to CSS and the shared
-`@testing-library/jest-dom/vitest` matcher registration in
-`src/test/setup.ts`.
+Side-effect imports are limited to CSS. The shared `src/test/setup.ts` registers
+jest-dom matchers with Rstest through `expect.extend`.
 TypeScript's `noImplicitReturns` checks return paths; Oxlint's
 `typescript/consistent-return` is disabled for this purpose.
 The `typescript/explicit-function-return-type` rule requires a return type on

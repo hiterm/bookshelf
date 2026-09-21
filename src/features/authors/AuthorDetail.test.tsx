@@ -1,31 +1,33 @@
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as routerActual from "@tanstack/react-router" with {
+  rstest: "importActual",
+};
 import { AppErrorProvider } from "../../components/errors/AppErrorProvider";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { vi } from "vitest";
+import { rs } from "@rstest/core";
+import type { DeleteAuthorMutation } from "../../generated/graphql-request";
+import { mutationIdle } from "../../test/reactQueryResults";
 import { useDeleteAuthor } from "./api/useDeleteAuthor";
 import { AuthorDetail } from "./AuthorDetail";
 
-vi.mock("@tanstack/react-router", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@tanstack/react-router")>();
-  return {
-    ...actual,
-    useNavigate: () => vi.fn().mockResolvedValue(undefined),
-  };
-});
+rs.mock("@tanstack/react-router", () => ({
+  ...routerActual,
+  useNavigate: () => rs.fn().mockResolvedValue(undefined),
+}));
 
-const mockMutateAsync = vi.fn().mockResolvedValue({});
+const mockMutateAsync = rs
+  .fn<ReturnType<typeof useDeleteAuthor>["mutateAsync"]>()
+  .mockResolvedValue({ deleteAuthor: { authorId: "author-1" } });
 
-vi.mock(import("./api/useDeleteAuthor"));
-vi.mocked(useDeleteAuthor, { partial: true }).mockReturnValue({
-  mutateAsync: mockMutateAsync,
-  isPending: false,
-});
+rs.mock(import("./api/useDeleteAuthor"));
+rs.mocked(useDeleteAuthor).mockReturnValue(
+  mutationIdle<DeleteAuthorMutation, string>({ mutateAsync: mockMutateAsync }),
+);
 
-vi.mock("../../components/mantineTsr", () => ({
+rs.mock("../../components/mantineTsr", () => ({
   Link: ({
     children,
     ...props
@@ -51,22 +53,22 @@ vi.mock("../../components/mantineTsr", () => ({
   ),
 }));
 
-vi.mock("@mantine/notifications", () => ({
-  showNotification: vi.fn(),
+rs.mock("@mantine/notifications", () => ({
+  showNotification: rs.fn(),
 }));
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
+      dispatchEvent: rs.fn(),
     })),
   });
 });

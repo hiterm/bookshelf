@@ -1,7 +1,7 @@
 import { MantineProvider } from "@mantine/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { vi } from "vitest";
+import { rs } from "@rstest/core";
 import { BookLookupDialog } from "./BookLookupDialog";
 import {
   BookLookupResult,
@@ -9,11 +9,11 @@ import {
   useBookLookup,
 } from "./useBookLookup";
 
-const mockSearch = vi.fn();
+const mockSearch = rs.fn();
 let mockState: BookLookupState = { status: "idle" };
 
-vi.mock(import("./useBookLookup"));
-vi.mocked(useBookLookup).mockImplementation(() => ({
+rs.mock(import("./useBookLookup"));
+rs.mocked(useBookLookup).mockImplementation(() => ({
   state: mockState,
   search: mockSearch,
 }));
@@ -32,15 +32,15 @@ beforeAll(() => {
 const mockMatchMedia = (): void => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
+      dispatchEvent: rs.fn(),
     })),
   });
 };
@@ -55,8 +55,8 @@ const renderDialog = (props: {
     <MantineProvider>
       <BookLookupDialog
         opened={props.opened ?? true}
-        onClose={props.onClose ?? vi.fn()}
-        onSelect={props.onSelect ?? vi.fn()}
+        onClose={props.onClose ?? rs.fn()}
+        onSelect={props.onSelect ?? rs.fn()}
       />
     </MantineProvider>,
   );
@@ -119,7 +119,7 @@ describe("BookLookupDialog", () => {
 
     rerender(
       <MantineProvider>
-        <BookLookupDialog opened={true} onClose={vi.fn()} onSelect={vi.fn()} />
+        <BookLookupDialog opened={true} onClose={rs.fn()} onSelect={rs.fn()} />
       </MantineProvider>,
     );
 
@@ -138,8 +138,8 @@ describe("BookLookupDialog", () => {
     mockState = { status: "success", results: [sampleResult] };
 
     const user = userEvent.setup();
-    const onSelect = vi.fn();
-    const onClose = vi.fn();
+    const onSelect = rs.fn();
+    const onClose = rs.fn();
 
     renderDialog({ onSelect, onClose });
 

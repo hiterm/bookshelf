@@ -103,7 +103,7 @@ the sandbox.
 
 - When implementing a new feature, always add or update tests appropriate to
   the change.
-- Use Vitest (`pnpm run test`) to test logic, hooks, and component behavior.
+- Use Rstest (`pnpm run test`) to test logic, hooks, and component behavior.
 - Use Playwright E2E tests to test critical user flows and interactions across
   screens.
 - Choose E2E suites according to their purpose:

@@ -1,6 +1,6 @@
 import { MantineProvider } from "@mantine/core";
 import { render, screen } from "@testing-library/react";
-import { beforeAll, describe, expect, test, vi } from "vitest";
+import { beforeAll, describe, expect, test, rs } from "@rstest/core";
 import { BookImportPreview } from "./BookImportPreview";
 
 const preview = {
@@ -33,13 +33,13 @@ const preview = {
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
     })),
   });
 });
@@ -51,8 +51,8 @@ describe("BookImportPreview", () => {
         <BookImportPreview
           preview={preview}
           importing={false}
-          onBack={vi.fn()}
-          onImport={vi.fn()}
+          onBack={rs.fn()}
+          onImport={rs.fn()}
         />
       </MantineProvider>,
     );
@@ -73,8 +73,8 @@ describe("BookImportPreview", () => {
         <BookImportPreview
           preview={preview}
           importing
-          onBack={vi.fn()}
-          onImport={vi.fn()}
+          onBack={rs.fn()}
+          onImport={rs.fn()}
         />
       </MantineProvider>,
     );

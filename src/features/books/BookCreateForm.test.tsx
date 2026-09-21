@@ -5,28 +5,27 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import React from "react";
-import { vi } from "vitest";
+import { rs } from "@rstest/core";
 import { useAuthors } from "../authors/api/useAuthors";
+import { querySuccess } from "../../test/reactQueryResults";
 import { BookCreateForm } from "./BookCreateForm";
 import { bookFormSchema, BookFormValues } from "./bookFormSchema";
 import { useBookLookup } from "./useBookLookup";
 
-vi.mock(import("../authors/api/useAuthors"));
-vi.mocked(useAuthors, { partial: true }).mockReturnValue({
-  data: {
+rs.mock(import("../authors/api/useAuthors"));
+rs.mocked(useAuthors).mockReturnValue(
+  querySuccess({
     authors: [
       { id: "1", name: "name1", yomi: "" },
       { id: "2", name: "name2", yomi: "" },
     ],
-  },
-  isLoading: false,
-  error: null,
-});
+  }),
+);
 
-vi.mock(import("./useBookLookup"));
-vi.mocked(useBookLookup).mockReturnValue({
+rs.mock(import("./useBookLookup"));
+rs.mocked(useBookLookup).mockReturnValue({
   state: { status: "idle" },
-  search: vi.fn(),
+  search: rs.fn(),
 });
 
 beforeAll(() => {
@@ -71,15 +70,15 @@ const TestForm: React.FC<TestFormProps> = ({ onSubmit }) => {
 const mockMatchMedia = (): void => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
+      dispatchEvent: rs.fn(),
     })),
   });
 };
@@ -100,7 +99,7 @@ describe("BookCreateForm", () => {
   test("renders all form fields", async () => {
     mockMatchMedia();
 
-    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
+    const mockSubmit = rs.fn<(values: BookFormValues) => void>();
     const { findByRole } = render(<TestForm onSubmit={mockSubmit} />, {
       wrapper: createWrapper(),
     });
@@ -118,7 +117,7 @@ describe("BookCreateForm", () => {
   test("shows title error when submitted empty", async () => {
     mockMatchMedia();
 
-    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
+    const mockSubmit = rs.fn<(values: BookFormValues) => void>();
     render(<TestForm onSubmit={mockSubmit} />, { wrapper: createWrapper() });
 
     const user = userEvent.setup();
@@ -131,7 +130,7 @@ describe("BookCreateForm", () => {
   test("submits with entered title", async () => {
     mockMatchMedia();
 
-    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
+    const mockSubmit = rs.fn<(values: BookFormValues) => void>();
     const { getByRole, findByRole } = render(
       <TestForm onSubmit={mockSubmit} />,
       { wrapper: createWrapper() },
@@ -152,7 +151,7 @@ describe("BookCreateForm", () => {
 
   test("submits an optional purchase date", async () => {
     mockMatchMedia();
-    const mockSubmit = vi.fn<(values: BookFormValues) => void>();
+    const mockSubmit = rs.fn<(values: BookFormValues) => void>();
     render(<TestForm onSubmit={mockSubmit} />, { wrapper: createWrapper() });
     const user = userEvent.setup();
     await user.type(screen.getByRole("textbox", { name: "書名" }), "book");

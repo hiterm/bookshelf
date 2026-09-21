@@ -2,8 +2,8 @@
 
 ## Purpose
 
-Define checker behavior for normal builds, Vitest, and all Playwright web
-server build paths.
+Define checker behavior for normal builds and all Playwright web server build
+paths. Rstest uses a separate Rsbuild configuration.
 
 ## Requirements
 
@@ -32,15 +32,6 @@ The project SHALL provide a `build:without-check` package script that disables
 
 - **WHEN** a developer runs `pnpm build:without-check`
 - **THEN** the Vite build succeeds without registering `vite-plugin-checker`
-
-### Requirement: Vitest retains its checker exclusion
-
-Vite SHALL continue to omit `vite-plugin-checker` while Vitest is running.
-
-#### Scenario: Vitest evaluates the Vite configuration
-
-- **WHEN** `process.env.VITEST` equals `"true"`
-- **THEN** `vite-plugin-checker` is not registered
 
 ### Requirement: Every Playwright suite uses the checker-free build command
 

@@ -1,24 +1,28 @@
 import { MantineProvider } from "@mantine/core";
 import { render, screen, within } from "@testing-library/react";
+import * as routerActual from "@tanstack/react-router" with {
+  rstest: "importActual",
+};
 import React from "react";
-import { vi } from "vitest";
+import { rs } from "@rstest/core";
+import type { DeleteBookMutation } from "../../generated/graphql-request";
+import { mutationIdle } from "../../test/reactQueryResults";
 import { useDeleteBook } from "./api/useDeleteBook";
 import { BookDetail } from "./BookDetail";
 import { AppErrorProvider } from "../../components/errors/AppErrorProvider";
 import type { Book } from "./entity/Book";
 
-vi.mock("@tanstack/react-router", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@tanstack/react-router")>();
-  return { ...actual, useNavigate: () => vi.fn() };
-});
+rs.mock("@tanstack/react-router", () => ({
+  ...routerActual,
+  useNavigate: () => rs.fn(),
+}));
 
-vi.mock(import("./api/useDeleteBook"));
-vi.mocked(useDeleteBook, { partial: true }).mockReturnValue({
-  mutateAsync: vi.fn(),
-});
+rs.mock(import("./api/useDeleteBook"));
+rs.mocked(useDeleteBook).mockReturnValue(
+  mutationIdle<DeleteBookMutation, string>(),
+);
 
-vi.mock("../../components/mantineTsr", () => ({
+rs.mock("../../components/mantineTsr", () => ({
   Link: ({
     children,
     to,
@@ -54,15 +58,15 @@ const book: Book = {
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
+      dispatchEvent: rs.fn(),
     })),
   });
 });

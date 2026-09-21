@@ -1,37 +1,55 @@
 import { MantineProvider } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import * as routerActual from "@tanstack/react-router" with {
+  rstest: "importActual",
+};
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
-import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  rs,
+} from "@rstest/core";
+import type {
+  ImportBookInput,
+  ImportBooksMutation,
+  PreviewBookImportMutation,
+} from "../../../generated/graphql-request";
+import { mutationIdle } from "../../../test/reactQueryResults";
 import { AppErrorProvider } from "../../../components/errors/AppErrorProvider";
 import { ErrorPanel } from "../../../components/errors/ErrorPanel";
 import { useImportBooks } from "../api/useImportBooks";
 import { usePreviewBookImport } from "../api/usePreviewBookImport";
 import { BookImportPage } from "./BookImportPage";
 
-const importMutateAsync = vi.fn();
-const previewMutateAsync = vi.fn();
-const navigate = vi.fn();
+const importMutateAsync =
+  rs.fn<ReturnType<typeof useImportBooks>["mutateAsync"]>();
+const previewMutateAsync =
+  rs.fn<ReturnType<typeof usePreviewBookImport>["mutateAsync"]>();
+const navigate = rs.fn();
 
-vi.mock(import("../api/useImportBooks"));
-vi.mock(import("../api/usePreviewBookImport"));
-vi.mock("@tanstack/react-router", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@tanstack/react-router")>()),
+rs.mock(import("../api/useImportBooks"));
+rs.mock(import("../api/usePreviewBookImport"));
+rs.mock("@tanstack/react-router", () => ({
+  ...routerActual,
   useNavigate: () => navigate,
 }));
-vi.mock("@mantine/notifications", () => ({ showNotification: vi.fn() }));
+rs.mock("@mantine/notifications", () => ({ showNotification: rs.fn() }));
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
     })),
   });
   // Test stub; methods are intentionally no-ops.
@@ -76,6 +94,7 @@ const previewResponse = {
         priority: 75,
         format: "PRINTED" as const,
         store: "UNKNOWN" as const,
+        purchaseDate: null,
       },
     ],
   },
@@ -100,7 +119,7 @@ const upload = async (contents: unknown = fixture): Promise<void> => {
   const text = JSON.stringify(contents);
   const file = new File([text], "kindle.json", { type: "application/json" });
   Object.defineProperty(file, "text", {
-    value: vi.fn().mockResolvedValue(text),
+    value: rs.fn().mockResolvedValue(text),
   });
   await userEvent.upload(getFileInput(), file);
 };
@@ -110,15 +129,17 @@ describe("BookImportPage", () => {
     importMutateAsync.mockReset();
     previewMutateAsync.mockReset();
     navigate.mockReset().mockResolvedValue(undefined);
-    vi.mocked(showNotification).mockReset();
-    vi.mocked(useImportBooks, { partial: true }).mockReturnValue({
-      mutateAsync: importMutateAsync,
-      isPending: false,
-    });
-    vi.mocked(usePreviewBookImport, { partial: true }).mockReturnValue({
-      mutateAsync: previewMutateAsync,
-      isPending: false,
-    });
+    rs.mocked(showNotification).mockReset();
+    rs.mocked(useImportBooks).mockReturnValue(
+      mutationIdle<ImportBooksMutation, ImportBookInput[]>({
+        mutateAsync: importMutateAsync,
+      }),
+    );
+    rs.mocked(usePreviewBookImport).mockReturnValue(
+      mutationIdle<PreviewBookImportMutation, ImportBookInput[]>({
+        mutateAsync: previewMutateAsync,
+      }),
+    );
   });
 
   test("loads equivalent file and text input and reports invalid input", async () => {
@@ -369,7 +390,10 @@ describe("BookImportPage", () => {
   test("imports the exact previewed array and navigates to books", async () => {
     previewMutateAsync.mockResolvedValue(previewResponse);
     importMutateAsync.mockResolvedValue({
-      importBooks: { books: [{ id: "1", title: "本" }] },
+      importBooks: {
+        operationId: "operation-1",
+        books: [{ id: "1", title: "本" }],
+      },
     });
     render(<BookImportPage />, { wrapper });
     await upload([fixture[0]]);
