@@ -68,7 +68,8 @@ jobs:
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - run: pnpm run generate
-      - run: pnpm exec playwright install --with-deps --only-shell chromium
+      # Ubuntu runners include Chromium system deps; omit apt checks and let E2E detect drift.
+      - run: pnpm exec playwright install --only-shell chromium
       - run: pnpm run test:e2e:mock-api
 
   test-e2e-demo-mode:
@@ -84,7 +85,8 @@ jobs:
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - run: pnpm run generate
-      - run: pnpm exec playwright install --with-deps --only-shell chromium
+      # Ubuntu runners include Chromium system deps; omit apt checks and let E2E detect drift.
+      - run: pnpm exec playwright install --only-shell chromium
       - run: pnpm run test:e2e:demo-mode
 
   test-integration:
@@ -99,57 +101,13 @@ jobs:
           node-version: "24"
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run generate
       - id: api-version
         run: echo "version=$(tr -d '[:space:]' < bookshelf-api.version)" >> "$GITHUB_OUTPUT"
-      - name: Start PostgreSQL
-        run: |
-          docker run -d \
-            --name postgres \
-            --network host \
-            -e POSTGRES_USER=bookshelf \
-            -e POSTGRES_PASSWORD=password \
-            -e POSTGRES_DB=bookshelf \
-            postgres:15
-          for _ in {1..30}; do
-            if docker exec postgres pg_isready -U bookshelf; then
-              echo "PostgreSQL ready"; exit 0
-            fi
-            sleep 1
-          done
-          docker logs postgres; exit 1
-      - name: Start JWKS server
-        run: |
-          node e2e-integration/jwks-server.mjs > /tmp/jwks.log 2>&1 &
-          for _ in {1..30}; do
-            if curl -fs http://localhost:9999/.well-known/jwks.json > /dev/null; then
-              echo "JWKS server ready"; exit 0
-            fi
-            sleep 1
-          done
-          cat /tmp/jwks.log; exit 1
-      - name: Start bookshelf-api
+      # Ubuntu runners include Chromium system deps; omit apt checks and let E2E detect drift.
+      - name: Prepare integration environment
         env:
-          API_VERSION: ${{ steps.api-version.outputs.version }}
-        run: |
-          docker run -d \
-            --name bookshelf-api \
-            --network host \
-            -e DATABASE_URL=postgres://bookshelf:password@localhost:5432/bookshelf \
-            -e PORT=8080 \
-            -e ALLOWED_ORIGINS=http://localhost:4173 \
-            -e JWT_AUDIENCE=test-audience \
-            -e JWT_DOMAIN=test-issuer.local \
-            -e JWKS_URL=http://localhost:9999/.well-known/jwks.json \
-            ghcr.io/hiterm/bookshelf-api:"$API_VERSION"
-          for _ in {1..60}; do
-            if curl -fs http://localhost:8080/health > /dev/null; then
-              echo "API ready"; exit 0
-            fi
-            sleep 1
-          done
-          docker logs bookshelf-api; exit 1
-      - run: pnpm exec playwright install --with-deps --only-shell chromium
+          API_IMAGE: ghcr.io/hiterm/bookshelf-api:${{ steps.api-version.outputs.version }}
+        run: bash scripts/prepare-integration-ci.sh
       - run: pnpm run test:e2e:integration
 
   test-integration-api-main:
@@ -164,55 +122,10 @@ jobs:
           node-version: "24"
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run generate
-      - name: Start PostgreSQL
-        run: |
-          docker run -d \
-            --name postgres \
-            --network host \
-            -e POSTGRES_USER=bookshelf \
-            -e POSTGRES_PASSWORD=password \
-            -e POSTGRES_DB=bookshelf \
-            postgres:15
-          for _ in {1..30}; do
-            if docker exec postgres pg_isready -U bookshelf; then
-              echo "PostgreSQL ready"; exit 0
-            fi
-            sleep 1
-          done
-          docker logs postgres; exit 1
-      - name: Start JWKS server
-        run: |
-          node e2e-integration/jwks-server.mjs > /tmp/jwks.log 2>&1 &
-          for _ in {1..30}; do
-            if curl -fs http://localhost:9999/.well-known/jwks.json > /dev/null; then
-              echo "JWKS server ready"; exit 0
-            fi
-            sleep 1
-          done
-          cat /tmp/jwks.log; exit 1
-      - name: Start bookshelf-api
-        run: |
-          image=ghcr.io/hiterm/bookshelf-api:main
-          docker pull "$image"
-          digest=$(docker image inspect --format '{{index .RepoDigests 0}}' "$image")
-          echo "Using bookshelf-api main image: $digest"
-          docker run -d \
-            --name bookshelf-api \
-            --network host \
-            -e DATABASE_URL=postgres://bookshelf:password@localhost:5432/bookshelf \
-            -e PORT=8080 \
-            -e ALLOWED_ORIGINS=http://localhost:4173 \
-            -e JWT_AUDIENCE=test-audience \
-            -e JWT_DOMAIN=test-issuer.local \
-            -e JWKS_URL=http://localhost:9999/.well-known/jwks.json \
-            "$image"
-          for _ in {1..60}; do
-            if curl -fs http://localhost:8080/health > /dev/null; then
-              echo "API ready"; exit 0
-            fi
-            sleep 1
-          done
-          docker logs bookshelf-api; exit 1
-      - run: pnpm exec playwright install --with-deps --only-shell chromium
+      # Ubuntu runners include Chromium system deps; omit apt checks and let E2E detect drift.
+      - name: Prepare integration environment
+        env:
+          API_IMAGE: ghcr.io/hiterm/bookshelf-api:main
+          LOG_API_DIGEST: "true"
+        run: bash scripts/prepare-integration-ci.sh
       - run: pnpm run test:e2e:integration
