@@ -34,4 +34,4 @@ The final typecheck trial failed with 277 diagnostics: 255 missing jest-dom matc
 
 The latest inspected Vitest CI `test` job completed in 121 seconds on [main run 35422104638](https://github.com/hiterm/bookshelf/actions/runs/35422104638), including setup and package installation. No Rstest commit was pushed for CI because the typecheck gate failed, so a same-workflow Rstest CI duration and CI discovery count are unavailable. Local measurements must not be presented as a CI speedup.
 
-The OpenSpec delta specs remain unsynchronized and the change remains unarchived because Rstest was not adopted. A future attempt should first establish a supported matcher type integration and partial-mock typing strategy, then repeat parity and CI timing measurements.
+The OpenSpec delta specs record the decision rule for future runner experiments without changing the supported Vitest 5 contract. A future attempt should first establish a supported matcher type integration and partial-mock typing strategy, then repeat parity and CI timing measurements.

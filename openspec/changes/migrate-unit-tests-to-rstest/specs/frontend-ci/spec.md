@@ -1,11 +1,15 @@
 ## ADDED Requirements
 
-### Requirement: Runner migration is evaluated with comparable CI timing
+### Requirement: Runner speed claims use comparable CI measurements
 
-The repository SHALL compare the unit test job duration for Rstest with a recent equivalent Vitest job before claiming a CI speed improvement. The comparison SHALL record test file and case counts and disclose material differences in environment, workflow, or worker settings.
+The repository SHALL claim a unit-test runner CI speed improvement only after comparing its unit test job duration with a recent equivalent job on the previous runner. The comparison SHALL disclose material differences in environment, workflow, test discovery, or worker settings.
 
-#### Scenario: Evaluate a runner migration pull request
+#### Scenario: A replacement runner has no CI measurement
 
-- **WHEN** the pull request's unit test job completes
-- **THEN** its duration and discovery counts are compared with a Vitest-based CI run
-- **AND** the pull request reports whether the measured result supports adoption
+- **WHEN** a runner experiment stops before a comparable CI run
+- **THEN** its report states that a CI speed comparison is unavailable
+
+#### Scenario: A replacement runner reaches CI
+
+- **WHEN** a replacement runner's unit test job completes in CI
+- **THEN** its duration and discovery counts are compared with an equivalent previous-runner job before claiming a speed improvement

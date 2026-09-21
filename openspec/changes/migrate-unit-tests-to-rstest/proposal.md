@@ -1,13 +1,13 @@
 ## Why
 
-The unit and component test suite is a material part of CI time. Rstest may reduce that time, but adoption is justified only if existing test behavior and discovery remain equivalent and CI measurements show a benefit.
+The unit and component test suite is a material part of CI time. Rstest might reduce that time, so this change evaluated compatibility and performance before deciding whether to replace Vitest. The experiment did not establish a worthwhile CI improvement and Vitest 5 remains the supported runner.
 
 ## What Changes
 
-- Migrate the unit and component test runner from Vitest to Rstest while retaining the `test` and `test:watch` scripts.
-- Preserve test discovery, assertions, mocks, setup, jsdom, global APIs, and exclusions.
-- Compare local and CI execution under equivalent conditions and report any compatibility or performance trade-offs.
-- Keep Playwright E2E suites outside this migration.
+- Record the Vitest baseline and trial Rstest with the same unit/component test scope.
+- Check discovery, assertions, mocks, setup, jsdom, global APIs, exclusions, and local performance.
+- Document the failed TypeScript compatibility gate and the lack of a comparable Rstest CI result.
+- Keep Vitest 5 and Playwright E2E unchanged after the trial.
 
 ## Capabilities
 
@@ -17,9 +17,9 @@ The unit and component test suite is a material part of CI time. Rstest may redu
 
 ### Modified Capabilities
 
-- `frontend-test-runtime`: Replace the Vitest runtime contract with a parity-checked Rstest experiment and CI performance decision.
-- `frontend-ci`: Compare the unit test job with a recent equivalent Vitest job before claiming a CI speed improvement.
+- `frontend-test-runtime`: Require parity and CI performance evidence before adopting a replacement runner; retain Vitest when evidence is insufficient.
+- `frontend-ci`: Require a comparable CI measurement before claiming a runner speed improvement.
 
 ## Impact
 
-Test scripts, test configuration, setup, test-only imports and mock APIs, package dependencies and lockfile, active testing guidance, and CI performance reporting. Production code and Playwright E2E behavior remain unchanged.
+The committed change documents the experiment and its adoption decision. Test scripts, configuration, setup, dependencies, production code, and Playwright E2E remain unchanged.
