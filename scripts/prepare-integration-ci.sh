@@ -4,6 +4,8 @@ set -uo pipefail
 
 : "${API_IMAGE:?API_IMAGE must be set}"
 
+log_dir=$(mktemp -d)
+
 generate() {
   set -e
   local start=$SECONDS
@@ -62,16 +64,15 @@ wait_for_jwks() {
     fi
     sleep 1
   done
-  cat /tmp/jwks.log
   return 1
 }
 
-generate & generate_pid=$!
-start_postgres & postgres_pid=$!
-pull_api & api_pull_pid=$!
-install_playwright & playwright_pid=$!
-node e2e-integration/jwks-server.mjs > /tmp/jwks.log 2>&1 &
-wait_for_jwks & jwks_pid=$!
+generate > "$log_dir/generate.log" 2>&1 & generate_pid=$!
+start_postgres > "$log_dir/postgres.log" 2>&1 & postgres_pid=$!
+pull_api > "$log_dir/api-pull.log" 2>&1 & api_pull_pid=$!
+install_playwright > "$log_dir/playwright.log" 2>&1 & playwright_pid=$!
+node e2e-integration/jwks-server.mjs > "$log_dir/jwks-server.log" 2>&1 &
+wait_for_jwks > "$log_dir/jwks.log" 2>&1 & jwks_pid=$!
 
 status=0
 for setup in \
@@ -82,10 +83,19 @@ for setup in \
   "jwks:$jwks_pid"; do
   name=${setup%%:*}
   pid=${setup##*:}
-  if ! wait "$pid"; then
+  if wait "$pid"; then
+    result=success
+  else
+    result=failure
     echo "::error::$name setup failed"
     status=1
   fi
+  echo "::group::$name setup log ($result)"
+  cat "$log_dir/$name.log"
+  if [[ $name == jwks && -s $log_dir/jwks-server.log ]]; then
+    cat "$log_dir/jwks-server.log"
+  fi
+  echo "::endgroup::"
 done
 if ((status != 0)); then
   exit "$status"
