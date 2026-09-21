@@ -1,5 +1,10 @@
 # Changelog
 
+## [v2.18.4](https://github.com/hiterm/bookshelf/compare/v2.18.3...v2.18.4) - 2026-09-21
+
+### Other Changes
+- Speed up Vitest with vmThreads by @hiterm in https://github.com/hiterm/bookshelf/pull/384
+
 ## [v2.18.3](https://github.com/hiterm/bookshelf/compare/v2.18.2...v2.18.3) - 2026-09-21
 
 ### Other Changes
