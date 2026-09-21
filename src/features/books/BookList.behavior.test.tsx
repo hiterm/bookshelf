@@ -1,10 +1,6 @@
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import {
-  createBooks,
-  renderBookList,
-  testBooks,
-} from "./BookList.testSupport";
+import { createBooks, renderBookList, testBooks } from "./BookList.testSupport";
 
 describe("BookList sorting", () => {
   // The sort onClick is on the inner Group div, not the <th>.
