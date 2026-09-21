@@ -13,4 +13,4 @@
 
 - [x] Document why no comparable Rstest CI run was made and keep Vitest as the supported runner.
 - [x] Open a pull request, confirm its existing Vitest CI, and document the adoption decision and trade-offs.
-- [ ] Resolve CodeRabbit findings, synchronize the revised delta specs, and archive this OpenSpec change.
+- [x] Resolve CodeRabbit findings, synchronize the revised delta specs, and archive this OpenSpec change.
