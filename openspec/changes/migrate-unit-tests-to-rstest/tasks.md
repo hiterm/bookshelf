@@ -1,7 +1,7 @@
 ## 1. Baseline and capability gate
 
-- [ ] Record the Vitest version, Node version, test manifest, counts, runner duration, and wall time.
-- [ ] Install and inspect the official migration skill and select a compatible Rstest version.
+- [x] Record the Vitest version, Node version, test manifest, counts, runner duration, and wall time.
+- [x] Install and inspect the official migration skill and select a compatible Rstest version.
 
 ## 2. Migration
 
