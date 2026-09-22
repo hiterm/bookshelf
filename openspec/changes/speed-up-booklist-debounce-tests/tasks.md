@@ -13,5 +13,4 @@
 
 - [x] 3.1 Run repeated post-change timings for both BookList files and the full Vitest suite; compare medians.
 - [x] 3.2 Run generation, lint, formatting, all Vitest tests, and type checking.
-- [ ] 3.3 Sync the delta spec, archive the change, and open a PR with timing and coverage details.
-- [ ] 3.4 Review CI measurements and failures, request CodeRabbit review after passing CI, and address findings until approval.
+- [x] 3.3 Sync the delta spec to the canonical frontend test runtime spec and validate it.
