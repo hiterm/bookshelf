@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "@rstest/core";
 import type { ImportedBook } from "./parseKindleExport";
 import {
   KINDLE_BOOK_IMPORT_DEFAULTS,

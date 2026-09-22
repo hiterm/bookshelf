@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test } from "@rstest/core";
 import { displayOperationType } from "./operationType";
 
 test("translates known operation types and falls back", () => {

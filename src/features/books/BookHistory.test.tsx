@@ -1,14 +1,15 @@
 import { MantineProvider } from "@mantine/core";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeAll, vi } from "vitest";
+import { beforeAll, rs } from "@rstest/core";
 import type { BookRevisionsQuery } from "../../generated/graphql-request";
+import { querySuccess } from "../../test/reactQueryResults";
 import { formatLocalTimestamp } from "../../test-utils/formatLocalTimestamp";
 import { BookHistory } from "./BookHistory";
 import { useBookRevisions } from "./api/useBookRevisions";
 
-vi.mock(import("./api/useBookRevisions"));
-const mockUseBookRevisions = vi.mocked(useBookRevisions, { partial: true });
+rs.mock(import("./api/useBookRevisions"));
+const mockUseBookRevisions = rs.mocked(useBookRevisions);
 const createdAt = "2021-01-01T00:00:00Z";
 const revisions: BookRevisionsQuery = {
   bookRevisions: [
@@ -41,20 +42,16 @@ const wrapper = ({
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation(() => ({
+    value: rs.fn().mockImplementation(() => ({
       matches: true,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
     })),
   });
 });
 
 test("renders revision history and detail", async () => {
-  mockUseBookRevisions.mockReturnValue({
-    data: revisions,
-    isLoading: false,
-    error: null,
-  });
+  mockUseBookRevisions.mockReturnValue(querySuccess(revisions));
   render(
     <BookHistory
       bookId="book-1"
@@ -89,11 +86,7 @@ test("renders revision history and detail", async () => {
 });
 
 test("renders no history when revisions are empty", () => {
-  mockUseBookRevisions.mockReturnValue({
-    data: { bookRevisions: [] },
-    isLoading: false,
-    error: null,
-  });
+  mockUseBookRevisions.mockReturnValue(querySuccess({ bookRevisions: [] }));
   render(<BookHistory bookId="book-1" authors={[]} />, { wrapper });
   expect(
     screen.queryByRole("heading", { name: "History" }),

@@ -1,33 +1,50 @@
 import { MantineProvider } from "@mantine/core";
+import * as routerActual from "@tanstack/react-router" with {
+  rstest: "importActual",
+};
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  rs,
+} from "@rstest/core";
+import type { MergeAuthorMutation } from "../../generated/graphql-request";
+import { mutationIdle, querySuccess } from "../../test/reactQueryResults";
 import { useAuthor } from "./api/useAuthor";
 import { useAuthors } from "./api/useAuthors";
 import { useMergeAuthor } from "./api/useMergeAuthor";
+import type { MergeAuthorInput } from "./api/useMergeAuthor";
 import { AuthorMergePage } from "./AuthorMergePage";
 import { AppErrorProvider } from "../../components/errors/AppErrorProvider";
 
-const navigate = vi.fn().mockResolvedValue(undefined);
-const mutateAsync = vi.fn().mockResolvedValue({
-  mergeAuthor: { author: { id: "author-2" }, operationId: "operation-1" },
-});
+const navigate = rs
+  .fn<ReturnType<typeof routerActual.useNavigate>>()
+  .mockResolvedValue(undefined);
+const mutateAsync = rs
+  .fn<ReturnType<typeof useMergeAuthor>["mutateAsync"]>()
+  .mockResolvedValue({
+    mergeAuthor: { author: { id: "author-2" }, operationId: "operation-1" },
+  });
 
-vi.mock("@tanstack/react-router", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@tanstack/react-router")>()),
+rs.mock("@tanstack/react-router", () => ({
+  ...routerActual,
   useNavigate: () => navigate,
 }));
-vi.mock(import("./api/useAuthor"));
-vi.mock(import("./api/useAuthors"));
-vi.mock(import("./api/useMergeAuthor"));
-vi.mock("../../components/mantineTsr", () => ({
+rs.mock(import("./api/useAuthor"));
+rs.mock(import("./api/useAuthors"));
+rs.mock(import("./api/useMergeAuthor"));
+rs.mock("../../components/mantineTsr", () => ({
   Link: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   LinkButton: ({ children }: { children: React.ReactNode }) => (
     <button type="button">{children}</button>
   ),
 }));
-vi.mock("@mantine/notifications", () => ({ showNotification: vi.fn() }));
+rs.mock("@mantine/notifications", () => ({ showNotification: rs.fn() }));
 
 const authors = [
   { id: "author-1", name: "統合元", yomi: "とうごうもと" },
@@ -77,25 +94,25 @@ const books: Record<string, TestBook[]> = {
 };
 
 beforeAll(() => {
-  vi.stubGlobal(
+  rs.stubGlobal(
     "ResizeObserver",
     class ResizeObserver {
-      observe = vi.fn();
-      unobserve = vi.fn();
-      disconnect = vi.fn();
+      observe = rs.fn();
+      unobserve = rs.fn();
+      disconnect = rs.fn();
     },
   );
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
+      dispatchEvent: rs.fn(),
     })),
   });
 });
@@ -103,26 +120,16 @@ beforeAll(() => {
 beforeEach(() => {
   navigate.mockClear();
   mutateAsync.mockClear();
-  vi.mocked(useAuthors, { partial: true }).mockReturnValue({
-    data: { authors },
-    isLoading: false,
-    error: null,
-  });
-  vi.mocked(useAuthor, { partial: true }).mockImplementation((id) => {
+  rs.mocked(useAuthors).mockReturnValue(querySuccess({ authors }));
+  rs.mocked(useAuthor).mockImplementation((id) => {
     const author = findAuthor(id);
-    return {
-      data:
-        author == null
-          ? undefined
-          : { author: { ...author, books: books[id] ?? [] } },
-      isLoading: false,
-      error: null,
-    };
+    return querySuccess({
+      author: author == null ? null : { ...author, books: books[id] ?? [] },
+    });
   });
-  vi.mocked(useMergeAuthor, { partial: true }).mockReturnValue({
-    mutateAsync,
-    isPending: false,
-  });
+  rs.mocked(useMergeAuthor).mockReturnValue(
+    mutationIdle<MergeAuthorMutation, MergeAuthorInput>({ mutateAsync }),
+  );
 });
 
 const renderPage = (): ReturnType<typeof render> =>

@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test } from "@rstest/core";
 import { MockStore } from "./mockStore";
 
 test("bulk and merge mutations persist retrievable operations", () => {

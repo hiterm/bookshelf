@@ -1,25 +1,28 @@
 import { MantineProvider } from "@mantine/core";
+import * as routerActual from "@tanstack/react-router" with {
+  rstest: "importActual",
+};
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeAll, expect, test, vi } from "vitest";
+import { beforeAll, expect, test, rs } from "@rstest/core";
 import { ImportBooksButton } from "./ImportBooksButton";
 
-const navigate = vi.fn();
-vi.mock("@tanstack/react-router", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@tanstack/react-router")>()),
+const navigate = rs.fn();
+rs.mock("@tanstack/react-router", () => ({
+  ...routerActual,
   useNavigate: () => navigate,
 }));
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
     })),
   });
 });

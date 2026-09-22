@@ -1,17 +1,17 @@
 import { MantineProvider } from "@mantine/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeAll, vi } from "vitest";
+import { beforeAll, rs } from "@rstest/core";
 import type { OperationQuery } from "../../generated/graphql-request";
 import { OperationDetail } from "./OperationDetail";
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation(() => ({
+    value: rs.fn().mockImplementation(() => ({
       matches: false,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
     })),
   });
 });

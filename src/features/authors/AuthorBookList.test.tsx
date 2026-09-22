@@ -1,22 +1,22 @@
 import { MantineProvider } from "@mantine/core";
 import { render, screen, within } from "@testing-library/react";
 import React from "react";
-import { vi } from "vitest";
+import { rs } from "@rstest/core";
 import type { AuthorQuery } from "../../generated/graphql-request";
 import { AuthorBookList } from "./AuthorBookList";
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
+      dispatchEvent: rs.fn(),
     })),
   });
 
@@ -33,7 +33,7 @@ beforeAll(() => {
   };
 });
 
-vi.mock("../../components/mantineTsr", () => ({
+rs.mock("../../components/mantineTsr", () => ({
   Link: ({
     children,
     to,

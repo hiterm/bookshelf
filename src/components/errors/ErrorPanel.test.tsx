@@ -5,20 +5,20 @@ import userEvent from "@testing-library/user-event";
 import { useAppError, AppErrorProvider } from "./AppErrorProvider";
 import { ErrorPanel } from "./ErrorPanel";
 
-vi.mock("@mantine/notifications", () => ({ showNotification: vi.fn() }));
+rs.mock("@mantine/notifications", () => ({ showNotification: rs.fn() }));
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
+      dispatchEvent: rs.fn(),
     })),
   });
 });
@@ -62,7 +62,9 @@ const renderPanel = (): ReturnType<typeof render> =>
   );
 
 describe("ErrorPanel", () => {
-  beforeEach(() => vi.mocked(showNotification).mockReset());
+  beforeEach(() => {
+    rs.mocked(showNotification).mockReset();
+  });
 
   it("is hidden with no errors and keeps reported errors until dismissal", async () => {
     const user = userEvent.setup();
@@ -111,7 +113,7 @@ describe("ErrorPanel", () => {
 
   it("copies long details in the stable clipboard format", async () => {
     const user = userEvent.setup();
-    const writeText = vi
+    const writeText = rs
       .spyOn(navigator.clipboard, "writeText")
       .mockResolvedValue(undefined);
     renderPanel();
@@ -131,7 +133,7 @@ describe("ErrorPanel", () => {
 
   it("shows copy failure only as a transient notification", async () => {
     const user = userEvent.setup();
-    vi.spyOn(navigator.clipboard, "writeText").mockRejectedValueOnce(
+    rs.spyOn(navigator.clipboard, "writeText").mockRejectedValueOnce(
       new Error("denied"),
     );
     renderPanel();

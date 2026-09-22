@@ -1,39 +1,42 @@
 import { MantineProvider } from "@mantine/core";
+import * as backupActual from "./backupDownload" with {
+  rstest: "importActual",
+};
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { vi } from "vitest";
+import { rs } from "@rstest/core";
 import { useAppError } from "../../components/errors/AppErrorProvider";
 import { BackupPage } from "./BackupPage";
 import { downloadBackup } from "./backupDownload";
 
-const getAccessTokenSilently = vi.fn().mockResolvedValue("token");
-const reportError = vi.fn();
+const getAccessTokenSilently = rs.fn().mockResolvedValue("token");
+const reportError = rs.fn();
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
+      dispatchEvent: rs.fn(),
     })),
   });
 });
 
-vi.mock("@auth0/auth0-react", () => ({
+rs.mock("@auth0/auth0-react", () => ({
   useAuth0: () => ({ getAccessTokenSilently }),
 }));
-vi.mock("../../components/errors/AppErrorProvider", () => ({
-  useAppError: vi.fn(),
+rs.mock("../../components/errors/AppErrorProvider", () => ({
+  useAppError: rs.fn(),
 }));
-vi.mock("./backupDownload", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("./backupDownload")>()),
-  downloadBackup: vi.fn(),
+rs.mock<typeof import("./backupDownload")>("./backupDownload", () => ({
+  ...backupActual,
+  downloadBackup: rs.fn<typeof downloadBackup>(),
 }));
 
 const renderPage = (): ReturnType<typeof render> =>
@@ -45,13 +48,13 @@ const renderPage = (): ReturnType<typeof render> =>
 
 describe("BackupPage", () => {
   beforeEach(() => {
-    vi.mocked(useAppError).mockReturnValue({
+    rs.mocked(useAppError).mockReturnValue({
       errors: [],
       reportError,
-      dismissError: vi.fn(),
-      dismissAllErrors: vi.fn(),
+      dismissError: rs.fn(),
+      dismissAllErrors: rs.fn(),
     });
-    vi.mocked(downloadBackup).mockReset().mockResolvedValue(undefined);
+    rs.mocked(downloadBackup).mockReset().mockResolvedValue(undefined);
     reportError.mockReset();
   });
 
@@ -84,7 +87,7 @@ describe("BackupPage", () => {
 
   test("disables only the pending export", async () => {
     let finish: (() => void) | undefined;
-    vi.mocked(downloadBackup).mockImplementation(
+    rs.mocked(downloadBackup).mockImplementation(
       () =>
         new Promise<void>((resolve) => {
           finish = resolve;
@@ -108,7 +111,7 @@ describe("BackupPage", () => {
 
   test("reports errors", async () => {
     const error = new Error("failed");
-    vi.mocked(downloadBackup).mockRejectedValue(error);
+    rs.mocked(downloadBackup).mockRejectedValue(error);
     renderPage();
     await userEvent.click(
       screen.getByRole("button", { name: "完全バックアップをエクスポート" }),

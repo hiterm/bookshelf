@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test } from "@rstest/core";
 import { updateVisibleSelection } from "./importSelection";
 
 test("visible bulk selection preserves hidden selections and its source", () => {

@@ -2,15 +2,20 @@ import { MantineProvider } from "@mantine/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { vi } from "vitest";
+import { rs } from "@rstest/core";
+import type {
+  CreateAuthorInput,
+  CreateAuthorMutation,
+} from "../../generated/graphql-request";
 import { useCreateAuthor } from "../../features/authors/api/useCreateAuthor";
 import { useAuthors } from "../../features/authors/api/useAuthors";
+import { mutationIdle, querySuccess } from "../../test/reactQueryResults";
 import { AuthorIndexPage } from "./index";
 
-vi.mock(import("../../features/authors/api/useCreateAuthor"));
-vi.mock(import("../../features/authors/api/useAuthors"));
+rs.mock(import("../../features/authors/api/useCreateAuthor"));
+rs.mock(import("../../features/authors/api/useAuthors"));
 
-vi.mock("../../components/mantineTsr", () => ({
+rs.mock("../../components/mantineTsr", () => ({
   Link: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   LinkButton: ({ children }: { children: React.ReactNode }) => (
     <button type="button">{children}</button>
@@ -23,29 +28,26 @@ const authors = Array.from({ length: 11 }, (_, index) => ({
   yomi: `ちょしゃ${String(index + 1)}`,
 }));
 
-vi.mocked(useAuthors, { partial: true }).mockReturnValue({
-  data: { authors },
-  isLoading: false,
-  error: null,
-});
+rs.mocked(useAuthors).mockReturnValue(querySuccess({ authors }));
 
-vi.mocked(useCreateAuthor, { partial: true }).mockReturnValue({
-  mutate: vi.fn(),
-  isPending: false,
-});
+rs.mocked(useCreateAuthor).mockReturnValue(
+  mutationIdle<CreateAuthorMutation, CreateAuthorInput>({
+    mutate: rs.fn<ReturnType<typeof useCreateAuthor>["mutate"]>(),
+  }),
+);
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
+      dispatchEvent: rs.fn(),
     })),
   });
 });

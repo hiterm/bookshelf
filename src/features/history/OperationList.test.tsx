@@ -1,22 +1,22 @@
 import { MantineProvider } from "@mantine/core";
 import { render, screen } from "@testing-library/react";
 import React from "react";
-import { beforeAll, vi } from "vitest";
+import { beforeAll, rs } from "@rstest/core";
 import { formatLocalTimestamp } from "../../test-utils/formatLocalTimestamp";
 import { OperationList } from "./OperationList";
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation(() => ({
+    value: rs.fn().mockImplementation(() => ({
       matches: false,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
     })),
   });
 });
 
-vi.mock("../../components/mantineTsr", () => ({
+rs.mock("../../components/mantineTsr", () => ({
   Link: ({
     children,
     "aria-label": ariaLabel,

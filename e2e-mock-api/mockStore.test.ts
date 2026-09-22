@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test } from "@rstest/core";
 import { MockStore } from "./mockStore";
 
 test("book import preview resolves authors without mutating state", () => {

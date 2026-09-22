@@ -1,5 +1,4 @@
 /// <reference types="vite/client" />
-/// <reference types="vitest" />
 
 import { existsSync, unlinkSync } from "node:fs";
 import { resolve } from "node:path";
@@ -61,21 +60,9 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     react(),
-    process.env.VITEST === "true" || process.env.SKIP_VITE_CHECKER === "true"
+    process.env.SKIP_VITE_CHECKER === "true"
       ? undefined
       : vitePluginChecker({ typescript: true }),
     excludeMockServiceWorker(),
   ],
-  test: {
-    globals: true,
-    environment: "jsdom",
-    pool: "vmThreads",
-    setupFiles: ["./src/test/setup.ts"],
-    exclude: [
-      "**/node_modules/**",
-      "**/e2e-mock-api/**/*.spec.ts",
-      "**/e2e-demo-mode/**",
-      "**/e2e-integration/**",
-    ],
-  },
 });

@@ -1,9 +1,9 @@
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test, rs } from "@rstest/core";
 import { resolvePendingAuthors } from "./resolvePendingAuthors";
 
 describe("resolvePendingAuthors", () => {
   test("returns non-pending authors unchanged", async () => {
-    const createAuthor = vi.fn();
+    const createAuthor = rs.fn();
     const authors = [
       { id: "1", name: "Alice" },
       { id: "2", name: "Bob" },
@@ -16,7 +16,7 @@ describe("resolvePendingAuthors", () => {
   });
 
   test("resolves a pending author via createAuthor", async () => {
-    const createAuthor = vi.fn().mockResolvedValue("new-id-1");
+    const createAuthor = rs.fn().mockResolvedValue("new-id-1");
     const authors = [{ id: "__pending__:Alice", name: "Alice" }];
 
     const result = await resolvePendingAuthors(authors, createAuthor);
@@ -26,7 +26,7 @@ describe("resolvePendingAuthors", () => {
   });
 
   test("deduplicates pending authors with the same name", async () => {
-    const createAuthor = vi.fn().mockResolvedValue("new-id-1");
+    const createAuthor = rs.fn().mockResolvedValue("new-id-1");
     const authors = [
       { id: "__pending__:Alice", name: "Alice" },
       { id: "__pending__:Alice", name: "Alice" },
@@ -42,7 +42,7 @@ describe("resolvePendingAuthors", () => {
   });
 
   test("resolves mixed real and pending authors", async () => {
-    const createAuthor = vi.fn().mockResolvedValue("new-id-2");
+    const createAuthor = rs.fn().mockResolvedValue("new-id-2");
     const authors = [
       { id: "1", name: "Bob" },
       { id: "__pending__:Alice", name: "Alice" },

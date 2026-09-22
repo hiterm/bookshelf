@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { vi } from "vitest";
+import { rs } from "@rstest/core";
 import { useBookLookup } from "./useBookLookup";
 
 const DC_NS = "http://purl.org/dc/elements/1.1/";
@@ -55,11 +55,11 @@ const googleBooksResponse = (
   });
 
 beforeEach(() => {
-  vi.stubGlobal("fetch", vi.fn());
+  rs.stubGlobal("fetch", rs.fn());
 });
 
 afterEach(() => {
-  vi.unstubAllGlobals();
+  rs.unstubAllGlobals();
 });
 
 describe("useBookLookup", () => {
@@ -69,8 +69,8 @@ describe("useBookLookup", () => {
   });
 
   test("all-empty query sets state back to idle without fetching", async () => {
-    const mockFetch = vi.fn();
-    vi.stubGlobal("fetch", mockFetch);
+    const mockFetch = rs.fn();
+    rs.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useBookLookup());
 
@@ -83,11 +83,11 @@ describe("useBookLookup", () => {
   });
 
   test("Google Books search with title builds intitle: query and returns results", async () => {
-    const mockFetch = vi
+    const mockFetch = rs
       .fn()
       .mockReturnValueOnce(googleBooksResponse("Rustプログラミング", ["著者A"]))
       .mockReturnValueOnce(makeJsonResponse([]));
-    vi.stubGlobal("fetch", mockFetch);
+    rs.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useBookLookup());
 
@@ -106,11 +106,11 @@ describe("useBookLookup", () => {
   });
 
   test("Google Books search with ISBN strips hyphens and builds isbn: query", async () => {
-    const mockFetch = vi
+    const mockFetch = rs
       .fn()
       .mockReturnValueOnce(googleBooksResponse("Some Book", ["Author"]))
       .mockReturnValueOnce(makeJsonResponse([]));
-    vi.stubGlobal("fetch", mockFetch);
+    rs.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useBookLookup());
 
@@ -124,7 +124,7 @@ describe("useBookLookup", () => {
   });
 
   test("Google Books returning no items yields success with empty results", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockReturnValue(makeJsonResponse({})));
+    rs.stubGlobal("fetch", rs.fn().mockReturnValue(makeJsonResponse({})));
 
     const { result } = renderHook(() => useBookLookup());
 
@@ -139,7 +139,7 @@ describe("useBookLookup", () => {
   });
 
   test("NDL search with title sends title param and parses XML correctly", async () => {
-    const mockFetch = vi
+    const mockFetch = rs
       .fn()
       .mockReturnValueOnce(
         makeTextResponse(
@@ -147,7 +147,7 @@ describe("useBookLookup", () => {
         ),
       )
       .mockReturnValueOnce(makeJsonResponse([]));
-    vi.stubGlobal("fetch", mockFetch);
+    rs.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useBookLookup());
 
@@ -168,10 +168,10 @@ describe("useBookLookup", () => {
   });
 
   test("NDL search with ISBN strips hyphens", async () => {
-    const mockFetch = vi
+    const mockFetch = rs
       .fn()
       .mockReturnValue(makeTextResponse(ndlXml("テスト", [])));
-    vi.stubGlobal("fetch", mockFetch);
+    rs.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useBookLookup());
 
@@ -185,9 +185,9 @@ describe("useBookLookup", () => {
   });
 
   test("HTTP error yields error state with message", async () => {
-    vi.stubGlobal(
+    rs.stubGlobal(
       "fetch",
-      vi.fn().mockReturnValue(makeJsonResponse({}, false)),
+      rs.fn().mockReturnValue(makeJsonResponse({}, false)),
     );
 
     const { result } = renderHook(() => useBookLookup());
@@ -205,9 +205,9 @@ describe("useBookLookup", () => {
   });
 
   test("network failure yields error state", async () => {
-    vi.stubGlobal(
+    rs.stubGlobal(
       "fetch",
-      vi.fn().mockReturnValue(Promise.reject(new Error("network error"))),
+      rs.fn().mockReturnValue(Promise.reject(new Error("network error"))),
     );
 
     const { result } = renderHook(() => useBookLookup());
@@ -225,7 +225,7 @@ describe("useBookLookup", () => {
   });
 
   test("OpenBD enrichment fills coverImageUrl for NDL results without cover", async () => {
-    const mockFetch = vi
+    const mockFetch = rs
       .fn()
       .mockReturnValueOnce(
         makeTextResponse(
@@ -245,7 +245,7 @@ describe("useBookLookup", () => {
           },
         ]),
       );
-    vi.stubGlobal("fetch", mockFetch);
+    rs.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useBookLookup());
 
@@ -266,7 +266,7 @@ describe("useBookLookup", () => {
   });
 
   test("OpenBD enrichment fills series and volume when present", async () => {
-    const mockFetch = vi
+    const mockFetch = rs
       .fn()
       .mockReturnValueOnce(
         makeTextResponse(
@@ -286,7 +286,7 @@ describe("useBookLookup", () => {
           },
         ]),
       );
-    vi.stubGlobal("fetch", mockFetch);
+    rs.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useBookLookup());
 
@@ -302,7 +302,7 @@ describe("useBookLookup", () => {
   });
 
   test("OpenBD HTTP error does not fail search — returns unenriched results", async () => {
-    const mockFetch = vi
+    const mockFetch = rs
       .fn()
       .mockReturnValueOnce(
         makeTextResponse(
@@ -310,7 +310,7 @@ describe("useBookLookup", () => {
         ),
       )
       .mockReturnValueOnce(makeJsonResponse({}, false));
-    vi.stubGlobal("fetch", mockFetch);
+    rs.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useBookLookup());
 
@@ -326,12 +326,12 @@ describe("useBookLookup", () => {
   });
 
   test("OpenBD not called when all results have no ISBN", async () => {
-    const mockFetch = vi
+    const mockFetch = rs
       .fn()
       .mockReturnValueOnce(
         makeTextResponse(ndlXml("ISBNなし本", ["著者A"], "", "出版社")),
       );
-    vi.stubGlobal("fetch", mockFetch);
+    rs.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useBookLookup());
 
@@ -348,14 +348,14 @@ describe("useBookLookup", () => {
       (resolve) => (resolveFirst = resolve),
     );
 
-    const mockFetch = vi
+    const mockFetch = rs
       .fn()
       .mockReturnValueOnce(firstResponse)
       .mockReturnValueOnce(
         googleBooksResponse("新しい書籍", ["著者B"], "9784000000002"),
       )
       .mockReturnValueOnce(makeJsonResponse([]));
-    vi.stubGlobal("fetch", mockFetch);
+    rs.stubGlobal("fetch", mockFetch);
 
     const { result } = renderHook(() => useBookLookup());
 

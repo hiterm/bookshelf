@@ -2,7 +2,7 @@ import { MantineProvider } from "@mantine/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React, { useState } from "react";
-import { type Mock, vi } from "vitest";
+import { type Mock, rs } from "@rstest/core";
 import { AuthorsCombobox } from "./AuthorsCombobox";
 import type { BookFormAuthor } from "./bookFormSchema";
 import type { Author } from "./entity/Author";
@@ -21,29 +21,29 @@ beforeAll(() => {
     disconnect(): void {}
   };
   /* eslint-enable @typescript-eslint/no-empty-function */
-  HTMLElement.prototype.scrollIntoView = vi.fn();
+  HTMLElement.prototype.scrollIntoView = rs.fn();
 });
 
 beforeEach(() => {
-  vi.useFakeTimers({ shouldAdvanceTime: true });
+  rs.useFakeTimers({ shouldAdvanceTime: true });
 });
 
 afterEach(() => {
-  vi.useRealTimers();
+  rs.useRealTimers();
 });
 
 const mockMatchMedia = (): void => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
+      dispatchEvent: rs.fn(),
     })),
   });
 };
@@ -80,11 +80,11 @@ const TestCombobox: React.FC<TestComboboxProps> = ({
 describe("AuthorsCombobox", () => {
   test("selects an existing author", async () => {
     mockMatchMedia();
-    const onChange = vi.fn();
+    const onChange = rs.fn();
     render(<TestCombobox onChange={onChange} />);
 
     const user = userEvent.setup({
-      advanceTimers: vi.advanceTimersByTime.bind(vi),
+      advanceTimers: rs.advanceTimersByTime.bind(rs),
     });
     const input = screen.getByRole("textbox", { name: "著者" });
     await user.click(input);
@@ -96,7 +96,7 @@ describe("AuthorsCombobox", () => {
 
   test("deselects an already selected author", async () => {
     mockMatchMedia();
-    const onChange = vi.fn();
+    const onChange = rs.fn();
     render(
       <TestCombobox
         onChange={onChange}
@@ -105,7 +105,7 @@ describe("AuthorsCombobox", () => {
     );
 
     const user = userEvent.setup({
-      advanceTimers: vi.advanceTimersByTime.bind(vi),
+      advanceTimers: rs.advanceTimersByTime.bind(rs),
     });
     const input = screen.getByRole("textbox", { name: "著者" });
     await user.click(input);
@@ -117,11 +117,11 @@ describe("AuthorsCombobox", () => {
 
   test("shows '+ Create' option for non-matching search", async () => {
     mockMatchMedia();
-    const onChange = vi.fn();
+    const onChange = rs.fn();
     render(<TestCombobox onChange={onChange} />);
 
     const user = userEvent.setup({
-      advanceTimers: vi.advanceTimersByTime.bind(vi),
+      advanceTimers: rs.advanceTimersByTime.bind(rs),
     });
     const input = screen.getByRole("textbox", { name: "著者" });
     await user.click(input);
@@ -134,11 +134,11 @@ describe("AuthorsCombobox", () => {
 
   test("does not show '+ Create' on exact name match", async () => {
     mockMatchMedia();
-    const onChange = vi.fn();
+    const onChange = rs.fn();
     render(<TestCombobox onChange={onChange} />);
 
     const user = userEvent.setup({
-      advanceTimers: vi.advanceTimersByTime.bind(vi),
+      advanceTimers: rs.advanceTimersByTime.bind(rs),
     });
     const input = screen.getByRole("textbox", { name: "著者" });
     await user.click(input);
@@ -151,11 +151,11 @@ describe("AuthorsCombobox", () => {
 
   test("creates a pending author when '+ Create' is clicked", async () => {
     mockMatchMedia();
-    const onChange = vi.fn();
+    const onChange = rs.fn();
     render(<TestCombobox onChange={onChange} />);
 
     const user = userEvent.setup({
-      advanceTimers: vi.advanceTimersByTime.bind(vi),
+      advanceTimers: rs.advanceTimersByTime.bind(rs),
     });
     const input = screen.getByRole("textbox", { name: "著者" });
     await user.click(input);
@@ -172,7 +172,7 @@ describe("AuthorsCombobox", () => {
 
   test("removes a pill via remove button", async () => {
     mockMatchMedia();
-    const onChange = vi.fn();
+    const onChange = rs.fn();
     const { container } = render(
       <TestCombobox
         onChange={onChange}
@@ -181,7 +181,7 @@ describe("AuthorsCombobox", () => {
     );
 
     const user = userEvent.setup({
-      advanceTimers: vi.advanceTimersByTime.bind(vi),
+      advanceTimers: rs.advanceTimersByTime.bind(rs),
     });
     // Mantine renders the Pill remove button with aria-hidden; query by aria-label attribute.
     const removeButton = container.querySelector(
@@ -195,7 +195,7 @@ describe("AuthorsCombobox", () => {
 
   test("removes last author via Backspace with empty input", async () => {
     mockMatchMedia();
-    const onChange = vi.fn();
+    const onChange = rs.fn();
     render(
       <TestCombobox
         onChange={onChange}
@@ -204,7 +204,7 @@ describe("AuthorsCombobox", () => {
     );
 
     const user = userEvent.setup({
-      advanceTimers: vi.advanceTimersByTime.bind(vi),
+      advanceTimers: rs.advanceTimersByTime.bind(rs),
     });
     const input = screen.getByRole("textbox", { name: "著者" });
     await user.click(input);
@@ -215,7 +215,7 @@ describe("AuthorsCombobox", () => {
 
   test("shows error message when error prop is set", () => {
     mockMatchMedia();
-    const onChange = vi.fn();
+    const onChange = rs.fn();
     render(<TestCombobox onChange={onChange} error="著者は必須です" />);
 
     expect(screen.getByText("著者は必須です")).toBeInTheDocument();

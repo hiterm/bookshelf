@@ -1,32 +1,43 @@
 import { MantineProvider } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as routerActual from "@tanstack/react-router" with {
+  rstest: "importActual",
+};
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { vi } from "vitest";
+import { rs } from "@rstest/core";
+import type {
+  UpdateAuthorInput,
+  UpdateAuthorMutation,
+} from "../../generated/graphql-request";
+import { mutationIdle } from "../../test/reactQueryResults";
 import { useUpdateAuthor } from "./api/useUpdateAuthor";
 import { AppErrorProvider } from "../../components/errors/AppErrorProvider";
 import { AuthorEdit } from "./AuthorEdit";
 
-vi.mock("@tanstack/react-router", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@tanstack/react-router")>();
-  return {
-    ...actual,
-    useNavigate: () => vi.fn().mockResolvedValue(undefined),
-  };
-});
+rs.mock("@tanstack/react-router", () => ({
+  ...routerActual,
+  useNavigate: () => rs.fn().mockResolvedValue(undefined),
+}));
 
-const mockMutateAsync = vi.fn().mockResolvedValue({});
+const mockMutateAsync = rs
+  .fn<ReturnType<typeof useUpdateAuthor>["mutateAsync"]>()
+  .mockResolvedValue({
+    updateAuthor: {
+      author: { id: "author-1", name: "テスト著者", yomi: "てすとちょしゃ" },
+    },
+  });
 
-vi.mock(import("./api/useUpdateAuthor"));
-vi.mocked(useUpdateAuthor, { partial: true }).mockReturnValue({
-  mutateAsync: mockMutateAsync,
-  isPending: false,
-});
+rs.mock(import("./api/useUpdateAuthor"));
+rs.mocked(useUpdateAuthor).mockReturnValue(
+  mutationIdle<UpdateAuthorMutation, UpdateAuthorInput>({
+    mutateAsync: mockMutateAsync,
+  }),
+);
 
-vi.mock("../../components/mantineTsr", () => ({
+rs.mock("../../components/mantineTsr", () => ({
   Link: ({
     children,
     ...props
@@ -48,22 +59,22 @@ vi.mock("../../components/mantineTsr", () => ({
   ),
 }));
 
-vi.mock("@mantine/notifications", () => ({
-  showNotification: vi.fn(),
+rs.mock("@mantine/notifications", () => ({
+  showNotification: rs.fn(),
 }));
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: rs.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: rs.fn(),
+      removeListener: rs.fn(),
+      addEventListener: rs.fn(),
+      removeEventListener: rs.fn(),
+      dispatchEvent: rs.fn(),
     })),
   });
 });
@@ -93,7 +104,7 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
 describe("AuthorEdit", () => {
   beforeEach(() => {
     mockMutateAsync.mockClear();
-    vi.mocked(showNotification).mockClear();
+    rs.mocked(showNotification).mockClear();
   });
 
   test("renders inputs with initial values", () => {

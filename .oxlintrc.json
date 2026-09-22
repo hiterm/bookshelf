@@ -146,10 +146,7 @@
     "react/react-in-jsx-scope": "off",
     // TypeScript's noImplicitReturns checks return paths using control-flow types.
     "typescript/consistent-return": "off",
-    // CSS loads styles; the Vitest jest-dom entry point registers test matchers.
-    "import/no-unassigned-import": [
-      "error",
-      { "allow": ["**/*.css", "@testing-library/jest-dom/vitest"] }
-    ]
+    // CSS imports load application styles.
+    "import/no-unassigned-import": ["error", { "allow": ["**/*.css"] }]
   }
 }
