@@ -19,6 +19,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
+import type { DependencyList, EffectCallback } from "react";
 import type { z } from "zod";
 import { vi } from "vitest";
 import { useAuthors } from "../authors/api/useAuthors";
@@ -34,6 +35,20 @@ type BookSearch = {
 };
 
 vi.mock(import("../authors/api/useAuthors"));
+
+// Debounce timing is covered by StringFilter and BookList.debounce tests.
+vi.mock("../../components/hooks/useDebouncedEffect", async () => {
+  const { useEffect } = await import("react");
+  const useDebouncedEffect = (
+    effect: EffectCallback,
+    deps: DependencyList,
+  ): void => {
+    // This mock intentionally follows the hook's dependency list, as the real hook does.
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(effect, deps);
+  };
+  return { useDebouncedEffect };
+});
 
 vi.mocked(useAuthors, { partial: true }).mockReturnValue({
   data: {
