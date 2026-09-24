@@ -65,7 +65,7 @@
     "jose": "6.2.10",
     "jsdom": "30.0.1",
     "msw": "2.15.0",
-    "oxfmt": "0.68.0",
+    "oxfmt": "0.70.0",
     "oxlint": "1.83.0",
     "oxlint-tsgolint": "7.0.2001",
     "typescript": "7.0.2",
