@@ -199,6 +199,23 @@ const renderBookList = async (
   };
 };
 
+// Use a fake clock for the debounce, then restore real timers for later interactions.
+const changeStringFilter = async (
+  input: HTMLElement,
+  value: string,
+): Promise<void> => {
+  vi.useFakeTimers();
+  try {
+    fireEvent.change(input, { target: { value } });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
+      await vi.runOnlyPendingTimersAsync();
+    });
+  } finally {
+    vi.useRealTimers();
+  }
+};
+
 describe("BookList filters", () => {
   test("shows all books initially", async () => {
     await renderBookList();
@@ -228,7 +245,7 @@ describe("BookList filters", () => {
     const readingInput = within(
       screen.getByTestId("filter-authorYomis"),
     ).getByRole("textbox");
-    fireEvent.change(readingInput, { target: { value: "いち" } });
+    await changeStringFilter(readingInput, "いち");
 
     await waitFor(
       () => {
@@ -303,7 +320,7 @@ describe("BookList filters", () => {
     const titleInput = within(screen.getByTestId("filter-title")).getByRole(
       "textbox",
     );
-    fireEvent.change(titleInput, { target: { value: "書籍1" } });
+    await changeStringFilter(titleInput, "書籍1");
 
     await waitFor(
       () => {
@@ -329,7 +346,7 @@ describe("BookList filters", () => {
     const isbnInput = within(screen.getByTestId("filter-isbn")).getByRole(
       "textbox",
     );
-    fireEvent.change(isbnInput, { target: { value: "000002" } });
+    await changeStringFilter(isbnInput, "000002");
 
     await waitFor(
       () => {
@@ -673,7 +690,7 @@ describe("BookList preset and reset", () => {
     const titleInput = within(screen.getByTestId("filter-title")).getByRole(
       "textbox",
     );
-    fireEvent.change(titleInput, { target: { value: "書籍1" } });
+    await changeStringFilter(titleInput, "書籍1");
 
     await waitFor(
       () => {
@@ -702,7 +719,7 @@ describe("BookList preset and reset", () => {
     const titleInput = within(screen.getByTestId("filter-title")).getByRole(
       "textbox",
     );
-    fireEvent.change(titleInput, { target: { value: "書籍1" } });
+    await changeStringFilter(titleInput, "書籍1");
 
     await waitFor(
       () => {
