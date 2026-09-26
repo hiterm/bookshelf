@@ -15,9 +15,12 @@ improvements on GitHub Actions because the local machine is resource constrained
 - [x] Run a local baseline with two workers: 41 files, 223 tests, 25.33 seconds.
 - [x] Verify a prototype replacing five real debounce waits with fake timers;
       all 223 tests pass, BookList drops from 19.755s to 14.977s locally.
-- [ ] Create a draft PR with paired CI measurements.
-- [ ] Retain proven improvements, document evidence, and complete required checks.
-- [ ] Update the PR description and mark it ready after successful CI validation.
+- [x] Create draft PR #391; paired CI run 36256488211 passes all six measurements.
+- [x] Retain proven improvement and document evidence in `docs/vitest-performance.md`.
+- [x] Complete local generation, lint, formatting, 223 tests, and type checking
+      after removing temporary measurement code.
+- [x] Mark PR #391 ready after successful paired and ordinary CI validation;
+      final CI after removal of the benchmark is tracked on the PR.
 
 ## Surprises & Discoveries
 
@@ -42,8 +45,11 @@ real timers in `finally`, rather than modifying production debounce behavior.
 
 ## Outcomes & Retrospective
 
-Investigation is in progress. Historical CI timings identify candidates but
-are insufficient evidence of improvement without paired measurements.
+Paired CI measurements on a 4-vCPU AMD EPYC 9V45 runner show median process
+wall time improving from 13.565s to 10.261s (24.4%), and BookList improving from
+10.873s to 7.545s (30.6%). All six runs pass 41 files and 223 tests. The normal
+CI jobs also pass. Retain the scoped fake-clock change; remove temporary
+benchmark infrastructure and finish final branch verification on PR #391, now ready for review.
 
 ## Context and Orientation
 
@@ -108,3 +114,6 @@ prototyping and controlled CI validation.
 
 Revision note (2026-09-26): local prototype passes; add a temporary Python
 measurement script and CI job for controlled baseline/candidate comparisons.
+
+Revision note (2026-09-26): paired CI confirms the improvement; record all
+measurements and reproduction instructions in docs, remove temporary CI overhead.
