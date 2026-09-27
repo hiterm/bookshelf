@@ -11,7 +11,9 @@ export default defineConfig({
   fullyParallel: false,
   forbidOnly: isCi,
   retries: isCi ? 1 : 0,
-  workers: 1,
+  // Integration tests use an isolated user per test, so CI can safely run the
+  // four spec files concurrently while preserving serial execution in a file.
+  workers: isCi ? 4 : 1,
   use: {
     baseURL: "http://localhost:4173",
     trace: "on-first-retry",
