@@ -37,7 +37,18 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run generate
       - run: pnpm run check
-      - run: pnpm run test
+      - name: Run unit tests with coverage
+        env:
+          NO_COLOR: "1"
+        run: |
+          coverage_output="${RUNNER_TEMP}/vitest-coverage.txt"
+          pnpm run test:coverage | tee "$coverage_output"
+          {
+            echo "## Vitest coverage"
+            echo '```text'
+            sed -n '/^-------------------|---------/,$p' "$coverage_output"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
       - run: pnpm run build
 
   check-generated:
