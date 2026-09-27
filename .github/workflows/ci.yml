@@ -25,6 +25,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -49,6 +52,12 @@ jobs:
             sed -n '/^-------------------|---------/,$p' "$coverage_output"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+        with:
+          fail_ci_if_error: true
+          files: coverage/lcov.info
+          use_oidc: true
       - run: pnpm run build
 
   check-generated:
