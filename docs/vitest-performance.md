@@ -20,11 +20,13 @@ add approximately five seconds to a file whose cases run sequentially.
 
 ## Change
 
-`changeStringFilter` temporarily enables Vitest fake timers around the input
-change, advances the real debounce implementation inside React `act`, flushes
-pending simulated timers, and restores real timers in `finally`. Subsequent
-router assertions and user interactions use real timers. All existing DOM,
-filter, reset, and URL assertions remain; production debounce code is unchanged.
+The affected tests enable Vitest fake timers immediately before React rendering,
+so the initial debounce and changed-value debounce use the same timer
+implementation. `changeStringFilter` advances the real debounce implementation
+inside React `act`, flushes pending simulated timers, and restores real timers
+in `finally`. Subsequent router assertions and user interactions use real timers.
+All existing DOM, filter, reset, and URL assertions remain; production debounce
+code is unchanged.
 Existing `useDebouncedEffect.test.ts` tests still verify that the callback waits
 for its delay and that changing dependencies restarts the timer.
 
@@ -75,6 +77,35 @@ The same CI run passed generation checks, lint, formatting, type checking,
 build, mock-API E2E, demo-mode E2E, and both backend integration variants.
 The temporary measurement job and script are removed from the final change,
 so future CI runs do not pay for six extra test executions.
+
+## Post-review performance validation
+
+Code review identified that enabling fake timers only after rendering mixed the
+initial native debounce with the simulated changed-value debounce. The final
+implementation starts the simulated clock immediately before rendering the five
+affected cases. A second temporary paired measurement compared the reviewed
+candidate at `b7b86de` with the final implementation on the same runner, using
+the same alternating order and cold-cache protocol.
+
+[Post-review paired measurement job](https://github.com/hiterm/bookshelf/actions/runs/36289053308/job/108535425871)
+used a 4-vCPU AMD EPYC 9V74 runner with Node 24.21.0. All six runs passed 41
+files and 223 tests.
+
+| Order | Variant  | Process wall (s) | BookList (s) |
+| ----- | -------- | ---------------: | -----------: |
+| 1     | Reviewed |           18.679 |       14.228 |
+| 2     | Final    |           17.869 |       13.343 |
+| 3     | Final    |           17.711 |       13.235 |
+| 4     | Reviewed |           17.851 |       13.310 |
+| 5     | Reviewed |           17.726 |       13.072 |
+| 6     | Final    |           17.529 |       12.929 |
+
+Median process wall time changed from **17.851s to 17.711s (-0.8%)**, and
+median BookList time changed from **13.310s to 13.235s (-0.6%)**. The
+distributions overlap, so this does not establish an additional speedup, but it
+does show no measured regression from the review fix. Absolute times differ
+from the earlier EPYC 9V45 run; only paired values from the same job should be
+compared.
 
 To reproduce the exact experiment, check out candidate `961ab99` in a clean
 checkout, install with `pnpm install --frozen-lockfile`, run `pnpm run generate`,
