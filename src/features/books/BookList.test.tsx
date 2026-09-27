@@ -161,6 +161,7 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
 const renderBookList = async (
   initialSearch: BookSearch = {},
   books: Book[] = testBooks,
+  useFakeTimers = false,
 ): Promise<{
   router: {
     state: { location: { search: BookSearch } };
@@ -193,18 +194,25 @@ const renderBookList = async (
   });
   await router.load();
 
+  if (useFakeTimers) {
+    vi.useFakeTimers();
+  }
+
   return {
     ...render(<RouterProvider router={router} />, { wrapper: createWrapper() }),
     router,
   };
 };
 
-// Use a fake clock for the debounce, then restore real timers for later interactions.
+const renderBookListWithFakeTimers = async (): ReturnType<
+  typeof renderBookList
+> => renderBookList({}, testBooks, true);
+
+// Advance the fake clock for the debounce, then restore real timers.
 const changeStringFilter = async (
   input: HTMLElement,
   value: string,
 ): Promise<void> => {
-  vi.useFakeTimers();
   try {
     fireEvent.change(input, { target: { value } });
     await act(async () => {
@@ -240,7 +248,7 @@ describe("BookList filters", () => {
   });
 
   test("author reading filter shows only books with a matching reading", async () => {
-    await renderBookList();
+    await renderBookListWithFakeTimers();
 
     const readingInput = within(
       screen.getByTestId("filter-authorYomis"),
@@ -311,11 +319,7 @@ describe("BookList filters", () => {
   });
 
   test("title string filter shows only matching books", async () => {
-    const { router } = await renderBookList();
-
-    await waitFor(() => {
-      expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
-    });
+    const { router } = await renderBookListWithFakeTimers();
 
     const titleInput = within(screen.getByTestId("filter-title")).getByRole(
       "textbox",
@@ -337,11 +341,7 @@ describe("BookList filters", () => {
   });
 
   test("ISBN string filter shows only matching books", async () => {
-    await renderBookList();
-
-    await waitFor(() => {
-      expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
-    });
+    await renderBookListWithFakeTimers();
 
     const isbnInput = within(screen.getByTestId("filter-isbn")).getByRole(
       "textbox",
@@ -681,11 +681,7 @@ describe("BookList preset and reset", () => {
   });
 
   test("reset filter restores all books", async () => {
-    await renderBookList();
-
-    await waitFor(() => {
-      expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
-    });
+    await renderBookListWithFakeTimers();
 
     const titleInput = within(screen.getByTestId("filter-title")).getByRole(
       "textbox",
@@ -710,11 +706,7 @@ describe("BookList preset and reset", () => {
   });
 
   test("reset filter clears the title input", async () => {
-    await renderBookList();
-
-    await waitFor(() => {
-      expect(screen.getByText("テスト書籍1")).toBeInTheDocument();
-    });
+    await renderBookListWithFakeTimers();
 
     const titleInput = within(screen.getByTestId("filter-title")).getByRole(
       "textbox",
