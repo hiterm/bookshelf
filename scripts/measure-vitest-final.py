@@ -42,7 +42,6 @@ for run in range(3):
     result = {
         "run": run + 1,
         "wallSeconds": wall_seconds,
-        "vitestSeconds": data["endTime"] / 1000 - data["startTime"] / 1000,
         "bookListSeconds": (book_list["endTime"] - book_list["startTime"]) / 1000,
     }
     results.append(result)
@@ -50,7 +49,7 @@ for run in range(3):
 
 medians = {
     key: statistics.median(result[key] for result in results)
-    for key in ("wallSeconds", "vitestSeconds", "bookListSeconds")
+    for key in ("wallSeconds", "bookListSeconds")
 }
 print("MEDIANS", json.dumps(medians), flush=True)
 
