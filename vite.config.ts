@@ -71,6 +71,19 @@ export default defineConfig({
     environment: "jsdom",
     pool: "vmThreads",
     setupFiles: ["./src/test/setup.ts"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text"],
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: [
+        "src/**/*.test.{ts,tsx}",
+        "src/**/*.d.ts",
+        "src/generated/**",
+        "src/routeTree.gen.ts",
+        "src/test/**",
+        "src/test-utils/**",
+      ],
+    },
     exclude: [
       "**/node_modules/**",
       "**/e2e-mock-api/**/*.spec.ts",
