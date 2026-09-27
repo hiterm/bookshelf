@@ -49,6 +49,12 @@ jobs:
             sed -n '/^-------------------|---------/,$p' "$coverage_output"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@2320916714171c258d01dbd81040d64d798c6f8e # v7.1.1
+        with:
+          fail_ci_if_error: true
+          files: coverage/lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
       - run: pnpm run build
 
   check-generated:
