@@ -1,5 +1,3 @@
-// @vitest-environment node
-
 import { expect, test } from "vitest";
 import { updateVisibleSelection } from "./importSelection";
 

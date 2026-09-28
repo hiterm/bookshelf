@@ -1,5 +1,3 @@
-// @vitest-environment node
-
 import { displayBookFormat } from "./BookFormat";
 
 describe("displayBookFormat", () => {

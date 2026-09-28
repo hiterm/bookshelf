@@ -165,4 +165,5 @@ jobs:
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - run: pnpm run generate
+      - run: pnpm exec playwright install --only-shell chromium
       - run: python3 scripts/measure-test-runtime.py
