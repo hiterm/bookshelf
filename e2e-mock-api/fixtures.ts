@@ -192,6 +192,13 @@ window.parent.postMessage({
       },
     );
 
+    // Resolvers read the current per-test store on every operation. Reuse only
+    // this page fixture's schema so requests share no state with other tests.
+    const executableSchema = makeExecutableSchema({
+      typeDefs: schemaString,
+      resolvers: createResolvers(mockStore),
+    });
+
     // GraphQL mock
     await page.route("http://localhost:4000/graphql", async (route) => {
       log("GraphQL route hit");
@@ -203,12 +210,6 @@ window.parent.postMessage({
         const body = graphqlRequestSchema.parse(route.request().postDataJSON());
         log("GraphQL query:", body.query.substring(0, 50));
         const { query, variables } = body;
-
-        const resolvers = createResolvers(mockStore);
-        const executableSchema = makeExecutableSchema({
-          typeDefs: schemaString,
-          resolvers,
-        });
 
         const result = graphqlSync({
           schema: executableSchema,
