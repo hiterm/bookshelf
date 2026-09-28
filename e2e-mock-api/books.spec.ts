@@ -32,13 +32,6 @@ test.describe("Books READ", () => {
     await expect(page.getByRole("link", { name: "テスト書籍2" })).toBeVisible();
   });
 
-  test("navigates to detail page when clicking book title", async ({
-    page,
-  }) => {
-    await page.getByRole("link", { name: "テスト書籍1" }).click();
-    await expect(page).toHaveURL(/\/books\/book-1$/);
-  });
-
   test("displays book information on detail page", async ({ page }) => {
     await page.getByRole("link", { name: "テスト書籍1" }).click();
     await expect(page).toHaveURL(/\/books\/book-1$/);
@@ -92,11 +85,6 @@ test.describe("Books CREATE", () => {
     await page.goto("/books");
     await page.getByRole("button", { name: "Login" }).click();
     await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
-  });
-
-  test("opens modal with Add button", async ({ page }) => {
-    await page.getByRole("button", { name: "追加" }).click();
-    await expect(page.getByRole("dialog", { name: "追加" })).toBeVisible();
   });
 
   test("creates a new book", async ({ page }) => {

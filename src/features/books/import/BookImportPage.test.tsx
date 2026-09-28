@@ -1,6 +1,12 @@
 import { MantineProvider } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
@@ -140,27 +146,44 @@ describe("BookImportPage", () => {
     expect(screen.getByText("購入日前の本")).toBeInTheDocument();
   });
 
-  test("ignores a stale file read after a newer source", async () => {
-    render(<BookImportPage />, { wrapper });
-    let resolveFirst: ((value: string) => void) | undefined;
-    let resolveSecond: ((value: string) => void) | undefined;
-    const first = new File([], "first.json", { type: "application/json" });
-    const second = new File([], "second.json", { type: "application/json" });
-    Object.defineProperty(first, "text", {
-      value: () => new Promise<string>((resolve) => (resolveFirst = resolve)),
-    });
-    Object.defineProperty(second, "text", {
-      value: () => new Promise<string>((resolve) => (resolveSecond = resolve)),
-    });
-    fireEvent.change(getFileInput(), { target: { files: [first] } });
-    fireEvent.change(getFileInput(), { target: { files: [second] } });
-    resolveSecond?.(JSON.stringify([{ ...fixture[0], title: "新しい入力" }]));
-    expect(await screen.findByText("新しい入力")).toBeInTheDocument();
-    resolveFirst?.(JSON.stringify([{ ...fixture[0], title: "古い入力" }]));
-    await waitFor(() => {
+  test.each(["success", "failure"] as const)(
+    "ignores stale file read %s after a newer source",
+    async (outcome) => {
+      render(<BookImportPage />, { wrapper });
+      const firstRead = Promise.withResolvers<string>();
+      const secondRead = Promise.withResolvers<string>();
+      const first = new File([], "first.json", { type: "application/json" });
+      const second = new File([], "second.json", { type: "application/json" });
+      Object.defineProperty(first, "text", { value: () => firstRead.promise });
+      Object.defineProperty(second, "text", {
+        value: () => secondRead.promise,
+      });
+      fireEvent.change(getFileInput(), { target: { files: [first] } });
+      fireEvent.change(getFileInput(), { target: { files: [second] } });
+      await act(async () => {
+        secondRead.resolve(
+          JSON.stringify([{ ...fixture[0], title: "新しい入力" }]),
+        );
+        await secondRead.promise;
+      });
+      expect(screen.getByText("新しい入力")).toBeInTheDocument();
+      await act(async () => {
+        if (outcome === "success") {
+          firstRead.resolve(
+            JSON.stringify([{ ...fixture[0], title: "古い入力" }]),
+          );
+        } else {
+          firstRead.reject(new Error("古い読み込みエラー"));
+        }
+        await firstRead.promise.catch(() => undefined);
+      });
+      expect(screen.getByText("新しい入力")).toBeInTheDocument();
       expect(screen.queryByText("古い入力")).not.toBeInTheDocument();
-    });
-  });
+      expect(
+        screen.queryByText("入力を読み込めませんでした"),
+      ).not.toBeInTheDocument();
+    },
+  );
 
   test("limits import targets to selected books within the purchase-date range", async () => {
     previewMutateAsync.mockResolvedValue(previewResponse);
@@ -216,16 +239,30 @@ describe("BookImportPage", () => {
   test("keeps hidden selection while changing only visible selection", async () => {
     render(<BookImportPage />, { wrapper });
     await upload();
-    fireEvent.change(screen.getByLabelText("購入日（指定日以降）"), {
-      target: { value: "2026-04-25" },
-    });
+    const filter = screen.getByLabelText("購入日（指定日以降）");
+    const hiddenBook = (): HTMLElement =>
+      screen.getByRole("checkbox", { name: "購入日前の本をインポート" });
+    const visibleBook = (): HTMLElement =>
+      screen.getByRole("checkbox", { name: "購入日後の本をインポート" });
+    fireEvent.change(filter, { target: { value: "2026-04-25" } });
     await userEvent.click(
       screen.getByRole("button", { name: "表示中をすべて解除" }),
     );
     expect(screen.getByText("インポート対象: 0")).toBeInTheDocument();
+    fireEvent.change(filter, { target: { value: "" } });
+    expect(hiddenBook()).toBeChecked();
+    expect(visibleBook()).not.toBeChecked();
+    expect(screen.getByText("インポート対象: 1")).toBeInTheDocument();
+
+    // A hidden deselection must also survive selecting all visible rows.
+    await userEvent.click(hiddenBook());
+    fireEvent.change(filter, { target: { value: "2026-04-25" } });
     await userEvent.click(
       screen.getByRole("button", { name: "表示中をすべて選択" }),
     );
+    fireEvent.change(filter, { target: { value: "" } });
+    expect(hiddenBook()).not.toBeChecked();
+    expect(visibleBook()).toBeChecked();
     expect(screen.getByText("インポート対象: 1")).toBeInTheDocument();
   });
 
