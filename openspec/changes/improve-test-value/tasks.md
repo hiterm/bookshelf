@@ -1,0 +1,15 @@
+## 1. Audit
+
+- [ ] 1.1 Record test-layer responsibilities and prioritized findings.
+
+## 2. Improve behavioral checks
+
+- [ ] 2.1 Await lookup races and cover stale failures, enrichment, and reset.
+- [ ] 2.2 Settle file-read races and reveal hidden selections.
+- [ ] 2.3 Consolidate debounce boundaries and cover unmount cancellation.
+- [ ] 2.4 Remove same-suite browser smoke duplication with retained assertion mapping.
+
+## 3. Validate
+
+- [ ] 3.1 Run targeted tests and demonstrate mutation detection, restoring source.
+- [ ] 3.2 Run required local checks and mock/demo E2E; leave real integration to CI.
