@@ -1,3 +1,5 @@
+// @vitest-environment node
+
 import { displayBookStore } from "./BookStore";
 
 describe("displayBookStore", () => {

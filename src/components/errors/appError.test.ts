@@ -1,3 +1,5 @@
+// @vitest-environment node
+
 import { ClientError } from "graphql-request";
 import { GraphQLError } from "graphql";
 import {

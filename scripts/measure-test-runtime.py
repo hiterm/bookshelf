@@ -11,15 +11,9 @@ import time
 
 root = Path(__file__).resolve().parents[1]
 os.chdir(root)
-original = Path('src/features/books/BookList.test.tsx')
-extras = [
-    Path('src/features/books/BookList.sorting.test.tsx'),
-    Path('src/features/books/BookList.pagination.test.tsx'),
-    Path('src/features/books/BookList.presets.test.tsx'),
-    Path('src/test-utils/bookList.tsx'),
-]
-saved = {p: p.read_bytes() for p in [original, *extras]}
-baseline = subprocess.check_output(['git', '--no-pager', 'show', 'a91368c:src/features/books/BookList.test.tsx'])
+paths = [Path(p) for p in ['src/features/books/bookSearch.test.ts', 'src/features/books/resolvePendingAuthors.test.ts', 'src/features/books/displayAuthorYomis.test.ts', 'src/features/books/entity/Book.test.ts', 'src/features/books/entity/BookFormat.test.ts', 'src/features/books/entity/BookStore.test.ts', 'src/features/books/import/importSelection.test.ts', 'src/features/books/import/toImportBookInput.test.ts', 'src/features/books/import/filterImportedBooks.test.ts', 'src/features/history/operationType.test.ts', 'src/components/errors/appError.test.ts', 'src/mocks/mockStore.test.ts', 'src/mocks/handlers.test.ts', 'e2e-mock-api/mockStore.test.ts']]
+saved = {p: p.read_bytes() for p in paths}
+baseline = {p: subprocess.check_output(["git", "--no-pager", "show", f"a91368c:{p}"]) for p in paths}
 results = []
 identities = None
 out = Path(tempfile.mkdtemp(prefix='test-runtime-'))
@@ -31,9 +25,8 @@ try:
         for p, data in saved.items():
             p.write_bytes(data)
         if variant == 'baseline':
-            original.write_bytes(baseline)
-            for p in extras:
-                p.unlink()
+            for p, data in baseline.items():
+                p.write_bytes(data)
         shutil.rmtree('node_modules/.vite/vitest', ignore_errors=True)
         report = out / f'{index}-{variant}.json'
         command = ['pnpm', 'run', 'test', '--reporter=default', '--reporter=json', f'--outputFile={report}']
