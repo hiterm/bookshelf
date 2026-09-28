@@ -1,24 +1,30 @@
 ## Context
 
-Main a91368c includes PR #395 and the earlier scoped debounce optimization. Baseline local Vitest passes 41 files / 228 tests in 23.78s; BookList takes 14.95s and import 6.39s. BookList remains a sequential critical path. Shared configuration uses isolated vmThreads and default file parallelism.
+Latest main a91368c includes PR #395 and the earlier BookList debounce optimization. The initial local suite passed 228 tests in 23.78s; BookList took 14.95s and import 6.39s. Preserve the test boundaries documented in the earlier audit.
 
 ## Goals / Non-Goals
 
-Preserve all test scenarios and assertions while reducing elapsed suite time. Do not alter production behavior, weaken accessibility queries, disable isolation, change shared worker limits, or remove cross-layer tests. Backend integration runs in CI only.
+Reduce avoidable test harness work while retaining assertions, async completion checks, and isolation. Do not change production behavior, dependencies, shared concurrency, timeouts, or browser coverage. Backend integration is CI-only for this task.
 
 ## Decisions
 
-Experiment with splitting BookList's existing describe groups into independently scheduled files sharing a test-only fixture module. Each file retains its isolated VM, fresh DOM cleanup, router, QueryClient, and mocks. This distributes existing work rather than deleting it. Compare alternating baseline/candidate full-suite runs with identical worker counts and cold Vitest scheduling caches; verify exact full test names and outcomes, not counts alone. Reject the split if duplicated initialization outweighs scheduling gains.
+1. Trial a four-file BookList split with byte-identical describe blocks. Reject it: paired local median 28.938s → 30.225s, CI 18.197s → 19.087s. Additional initialization outweighs scheduling gains. Restore the original source.
+2. Trial explicit Node environments for 14 audited DOM-independent files. Reject them: paired local median 28.677s → 29.407s, CI 14.017s → 14.402s. Restore all original environments.
+3. Adopt per-page-fixture executable GraphQL schema reuse. Move createResolvers and makeExecutableSchema outside the request callback in e2e-mock-api/fixtures.ts. Each page fixture binds its own test-scoped MockStore; resolvers read current state on every operation. Never cache the schema globally or across tests.
 
-Pure-test Node environments are lower priority because they do not shorten BookList's critical path and require auditing transitive DOM dependencies. Query shortcuts and reduced fixtures risk weakening accessible interaction or pagination boundary coverage. Global browser shim consolidation is maintenance work, not demonstrated speed improvement.
+The complete 53-test mock-API CI comparison gives wall medians 40.332s → 39.911s (-1.0%). Ranges overlap, so this is not conclusive evidence of a universal suite speedup. A mechanism benchmark of 100 fresh stores and ten reads each reduces schema/GraphQL execution time from a median 2362.382ms to 495.158ms (-79.0%). Adopt because it eliminates demonstrated repeated work with a minimal fixture-only change and no clear total-suite regression. Do not equate the mechanism result with browser-suite speedup.
+
+## Measurement
+
+Alternate baseline/candidate, candidate/baseline, baseline/candidate on the same runner. Unit experiments clear Vitest caches and verify all 228 full test identities. E2E measurements rebuild the same frontend each time, start a fresh server, disable retries, and verify all 53 identities pass on their first attempt. Include process startup and shutdown in wall time; E2E timing includes build/server startup too. Keep local two-worker and default four-CPU CI results separate. Record every run and reproducible experiment commit in docs/test-runtime-follow-up.md and the PR body. Remove temporary measurement jobs/scripts after collecting results.
 
 ## Risks / Trade-offs
 
-- Extra imports and setup per file → measure total suite wall time, including startup.
-- Shared helper accidentally shares mutable state → retain file isolation and fresh router/QueryClient creation; verify randomized test order.
-- Local two-worker gains may differ from CI → confirm paired measurements with default CI parallelism before acceptance.
-- Timing noise → alternating runs and raw results; do not infer speedups from different runners.
+- Reuse could share state → schema ownership remains inside the existing test-scoped page fixture, with a fresh MockStore for each test.
+- Reuse could return stale snapshots → createResolvers callbacks read the live store; existing create/update/delete/import and history workflows verify subsequent reads.
+- Small total-time differences may be noise → publish raw runs and overlapping ranges, and limit the strong performance claim to eliminated schema work.
+- Eager construction adds work for pages without GraphQL requests → include all 53 tests, including pre-login cases, in the full-suite comparison.
 
-## Migration Plan
+## Validation and Delivery
 
-Commit planning separately, implement the test-only split, validate, and synchronize/archive the delta in a separate commit. Revert the split if validation or performance fails. Preserve historical audit documents.
+All unit/component and browser test bodies remain unchanged. Run generation, lint, format, unit tests, and typecheck locally; run mock-API E2E locally and all CI suites. Scope is a fixture optimization, so the discarded split's shuffled-order experiment is no longer necessary. Synchronize the delta and archive OpenSpec separately from source changes. Track final CI and CodeRabbit review in the ExecPlan; do not merge.
