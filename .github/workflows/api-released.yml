@@ -63,7 +63,7 @@ jobs:
           title="Update bookshelf-api to ${API_VERSION}"
 
           existing_pr=$(gh pr list \
-            --state all \
+            --state open \
             --head "${branch}" \
             --json number \
             --jq '.[0].number // empty')
@@ -72,13 +72,17 @@ jobs:
             exit 0
           fi
 
-          git config user.name "bookshelf-delivery[bot]"
-          git config user.email "bookshelf-delivery[bot]@users.noreply.github.com"
-          gh auth setup-git
-          git switch -c "${branch}"
-          git add bookshelf-api.version
-          git commit -m "${title}"
-          git push origin "HEAD:refs/heads/${branch}"
+          if git ls-remote --exit-code --heads origin "refs/heads/${branch}" > /dev/null; then
+            echo "Reusing existing remote branch ${branch}."
+          else
+            git config user.name "bookshelf-delivery[bot]"
+            git config user.email "bookshelf-delivery[bot]@users.noreply.github.com"
+            gh auth setup-git
+            git switch -c "${branch}"
+            git add bookshelf-api.version
+            git commit -m "${title}"
+            git push origin "HEAD:refs/heads/${branch}"
+          fi
 
           gh pr create \
             --base main \
