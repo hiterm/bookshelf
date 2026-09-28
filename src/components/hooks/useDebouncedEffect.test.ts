@@ -10,24 +10,28 @@ describe("useDebouncedEffect", () => {
     vi.useRealTimers();
   });
 
-  test("does not call effect before delay elapses", () => {
+  test("calls effect once at the delay boundary", () => {
     const effect = vi.fn();
     renderHook(() => {
       useDebouncedEffect(effect, [], 500);
     });
-
     vi.advanceTimersByTime(499);
     expect(effect).not.toHaveBeenCalled();
-  });
-
-  test("calls effect once after delay elapses", () => {
-    const effect = vi.fn();
-    renderHook(() => {
-      useDebouncedEffect(effect, [], 500);
-    });
-
+    vi.advanceTimersByTime(1);
+    expect(effect).toHaveBeenCalledTimes(1);
     vi.advanceTimersByTime(500);
     expect(effect).toHaveBeenCalledTimes(1);
+  });
+
+  test("cancels a pending effect on unmount", () => {
+    const effect = vi.fn();
+    const { unmount } = renderHook(() => {
+      useDebouncedEffect(effect, [], 500);
+    });
+    vi.advanceTimersByTime(300);
+    unmount();
+    vi.advanceTimersByTime(500);
+    expect(effect).not.toHaveBeenCalled();
   });
 
   test("resets timer when deps change, calling effect only once", () => {

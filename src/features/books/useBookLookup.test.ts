@@ -342,41 +342,105 @@ describe("useBookLookup", () => {
     expect(mockFetch).toHaveBeenCalledTimes(1);
   });
 
-  test("stale response is discarded when a newer search completes first", async () => {
-    let resolveFirst!: (value: Response) => void;
-    const firstResponse = new Promise<Response>(
-      (resolve) => (resolveFirst = resolve),
-    );
+  test.each(["success", "failure"] as const)(
+    "discards stale search %s after a newer search completes",
+    async (outcome) => {
+      const first = Promise.withResolvers<Response>();
+      const mockFetch = vi
+        .fn()
+        .mockReturnValueOnce(first.promise)
+        .mockReturnValueOnce(googleBooksResponse("新しい書籍", ["著者B"], ""));
+      vi.stubGlobal("fetch", mockFetch);
+      const { result } = renderHook(() => useBookLookup());
+      let firstSearch!: Promise<void>;
+      act(() => {
+        firstSearch = result.current.search({ title: "first" }, "googleBooks");
+      });
+      expect(result.current.state).toEqual({ status: "loading" });
+      await act(async () => {
+        await result.current.search({ title: "second" }, "googleBooks");
+      });
+      expect(result.current.state).toMatchObject({
+        status: "success",
+        results: [{ title: "新しい書籍" }],
+      });
+      await act(async () => {
+        if (outcome === "success") {
+          first.resolve(await googleBooksResponse("古い書籍", ["著者A"], ""));
+        } else {
+          first.reject(new Error("old request failed"));
+        }
+        await firstSearch;
+      });
+      expect(result.current.state).toMatchObject({
+        status: "success",
+        results: [{ title: "新しい書籍" }],
+      });
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    },
+  );
 
+  test("discards stale enrichment after a newer search completes", async () => {
+    const enrichment = Promise.withResolvers<Response>();
     const mockFetch = vi
       .fn()
-      .mockReturnValueOnce(firstResponse)
-      .mockReturnValueOnce(
-        googleBooksResponse("新しい書籍", ["著者B"], "9784000000002"),
-      )
-      .mockReturnValueOnce(makeJsonResponse([]));
+      .mockReturnValueOnce(googleBooksResponse("古い書籍", ["著者A"]))
+      .mockReturnValueOnce(enrichment.promise)
+      .mockReturnValueOnce(googleBooksResponse("新しい書籍", ["著者B"], ""));
     vi.stubGlobal("fetch", mockFetch);
-
     const { result } = renderHook(() => useBookLookup());
-
+    let firstSearch!: Promise<void>;
     act(() => {
-      void result.current.search({ title: "first" }, "googleBooks");
+      firstSearch = result.current.search({ title: "first" }, "googleBooks");
     });
-
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        "/openbd-proxy/v1/get?isbn=9784065362433",
+      );
+    });
+    expect(result.current.state).toEqual({ status: "loading" });
     await act(async () => {
       await result.current.search({ title: "second" }, "googleBooks");
     });
-
-    resolveFirst(
-      await googleBooksResponse("古い書籍", ["著者A"], "9784000000001"),
-    );
-
-    await waitFor(() => {
-      expect(result.current.state.status).toBe("success");
+    await act(async () => {
+      enrichment.resolve(
+        await makeJsonResponse([{ summary: { title: "古い補完結果" } }]),
+      );
+      await firstSearch;
     });
-
-    if (result.current.state.status === "success") {
-      expect(result.current.state.results[0].title).toBe("新しい書籍");
-    }
+    expect(result.current.state).toMatchObject({
+      status: "success",
+      results: [{ title: "新しい書籍" }],
+    });
+    expect(mockFetch).toHaveBeenCalledTimes(3);
   });
+
+  test.each(["success", "failure"] as const)(
+    "empty query keeps idle after pending search %s",
+    async (outcome) => {
+      const pending = Promise.withResolvers<Response>();
+      const mockFetch = vi.fn().mockReturnValueOnce(pending.promise);
+      vi.stubGlobal("fetch", mockFetch);
+      const { result } = renderHook(() => useBookLookup());
+      let search!: Promise<void>;
+      act(() => {
+        search = result.current.search({ title: "pending" }, "googleBooks");
+      });
+      expect(result.current.state).toEqual({ status: "loading" });
+      await act(async () => {
+        await result.current.search({}, "googleBooks");
+      });
+      expect(result.current.state).toEqual({ status: "idle" });
+      await act(async () => {
+        if (outcome === "success") {
+          pending.resolve(await googleBooksResponse("古い書籍", [], ""));
+        } else {
+          pending.reject(new Error("old request failed"));
+        }
+        await search;
+      });
+      expect(result.current.state).toEqual({ status: "idle" });
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    },
+  );
 });
