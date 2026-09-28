@@ -1,5 +1,19 @@
 # Changelog
 
+## [v2.18.4](https://github.com/hiterm/bookshelf/compare/v2.18.3...v2.18.4) - 2026-09-28
+
+### Other Changes
+- Speed up Vitest with vmThreads by @hiterm in https://github.com/hiterm/bookshelf/pull/384
+- Reduce Vitest filter debounce waits by @hiterm in https://github.com/hiterm/bookshelf/pull/391
+- Parallelize integration specs in CI by @hiterm in https://github.com/hiterm/bookshelf/pull/392
+- Report Vitest coverage in CI by @hiterm in https://github.com/hiterm/bookshelf/pull/393
+- Update Node.js to v24.21.0 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/386
+- Update dependency hiterm/bookshelf-api to v2.17.3 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/375
+- Upload Vitest coverage to Codecov by @hiterm in https://github.com/hiterm/bookshelf/pull/394
+- Strengthen regression tests and audit test value by @hiterm in https://github.com/hiterm/bookshelf/pull/395
+- Create API version update PRs on release by @hiterm in https://github.com/hiterm/bookshelf/pull/396
+- Update bookshelf-api to 2.17.4 by @hiterm-bookshelf-delivery[bot] in https://github.com/hiterm/bookshelf/pull/397
+
 ## [v2.18.3](https://github.com/hiterm/bookshelf/compare/v2.18.2...v2.18.3) - 2026-09-21
 
 ### Other Changes
