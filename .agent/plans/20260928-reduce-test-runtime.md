@@ -14,7 +14,7 @@ Reduce test harness overhead while keeping existing regression detection. Starti
 - [x] Adopt fixture-local schema reuse after complete E2E and mechanism measurements.
 - [x] Validate all existing tests and document raw results and reproduction steps.
 - [x] Synchronize completed delta requirements into the main specification.
-- [ ] Archive the completed OpenSpec change in a separate rename-only commit.
+- [x] Archive the completed OpenSpec change in a separate rename-only commit at openspec/changes/archive/2026-09-28-reduce-test-runtime.
 
 ## Surprises & Discoveries
 
