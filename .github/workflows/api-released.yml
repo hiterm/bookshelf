@@ -1,0 +1,91 @@
+name: Update released API version
+
+on:
+  repository_dispatch:
+    types:
+      - api-released
+
+concurrency:
+  group: api-release-${{ github.event.client_payload.version }}
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  update: # zizmor: ignore[secrets-outside-env]
+    # secrets-outside-env: this trusted dispatch job needs the delivery App key
+    # to push a branch and create a pull request that triggers normal PR CI.
+    name: Update API version
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Validate released version
+        env:
+          API_VERSION: ${{ github.event.client_payload.version }}
+        run: |
+          if [[ ! "${API_VERSION}" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "::error::Invalid API version: ${API_VERSION}" >&2
+            exit 1
+          fi
+
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.BOOKSHELF_DELIVERY_APP_CLIENT_ID }}
+          private-key: ${{ secrets.BOOKSHELF_DELIVERY_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: bookshelf
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Check out the frontend
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: main
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Update API version
+        id: update
+        env:
+          API_VERSION: ${{ github.event.client_payload.version }}
+        run: scripts/update-api-version.sh "${API_VERSION}"
+
+      - name: Create update pull request
+        if: steps.update.outputs.changed == 'true'
+        env:
+          API_VERSION: ${{ github.event.client_payload.version }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          branch="update/bookshelf-api-${API_VERSION}"
+          title="Update bookshelf-api to ${API_VERSION}"
+
+          existing_pr=$(gh pr list \
+            --state open \
+            --head "${branch}" \
+            --json number \
+            --jq '.[0].number // empty')
+          if [[ -n "${existing_pr}" ]]; then
+            echo "Pull request #${existing_pr} already uses ${branch}; nothing to do."
+            exit 0
+          fi
+
+          if git ls-remote --exit-code --heads origin "refs/heads/${branch}" > /dev/null; then
+            echo "Reusing existing remote branch ${branch}."
+          else
+            git config user.name "bookshelf-delivery[bot]"
+            git config user.email "bookshelf-delivery[bot]@users.noreply.github.com"
+            gh auth setup-git
+            git switch -c "${branch}"
+            git add bookshelf-api.version
+            git commit -m "${title}"
+            git push origin "HEAD:refs/heads/${branch}"
+          fi
+
+          gh pr create \
+            --base main \
+            --head "${branch}" \
+            --title "${title}" \
+            --body "Automated API version update triggered by the bookshelf-api release."
