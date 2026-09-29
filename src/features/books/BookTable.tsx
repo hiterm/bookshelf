@@ -31,9 +31,13 @@ const SortIcon: React.FC<SortIconProps> = ({ isSorted }) => {
 
 type BookTableProps = {
   table: BookTableInstance;
+  filterResetKey: number;
 };
 
-export const BookTable: React.FC<BookTableProps> = ({ table }) => (
+export const BookTable: React.FC<BookTableProps> = ({
+  table,
+  filterResetKey,
+}) => (
   <Box style={{ overflow: "scroll" }}>
     <Table
       withTableBorder
@@ -79,7 +83,7 @@ export const BookTable: React.FC<BookTableProps> = ({ table }) => (
               <Table.Th key={header.id}>
                 <Box style={{ fontWeight: "normal" }}>
                   {header.isPlaceholder ? null : header.column.getCanFilter() ? (
-                    <ColumnFilter column={header.column} />
+                    <ColumnFilter key={filterResetKey} column={header.column} />
                   ) : null}
                 </Box>
               </Table.Th>
