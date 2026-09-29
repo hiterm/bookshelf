@@ -1,7 +1,7 @@
 import { MantineProvider } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import React from "react";
@@ -12,21 +12,23 @@ import { bookFormSchema, BookFormValues } from "./bookFormSchema";
 import { useBookLookup } from "./useBookLookup";
 
 vi.mock(import("../authors/api/useAuthors"));
-vi.mocked(useAuthors, { partial: true }).mockReturnValue({
-  data: {
-    authors: [
-      { id: "1", name: "name1", yomi: "" },
-      { id: "2", name: "name2", yomi: "" },
-    ],
-  },
-  isLoading: false,
-  error: null,
-});
-
 vi.mock(import("./useBookLookup"));
-vi.mocked(useBookLookup).mockReturnValue({
-  state: { status: "idle" },
-  search: vi.fn(),
+beforeEach(() => {
+  vi.mocked(useAuthors, { partial: true }).mockReturnValue({
+    data: {
+      authors: [
+        { id: "1", name: "name1", yomi: "" },
+        { id: "2", name: "name2", yomi: "" },
+      ],
+    },
+    isLoading: false,
+    error: null,
+  });
+
+  vi.mocked(useBookLookup).mockReturnValue({
+    state: { status: "idle" },
+    search: vi.fn(),
+  });
 });
 
 beforeAll(() => {
@@ -159,5 +161,55 @@ describe("BookCreateForm", () => {
     await user.type(screen.getByLabelText("購入日"), "2024-05-01");
     await user.click(screen.getByRole("button", { name: "送信" }));
     expect(mockSubmit.mock.calls[0]?.[0].purchaseDate).toBe("2024-05-01");
+  });
+});
+
+test("autofill submits normalized unique authors and reuses existing IDs", async () => {
+  mockMatchMedia();
+  vi.mocked(useAuthors, { partial: true }).mockReturnValue({
+    data: { authors: [{ id: "existing", name: "Alice Smith", yomi: "" }] },
+    isLoading: false,
+    error: null,
+  });
+  vi.mocked(useBookLookup).mockReturnValue({
+    state: {
+      status: "success",
+      results: [
+        {
+          title: "Autofilled book",
+          isbn: "9784065362433",
+          publisher: "Publisher",
+          authorNames: [
+            "  ALICE   SMITH ",
+            "alicesmith",
+            " ",
+            " New   Author ",
+            "new author",
+            "\t",
+          ],
+        },
+      ],
+    },
+    search: vi.fn(),
+  });
+  const onSubmit = vi.fn<(values: BookFormValues) => void>();
+  render(<TestForm onSubmit={onSubmit} />, { wrapper: createWrapper() });
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("button", { name: "検索して自動入力" }));
+  const dialog = await screen.findByRole("dialog", { name: "書籍を検索" });
+  await user.click(within(dialog).getByRole("button", { name: "選択" }));
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+  );
+  await user.click(screen.getByRole("button", { name: "送信" }));
+  expect(onSubmit).toHaveBeenCalledTimes(1);
+  expect(onSubmit.mock.calls[0][0]).toEqual({
+    ...emptyBook,
+    title: "Autofilled book",
+    isbn: "9784065362433",
+    authors: [
+      expect.objectContaining({ id: "existing", name: "Alice Smith" }),
+      { id: "__pending__:newauthor", name: "new author" },
+    ],
   });
 });
