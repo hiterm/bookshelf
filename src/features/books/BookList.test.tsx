@@ -163,6 +163,7 @@ const renderBookList = async (
   books: Book[] = testBooks,
   useFakeTimers = false,
 ): Promise<{
+  history: ReturnType<typeof createMemoryHistory>;
   router: {
     state: { location: { search: BookSearch } };
     navigate: (options: {
@@ -186,11 +187,12 @@ const renderBookList = async (
   const routeTree = rootRoute.addChildren([
     booksRoute.addChildren([booksIndexRoute]),
   ]);
+  const history = createMemoryHistory({
+    initialEntries: [`/books${defaultStringifySearch(initialSearch)}`],
+  });
   const router = createRouter({
     routeTree,
-    history: createMemoryHistory({
-      initialEntries: [`/books${defaultStringifySearch(initialSearch)}`],
-    }),
+    history,
   });
   await router.load();
 
@@ -200,6 +202,7 @@ const renderBookList = async (
 
   return {
     ...render(<RouterProvider router={router} />, { wrapper: createWrapper() }),
+    history,
     router,
   };
 };
@@ -644,6 +647,158 @@ describe("BookList pagination", () => {
   });
 });
 
+describe("BookList pending string filters", () => {
+  test.each(["back", "forward"] as const)(
+    "history %s supersedes a pending title edit",
+    async (direction) => {
+      try {
+        const { router, history } = await renderBookList(
+          { columnFilters: [{ id: "title", value: "書籍2" }] },
+          testBooks,
+          true,
+        );
+        const input = within(screen.getByTestId("filter-title")).getByRole(
+          "textbox",
+        );
+        await act(async () => {
+          await router.navigate({
+            to: "/books",
+            search: { columnFilters: [{ id: "title", value: "書籍3" }] },
+          });
+        });
+        if (direction === "forward") {
+          await act(async () => {
+            history.back();
+            await vi.advanceTimersByTimeAsync(0);
+          });
+        }
+        const committedTitle = direction === "back" ? "書籍3" : "書籍2";
+        const restoredTitle = direction === "back" ? "書籍2" : "書籍3";
+        expect(input).toHaveValue(committedTitle);
+        fireEvent.change(input, { target: { value: "書籍1" } });
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(500);
+        });
+        expect(input).toHaveValue("書籍1");
+        expect(router.state.location.search.columnFilters).toEqual([
+          { id: "title", value: committedTitle },
+        ]);
+
+        await act(async () => {
+          history[direction]();
+          await vi.advanceTimersByTimeAsync(0);
+        });
+        expect(input).toHaveValue(restoredTitle);
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(2000);
+        });
+        expect(input).toHaveValue(restoredTitle);
+        expect(router.state.location.search.columnFilters).toEqual([
+          { id: "title", value: restoredTitle },
+        ]);
+        expect(screen.getByText(`テスト${restoredTitle}`)).toBeInTheDocument();
+        expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
+        expect(
+          screen.queryByText(`テスト${committedTitle}`),
+        ).not.toBeInTheDocument();
+        expect(screen.queryByText("テスト書籍4")).not.toBeInTheDocument();
+      } finally {
+        vi.useRealTimers();
+      }
+    },
+  );
+
+  test.each([undefined, "書籍2"])(
+    "Reset cancels a pending title edit (committed filter: %s)",
+    async (committedTitle) => {
+      try {
+        const { router } = await renderBookList(
+          committedTitle == null
+            ? {}
+            : { columnFilters: [{ id: "title", value: committedTitle }] },
+          testBooks,
+          true,
+        );
+        const input = within(screen.getByTestId("filter-title")).getByRole(
+          "textbox",
+        );
+        fireEvent.change(input, { target: { value: "書籍1" } });
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(500);
+        });
+        expect(input).toHaveValue("書籍1");
+        expect(router.state.location.search.columnFilters).toEqual(
+          committedTitle == null
+            ? undefined
+            : [{ id: "title", value: committedTitle }],
+        );
+
+        await act(async () => {
+          fireEvent.click(screen.getByRole("button", { name: "Reset filter" }));
+          await vi.advanceTimersByTimeAsync(0);
+        });
+        expect(router.state.location.search.columnFilters).toBeUndefined();
+
+        // Cross both the old draft deadline and any debounce caused by Reset.
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(2000);
+        });
+        expect
+          .soft(within(screen.getByTestId("filter-title")).getByRole("textbox"))
+          .toHaveValue("");
+        expect.soft(router.state.location.search.columnFilters).toBeUndefined();
+        for (const book of testBooks) {
+          expect.soft(screen.queryByText(book.title)).toBeInTheDocument();
+        }
+      } finally {
+        vi.useRealTimers();
+      }
+    },
+  );
+
+  test("external search supersedes a pending title edit", async () => {
+    try {
+      const { router } = await renderBookList(
+        { columnFilters: [{ id: "title", value: "書籍2" }] },
+        testBooks,
+        true,
+      );
+      const input = within(screen.getByTestId("filter-title")).getByRole(
+        "textbox",
+      );
+      fireEvent.change(input, { target: { value: "書籍1" } });
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(500);
+      });
+      expect(input).toHaveValue("書籍1");
+      expect(router.state.location.search.columnFilters).toEqual([
+        { id: "title", value: "書籍2" },
+      ]);
+
+      await act(async () => {
+        await router.navigate({
+          to: "/books",
+          search: { columnFilters: [{ id: "title", value: "書籍3" }] },
+        });
+      });
+      expect(input).toHaveValue("書籍3");
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(2000);
+      });
+      expect(input).toHaveValue("書籍3");
+      expect(router.state.location.search.columnFilters).toEqual([
+        { id: "title", value: "書籍3" },
+      ]);
+      expect(screen.getByText("テスト書籍3")).toBeInTheDocument();
+      expect(screen.queryByText("テスト書籍1")).not.toBeInTheDocument();
+      expect(screen.queryByText("テスト書籍2")).not.toBeInTheDocument();
+      expect(screen.queryByText("テスト書籍4")).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
 describe("BookList preset and reset", () => {
   test("preset filter shows only unread owned books", async () => {
     const { router } = await renderBookList();
@@ -723,7 +878,9 @@ describe("BookList preset and reset", () => {
     fireEvent.click(screen.getByRole("button", { name: "Reset filter" }));
 
     await waitFor(() => {
-      expect(titleInput).toHaveValue("");
+      expect(
+        within(screen.getByTestId("filter-title")).getByRole("textbox"),
+      ).toHaveValue("");
     });
   });
 

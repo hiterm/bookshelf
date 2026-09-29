@@ -13,6 +13,38 @@ const selectFilterOption = async (
   await page.getByRole("option", { name: optionName }).click();
 };
 
+test("Reset cancels pending string filters before their first commit", async ({
+  page,
+}) => {
+  await page.clock.install({ time: new Date("2026-09-29T12:00:00Z") });
+  await page.goto("/books");
+  await page.getByRole("button", { name: "Login" }).click();
+  await expect(page.getByRole("link", { name: "テスト書籍1" })).toBeVisible();
+  await page.clock.pauseAt(new Date("2026-09-29T12:10:00Z"));
+
+  const title = page.getByTestId("filter-title").getByRole("textbox");
+  const isbn = page.getByTestId("filter-isbn").getByRole("textbox");
+  const reading = page.getByTestId("filter-authorYomis").getByRole("textbox");
+  await title.fill("書籍1");
+  await isbn.fill("000001");
+  await reading.fill("いち");
+  await page.clock.runFor(500);
+  await expect(page).toHaveURL(/\/books$/);
+
+  await page.getByRole("button", { name: "Reset filter", exact: true }).click();
+  await page.clock.runFor(2000);
+
+  await expect(title).toHaveValue("");
+  await expect(isbn).toHaveValue("");
+  await expect(reading).toHaveValue("");
+  await expect(page).toHaveURL(/\/books$/);
+  for (const number of [1, 2, 3, 4]) {
+    await expect(
+      page.getByRole("link", { name: `テスト書籍${String(number)}` }),
+    ).toBeVisible();
+  }
+});
+
 test.describe("Books READ", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/books");
