@@ -1,6 +1,7 @@
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppErrorProvider } from "../../components/errors/AppErrorProvider";
+import { ErrorPanel } from "../../components/errors/ErrorPanel";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
@@ -8,12 +9,14 @@ import { vi } from "vitest";
 import { useDeleteAuthor } from "./api/useDeleteAuthor";
 import { AuthorDetail } from "./AuthorDetail";
 
+const navigate = vi.fn();
+
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual =
     await importOriginal<typeof import("@tanstack/react-router")>();
   return {
     ...actual,
-    useNavigate: () => vi.fn().mockResolvedValue(undefined),
+    useNavigate: () => navigate,
   };
 });
 
@@ -86,6 +89,7 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
     <QueryClientProvider client={queryClient}>
       <MantineProvider env="test">
         <AppErrorProvider queryClient={queryClient}>
+          <ErrorPanel />
           {children}
         </AppErrorProvider>
       </MantineProvider>
@@ -96,7 +100,8 @@ const createWrapper = (): React.FC<{ children: React.ReactNode }> => {
 
 describe("AuthorDetail", () => {
   beforeEach(() => {
-    mockMutateAsync.mockClear();
+    mockMutateAsync.mockReset().mockResolvedValue({});
+    navigate.mockReset().mockResolvedValue(undefined);
   });
 
   test("renders the author name", () => {
@@ -140,6 +145,7 @@ describe("AuthorDetail", () => {
     await waitFor(() => {
       expect(screen.queryByText("削除確認")).not.toBeInTheDocument();
     });
+    expect(mockMutateAsync).not.toHaveBeenCalled();
   });
 
   test("calls deleteAuthor mutation on confirm", async () => {
@@ -154,5 +160,31 @@ describe("AuthorDetail", () => {
     await waitFor(() => {
       expect(mockMutateAsync).toHaveBeenCalledWith("author-1");
     });
+  });
+
+  test("keeps author details after deletion failure and allows retry", async () => {
+    const failure = new Error("delete failed");
+    mockMutateAsync.mockRejectedValueOnce(failure).mockResolvedValueOnce({});
+    render(<AuthorDetail author={testAuthor} />, {
+      wrapper: createWrapper(),
+    });
+
+    await userEvent.click(screen.getByRole("button", { name: "削除" }));
+    await userEvent.click(screen.getByRole("button", { name: "削除する" }));
+    expect(
+      await screen.findByText("著者の削除に失敗しました"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "テスト著者" }),
+    ).toBeInTheDocument();
+    expect(navigate).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole("button", { name: "削除する" }));
+    await waitFor(() => {
+      expect(mockMutateAsync).toHaveBeenCalledTimes(2);
+      expect(navigate).toHaveBeenCalledWith({ to: "/authors" });
+    });
+    expect(mockMutateAsync).toHaveBeenNthCalledWith(1, "author-1");
+    expect(mockMutateAsync).toHaveBeenNthCalledWith(2, "author-1");
   });
 });
