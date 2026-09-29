@@ -9,5 +9,5 @@
 ## 2. Validation and delivery
 
 - [x] 2.1 Run generation, lint, formatting, unit tests, typecheck, and applicable browser tests; leave real-backend integration to CI.
-- [ ] 2.2 Synchronize the delta spec and archive this change, keeping OpenSpec and source changes in separate commits.
-- [ ] 2.3 Create a PR, resolve CI failures, and request CodeRabbit review after CI passes; address feedback until approved without merging.
+- [x] 2.2 Synchronize the delta specs and verify readiness for archive, keeping OpenSpec and source changes in separate commits.
+- [x] 2.3 Create a PR, resolve CI failures, and request CodeRabbit review after CI passes; address feedback until approved without merging.
