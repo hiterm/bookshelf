@@ -2,7 +2,7 @@ import { Button, Modal } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { zod4Resolver } from "mantine-form-zod-resolver";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { LinkButton } from "../../components/mantineTsr";
 import { useCreateAuthor } from "../authors/api/useCreateAuthor";
 import { useCreateBook } from "./api/useCreateBook";
@@ -13,6 +13,8 @@ import { resolvePendingAuthors } from "./resolvePendingAuthors";
 
 export const AddBookButton: React.FC = () => {
   const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const submittingRef = useRef(false);
 
   const handleDialogOpenClick = (): void => {
     setOpen(true);
@@ -27,62 +29,69 @@ export const AddBookButton: React.FC = () => {
   const { reportError } = useAppError();
 
   const submitBook = async (value: BookFormValues): Promise<void> => {
-    if (createBookMutation.isPending) return;
-
-    let resolvedAuthors: Awaited<ReturnType<typeof resolvePendingAuthors>>;
-    try {
-      resolvedAuthors = await resolvePendingAuthors(
-        value.authors,
-        async (name) => {
-          const result = await createAuthorMutation.mutateAsync({ name });
-          return result.createAuthor.author.id;
-        },
-      );
-    } catch (error) {
-      reportError({
-        title: "著者の作成に失敗しました",
-        operation: "CreateAuthor",
-        error,
-      });
-      return;
-    }
-
-    form.setFieldValue("authors", resolvedAuthors);
-
-    const { authors: _authors, purchaseDate, ...rest } = value;
-    const bookData = {
-      ...rest,
-      purchaseDate: purchaseDate === "" ? null : purchaseDate,
-      authorIds: resolvedAuthors.map((a) => a.id),
-    };
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+    setIsSubmitting(true);
 
     try {
-      const result = await createBookMutation.mutateAsync(bookData);
+      let resolvedAuthors: Awaited<ReturnType<typeof resolvePendingAuthors>>;
+      try {
+        resolvedAuthors = await resolvePendingAuthors(
+          value.authors,
+          async (name) => {
+            const result = await createAuthorMutation.mutateAsync({ name });
+            return result.createAuthor.author.id;
+          },
+        );
+      } catch (error) {
+        reportError({
+          title: "著者の作成に失敗しました",
+          operation: "CreateAuthor",
+          error,
+        });
+        return;
+      }
 
-      setOpen(false);
+      form.setFieldValue("authors", resolvedAuthors);
 
-      showNotification({
-        message: (
-          <>
-            <div>{value.title}を追加しました</div>
-            <LinkButton
-              linkOptions={{
-                to: "/books/$id",
-                params: { id: result.createBook.book.id },
-              }}
-            >
-              Move
-            </LinkButton>
-          </>
-        ),
-        color: "teal",
-      });
-    } catch (error) {
-      reportError({
-        title: "書籍の作成に失敗しました",
-        operation: "CreateBook",
-        error,
-      });
+      const { authors: _authors, purchaseDate, ...rest } = value;
+      const bookData = {
+        ...rest,
+        purchaseDate: purchaseDate === "" ? null : purchaseDate,
+        authorIds: resolvedAuthors.map((a) => a.id),
+      };
+
+      try {
+        const result = await createBookMutation.mutateAsync(bookData);
+
+        setOpen(false);
+
+        showNotification({
+          message: (
+            <>
+              <div>{value.title}を追加しました</div>
+              <LinkButton
+                linkOptions={{
+                  to: "/books/$id",
+                  params: { id: result.createBook.book.id },
+                }}
+              >
+                Move
+              </LinkButton>
+            </>
+          ),
+          color: "teal",
+        });
+      } catch (error) {
+        reportError({
+          title: "書籍の作成に失敗しました",
+          operation: "CreateBook",
+          error,
+        });
+      }
+    } finally {
+      submittingRef.current = false;
+      setIsSubmitting(false);
     }
   };
 
@@ -110,14 +119,16 @@ export const AddBookButton: React.FC = () => {
 
       <Modal title="書籍追加" opened={open} onClose={handleDialogCloseClick}>
         <form
-          onSubmit={form.onSubmit((values, _event) => void submitBook(values))}
+          onSubmit={(event) => {
+            form.onSubmit((values) => void submitBook(values))(event);
+          }}
         >
           <BookCreateForm form={form} />
           <Button
             type="submit"
             mt="md"
-            disabled={createBookMutation.isPending}
-            loading={createBookMutation.isPending}
+            disabled={isSubmitting}
+            loading={isSubmitting}
           >
             追加
           </Button>
