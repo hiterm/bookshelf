@@ -359,6 +359,20 @@ test.describe("Books UPDATE", () => {
     await expect(
       page.getByTestId("book-detail").getByText("9784000000999"),
     ).toBeVisible();
+
+    // Reopen the editor to verify values persisted beyond the detail summary.
+    await page.getByRole("link", { name: "変更", exact: true }).click();
+    await expect(page.getByLabel("書名")).toHaveValue("全フィールド更新");
+    await expect(page.getByLabel("ISBN")).toHaveValue("9784000000999");
+    await expect(page.getByRole("combobox", { name: "形式" })).toHaveValue(
+      "eBook",
+    );
+    await expect(page.getByRole("combobox", { name: "ストア" })).toHaveValue(
+      "Kindle",
+    );
+    await expect(page.getByLabel("優先度")).toHaveValue("75");
+    await expect(page.getByLabel("既読")).toBeChecked();
+    await expect(page.getByLabel("所有")).not.toBeChecked();
   });
 
   test("preserves values when not changed", async ({ page }) => {

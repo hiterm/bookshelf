@@ -424,6 +424,66 @@ describe("BookImportPage", () => {
     expect(navigate).toHaveBeenCalledWith({ to: "/books" });
   });
 
+  test("runs only one preview while controlled work is pending", async () => {
+    const pending = Promise.withResolvers<typeof previewResponse>();
+    previewMutateAsync.mockReturnValue(pending.promise);
+    render(<BookImportPage />, { wrapper });
+    await upload([fixture[0]]);
+    const previewButton = screen.getByRole("button", {
+      name: "プレビュー",
+      hidden: true,
+    });
+
+    await userEvent.click(previewButton);
+    await userEvent.click(previewButton);
+    expect(previewMutateAsync).toHaveBeenCalledOnce();
+
+    await act(async () => {
+      pending.resolve(previewResponse);
+      await pending.promise;
+    });
+    expect(screen.getByText("インポートプレビュー")).toBeInTheDocument();
+  });
+
+  test("locks a pending import and retries after its settled failure", async () => {
+    const pending = Promise.withResolvers<{
+      importBooks: { books: { id: string; title: string }[] };
+    }>();
+    previewMutateAsync.mockResolvedValue(previewResponse);
+    importMutateAsync
+      .mockReturnValueOnce(pending.promise)
+      .mockResolvedValueOnce({
+        importBooks: { books: [{ id: "1", title: "本" }] },
+      });
+    render(<BookImportPage />, { wrapper });
+    await upload([fixture[0]]);
+    await userEvent.click(screen.getByRole("button", { name: "プレビュー" }));
+    const importButton = await screen.findByRole("button", {
+      name: "1冊をインポート",
+    });
+
+    await userEvent.click(importButton);
+    await userEvent.click(importButton);
+    expect(importMutateAsync).toHaveBeenCalledOnce();
+
+    await act(async () => {
+      pending.reject(new Error("import failed"));
+      await pending.promise.catch(() => undefined);
+    });
+    expect(
+      await screen.findByText("書籍のインポートに失敗しました"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("インポートプレビュー")).toBeInTheDocument();
+    expect(navigate).not.toHaveBeenCalled();
+
+    await userEvent.click(importButton);
+    await waitFor(() => {
+      expect(importMutateAsync).toHaveBeenCalledTimes(2);
+      expect(navigate).toHaveBeenCalledTimes(1);
+      expect(navigate).toHaveBeenCalledWith({ to: "/books" });
+    });
+  });
+
   test("keeps preview after import failure and editor after preview failure", async () => {
     previewMutateAsync.mockRejectedValueOnce(new Error("preview failed"));
     render(<BookImportPage />, { wrapper });

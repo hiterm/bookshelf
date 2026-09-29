@@ -1,5 +1,5 @@
 import { MantineProvider } from "@mantine/core";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React, { useState } from "react";
 import { type Mock, vi } from "vitest";
@@ -168,6 +168,95 @@ describe("AuthorsCombobox", () => {
     expect(onChange).toHaveBeenLastCalledWith([
       { id: "__pending__:NewAuthor", name: "NewAuthor" },
     ]);
+  });
+
+  test.each(["{Enter}", "{Tab}"])(
+    "commits a trimmed pending author edit with %s",
+    async (commitKey) => {
+      mockMatchMedia();
+      const onChange = vi.fn();
+      render(
+        <TestCombobox
+          onChange={onChange}
+          initial={[{ id: "__pending__:Old Name", name: "Old Name" }]}
+        />,
+      );
+
+      const user = userEvent.setup({
+        advanceTimers: vi.advanceTimersByTime.bind(vi),
+      });
+      await user.click(
+        screen.getByRole("button", { name: "Edit author Old Name" }),
+      );
+      expect(onChange).not.toHaveBeenCalled();
+      const editInput = screen.getByRole("textbox", {
+        name: "Edit author name",
+      });
+      fireEvent.change(editInput, { target: { value: "  New Name  " } });
+      expect(onChange).not.toHaveBeenCalled();
+      await user.keyboard(commitKey);
+
+      expect(onChange).toHaveBeenLastCalledWith([
+        { id: "__pending__:New Name", name: "New Name" },
+      ]);
+    },
+  );
+
+  test("cancels a pending author edit with Escape without blur committing it", async () => {
+    mockMatchMedia();
+    const onChange = vi.fn();
+    render(
+      <TestCombobox
+        onChange={onChange}
+        initial={[{ id: "__pending__:Original", name: "Original" }]}
+      />,
+    );
+
+    const user = userEvent.setup({
+      advanceTimers: vi.advanceTimersByTime.bind(vi),
+    });
+    await user.click(
+      screen.getByRole("button", { name: "Edit author Original" }),
+    );
+    expect(onChange).not.toHaveBeenCalled();
+    const editInput = screen.getByRole("textbox", {
+      name: "Edit author name",
+    });
+    fireEvent.change(editInput, { target: { value: "Changed" } });
+    expect(onChange).not.toHaveBeenCalled();
+    await user.keyboard("{Escape}");
+    expect(onChange).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("textbox", { name: "著者" }));
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(
+      screen.getByRole("button", { name: "Edit author Original" }),
+    ).toBeInTheDocument();
+  });
+
+  test("removes a pending author when an empty edit is committed", async () => {
+    mockMatchMedia();
+    const onChange = vi.fn();
+    render(
+      <TestCombobox
+        onChange={onChange}
+        initial={[{ id: "__pending__:Pending", name: "Pending" }]}
+      />,
+    );
+
+    const user = userEvent.setup({
+      advanceTimers: vi.advanceTimersByTime.bind(vi),
+    });
+    await user.click(
+      screen.getByRole("button", { name: "Edit author Pending" }),
+    );
+    const editInput = screen.getByRole("textbox", {
+      name: "Edit author name",
+    });
+    fireEvent.change(editInput, { target: { value: "" } });
+    await user.keyboard("{Enter}");
+
+    expect(onChange).toHaveBeenLastCalledWith([]);
   });
 
   test("removes a pill via remove button", async () => {
