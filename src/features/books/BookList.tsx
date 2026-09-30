@@ -1,6 +1,6 @@
 import { Box } from "@mantine/core";
 import { useTable } from "@tanstack/react-table";
-import React from "react";
+import React, { useState } from "react";
 import { Book } from "./entity/Book";
 import { bookColumns } from "./bookColumns";
 import { bookTableFeatures } from "./bookTable";
@@ -12,6 +12,7 @@ import { useBookTableSearchState } from "./useBookTableSearchState";
 type BookListProps = { list: Book[] };
 
 export const BookList: React.FC<BookListProps> = ({ list }) => {
+  const [filterResetKey, setFilterResetKey] = useState(0);
   const {
     state,
     onColumnFiltersChange,
@@ -36,9 +37,13 @@ export const BookList: React.FC<BookListProps> = ({ list }) => {
       <BookTableToolbar
         table={table}
         onApplyUnreadOwnedPreset={applyUnreadOwnedPreset}
-        onReset={resetSearch}
+        onReset={() => {
+          // Reset must also discard drafts when the URL is already unfiltered.
+          setFilterResetKey((previous) => previous + 1);
+          resetSearch();
+        }}
       />
-      <BookTable table={table} />
+      <BookTable table={table} filterResetKey={filterResetKey} />
       <BookTablePagination table={table} />
     </Box>
   );
