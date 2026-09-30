@@ -3,7 +3,7 @@ import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "@tanstack/react-router";
 import { zod4Resolver } from "mantine-form-zod-resolver";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { LinkButton } from "../../components/mantineTsr";
 import { useCreateAuthor } from "../authors/api/useCreateAuthor";
 import { useUpdateBook } from "./api/useUpdateBook";
@@ -22,11 +22,9 @@ export const BookEdit: React.FC<{ book: Book }> = (props) => {
   const createAuthorMutation = useCreateAuthor();
   const { reportError } = useAppError();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const submittingRef = useRef(false);
 
   const handleSubmit = async (values: BookFormValues): Promise<void> => {
-    if (submittingRef.current) return;
-    submittingRef.current = true;
+    if (isSubmitting) return;
     setIsSubmitting(true);
 
     try {
@@ -75,7 +73,6 @@ export const BookEdit: React.FC<{ book: Book }> = (props) => {
         });
       }
     } finally {
-      submittingRef.current = false;
       setIsSubmitting(false);
     }
   };

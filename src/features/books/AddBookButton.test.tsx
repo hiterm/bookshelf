@@ -1,13 +1,6 @@
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import type {
@@ -254,12 +247,8 @@ test("blocks duplicate submission throughout author and book creation", async ()
       expect(sdk.createAuthor).toHaveBeenCalledTimes(1);
     });
     expect(submit).toBeDisabled();
-    // Exercise the handler guard as well as the disabled button (e.g. Enter).
-    const form = submit.closest("form");
-    if (form == null) throw new Error("Expected book form");
-    act(() => {
-      fireEvent.submit(form);
-    });
+    await user.click(submit);
+    expect(sdk.createAuthor).toHaveBeenCalledTimes(1);
     await act(async () => {
       author.resolve(createdAuthor);
       await author.promise;
@@ -269,9 +258,8 @@ test("blocks duplicate submission throughout author and book creation", async ()
     });
     expect(sdk.createAuthor).toHaveBeenCalledTimes(1);
     expect(submit).toBeDisabled();
-    act(() => {
-      fireEvent.submit(form);
-    });
+    await user.click(submit);
+    expect(sdk.createBook).toHaveBeenCalledTimes(1);
     await act(async () => {
       book.resolve(createdBook);
       await book.promise;

@@ -3,7 +3,7 @@ import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "@tanstack/react-router";
 import { zod4Resolver } from "mantine-form-zod-resolver";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { useUpdateAuthor } from "./api/useUpdateAuthor";
 import { useAppError } from "../../components/errors/AppErrorProvider";
 import { LinkButton } from "../../components/mantineTsr";
@@ -20,7 +20,6 @@ export const AuthorEdit: React.FC<{ author: Author }> = ({ author }) => {
   const updateAuthorMutation = useUpdateAuthor();
   const { reportError } = useAppError();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const submittingRef = useRef(false);
 
   const form = useForm<AuthorFormValues>({
     initialValues: { name: author.name, yomi: author.yomi },
@@ -29,8 +28,7 @@ export const AuthorEdit: React.FC<{ author: Author }> = ({ author }) => {
   });
 
   const handleSubmit = async (values: AuthorFormValues): Promise<void> => {
-    if (submittingRef.current) return;
-    submittingRef.current = true;
+    if (isSubmitting) return;
     setIsSubmitting(true);
     try {
       await updateAuthorMutation.mutateAsync({
@@ -47,7 +45,6 @@ export const AuthorEdit: React.FC<{ author: Author }> = ({ author }) => {
         error,
       });
     } finally {
-      submittingRef.current = false;
       setIsSubmitting(false);
     }
   };

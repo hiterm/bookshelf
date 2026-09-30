@@ -2,7 +2,7 @@ import { Button, Modal } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { zod4Resolver } from "mantine-form-zod-resolver";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { LinkButton } from "../../components/mantineTsr";
 import { useCreateAuthor } from "../authors/api/useCreateAuthor";
 import { useCreateBook } from "./api/useCreateBook";
@@ -14,7 +14,6 @@ import { resolvePendingAuthors } from "./resolvePendingAuthors";
 export const AddBookButton: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const submittingRef = useRef(false);
 
   const handleDialogOpenClick = (): void => {
     setOpen(true);
@@ -29,8 +28,7 @@ export const AddBookButton: React.FC = () => {
   const { reportError } = useAppError();
 
   const submitBook = async (value: BookFormValues): Promise<void> => {
-    if (submittingRef.current) return;
-    submittingRef.current = true;
+    if (isSubmitting) return;
     setIsSubmitting(true);
 
     try {
@@ -90,7 +88,6 @@ export const AddBookButton: React.FC = () => {
         });
       }
     } finally {
-      submittingRef.current = false;
       setIsSubmitting(false);
     }
   };

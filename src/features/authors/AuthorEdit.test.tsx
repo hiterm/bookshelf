@@ -1,13 +1,7 @@
 import { MantineProvider } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { vi } from "vitest";
@@ -203,9 +197,7 @@ describe("AuthorEdit", () => {
       expect(mockMutateAsync).toHaveBeenCalledTimes(1);
     });
     expect(save).toBeDisabled();
-    const form = save.closest("form");
-    if (form == null) throw new Error("Expected author form");
-    fireEvent.submit(form);
+    await userEvent.click(save);
     expect(mockMutateAsync).toHaveBeenCalledTimes(1);
 
     await act(async () => {

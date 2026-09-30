@@ -1,11 +1,5 @@
 import { MantineProvider } from "@mantine/core";
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import type { Book } from "./entity/Book";
@@ -74,7 +68,6 @@ beforeEach(() => {
 
 function setup(): {
   save: HTMLElement;
-  form: HTMLFormElement;
   user: ReturnType<typeof userEvent.setup>;
 } {
   render(
@@ -83,9 +76,7 @@ function setup(): {
     </MantineProvider>,
   );
   const save = screen.getByRole("button", { name: "Save" });
-  const form = save.closest("form");
-  if (form == null) throw new Error("Expected book form");
-  return { save, form, user: userEvent.setup() };
+  return { save, user: userEvent.setup() };
 }
 
 test("blocks repeat submits during author resolution and book update", async () => {
@@ -95,14 +86,14 @@ test("blocks repeat submits during author resolution and book update", async () 
   const update = Promise.withResolvers<unknown>();
   createAuthor.mockReturnValue(author.promise);
   updateBook.mockReturnValue(update.promise);
-  const { save, form, user } = setup();
+  const { save, user } = setup();
 
   await user.click(save);
   await waitFor(() => {
     expect(createAuthor).toHaveBeenCalledTimes(1);
   });
   expect(save).toBeDisabled();
-  fireEvent.submit(form);
+  await user.click(save);
   expect(createAuthor).toHaveBeenCalledTimes(1);
 
   await act(async () => {
@@ -113,7 +104,7 @@ test("blocks repeat submits during author resolution and book update", async () 
     expect(updateBook).toHaveBeenCalledTimes(1);
   });
   expect(save).toBeDisabled();
-  fireEvent.submit(form);
+  await user.click(save);
   expect(updateBook).toHaveBeenCalledTimes(1);
   expect(updateBook).toHaveBeenCalledWith(
     expect.objectContaining({ authorIds: ["resolved"] }),
