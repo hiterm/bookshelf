@@ -12,9 +12,12 @@ Users must be able to see and retry failed author or user registration. All loca
 - [x] (2026-10-01) Implement safe local query displays and caller-owned registration reports.
 - [x] (2026-10-01) Verify 289 unit tests, 58 mock API E2E, 14 Demo E2E, generation, lint, formatting, type checks, and build.
 - [x] (2026-10-01) Sync two added requirements and archive at openspec/changes/archive/2026-10-01-unify-error-reporting.
-- [ ] Create PR and complete CI and CodeRabbit review without merging.
+- [x] (2026-10-01) Create PR #408; all workflow jobs pass, including both integration environments.
+- [ ] Cover registration and query screen failure branches required by Codecov patch coverage, then complete CI and CodeRabbit review without merging.
 
 ## Surprises & Discoveries
+
+Codecov patch coverage counts unit tests, so successful E2E registration tests alone do not cover the registration catch branches for that gate. Add unit tests that render the actual root, author page, loader, filter, and book forms.
 
 Git metadata writes require escalated sandbox permissions. QueryCache already reports query failures; mutation failures are currently reported by owning UI catches. RegisterAuthorForm and RegisterCheck are the two missing reporting paths.
 
@@ -29,7 +32,7 @@ Git metadata writes require escalated sandbox permissions. QueryCache already re
 
 ## Outcomes & Retrospective
 
-Implementation and local validation are complete. Real backend integration is reserved for CI. OpenSpec delta synchronization and archival are complete. PR creation, CI, and review remain.
+Implementation and local validation are complete. Real backend integration is reserved for CI. OpenSpec delta synchronization and archival are complete. PR #408 is created and all workflow jobs pass. Codecov patch coverage needs the additional actual-screen unit tests; CodeRabbit review follows the final passing CI.
 
 ## Context and Orientation
 
@@ -59,4 +62,4 @@ Baseline: 7caadbf, pulled from origin/main. OpenSpec change: openspec/changes/un
 
 Use existing Mantine, TanStack Query, graphql-request, Vitest, and Playwright libraries. LocalError accepts `error: unknown` and `title: string` and renders normalized message only. reportError remains the existing application context operation with title, optional operation, and unknown error.
 
-Revision note: Implementation uses mutateAsync catches so failures remain reportable after unmount. Local validation and OpenSpec archive pass; PR gates remain.
+Revision note: Implementation uses mutateAsync catches so failures remain reportable after unmount. Local validation and OpenSpec archive pass. CI workflows pass; Codecov identifies missing unit coverage in registration and query failure UI, now covered by additional component regression tests.
