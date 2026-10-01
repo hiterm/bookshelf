@@ -1,5 +1,15 @@
 # Changelog
 
+## [v2.18.5](https://github.com/hiterm/bookshelf/compare/v2.18.4...v2.18.5) - 2026-10-01
+
+### Other Changes
+- Reduce repeated mock API schema setup in tests by @hiterm in https://github.com/hiterm/bookshelf/pull/399
+- test: 高優先の回帰テストを追加しキャッシュと重複登録を修正 by @hiterm in https://github.com/hiterm/bookshelf/pull/402
+- test: 中優先の回帰テストを強化 by @hiterm in https://github.com/hiterm/bookshelf/pull/403
+- Cancel pending string filters on Reset by @hiterm in https://github.com/hiterm/bookshelf/pull/405
+- Issue #406 (3): Unify edit submission lifecycle by @hiterm in https://github.com/hiterm/bookshelf/pull/407
+- Unify error reporting and safe local display by @hiterm in https://github.com/hiterm/bookshelf/pull/408
+
 ## [v2.18.4](https://github.com/hiterm/bookshelf/compare/v2.18.3...v2.18.4) - 2026-09-28
 
 ### Other Changes
