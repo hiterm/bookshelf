@@ -3,7 +3,7 @@ import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "@tanstack/react-router";
 import { zod4Resolver } from "mantine-form-zod-resolver";
-import React from "react";
+import React, { useState } from "react";
 import { useUpdateAuthor } from "./api/useUpdateAuthor";
 import { useAppError } from "../../components/errors/AppErrorProvider";
 import { LinkButton } from "../../components/mantineTsr";
@@ -19,6 +19,7 @@ export const AuthorEdit: React.FC<{ author: Author }> = ({ author }) => {
   const navigate = useNavigate();
   const updateAuthorMutation = useUpdateAuthor();
   const { reportError } = useAppError();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<AuthorFormValues>({
     initialValues: { name: author.name, yomi: author.yomi },
@@ -27,6 +28,8 @@ export const AuthorEdit: React.FC<{ author: Author }> = ({ author }) => {
   });
 
   const handleSubmit = async (values: AuthorFormValues): Promise<void> => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       await updateAuthorMutation.mutateAsync({
         id: author.id,
@@ -41,6 +44,8 @@ export const AuthorEdit: React.FC<{ author: Author }> = ({ author }) => {
         operation: "UpdateAuthor",
         error,
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -48,13 +53,17 @@ export const AuthorEdit: React.FC<{ author: Author }> = ({ author }) => {
     <Box style={{ display: "flex", justifyContent: "center" }}>
       <Box
         component="form"
-        onSubmit={form.onSubmit((values) => void handleSubmit(values))}
+        onSubmit={(event) => {
+          form.onSubmit((values) => void handleSubmit(values))(event);
+        }}
         style={{ minWidth: 400 }}
       >
         <TextInput label="名前" {...form.getInputProps("name")} />
         <TextInput label="読み仮名" {...form.getInputProps("yomi")} />
         <Group mt="md">
-          <Button type="submit">Save</Button>
+          <Button type="submit" disabled={isSubmitting} loading={isSubmitting}>
+            Save
+          </Button>
           <LinkButton
             color="gray"
             linkOptions={{ to: "/authors/$id", params: { id: author.id } }}
