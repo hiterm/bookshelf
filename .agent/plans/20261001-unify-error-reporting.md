@@ -11,7 +11,7 @@ Users must be able to see and retry failed author or user registration. All loca
 - [x] (2026-10-01) Pull latest main (7caadbf), inspect issue #406 item 1, and create OpenSpec change unify-error-reporting.
 - [x] (2026-10-01) Implement safe local query displays and caller-owned registration reports.
 - [x] (2026-10-01) Verify 289 unit tests, 58 mock API E2E, 14 Demo E2E, generation, lint, formatting, type checks, and build.
-- [ ] Sync and archive the completed OpenSpec change.
+- [x] (2026-10-01) Sync two added requirements and archive at openspec/changes/archive/2026-10-01-unify-error-reporting.
 - [ ] Create PR and complete CI and CodeRabbit review without merging.
 
 ## Surprises & Discoveries
@@ -29,7 +29,7 @@ Git metadata writes require escalated sandbox permissions. QueryCache already re
 
 ## Outcomes & Retrospective
 
-Implementation and local validation are complete. Real backend integration is reserved for CI. OpenSpec sync/archive and PR review remain.
+Implementation and local validation are complete. Real backend integration is reserved for CI. OpenSpec delta synchronization and archival are complete. PR creation, CI, and review remain.
 
 ## Context and Orientation
 
@@ -59,4 +59,4 @@ Baseline: 7caadbf, pulled from origin/main. OpenSpec change: openspec/changes/un
 
 Use existing Mantine, TanStack Query, graphql-request, Vitest, and Playwright libraries. LocalError accepts `error: unknown` and `title: string` and renders normalized message only. reportError remains the existing application context operation with title, optional operation, and unknown error.
 
-Revision note: Implementation uses mutateAsync catches so failures remain reportable after unmount. Local validation passes; archive and PR gates remain.
+Revision note: Implementation uses mutateAsync catches so failures remain reportable after unmount. Local validation and OpenSpec archive pass; PR gates remain.
