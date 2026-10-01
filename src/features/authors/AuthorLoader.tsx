@@ -1,4 +1,5 @@
-import { Center, Loader, Text } from "@mantine/core";
+import { LocalError } from "../../components/errors/LocalError";
+import { Center, Loader } from "@mantine/core";
 import React from "react";
 import { useAuthor } from "./api/useAuthor";
 import type { AuthorQuery } from "../../generated/graphql-request";
@@ -14,8 +15,7 @@ export const AuthorLoader: React.FC<AuthorLoaderProps> = ({ id, children }) => {
   const { data, isLoading, error } = useAuthor(id);
 
   if (error != null) {
-    console.error(error);
-    return <Text>An unexpected error occurred.</Text>;
+    return <LocalError error={error} title="An unexpected error occurred." />;
   }
 
   if (isLoading || data == null) {

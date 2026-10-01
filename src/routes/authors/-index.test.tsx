@@ -7,6 +7,10 @@ import { useCreateAuthor } from "../../features/authors/api/useCreateAuthor";
 import { useAuthors } from "../../features/authors/api/useAuthors";
 import { AuthorIndexPage } from "./index";
 
+vi.mock("../../components/errors/AppErrorProvider", () => ({
+  useAppError: () => ({ reportError: vi.fn() }),
+}));
+
 vi.mock(import("../../features/authors/api/useCreateAuthor"));
 vi.mock(import("../../features/authors/api/useAuthors"));
 
@@ -30,7 +34,7 @@ vi.mocked(useAuthors, { partial: true }).mockReturnValue({
 });
 
 vi.mocked(useCreateAuthor, { partial: true }).mockReturnValue({
-  mutate: vi.fn(),
+  mutateAsync: vi.fn(),
   isPending: false,
 });
 

@@ -1,3 +1,4 @@
+import { LocalError } from "../../components/errors/LocalError";
 import {
   Checkbox,
   Loader,
@@ -22,7 +23,7 @@ export const BookUpdateForm: React.FC<BookUpdateFormProps> = ({ form }) => {
   const { data, isLoading, error } = useAuthors();
 
   if (error != null) {
-    return <div>{JSON.stringify(error)}</div>;
+    return <LocalError error={error} title="著者の読み込みに失敗しました。" />;
   }
 
   if (isLoading || data == null) {

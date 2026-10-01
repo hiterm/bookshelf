@@ -1,3 +1,4 @@
+import { LocalError } from "../../components/errors/LocalError";
 import { Loader, MultiSelect } from "@mantine/core";
 import { Column } from "@tanstack/react-table";
 import { useAuthors } from "../authors/api/useAuthors";
@@ -18,8 +19,12 @@ export const AuthorsFilter = ({
     : [];
 
   if (error != null) {
-    console.error("AuthorsFilter: failed to load authors", error);
-    return <div>An error occurred while loading authors</div>;
+    return (
+      <LocalError
+        error={error}
+        title="An error occurred while loading authors"
+      />
+    );
   }
 
   return (
