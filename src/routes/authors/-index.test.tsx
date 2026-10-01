@@ -1,4 +1,8 @@
 import { MantineProvider } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
+import { QueryClient } from "@tanstack/react-query";
+import { AppErrorProvider } from "../../components/errors/AppErrorProvider";
+import { ErrorPanel } from "../../components/errors/ErrorPanel";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
@@ -6,6 +10,8 @@ import { vi } from "vitest";
 import { useCreateAuthor } from "../../features/authors/api/useCreateAuthor";
 import { useAuthors } from "../../features/authors/api/useAuthors";
 import { AuthorIndexPage } from "./index";
+
+vi.mock("@mantine/notifications", () => ({ showNotification: vi.fn() }));
 
 vi.mock(import("../../features/authors/api/useCreateAuthor"));
 vi.mock(import("../../features/authors/api/useAuthors"));
@@ -30,7 +36,7 @@ vi.mocked(useAuthors, { partial: true }).mockReturnValue({
 });
 
 vi.mocked(useCreateAuthor, { partial: true }).mockReturnValue({
-  mutate: vi.fn(),
+  mutateAsync: vi.fn(),
   isPending: false,
 });
 
@@ -53,7 +59,12 @@ beforeAll(() => {
 const renderPage = (): ReturnType<typeof render> =>
   render(<AuthorIndexPage />, {
     wrapper: ({ children }) => (
-      <MantineProvider env="test">{children}</MantineProvider>
+      <MantineProvider env="test">
+        <AppErrorProvider queryClient={new QueryClient()}>
+          <ErrorPanel />
+          {children}
+        </AppErrorProvider>
+      </MantineProvider>
     ),
   });
 
@@ -89,4 +100,58 @@ describe("AuthorIndexPage table features", () => {
     });
     expect(screen.queryByText("著者1")).not.toBeInTheDocument();
   });
+});
+
+test("retains author registration input and reports a failed attempt once before retry", async () => {
+  const mutateAsync = vi
+    .fn()
+    .mockRejectedValueOnce(new Error("Registration rejected"))
+    .mockResolvedValueOnce({});
+  vi.mocked(showNotification).mockClear();
+  vi.mocked(useCreateAuthor, { partial: true }).mockReturnValue({
+    mutateAsync,
+    isPending: false,
+  });
+  renderPage();
+  fireEvent.change(screen.getByRole("textbox", { name: "名前" }), {
+    target: { value: "Retry author" },
+  });
+  fireEvent.change(screen.getByRole("textbox", { name: "読み仮名" }), {
+    target: { value: "りとらい" },
+  });
+  const register = screen.getByRole("button", { name: "登録" });
+  fireEvent.click(register);
+  await waitFor(() =>
+    expect(screen.getByText("著者の登録に失敗しました")).toBeInTheDocument(),
+  );
+  expect(screen.getByRole("textbox", { name: "名前" })).toHaveValue(
+    "Retry author",
+  );
+  expect(screen.getByRole("textbox", { name: "読み仮名" })).toHaveValue(
+    "りとらい",
+  );
+  expect(showNotification).toHaveBeenCalledTimes(1);
+  expect(screen.getAllByRole("alert")).toHaveLength(1);
+  fireEvent.click(register);
+  await waitFor(() => {
+    expect(mutateAsync).toHaveBeenCalledTimes(2);
+  });
+  expect(mutateAsync).toHaveBeenLastCalledWith({
+    name: "Retry author",
+    yomi: "りとらい",
+  });
+  expect(showNotification).toHaveBeenCalledTimes(1);
+});
+
+test("shows a normalized local author query failure", () => {
+  vi.mocked(useAuthors, { partial: true }).mockReturnValueOnce({
+    data: undefined,
+    isLoading: false,
+    error: new Error("Authors unavailable"),
+  });
+  renderPage();
+  expect(screen.getByRole("alert")).toHaveTextContent(
+    "著者の読み込みに失敗しました",
+  );
+  expect(screen.getByRole("alert")).toHaveTextContent("Authors unavailable");
 });

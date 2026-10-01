@@ -1,3 +1,5 @@
+import { LocalError } from "../components/errors/LocalError";
+import { useAppError } from "../components/errors/AppErrorProvider";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Alert, AppShell, Button, Center, Loader } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -34,12 +36,11 @@ const SignInCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
   const { data, isLoading, error } = useLoggedInUser();
   const registerUserMutation = useRegisterUser();
+  const { reportError } = useAppError();
 
   if (error != null) {
     return (
-      <>
-        <div>query error: {JSON.stringify(error)}</div>
-      </>
+      <LocalError error={error} title="ユーザーの読み込みに失敗しました" />
     );
   }
 
@@ -59,7 +60,15 @@ const RegisterCheck: React.FC<ChildrenProps> = ({ children }) => {
           loading={registerUserMutation.isPending}
           onClick={async () => {
             if (registerUserMutation.isPending) return;
-            await registerUserMutation.mutateAsync();
+            try {
+              await registerUserMutation.mutateAsync();
+            } catch (registrationError) {
+              reportError({
+                title: "ユーザーの登録に失敗しました",
+                operation: "RegisterUser",
+                error: registrationError,
+              });
+            }
           }}
         >
           Register user

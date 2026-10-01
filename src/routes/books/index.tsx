@@ -1,3 +1,4 @@
+import { LocalError } from "../../components/errors/LocalError";
 import { Center, Group, Loader, Paper } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
@@ -21,7 +22,7 @@ const BookIndexPage: React.FC = () => {
   const { data, isLoading, error } = useBooks();
 
   if (error != null) {
-    return <>{JSON.stringify(error)}</>;
+    return <LocalError error={error} title="書籍の読み込みに失敗しました" />;
   }
 
   if (isLoading || data == null) {

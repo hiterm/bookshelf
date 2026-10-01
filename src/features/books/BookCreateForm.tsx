@@ -1,3 +1,4 @@
+import { LocalError } from "../../components/errors/LocalError";
 import {
   Button,
   Checkbox,
@@ -27,8 +28,7 @@ export const BookCreateForm: React.FC<BookCreateFormProps> = ({ form }) => {
   const [searchOpened, setSearchOpened] = useState(false);
 
   if (error != null) {
-    console.error(error);
-    return <div>著者の読み込みに失敗しました。</div>;
+    return <LocalError error={error} title="著者の読み込みに失敗しました。" />;
   }
 
   if (isLoading || data == null) {

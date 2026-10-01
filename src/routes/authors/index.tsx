@@ -1,3 +1,5 @@
+import { useAppError } from "../../components/errors/AppErrorProvider";
+import { LocalError } from "../../components/errors/LocalError";
 import {
   Button,
   Center,
@@ -70,13 +72,25 @@ function RouteComponent(): React.JSX.Element {
 
 const RegisterAuthorForm: React.FC = () => {
   const createAuthorMutation = useCreateAuthor();
+  const { reportError } = useAppError();
   const form = useForm<AuthorFormValues>({
     initialValues: { name: "", yomi: "" },
     validate: zod4Resolver(authorFormSchema),
   });
-  const handleSubmit = (data: AuthorFormValues): void => {
+  const handleSubmit = async (data: AuthorFormValues): Promise<void> => {
     if (createAuthorMutation.isPending) return;
-    createAuthorMutation.mutate({ name: data.name, yomi: data.yomi });
+    try {
+      await createAuthorMutation.mutateAsync({
+        name: data.name,
+        yomi: data.yomi,
+      });
+    } catch (registrationError) {
+      reportError({
+        title: "著者の登録に失敗しました",
+        operation: "CreateAuthor",
+        error: registrationError,
+      });
+    }
   };
 
   return (
@@ -107,7 +121,7 @@ export const AuthorIndexPage: React.FC = () => {
   });
 
   if (error != null) {
-    return <>{JSON.stringify(error)}</>;
+    return <LocalError error={error} title="著者の読み込みに失敗しました" />;
   }
 
   if (isLoading || data == null) {
