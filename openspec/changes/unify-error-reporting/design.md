@@ -8,7 +8,7 @@ Goals are complete registration reporting, safe local messages, and one notifica
 
 ## Decisions
 
-Keep mutation reporting in the operation caller. Add an onError callback to author registration and catch user registration rejection. A global MutationCache subscriber would duplicate existing catches and report intermediate author creation separately from its owning book operation, so it is unsuitable here.
+Keep mutation reporting in the operation caller. Catch mutateAsync rejection in both author and user registration. Awaiting the promise also retains reporting when the owning component unmounts before rejection. A global MutationCache subscriber would duplicate existing catches and report intermediate author creation separately from its owning book operation, so it is unsuitable here.
 
 Add LocalError to render a contextual title and normalizeError(error).message. It performs no reporting and shows no technical details. QueryCache remains the sole owner of persistent query reports. Replace direct serialization and raw error logging in query UI, including AuthorLoader and AuthorsFilter.
 

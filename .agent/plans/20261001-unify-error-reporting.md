@@ -9,8 +9,9 @@ Users must be able to see and retry failed author or user registration. All loca
 ## Progress
 
 - [x] (2026-10-01) Pull latest main (7caadbf), inspect issue #406 item 1, and create OpenSpec change unify-error-reporting.
-- [ ] Implement safe local query displays and caller-owned registration reports.
-- [ ] Verify unit and browser behavior, complete mandatory checks, and archive OpenSpec.
+- [x] (2026-10-01) Implement safe local query displays and caller-owned registration reports.
+- [x] (2026-10-01) Verify 289 unit tests, 58 mock API E2E, 14 Demo E2E, generation, lint, formatting, type checks, and build.
+- [ ] Sync and archive the completed OpenSpec change.
 - [ ] Create PR and complete CI and CodeRabbit review without merging.
 
 ## Surprises & Discoveries
@@ -28,7 +29,7 @@ Git metadata writes require escalated sandbox permissions. QueryCache already re
 
 ## Outcomes & Retrospective
 
-Planning complete; implementation and validation pending.
+Implementation and local validation are complete. Real backend integration is reserved for CI. OpenSpec sync/archive and PR review remain.
 
 ## Context and Orientation
 
@@ -36,7 +37,7 @@ Planning complete; implementation and validation pending.
 
 ## Plan of Work
 
-Create `src/components/errors/LocalError.tsx` using Mantine Alert and normalizeError(error).message, with a contextual title. Replace raw serialization in books index/detail/edit routes, BookUpdateForm, authors index, and root registration checks. Replace raw logging in BookCreateForm, AuthorLoader, and AuthorsFilter. In RegisterAuthorForm add a mutate onError callback; in RegisterCheck catch mutateAsync rejection. Preserve current pending guards and form values. Add unit tests for safe rendering and E2E tests exercising actual registration hooks with failing GraphQL responses, verifying exactly one notification and persistent record and successful retry. Document reporting ownership under `docs/architecture/error-reporting.md`.
+Create `src/components/errors/LocalError.tsx` using Mantine Alert and normalizeError(error).message, with a contextual title. Replace raw serialization in books index/detail/edit routes, BookUpdateForm, authors index, and root registration checks. Replace raw logging in BookCreateForm, AuthorLoader, and AuthorsFilter. In RegisterAuthorForm and RegisterCheck catch mutateAsync rejection. Preserve current pending guards and form values. Add unit tests for safe rendering and E2E tests exercising actual registration hooks with failing GraphQL responses, verifying exactly one notification and persistent record and successful retry. Document reporting ownership under `docs/architecture/error-reporting.md`.
 
 ## Concrete Steps
 
@@ -58,4 +59,4 @@ Baseline: 7caadbf, pulled from origin/main. OpenSpec change: openspec/changes/un
 
 Use existing Mantine, TanStack Query, graphql-request, Vitest, and Playwright libraries. LocalError accepts `error: unknown` and `title: string` and renders normalized message only. reportError remains the existing application context operation with title, optional operation, and unknown error.
 
-Revision note: Initial plan records caller ownership, scope, and required verification.
+Revision note: Implementation uses mutateAsync catches so failures remain reportable after unmount. Local validation passes; archive and PR gates remain.
