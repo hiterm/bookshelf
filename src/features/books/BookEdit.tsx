@@ -5,11 +5,11 @@ import { useNavigate } from "@tanstack/react-router";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import React, { useState } from "react";
 import { LinkButton } from "../../components/mantineTsr";
-import { useCreateAuthor } from "../authors/api/useCreateAuthor";
 import { useUpdateBook } from "./api/useUpdateBook";
 import { useAppError } from "../../components/errors/AppErrorProvider";
 import { bookFormSchema, BookFormValues } from "./bookFormSchema";
-import { resolvePendingAuthors } from "./resolvePendingAuthors";
+import { bookAuthorInput } from "./bookAuthorInput";
+import { useAuthorConflictRecovery } from "./useAuthorConflictRecovery";
 import { BookUpdateForm } from "./BookUpdateForm";
 import { Book } from "./entity/Book";
 
@@ -19,7 +19,7 @@ export const BookEdit: React.FC<{ book: Book }> = (props) => {
   const navigate = useNavigate();
 
   const updateBookMutation = useUpdateBook();
-  const createAuthorMutation = useCreateAuthor();
+  const recoverAuthors = useAuthorConflictRecovery();
   const { reportError } = useAppError();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -28,26 +28,6 @@ export const BookEdit: React.FC<{ book: Book }> = (props) => {
     setIsSubmitting(true);
 
     try {
-      let resolvedAuthors: Awaited<ReturnType<typeof resolvePendingAuthors>>;
-      try {
-        resolvedAuthors = await resolvePendingAuthors(
-          values.authors,
-          async (name) => {
-            const result = await createAuthorMutation.mutateAsync({ name });
-            return result.createAuthor.author.id;
-          },
-        );
-      } catch (error) {
-        reportError({
-          title: "著者の作成に失敗しました",
-          operation: "CreateAuthor",
-          error,
-        });
-        return;
-      }
-
-      form.setFieldValue("authors", resolvedAuthors);
-
       const bookData = {
         id: book.id,
         title: values.title,
@@ -58,7 +38,7 @@ export const BookEdit: React.FC<{ book: Book }> = (props) => {
         format: values.format,
         store: values.store,
         purchaseDate: values.purchaseDate === "" ? null : values.purchaseDate,
-        authorIds: resolvedAuthors.map((a) => a.id),
+        ...bookAuthorInput(values.authors),
       };
 
       try {
@@ -66,6 +46,17 @@ export const BookEdit: React.FC<{ book: Book }> = (props) => {
         await navigate({ to: `/books/$id`, params: { id: book.id } });
         showNotification({ message: "更新しました", color: "teal" });
       } catch (error) {
+        if (
+          await recoverAuthors(
+            error,
+            values.authors,
+            () => form.getValues().authors,
+            (authors) => {
+              form.setFieldValue("authors", authors);
+            },
+          )
+        )
+          return;
         reportError({
           title: "書籍の更新に失敗しました",
           operation: "UpdateBook",

@@ -1,3 +1,4 @@
+import { GraphQLError } from "graphql";
 import type { ImportBookInput } from "../generated/graphql-request";
 
 type ImportPreview = {
@@ -280,13 +281,66 @@ export class MockStore {
     );
     return { author, operationId };
   }
+  /** Roll back current state and history if any part of a combined save fails. */
+  private withNewAuthors(
+    names: string[],
+    ids: string[],
+    save: (ids: string[]) => Book,
+  ): Book {
+    const snapshot = {
+      authors: new Map(this.authors),
+      books: new Map(this.books),
+      authorRevisions: [...this.authorRevisions],
+      bookRevisions: [...this.bookRevisions],
+      operations: [...this.operations],
+      nextAuthorId: this.nextAuthorId,
+      nextBookId: this.nextBookId,
+      nextOperationId: this.nextOperationId,
+    };
+    try {
+      for (const id of ids)
+        if (!this.authors.has(id))
+          throw new GraphQLError("Author not found", {
+            extensions: { code: "NOT_FOUND" },
+          });
+      const authorIds = [...new Set(ids)];
+      const authorChanges: Operation["authorChanges"] = [];
+      for (const name of [...new Set(names)].sort()) {
+        if (name.length === 0)
+          throw new GraphQLError("Author name is required", {
+            extensions: { code: "VALIDATION_ERROR" },
+          });
+        if (this.getAllAuthors().some((author) => author.name === name))
+          throw new GraphQLError(`author name '${name}' is already in use`, {
+            extensions: { code: "CONFLICT", reason: "AUTHOR_NAME_CONFLICT" },
+          });
+        const author = this.createAuthor(name);
+        authorIds.push(author.id);
+        const operation = this.operations.shift();
+        if (operation != null) authorChanges.push(...operation.authorChanges);
+      }
+      const book = save(authorIds);
+      const operation = this.operations.at(0);
+      if (operation != null) operation.authorChanges.push(...authorChanges);
+      return book;
+    } catch (error) {
+      Object.assign(this, snapshot);
+      throw error;
+    }
+  }
+
   createBook(
     bookData: Omit<Book, "id" | "createdAt" | "updatedAt" | "purchaseDate"> &
-      Pick<Partial<Book>, "purchaseDate">,
+      Pick<Partial<Book>, "purchaseDate"> & { newAuthorNames?: string[] },
   ): Book {
+    const { newAuthorNames = [], ...data } = bookData;
+    if (newAuthorNames.length > 0)
+      return this.withNewAuthors(newAuthorNames, data.authorIds, (authorIds) =>
+        this.createBook({ ...data, authorIds }),
+      );
     const now = Math.floor(Date.now() / 1000);
     const book = {
-      ...bookData,
+      ...data,
       purchaseDate: bookData.purchaseDate ?? null,
       id: `book-${String(this.nextBookId)}`,
       createdAt: now,
@@ -310,16 +364,27 @@ export class MockStore {
     return [...this.books.values()];
   }
   updateBook(
-    bookData: { id: string } & Partial<
+    bookData: { id: string; newAuthorNames?: string[] } & Partial<
       Omit<Book, "id" | "createdAt" | "updatedAt">
     >,
   ): Book | null {
     const current = this.books.get(bookData.id);
     if (current == null) return null;
+    const { newAuthorNames = [], ...data } = bookData;
+    if (newAuthorNames.length > 0)
+      return this.withNewAuthors(
+        newAuthorNames,
+        data.authorIds ?? current.authorIds,
+        (authorIds) => {
+          const result = this.updateBook({ ...data, authorIds });
+          if (result == null) throw new Error("Book not found");
+          return result;
+        },
+      );
     const beforeRevision = this.getBookRevisions(bookData.id)[0] ?? null;
     const book = {
       ...current,
-      ...bookData,
+      ...data,
       updatedAt: Math.floor(Date.now() / 1000),
     };
     this.books.set(book.id, book);
