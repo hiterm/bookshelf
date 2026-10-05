@@ -13,8 +13,8 @@ Issue hiterm/bookshelf#404 concerns author creation partially succeeding before 
   - [x] plan updated
 - [x] (2026-10-05 JST) Milestone 2: Implement browser recovery, generated schema and mock contracts; verify UI and E2E behavior.
   - [x] plan updated
-- [ ] Milestone 3: Complete required checks and publish mutually linked PRs referencing issue 404.
-  - [ ] plan updated
+- [x] (2026-10-05 JST) Milestone 3: Complete required checks and publish mutually linked PRs referencing issue 404.
+  - [x] plan updated
 
 ## Surprises & Discoveries
 
@@ -26,7 +26,7 @@ The repositories are symlinks outside the virtual workspace, so writes and Git o
 
 ## Outcomes & Retrospective
 
-Both implementations and local validation are complete. Frontend: 304 unit tests, typecheck, lint and formatting passed. Two Mock API recovery E2Es, one Demo Mode multi-author save E2E, and two real-API recovery E2Es passed. Backend: 179 unit tests, five real-DB tests, and 52 HTTP E2Es passed. PR publication remains. The frontend PR is draft until the backend release exists and bookshelf-api.version is updated to it. No release number is guessed and no merge/deployment is performed.
+Both implementations and local validation are complete. Frontend: 304 unit tests, typecheck, lint and formatting passed. Two Mock API recovery E2Es, one Demo Mode multi-author save E2E, and two real-API recovery E2Es passed. Backend: 179 unit tests, five real-DB tests, and 52 HTTP E2Es passed. PR publication is complete: API https://github.com/hiterm/bookshelf-api/pull/371 and frontend draft https://github.com/hiterm/bookshelf/pull/411 are mutually linked and reference issue 404. The frontend PR is draft until the backend release exists and bookshelf-api.version is updated to it. No release number is guessed and no merge/deployment is performed.
 
 ## Context and Orientation
 
@@ -56,7 +56,7 @@ No migration or destructive data cleanup is needed. Test users/databases are iso
 
 ## Artifacts and Notes
 
-Initial main revisions: frontend fdd6784; API 232ae40. Verification commands: GRAPHQL_SCHEMA_PATH=../bookshelf-api/schema.graphql pnpm run generate; pnpm run lint:fix; pnpm run format; pnpm run test --maxWorkers=2; pnpm run typecheck. E2E commands: pnpm exec playwright test e2e-mock-api/atomic-books.spec.ts --workers=1 (2 passed); pnpm exec playwright test --config=playwright.demo.config.ts e2e-demo-mode/atomic-books.spec.ts --workers=1 (1 passed); pnpm exec playwright test --config=playwright.integration.config.ts e2e-integration/atomic-books.spec.ts --workers=1 (2 passed). Earlier full Mock API suite had 59 passes and one navigation failure; the navigation fix then passed the focused recovery suite. PR URLs will be recorded after publication.
+Initial main revisions: frontend fdd6784; API 232ae40. Verification commands: GRAPHQL_SCHEMA_PATH=../bookshelf-api/schema.graphql pnpm run generate; pnpm run lint:fix; pnpm run format; pnpm run test --maxWorkers=2; pnpm run typecheck. E2E commands: pnpm exec playwright test e2e-mock-api/atomic-books.spec.ts --workers=1 (2 passed); pnpm exec playwright test --config=playwright.demo.config.ts e2e-demo-mode/atomic-books.spec.ts --workers=1 (1 passed); pnpm exec playwright test --config=playwright.integration.config.ts e2e-integration/atomic-books.spec.ts --workers=1 (2 passed). Earlier full Mock API suite had 59 passes and one navigation failure; the navigation fix then passed the focused recovery suite. PR URLs: API https://github.com/hiterm/bookshelf-api/pull/371; frontend draft https://github.com/hiterm/bookshelf/pull/411. API uses Refs hiterm/bookshelf#404; frontend uses Closes #404. Native attach_artifact was attempted for both but the host reports that tool unavailable; provide both links in the chat.
 
 ## Interfaces and Dependencies
 
@@ -65,3 +65,5 @@ Use existing Rust transaction/repository traits and React Query hooks; add no de
 Revision note: initialized from the approved design on 2026-10-05.
 
 Revision note: completed frontend recovery and verification milestones on 2026-10-05. Keep vmThreads and limit worker count locally; a forks experiment exposed Mantine teardown differences. Tests now provide their own matchMedia stub. The mock edit E2E uses SPA links so Auth0 state survives navigation.
+
+Revision note: published and cross-linked both issue-associated PRs on 2026-10-05. Local implementation and validation are complete; backend release and frontend version-pin update remain the documented merge gate.
