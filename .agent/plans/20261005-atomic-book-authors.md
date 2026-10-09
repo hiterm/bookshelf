@@ -16,6 +16,12 @@ Issue hiterm/bookshelf#404 concerns author creation partially succeeding before 
 - [x] (2026-10-05 JST) Milestone 3: Complete required checks and publish mutually linked PRs referencing issue 404.
   - [x] plan updated
 
+- [x] (2026-10-10 JST) API implementation merged by the user; release PR 372 passed all CI, was merged, and published 2.17.6.
+- [ ] (2026-10-10 JST) Milestone 4: Validate and deploy API 2.17.6, update frontend API pin, complete CodeRabbit review and frontend checks.
+  - [ ] plan updated
+- [ ] Milestone 5: Merge frontend PR 411 and its release PR; verify both production deployments and issue closure.
+  - [ ] plan updated
+
 ## Surprises & Discoveries
 
 The repositories are symlinks outside the virtual workspace, so writes and Git operations need sandbox escalation. Existing import can reuse authors, but this feature must reject existing names. Use the ordinary author repository create method instead. Operation history already supports multiple entity changes and Undo.
@@ -26,7 +32,7 @@ The repositories are symlinks outside the virtual workspace, so writes and Git o
 
 ## Outcomes & Retrospective
 
-Both implementations and local validation are complete. Frontend: 304 unit tests, typecheck, lint and formatting passed. Two Mock API recovery E2Es, one Demo Mode multi-author save E2E, and two real-API recovery E2Es passed. Backend: 179 unit tests, five real-DB tests, and 52 HTTP E2Es passed. PR publication is complete: API https://github.com/hiterm/bookshelf-api/pull/371 and frontend draft https://github.com/hiterm/bookshelf/pull/411 are mutually linked and reference issue 404. The frontend PR is draft until the backend release exists and bookshelf-api.version is updated to it. No release number is guessed and no merge/deployment is performed.
+Both implementations and local validation are complete. Frontend: 304 unit tests, typecheck, lint and formatting passed. Two Mock API recovery E2Es, one Demo Mode multi-author save E2E, and two real-API recovery E2Es passed. Backend: 179 unit tests, five real-DB tests, and 52 HTTP E2Es passed. PR publication is complete: API https://github.com/hiterm/bookshelf-api/pull/371 and frontend draft https://github.com/hiterm/bookshelf/pull/411 are mutually linked and reference issue 404. The frontend PR is draft until the backend release exists and bookshelf-api.version is updated to it. The user authorized continuing through frontend release on 2026-10-10 JST. API implementation PR 371 is merged, and API release PR 372 has published 2.17.6. Image validation and production deployment are in progress; do not deploy the frontend before the API production deployment succeeds.
 
 ## Context and Orientation
 
@@ -67,3 +73,5 @@ Revision note: initialized from the approved design on 2026-10-05.
 Revision note: completed frontend recovery and verification milestones on 2026-10-05. Keep vmThreads and limit worker count locally; a forks experiment exposed Mantine teardown differences. Tests now provide their own matchMedia stub. The mock edit E2E uses SPA links so Auth0 state survives navigation.
 
 Revision note: published and cross-linked both issue-associated PRs on 2026-10-05. Local implementation and validation are complete; backend release and frontend version-pin update remain the documented merge gate.
+
+Revision note: resumed rollout on 2026-10-10 JST under explicit user authorization. API release PR https://github.com/hiterm/bookshelf-api/pull/372 passed all checks and published 2.17.6. The frontend now pins that actual release. Local Mock API E2E passed all 60 tests and Demo Mode E2E passed all 18 tests with the new schema. Requested a fresh full CodeRabbit review; no CI workaround is retained.
