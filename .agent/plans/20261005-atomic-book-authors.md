@@ -17,10 +17,11 @@ Issue hiterm/bookshelf#404 concerns author creation partially succeeding before 
   - [x] plan updated
 
 - [x] (2026-10-10 JST) API implementation merged by the user; release PR 372 passed all CI, was merged, and published 2.17.6.
-- [ ] (2026-10-10 JST) Milestone 4: Validate and deploy API 2.17.6, update frontend API pin, complete CodeRabbit review and frontend checks.
-  - [ ] plan updated
-- [ ] Milestone 5: Merge frontend PR 411 and its release PR; verify both production deployments and issue closure.
-  - [ ] plan updated
+- [x] (2026-10-10 JST) Milestone 4: Validate and deploy API 2.17.6, update frontend API pin, complete CodeRabbit review and frontend checks.
+  - [x] plan updated
+- [x] (2026-10-10 JST) Milestone 5a: Merge frontend PR 411; verify issue closure and prepare release PR 413 for v2.18.6.
+  - [x] plan updated
+- [ ] Milestone 5b: Merge release PR 413 after all checks and verify v2.18.6 publication and production deployment.
 
 ## Surprises & Discoveries
 
@@ -32,7 +33,7 @@ The repositories are symlinks outside the virtual workspace, so writes and Git o
 
 ## Outcomes & Retrospective
 
-Both implementations and local validation are complete. Frontend: 304 unit tests, typecheck, lint and formatting passed. Two Mock API recovery E2Es, one Demo Mode multi-author save E2E, and two real-API recovery E2Es passed. Backend: 179 unit tests, five real-DB tests, and 52 HTTP E2Es passed. PR publication is complete: API https://github.com/hiterm/bookshelf-api/pull/371 and frontend draft https://github.com/hiterm/bookshelf/pull/411 are mutually linked and reference issue 404. The frontend PR is draft until the backend release exists and bookshelf-api.version is updated to it. The user authorized continuing through frontend release on 2026-10-10 JST. API implementation PR 371 is merged, and API release PR 372 has published 2.17.6. The validated release image was published, and deployment PR 7 passed its smoke test and was merged. Its production Vercel deployment succeeded. Frontend PR 411 pins 2.17.6; all functional CI suites passed and CodeRabbit approved the pin correction. Project coverage remains below baseline, so add HTTP-level Demo Mode handler tests before merging.
+Both implementations and local validation are complete. Frontend: 304 unit tests, typecheck, lint and formatting passed. Two Mock API recovery E2Es, one Demo Mode multi-author save E2E, and two real-API recovery E2Es passed. Backend: 179 unit tests, five real-DB tests, and 52 HTTP E2Es passed. PR publication is complete: API https://github.com/hiterm/bookshelf-api/pull/371 and frontend draft https://github.com/hiterm/bookshelf/pull/411 are mutually linked and reference issue 404. The frontend PR is draft until the backend release exists and bookshelf-api.version is updated to it. The user authorized continuing through frontend release on 2026-10-10 JST. API implementation PR 371 is merged, and API release PR 372 has published 2.17.6. The validated release image was published, and deployment PR 7 passed its smoke test and was merged. Its production Vercel deployment succeeded. Frontend PR 411 pins 2.17.6; all functional CI suites passed and CodeRabbit approved the pin correction. Six HTTP-level Demo Mode handler tests passed along with all required checks (310 unit tests). CI passed Mock API, Demo Mode, released-API and API-main integration suites. Codecov project passed at 69.91% (+1.29 points); patch coverage passed at 86.36%. PR 411 is merged as a836480, issue 404 is closed, and duplicate dependency update PR 412 is closed. The remaining release gate is PR 413 for v2.18.6 and its production deployment.
 
 ## Context and Orientation
 
@@ -77,3 +78,5 @@ Revision note: published and cross-linked both issue-associated PRs on 2026-10-0
 Revision note: resumed rollout on 2026-10-10 JST under explicit user authorization. API release PR https://github.com/hiterm/bookshelf-api/pull/372 passed all checks and published 2.17.6. The frontend now pins that actual release. Local Mock API E2E passed all 60 tests and Demo Mode E2E passed all 18 tests with the new schema. Requested a fresh full CodeRabbit review; no CI workaround is retained.
 
 Revision note: API 2.17.6 is deployed successfully via https://github.com/hiterm/bookshelf-api-deploy/pull/7 (merge ba1b351). CodeRabbit requested only the released API pin; that thread is resolved and review approved. All frontend functional CI passed on ce11c10. Codecov project is 68.35% versus 68.61% baseline; newly changed Demo Mode HTTP handlers were untested at the transport boundary. Add six handler tests covering create/update success, legacy inputs, typed conflicts with full rollback and invalid new-author values, then repeat required checks.
+
+Revision note: on 2026-10-10 JST all frontend CI and Codecov checks passed on a284918; CodeRabbit approved after the dependency correction. PR 411 merged, closing issue 404. API 2.17.6 is already deployed. Release PR https://github.com/hiterm/bookshelf/pull/413 contains the frontend v2.18.6 version and changelog; this documentation update records rollout progress before its final merge. Confirm the release workflow and both production frontend deployments after merging.
