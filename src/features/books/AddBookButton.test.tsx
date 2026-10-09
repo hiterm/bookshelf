@@ -1,13 +1,11 @@
+import { GraphQLError } from "graphql";
+import { ClientError } from "graphql-request";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
-import type {
-  CreateAuthorMutation,
-  CreateBookMutation,
-  Sdk,
-} from "../../generated/graphql-request";
+import type { CreateBookMutation, Sdk } from "../../generated/graphql-request";
 import { AddBookButton } from "./AddBookButton";
 
 const { sdk, reportError, notify } = vi.hoisted(() => ({
@@ -17,7 +15,7 @@ const { sdk, reportError, notify } = vi.hoisted(() => ({
     authors: vi.fn<Sdk["authors"]>(),
   },
   reportError: vi.fn(),
-  notify: vi.fn(),
+  notify: vi.fn<(input: { message: unknown }) => void>(),
 }));
 vi.mock("@auth0/auth0-react", () => ({
   useAuth0: () => ({ getAccessTokenSilently: vi.fn() }),
@@ -130,146 +128,137 @@ async function setup(): Promise<{
     },
   };
 }
-const createdAuthor: CreateAuthorMutation = {
-  createAuthor: { author: { id: "resolved-author" } },
-};
 const createdBook: CreateBookMutation = {
   createBook: { book: { id: "created-book" } },
 };
+const conflict = (): ClientError =>
+  new ClientError(
+    {
+      status: 200,
+      headers: new Headers(),
+      body: "",
+      errors: [
+        new GraphQLError("duplicate", {
+          extensions: { code: "CONFLICT", reason: "AUTHOR_NAME_CONFLICT" },
+        }),
+      ],
+    },
+    { query: "mutation" },
+  );
 
-test("author failure retains input, prevents book creation, and allows retry", async () => {
-  const pending = Promise.withResolvers<CreateAuthorMutation>();
-  sdk.createAuthor
-    .mockReturnValueOnce(pending.promise)
-    .mockResolvedValue(createdAuthor);
-  sdk.createBook.mockResolvedValue(createdBook);
-  const { user, dialog, title, submit, cleanup } = await setup();
-  try {
-    await user.click(submit);
-    await waitFor(() => {
-      expect(sdk.createAuthor).toHaveBeenCalledTimes(1);
-    });
-    const failure = new Error("Cannot create author");
-    await act(async () => {
-      pending.reject(failure);
-      await pending.promise.catch(() => undefined);
-    });
-    await waitFor(() => {
-      expect(reportError).toHaveBeenCalledWith(
-        expect.objectContaining({ operation: "CreateAuthor", error: failure }),
-      );
-    });
-    expect(sdk.createBook).not.toHaveBeenCalled();
-    expect(notify).not.toHaveBeenCalled();
-    expect(title).toHaveValue("Retained book");
-    expect(within(dialog).getByLabelText("購入日")).toHaveValue("2026-09-28");
-    expect(
-      within(dialog).getByRole("button", { name: "Edit author New author" }),
-    ).toBeInTheDocument();
-    await waitFor(() => expect(submit).toBeEnabled());
-    await user.click(submit);
-    await waitFor(() =>
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
-    );
-    expect(sdk.createAuthor).toHaveBeenCalledTimes(2);
-    expect(sdk.createBook).toHaveBeenCalledTimes(1);
-    expect(sdk.createBook.mock.calls[0][0].bookData).toMatchObject({
-      title: "Retained book",
-      purchaseDate: "2026-09-28",
-      authorIds: ["resolved-author"],
-    });
-    expect(notify).toHaveBeenCalledTimes(1);
-  } finally {
-    cleanup();
-  }
-});
-
-test("book failure retains resolved authors and retry does not create them again", async () => {
-  const pending = Promise.withResolvers<CreateBookMutation>();
-  sdk.createAuthor.mockResolvedValue(createdAuthor);
+test("sends one atomic book request and retains all input after failure", async () => {
   sdk.createBook
-    .mockReturnValueOnce(pending.promise)
+    .mockRejectedValueOnce(new Error("save failed"))
     .mockResolvedValue(createdBook);
   const { user, dialog, title, submit, cleanup } = await setup();
   try {
     await user.click(submit);
     await waitFor(() => {
-      expect(sdk.createBook).toHaveBeenCalledTimes(1);
+      expect(reportError).toHaveBeenCalled();
     });
-    const failure = new Error("Cannot create book");
-    await act(async () => {
-      pending.reject(failure);
-      await pending.promise.catch(() => undefined);
-    });
-    await waitFor(() => {
-      expect(reportError).toHaveBeenCalledWith(
-        expect.objectContaining({ operation: "CreateBook", error: failure }),
-      );
-    });
-    expect(notify).not.toHaveBeenCalled();
     expect(title).toHaveValue("Retained book");
     expect(within(dialog).getByLabelText("購入日")).toHaveValue("2026-09-28");
-    expect(
-      within(dialog).queryByRole("button", { name: "Edit author New author" }),
-    ).not.toBeInTheDocument();
-    expect(
-      within(dialog).getByText("New author", { exact: true }),
-    ).toBeInTheDocument();
-    await waitFor(() => expect(submit).toBeEnabled());
+    expect(sdk.createAuthor).not.toHaveBeenCalled();
+    expect(sdk.createBook.mock.calls.at(-1)?.[0].bookData).toMatchObject({
+      authorIds: [],
+      newAuthorNames: ["New author"],
+    });
     await user.click(submit);
-    await waitFor(() =>
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
-    );
-    expect(sdk.createAuthor).toHaveBeenCalledTimes(1);
-    expect(sdk.createBook).toHaveBeenCalledTimes(2);
-    for (const [variables] of sdk.createBook.mock.calls) {
-      expect(variables.bookData).toMatchObject({
-        title: "Retained book",
-        purchaseDate: "2026-09-28",
-        authorIds: ["resolved-author"],
-      });
-    }
-    expect(notify).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(sdk.createBook).toHaveBeenCalledTimes(2);
+    });
+    expect(sdk.createAuthor).not.toHaveBeenCalled();
   } finally {
     cleanup();
   }
 });
 
-test("blocks duplicate submission throughout author and book creation", async () => {
-  const author = Promise.withResolvers<CreateAuthorMutation>();
-  const book = Promise.withResolvers<CreateBookMutation>();
-  sdk.createAuthor.mockReturnValue(author.promise);
-  sdk.createBook.mockReturnValue(book.promise);
+test("conflict refreshes and replaces pending authors without automatically saving", async () => {
+  sdk.createBook
+    .mockRejectedValueOnce(conflict())
+    .mockResolvedValue(createdBook);
+  const { user, dialog, submit, cleanup } = await setup();
+  try {
+    const refresh =
+      Promise.withResolvers<Awaited<ReturnType<Sdk["authors"]>>>();
+    sdk.authors.mockReturnValue(refresh.promise);
+    await user.click(submit);
+    await waitFor(() => {
+      expect(sdk.createBook).toHaveBeenCalledTimes(1);
+    });
+    expect(submit).toBeDisabled();
+    await act(async () => {
+      refresh.resolve({
+        authors: [{ id: "existing", name: "New author", yomi: "" }],
+      });
+      await refresh.promise;
+    });
+    await waitFor(() => expect(submit).toBeEnabled());
+    expect(notify.mock.calls.at(-1)?.[0].message).toContain(
+      "書籍はまだ保存されていません",
+    );
+    expect(reportError).not.toHaveBeenCalled();
+    expect(sdk.createBook).toHaveBeenCalledTimes(1);
+    expect(
+      within(dialog).queryByRole("button", { name: "Edit author New author" }),
+    ).not.toBeInTheDocument();
+    await user.click(submit);
+    await waitFor(() => {
+      expect(sdk.createBook).toHaveBeenCalledTimes(2);
+    });
+    expect(sdk.createBook.mock.calls.at(-1)?.[0].bookData).toMatchObject({
+      authorIds: ["existing"],
+      newAuthorNames: [],
+    });
+  } finally {
+    cleanup();
+  }
+});
+
+test("refresh failure preserves pending selections and reports the save error", async () => {
+  sdk.createBook.mockRejectedValue(conflict());
+  const { user, submit, cleanup } = await setup();
+  try {
+    sdk.authors.mockRejectedValue(new Error("offline"));
+    await user.click(submit);
+    await waitFor(() => {
+      expect(reportError).toHaveBeenCalledWith(
+        expect.objectContaining({ operation: "CreateBook" }),
+      );
+    });
+    expect(notify).not.toHaveBeenCalled();
+    expect(submit).toBeEnabled();
+    await user.click(submit);
+    await waitFor(() => {
+      expect(sdk.createBook).toHaveBeenCalledTimes(2);
+    });
+    expect(sdk.createBook.mock.calls.at(-1)?.[0].bookData).toMatchObject({
+      newAuthorNames: ["New author"],
+    });
+  } finally {
+    cleanup();
+  }
+});
+
+test("blocks repeated submits until the book request finishes", async () => {
+  const pending = Promise.withResolvers<CreateBookMutation>();
+  sdk.createBook.mockReturnValue(pending.promise);
   const { user, submit, cleanup } = await setup();
   try {
     await user.click(submit);
     await waitFor(() => {
-      expect(sdk.createAuthor).toHaveBeenCalledTimes(1);
-    });
-    expect(submit).toBeDisabled();
-    await user.click(submit);
-    expect(sdk.createAuthor).toHaveBeenCalledTimes(1);
-    await act(async () => {
-      author.resolve(createdAuthor);
-      await author.promise;
-    });
-    await waitFor(() => {
       expect(sdk.createBook).toHaveBeenCalledTimes(1);
     });
-    expect(sdk.createAuthor).toHaveBeenCalledTimes(1);
     expect(submit).toBeDisabled();
     await user.click(submit);
     expect(sdk.createBook).toHaveBeenCalledTimes(1);
     await act(async () => {
-      book.resolve(createdBook);
-      await book.promise;
+      pending.resolve(createdBook);
+      await pending.promise;
     });
-    await waitFor(() =>
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
-    );
-    expect(sdk.createAuthor).toHaveBeenCalledTimes(1);
-    expect(sdk.createBook).toHaveBeenCalledTimes(1);
-    expect(notify).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(notify).toHaveBeenCalledTimes(1);
+    });
   } finally {
     cleanup();
   }

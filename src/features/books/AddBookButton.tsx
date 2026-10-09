@@ -4,12 +4,12 @@ import { showNotification } from "@mantine/notifications";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import React, { useState } from "react";
 import { LinkButton } from "../../components/mantineTsr";
-import { useCreateAuthor } from "../authors/api/useCreateAuthor";
 import { useCreateBook } from "./api/useCreateBook";
 import { useAppError } from "../../components/errors/AppErrorProvider";
 import { BookCreateForm } from "./BookCreateForm";
 import { bookFormSchema, BookFormValues } from "./bookFormSchema";
-import { resolvePendingAuthors } from "./resolvePendingAuthors";
+import { bookAuthorInput } from "./bookAuthorInput";
+import { useAuthorConflictRecovery } from "./useAuthorConflictRecovery";
 
 export const AddBookButton: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -24,7 +24,7 @@ export const AddBookButton: React.FC = () => {
   };
 
   const createBookMutation = useCreateBook();
-  const createAuthorMutation = useCreateAuthor();
+  const recoverAuthors = useAuthorConflictRecovery();
   const { reportError } = useAppError();
 
   const submitBook = async (value: BookFormValues): Promise<void> => {
@@ -32,31 +32,11 @@ export const AddBookButton: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      let resolvedAuthors: Awaited<ReturnType<typeof resolvePendingAuthors>>;
-      try {
-        resolvedAuthors = await resolvePendingAuthors(
-          value.authors,
-          async (name) => {
-            const result = await createAuthorMutation.mutateAsync({ name });
-            return result.createAuthor.author.id;
-          },
-        );
-      } catch (error) {
-        reportError({
-          title: "著者の作成に失敗しました",
-          operation: "CreateAuthor",
-          error,
-        });
-        return;
-      }
-
-      form.setFieldValue("authors", resolvedAuthors);
-
       const { authors: _authors, purchaseDate, ...rest } = value;
       const bookData = {
         ...rest,
         purchaseDate: purchaseDate === "" ? null : purchaseDate,
-        authorIds: resolvedAuthors.map((a) => a.id),
+        ...bookAuthorInput(value.authors),
       };
 
       try {
@@ -81,6 +61,17 @@ export const AddBookButton: React.FC = () => {
           color: "teal",
         });
       } catch (error) {
+        if (
+          await recoverAuthors(
+            error,
+            value.authors,
+            () => form.getValues().authors,
+            (authors) => {
+              form.setFieldValue("authors", authors);
+            },
+          )
+        )
+          return;
         reportError({
           title: "書籍の作成に失敗しました",
           operation: "CreateBook",

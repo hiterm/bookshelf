@@ -5,18 +5,17 @@ import { vi } from "vitest";
 import type { Book } from "./entity/Book";
 import { BookEdit } from "./BookEdit";
 
-const { createAuthor, updateBook, reportError, navigate, notify } = vi.hoisted(
-  () => ({
-    createAuthor: vi.fn(),
+const { recoverAuthors, updateBook, reportError, navigate, notify } =
+  vi.hoisted(() => ({
+    recoverAuthors: vi.fn(),
     updateBook: vi.fn(),
     reportError: vi.fn(),
     navigate: vi.fn().mockResolvedValue(undefined),
     notify: vi.fn(),
-  }),
-);
+  }));
 
-vi.mock("../authors/api/useCreateAuthor", () => ({
-  useCreateAuthor: () => ({ mutateAsync: createAuthor }),
+vi.mock("./useAuthorConflictRecovery", () => ({
+  useAuthorConflictRecovery: () => recoverAuthors,
 }));
 vi.mock("./api/useUpdateBook", () => ({
   useUpdateBook: () => ({ mutateAsync: updateBook }),
@@ -63,7 +62,20 @@ const book: Book = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => ({
+      matches: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })),
+  );
   navigate.mockResolvedValue(undefined);
+  recoverAuthors.mockResolvedValue(false);
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
 });
 
 function setup(): {
@@ -79,27 +91,11 @@ function setup(): {
   return { save, user: userEvent.setup() };
 }
 
-test("blocks repeat submits during author resolution and book update", async () => {
-  const author = Promise.withResolvers<{
-    createAuthor: { author: { id: string } };
-  }>();
+test("sends new author names with update and blocks repeated submits", async () => {
   const update = Promise.withResolvers<unknown>();
-  createAuthor.mockReturnValue(author.promise);
   updateBook.mockReturnValue(update.promise);
   const { save, user } = setup();
-
   await user.click(save);
-  await waitFor(() => {
-    expect(createAuthor).toHaveBeenCalledTimes(1);
-  });
-  expect(save).toBeDisabled();
-  await user.click(save);
-  expect(createAuthor).toHaveBeenCalledTimes(1);
-
-  await act(async () => {
-    author.resolve({ createAuthor: { author: { id: "resolved" } } });
-    await author.promise;
-  });
   await waitFor(() => {
     expect(updateBook).toHaveBeenCalledTimes(1);
   });
@@ -107,71 +103,68 @@ test("blocks repeat submits during author resolution and book update", async () 
   await user.click(save);
   expect(updateBook).toHaveBeenCalledTimes(1);
   expect(updateBook).toHaveBeenCalledWith(
-    expect.objectContaining({ authorIds: ["resolved"] }),
+    expect.objectContaining({ authorIds: [], newAuthorNames: ["New author"] }),
   );
-
   await act(async () => {
     update.resolve({});
     await update.promise;
   });
   await waitFor(() => expect(save).toBeEnabled());
-  expect(notify).toHaveBeenCalledTimes(1);
 });
 
-test("author failure retains values and allows retry", async () => {
-  const author = Promise.withResolvers<unknown>();
-  createAuthor
-    .mockReturnValueOnce(author.promise)
-    .mockResolvedValue({ createAuthor: { author: { id: "resolved" } } });
-  updateBook.mockResolvedValue({});
+test("failure keeps pending author and edited values for retry", async () => {
+  updateBook.mockRejectedValueOnce(new Error("failed")).mockResolvedValue({});
   const { save, user } = setup();
   await user.clear(screen.getByRole("textbox", { name: "書名" }));
   await user.type(screen.getByRole("textbox", { name: "書名" }), "Edited");
   await user.click(save);
   await waitFor(() => {
-    expect(createAuthor).toHaveBeenCalledTimes(1);
+    expect(reportError).toHaveBeenCalledWith(
+      expect.objectContaining({ operation: "UpdateBook" }),
+    );
   });
-  await act(async () => {
-    author.reject(new Error("creation failed"));
-    await author.promise.catch(() => undefined);
-  });
-  await waitFor(() => expect(save).toBeEnabled());
-  expect(screen.getByRole("textbox", { name: "書名" })).toHaveValue("Edited");
   expect(screen.getByTestId("author-id")).toHaveTextContent("__pending__:new");
-  expect(updateBook).not.toHaveBeenCalled();
-  expect(reportError).toHaveBeenCalledWith(
-    expect.objectContaining({ operation: "CreateAuthor" }),
-  );
-  await user.click(save);
-  await waitFor(() => {
-    expect(updateBook).toHaveBeenCalledTimes(1);
-  });
-  expect(createAuthor).toHaveBeenCalledTimes(2);
-});
-
-test("book update failure retains resolved author and retries without recreation", async () => {
-  const update = Promise.withResolvers<unknown>();
-  createAuthor.mockResolvedValue({
-    createAuthor: { author: { id: "resolved" } },
-  });
-  updateBook.mockReturnValueOnce(update.promise).mockResolvedValue({});
-  const { save, user } = setup();
-  await user.click(save);
-  await waitFor(() => {
-    expect(updateBook).toHaveBeenCalledTimes(1);
-  });
-  await act(async () => {
-    update.reject(new Error("update failed"));
-    await update.promise.catch(() => undefined);
-  });
-  await waitFor(() => expect(save).toBeEnabled());
-  expect(screen.getByTestId("author-id")).toHaveTextContent("resolved");
-  expect(reportError).toHaveBeenCalledWith(
-    expect.objectContaining({ operation: "UpdateBook" }),
-  );
+  expect(screen.getByRole("textbox", { name: "書名" })).toHaveValue("Edited");
   await user.click(save);
   await waitFor(() => {
     expect(updateBook).toHaveBeenCalledTimes(2);
   });
-  expect(createAuthor).toHaveBeenCalledTimes(1);
+});
+
+test("keeps submission locked during recovery and requires confirmation before retry", async () => {
+  updateBook.mockRejectedValueOnce(new Error("conflict")).mockResolvedValue({});
+  const recovery = Promise.withResolvers<boolean>();
+  recoverAuthors.mockImplementation(
+    async (
+      _error: unknown,
+      _submitted: unknown,
+      _getCurrent: unknown,
+      setAuthors: (authors: { id: string; name: string }[]) => void,
+    ) => {
+      const result = await recovery.promise;
+      setAuthors([{ id: "existing", name: "New author" }]);
+      return result;
+    },
+  );
+  const { save, user } = setup();
+  await user.click(save);
+  await waitFor(() => {
+    expect(recoverAuthors).toHaveBeenCalledTimes(1);
+  });
+  expect(save).toBeDisabled();
+  await act(async () => {
+    recovery.resolve(true);
+    await recovery.promise;
+  });
+  await waitFor(() => expect(save).toBeEnabled());
+  expect(updateBook).toHaveBeenCalledTimes(1);
+  expect(reportError).not.toHaveBeenCalled();
+  expect(navigate).not.toHaveBeenCalled();
+  await user.click(save);
+  await waitFor(() => {
+    expect(updateBook).toHaveBeenCalledTimes(2);
+  });
+  expect(updateBook).toHaveBeenLastCalledWith(
+    expect.objectContaining({ authorIds: ["existing"], newAuthorNames: [] }),
+  );
 });

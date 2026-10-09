@@ -1,3 +1,4 @@
+import { GraphQLError } from "graphql";
 import { graphql, http, HttpResponse } from "msw";
 import type { ImportBookInput } from "../generated/graphql-request";
 import { mockStore } from "./mockStore";
@@ -477,6 +478,17 @@ export const handlers = [
       );
     }
     const { bookData } = variables;
+    const newAuthorNames = bookData.newAuthorNames ?? [];
+    if (!Array.isArray(newAuthorNames) || !newAuthorNames.every(isString)) {
+      return HttpResponse.json({
+        errors: [
+          {
+            message: "Invalid newAuthorNames",
+            extensions: { code: "VALIDATION_ERROR" },
+          },
+        ],
+      });
+    }
     if (
       !isString(bookData.title) ||
       !Array.isArray(bookData.authorIds) ||
@@ -494,28 +506,35 @@ export const handlers = [
         { status: 200 },
       );
     }
-    const book = mockStore.createBook({
-      title: bookData.title,
-      authorIds: bookData.authorIds,
-      isbn: bookData.isbn,
-      read: bookData.read,
-      owned: bookData.owned,
-      priority: bookData.priority,
-      format: bookData.format,
-      store: bookData.store,
-      purchaseDate: bookData.purchaseDate ?? null,
-    });
-    return HttpResponse.json({
-      data: {
-        createBook: {
-          book: {
-            __typename: "Book",
-            ...book,
-            authors: resolveBookAuthors(book),
+    try {
+      const book = mockStore.createBook({
+        newAuthorNames,
+        title: bookData.title,
+        authorIds: bookData.authorIds,
+        isbn: bookData.isbn,
+        read: bookData.read,
+        owned: bookData.owned,
+        priority: bookData.priority,
+        format: bookData.format,
+        store: bookData.store,
+        purchaseDate: bookData.purchaseDate ?? null,
+      });
+      return HttpResponse.json({
+        data: {
+          createBook: {
+            book: {
+              __typename: "Book",
+              ...book,
+              authors: resolveBookAuthors(book),
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      if (error instanceof GraphQLError)
+        return HttpResponse.json({ errors: [error.toJSON()] });
+      throw error;
+    }
   }),
 
   graphqlApi.mutation("updateBook", ({ variables }) => {
@@ -539,6 +558,18 @@ export const handlers = [
       );
     }
     const bookId = bookData.id;
+    const newAuthorNames = bookData.newAuthorNames ?? [];
+    if (!Array.isArray(newAuthorNames) || !newAuthorNames.every(isString)) {
+      return HttpResponse.json({
+        errors: [
+          {
+            message: "Invalid newAuthorNames",
+            extensions: { code: "VALIDATION_ERROR" },
+          },
+        ],
+      });
+    }
+
     const update: Parameters<typeof mockStore.updateBook>[0] = { id: bookId };
     if (isString(bookData.title)) update.title = bookData.title;
     if (
@@ -555,24 +586,31 @@ export const handlers = [
     if (isString(bookData.format)) update.format = bookData.format;
     if (isString(bookData.store)) update.store = bookData.store;
     assignPurchaseDateUpdate(update, bookData.purchaseDate);
-    const book = mockStore.updateBook(update);
-    if (book == null) {
-      return HttpResponse.json(
-        { errors: [{ message: `Book not found: ${bookId}` }] },
-        { status: 200 },
-      );
-    }
-    return HttpResponse.json({
-      data: {
-        updateBook: {
-          book: {
-            __typename: "Book",
-            ...book,
-            authors: resolveBookAuthors(book),
+    update.newAuthorNames = newAuthorNames;
+    try {
+      const book = mockStore.updateBook(update);
+      if (book == null) {
+        return HttpResponse.json(
+          { errors: [{ message: `Book not found: ${bookId}` }] },
+          { status: 200 },
+        );
+      }
+      return HttpResponse.json({
+        data: {
+          updateBook: {
+            book: {
+              __typename: "Book",
+              ...book,
+              authors: resolveBookAuthors(book),
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      if (error instanceof GraphQLError)
+        return HttpResponse.json({ errors: [error.toJSON()] });
+      throw error;
+    }
   }),
 
   graphqlApi.mutation("deleteBook", ({ variables }) => {
