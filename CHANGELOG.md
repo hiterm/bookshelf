@@ -1,5 +1,10 @@
 # Changelog
 
+## [v2.18.6](https://github.com/hiterm/bookshelf/compare/v2.18.5...v2.18.6) - 2026-10-09
+
+### Other Changes
+- Recover atomic book saves from author conflicts by @hiterm in https://github.com/hiterm/bookshelf/pull/411
+
 ## [v2.18.5](https://github.com/hiterm/bookshelf/compare/v2.18.4...v2.18.5) - 2026-10-01
 
 ### Other Changes
