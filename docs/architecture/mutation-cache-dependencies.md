@@ -100,7 +100,7 @@ new queries or mutations are introduced.
 
 | Check                                      | Result                                                                                            |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| Generation                                 | Successful pinned-schema generation; tracked MSW worker unchanged                                 |
+| Generation                                 | Pinned-schema generation passed; schema/SDK/types/route tree/MSW hashes unchanged on regeneration |
 | Lint / format / typecheck / combined check | Passed; all four TypeScript projects                                                              |
 | Focused active-cache suite                 | 6 passed, including 4 new cases                                                                   |
 | Full Vitest / coverage                     | 52 files / 314 tests passed; Lines 79.73%, Branches 59.49%                                        |
@@ -109,7 +109,7 @@ new queries or mutations are introduced.
 | Demo E2E                                   | 18 passed                                                                                         |
 | Real API E2E: pinned 2.17.6                | 14 passed                                                                                         |
 | Real API E2E: main                         | 14 passed; image digest `sha256:75028c23cdbdb5e54af9980875143506d325f1c6e1db6993ee6029af683bcc2f` |
-| OpenSpec                                   | Strict validation passed for both delta and synchronized specification                            |
+| OpenSpec                                   | Delta/synchronized validation passed; archived final state: 24 specifications passed              |
 
 Seven temporary omissions independently detected the intended regression:
 author-update book list, book details and author revisions; book-delete author

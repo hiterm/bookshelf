@@ -16,7 +16,8 @@ When a user changes a book or author, already open lists, details and history mu
 - [x] Demo E2E: 18 passed.
 - [x] Mock API final full run: 60 passed; pinned 2.17.6 and API main: 14 passed each.
 - [x] Commit implementation, record exact results and synchronize the specification.
-- [ ] Archive OpenSpec in a separate rename-only commit and complete final delivery checks.
+- [x] Archive OpenSpec in a separate rename-only commit; final combined check and all 24 strict specifications pass.
+- [x] Re-run generation: schema, generated SDK/types, route tree and MSW worker hashes match; tracked working tree is clean.
 
 ## Surprises & Discoveries
 
@@ -32,7 +33,7 @@ Decision: Keep pre-save store-selection timing failures outside this cache corre
 
 ## Outcomes & Retrospective
 
-Implementation and active-consumer verification are complete. Four targeted cases extend the existing two tests instead of duplicating merge/update. Generation, lint/format, all four TypeScript projects, unit tests, coverage, build and OpenSpec delta/synchronized validation pass. Final browser results: Mock API 60, Demo 18, pinned API 14 and API main 14 passed. Earlier store keyboard-selection failures occurred before mutation submission and are recorded in the architecture document; no unrelated test/runtime changes were made. OpenSpec archival and final delivery checks remain pending.
+Implementation and active-consumer verification are complete. Four targeted cases extend the existing two tests instead of duplicating merge/update. Generation, lint/format, all four TypeScript projects, unit tests, coverage, build and OpenSpec delta/synchronized validation pass. Final browser results: Mock API 60, Demo 18, pinned API 14 and API main 14 passed. Earlier store keyboard-selection failures occurred before mutation submission and are recorded in the architecture document; no unrelated test/runtime changes were made. OpenSpec is synchronized and archived at `openspec/changes/archive/2026-10-10-document-mutation-cache-dependencies/`. Final combined check and all 24 strict specifications pass; regeneration preserves every generated-file hash. Delivery is the committed feature branch plus a reviewable patch and Japanese verification report.
 
 ## Context and Orientation
 
@@ -79,3 +80,5 @@ Revision note: Initial investigation and execution plan recorded before implemen
 Revision note: Implementation, failure/retry evidence and sensitivity results recorded; browser verification remains in progress.
 
 Revision note: All browser/API suites passed; recorded initial execution issues, exact results and local proxy healthcheck accommodation. Specification synchronized; archive and delivery checks remain.
+
+Revision note: Archive completed with rename-only commit; final generation hashes, strict specifications and static checks pass. Temporary backend services are stopped and the diagnostic baseline checkout is removed during delivery cleanup.
