@@ -1,5 +1,10 @@
 # Changelog
 
+## [v2.18.7](https://github.com/hiterm/bookshelf/compare/v2.18.6...v2.18.7) - 2026-10-10
+
+### Other Changes
+- Refresh dependent caches after book and author mutations by @hiterm in https://github.com/hiterm/bookshelf/pull/414
+
 ## [v2.18.6](https://github.com/hiterm/bookshelf/compare/v2.18.5...v2.18.6) - 2026-10-09
 
 ### Other Changes
