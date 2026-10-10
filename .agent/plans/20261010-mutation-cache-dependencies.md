@@ -10,13 +10,15 @@ When a user changes a book or author, already open lists, details and history mu
 
 - [x] (2026-10-10) Fetch main, inspect repository rules, Issue #406 and merged PRs #402/#411; baseline is `63b9865b8c87ccb53d5dbedebe4c10d4d01d93ea`.
 - [x] Inspect all books/authors/history keys and mutation hooks, GraphQL selections, Demo store and CI.
-- [ ] Extend active-consumer tests and demonstrate failures before production edits.
-- [ ] Add feature-owned invalidation functions, dependency documentation and OpenSpec change.
-- [ ] Execute required checks, record results and commit meaningful units.
+- [x] Extend active-consumer tests; before corrections all six expanded cases failed (308 other tests passed).
+- [x] Add feature-owned invalidation functions, dependency matrix and validated OpenSpec delta.
+- [x] Generate, lint, format, all four TypeScript projects, 314 unit tests, coverage and production build pass; seven targeted invalidation omissions are detected.
+- [x] Demo E2E: 18 passed.
+- [ ] Complete Mock API and both real API suites, record results, sync/archive OpenSpec and commit implementation.
 
 ## Surprises & Discoveries
 
-PR #402 already protects book update and author merge. PR #411 atomically creates new authors with book saves and already refreshes author list/details. Neither should be reimplemented. Current author update omits book list/details and author revisions; book deletion omits author details; import omits author list/details. All eight domain write hooks omit the operations list. Import preview is read-only. Past operation details contain immutable revision snapshots and do not need refresh after a new operation.
+PR #402 already protects book update and author merge. PR #411 atomically creates new authors with book saves and already refreshes author list/details. Neither should be reimplemented. Related Issue #404 is closed by #411; the original #401/#406 text remains a historical investigation rather than a current defect list. Current author update omits book list/details and author revisions; book deletion omits author details; import omits author list/details. All eight domain write hooks omit the operations list. Import preview is read-only. Past operation details contain immutable revision snapshots and do not need refresh after a new operation.
 
 ## Decision Log
 
@@ -26,7 +28,7 @@ Decision: Place explicit domain invalidation functions in feature `api` director
 
 ## Outcomes & Retrospective
 
-Investigation completed; implementation and verification remain pending.
+Implementation and active-consumer verification are complete. Four targeted cases extend the existing two tests instead of duplicating merge/update. Generation, unit tests, coverage, build and OpenSpec delta validation pass. Browser/backend verification and final specification synchronization remain pending.
 
 ## Context and Orientation
 
@@ -39,6 +41,14 @@ Book mutation responses contain a saved book ID; import returns created book IDs
 First extend the typed SDK in `mutationCache.test.tsx` to model author rename, book deletion and import with immutable response objects and new operations. Add mounted `useOperations` and immutable `useOperation` observers. Add rename and import failure/retry cases, deletion association assertions and focused history checks for remaining writes. Run the focused suite before changing production hooks and record demonstrated failures.
 
 Next add `invalidation.ts` under books, authors and history `api`. Each write hook's onSuccess delegates to an explicit function, obtaining all keys from the factories. Keep mutation rejection behavior and caches untouched on failure. Document every mutation and dependent cache in `docs/architecture/mutation-cache-dependencies.md`. Update frontend-query-organization's historical reorganization preservation rule to permit explicitly specified behavior corrections and add successful-write coherence requirements through an OpenSpec proposal/design/tasks/delta. Historical archives remain unchanged.
+
+## Milestones
+
+The baseline milestone establishes the current dependency matrix against latest main and merged fixes. Its observable proof is six expanded cases failing on stale response data before production edits.
+
+The correction milestone supplies explicit feature invalidation functions and successful failure/retry tests. Its proof is six passing active-cache cases and seven deliberate omissions detected independently, with original source restored after every experiment.
+
+The delivery milestone verifies generation, static checks, all unit tests and each distinct browser/API boundary, then syncs and archives OpenSpec. Its proof consists of exact check results and a reviewable committed patch; no API/package/test-setting changes are included.
 
 ## Concrete Steps
 
@@ -61,3 +71,5 @@ Latest-main verification: `git fetch origin main` followed by `git merge --ff-on
 Use existing TanStack Query QueryClient, query-key factories, generated SDK types and Vitest/Testing Library. No package additions. Invalidation helpers return void and schedule existing asynchronous invalidateQueries calls at successful mutation completion, preserving the current mutation lifecycle timing.
 
 Revision note: Initial investigation and execution plan recorded before implementation.
+
+Revision note: Implementation, failure/retry evidence and sensitivity results recorded; browser verification remains in progress.

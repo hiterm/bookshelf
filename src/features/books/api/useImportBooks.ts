@@ -6,7 +6,7 @@ import type { UseMutationResult } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
-import { bookQueryKeys } from "./queryKeys";
+import { invalidateBookImport } from "./invalidation";
 
 export const useImportBooks = (): UseMutationResult<
   ImportBooksMutation,
@@ -22,7 +22,7 @@ export const useImportBooks = (): UseMutationResult<
       return sdk.importBooks({ books });
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: bookQueryKeys.all });
+      invalidateBookImport(queryClient);
     },
   });
 };

@@ -3,7 +3,7 @@ import type { UseMutationResult } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
-import { bookQueryKeys } from "./queryKeys";
+import { invalidateBookDelete } from "./invalidation";
 
 export const useDeleteBook = (): UseMutationResult<
   DeleteBookMutation,
@@ -19,10 +19,7 @@ export const useDeleteBook = (): UseMutationResult<
       return sdk.deleteBook({ bookId });
     },
     onSuccess: (_, bookId) => {
-      void queryClient.invalidateQueries({ queryKey: bookQueryKeys.all });
-      void queryClient.invalidateQueries({
-        queryKey: bookQueryKeys.detail(bookId),
-      });
+      invalidateBookDelete(queryClient, bookId);
     },
   });
 };

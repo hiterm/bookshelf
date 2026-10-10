@@ -6,8 +6,7 @@ import type { UseMutationResult } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
-import { bookQueryKeys } from "./queryKeys";
-import { authorQueryKeys } from "../../authors/api/queryKeys";
+import { invalidateBookUpdate } from "./invalidation";
 
 export const useUpdateBook = (): UseMutationResult<
   UpdateBookMutation,
@@ -23,16 +22,7 @@ export const useUpdateBook = (): UseMutationResult<
       return sdk.updateBook({ bookData });
     },
     onSuccess: (_, variables) => {
-      void queryClient.invalidateQueries({ queryKey: authorQueryKeys.all });
-      void queryClient.invalidateQueries({ queryKey: bookQueryKeys.all });
-      void queryClient.invalidateQueries({
-        queryKey: bookQueryKeys.detail(variables.id),
-      });
-      void queryClient.invalidateQueries({
-        queryKey: bookQueryKeys.revisions(variables.id),
-      });
-      // Both previous and new authors can contain this book in their detail.
-      void queryClient.invalidateQueries({ queryKey: authorQueryKeys.details });
+      invalidateBookUpdate(queryClient, variables.id);
     },
   });
 };

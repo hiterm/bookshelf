@@ -14,7 +14,9 @@ is still unsaved. The user explicitly saves again; no write is retried
 automatically. If refresh fails or no match remains, keep inputs and report the
 original save error. Other conflicts never trigger author replacement.
 
-Successful mutations invalidate book and author caches. MockStore and Demo Mode
+Successful mutations invalidate book and author caches and the operations list,
+as documented in [mutation-cache-dependencies.md](mutation-cache-dependencies.md).
+MockStore and Demo Mode
 also roll back intermediate author/history changes on failure and combine all
 changes into the book operation. The server's response-loss/idempotency problem
 is outside this contract: a lost response does not prove rollback.
