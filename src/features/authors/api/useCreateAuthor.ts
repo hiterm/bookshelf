@@ -6,7 +6,7 @@ import type { UseMutationResult } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
-import { authorQueryKeys } from "./queryKeys";
+import { invalidateAuthorCreate } from "./invalidation";
 
 export const useCreateAuthor = (): UseMutationResult<
   CreateAuthorMutation,
@@ -22,7 +22,7 @@ export const useCreateAuthor = (): UseMutationResult<
       return sdk.createAuthor({ authorData });
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: authorQueryKeys.all });
+      invalidateAuthorCreate(queryClient);
     },
   });
 };

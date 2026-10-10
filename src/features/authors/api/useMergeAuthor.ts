@@ -3,8 +3,7 @@ import type { UseMutationResult } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createAuthenticatedSdk } from "../../../lib/graphqlClient";
-import { bookQueryKeys } from "../../books/api/queryKeys";
-import { authorQueryKeys } from "./queryKeys";
+import { invalidateAuthorMerge } from "./invalidation";
 
 export type MergeAuthorInput = {
   sourceAuthorId: string;
@@ -25,21 +24,11 @@ export const useMergeAuthor = (): UseMutationResult<
       return sdk.mergeAuthor(input);
     },
     onSuccess: (_, input) => {
-      void queryClient.invalidateQueries({ queryKey: authorQueryKeys.all });
-      void queryClient.invalidateQueries({
-        queryKey: authorQueryKeys.detail(input.sourceAuthorId),
-      });
-      void queryClient.invalidateQueries({
-        queryKey: authorQueryKeys.detail(input.destinationAuthorId),
-      });
-      void queryClient.invalidateQueries({
-        queryKey: authorQueryKeys.allRevisions,
-      });
-      void queryClient.invalidateQueries({ queryKey: bookQueryKeys.all });
-      void queryClient.invalidateQueries({ queryKey: bookQueryKeys.details });
-      void queryClient.invalidateQueries({
-        queryKey: bookQueryKeys.allRevisions,
-      });
+      invalidateAuthorMerge(
+        queryClient,
+        input.sourceAuthorId,
+        input.destinationAuthorId,
+      );
     },
   });
 };
