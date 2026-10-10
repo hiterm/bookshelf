@@ -12,5 +12,5 @@
 ## 3. Verification
 
 - [x] 3.1 Confirm focused failure/retry regressions and sensitivity to each missing dependency.
-- [ ] 3.2 Run generation, lint, formatting, unit/coverage tests, typecheck, build, OpenSpec validation and relevant browser suites.
-- [ ] 3.3 Record exact results and remaining environment/API limitations, sync and archive the specification change.
+- [x] 3.2 Run generation, lint, formatting, unit/coverage tests, typecheck, build, OpenSpec validation and relevant browser suites.
+- [x] 3.3 Record exact results and remaining environment/API limitations and synchronize the specification change.

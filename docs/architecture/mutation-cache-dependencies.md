@@ -95,3 +95,45 @@ possible future ID before creation, implement push updates across clients, or
 change API operations/authentication, automatic-refetch settings or test runtime
 configuration. Add new dependencies here and protect observable consumers when
 new queries or mutations are introduced.
+
+## Validation (2026-10-10)
+
+| Check                                      | Result                                                                                            |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| Generation                                 | Successful pinned-schema generation; tracked MSW worker unchanged                                 |
+| Lint / format / typecheck / combined check | Passed; all four TypeScript projects                                                              |
+| Focused active-cache suite                 | 6 passed, including 4 new cases                                                                   |
+| Full Vitest / coverage                     | 52 files / 314 tests passed; Lines 79.73%, Branches 59.49%                                        |
+| Production build                           | Passed (existing chunk-size warning)                                                              |
+| Mock API E2E                               | Final standalone full run: 60 passed                                                              |
+| Demo E2E                                   | 18 passed                                                                                         |
+| Real API E2E: pinned 2.17.6                | 14 passed                                                                                         |
+| Real API E2E: main                         | 14 passed; image digest `sha256:75028c23cdbdb5e54af9980875143506d325f1c6e1db6993ee6029af683bcc2f` |
+| OpenSpec                                   | Strict validation passed for both delta and synchronized specification                            |
+
+Seven temporary omissions independently detected the intended regression:
+author-update book list, book details and author revisions; book-delete author
+books; import author directory and details; operations list. Each experiment
+restored the production file in `finally`. The experiments are not a permanent
+mutation-testing dependency or an exhaustive score.
+
+Initial browser runs required Chromium installation. A concurrent production
+build overwrote the preview's distribution files; that interrupted run was
+excluded and subsequent browser suites used sequential builds. Two later Mock
+API runs each had one failure in the existing pre-save store keyboard selection
+(one create, one update); a focused run passed create but failed update. Both
+cases passed individually on unchanged main. The final change-branch full run,
+without concurrent build/check/container preparation, passed all 60. This does
+not establish that the selection timing is permanently free of flakiness, and
+no existing E2E interaction/worker/timeout settings were changed.
+
+Real API tests used disposable local Compose services. A scratch-only override
+appended loopback addresses to existing proxy exclusions and used Node fetch
+for the JWKS healthcheck because BusyBox wget sent localhost through the proxy.
+No repository Docker or network configuration changed. The same database/JWKS
+services were used when switching the API container from pinned release to main;
+each test retains its existing unique-user isolation.
+
+Local execution does not perform CI's external Codecov upload. Query refreshes
+remain asynchronous, and response loss/server rollback/idempotency remain
+outside this frontend cache contract.

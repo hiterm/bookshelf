@@ -14,7 +14,9 @@ When a user changes a book or author, already open lists, details and history mu
 - [x] Add feature-owned invalidation functions, dependency matrix and validated OpenSpec delta.
 - [x] Generate, lint, format, all four TypeScript projects, 314 unit tests, coverage and production build pass; seven targeted invalidation omissions are detected.
 - [x] Demo E2E: 18 passed.
-- [ ] Complete Mock API and both real API suites, record results, sync/archive OpenSpec and commit implementation.
+- [x] Mock API final full run: 60 passed; pinned 2.17.6 and API main: 14 passed each.
+- [x] Commit implementation, record exact results and synchronize the specification.
+- [ ] Archive OpenSpec in a separate rename-only commit and complete final delivery checks.
 
 ## Surprises & Discoveries
 
@@ -26,9 +28,11 @@ Decision: Extend the existing `src/features/books/api/mutationCache.test.tsx` wi
 
 Decision: Place explicit domain invalidation functions in feature `api` directories and invalidate the operations list through history's helper. Preserve existing targets; add only dependencies justified by server changes. Rationale: no generic CRUD framework or global cache reset; feature ownership makes each mutation's dependency reviewable. Date/Author: 2026-10-10, Codex.
 
+Decision: Keep pre-save store-selection timing failures outside this cache correction and verify the final full suite with no concurrent preparation work. Rationale: the failure precedes all changed mutation callbacks, both cases pass on unchanged main and the final changed suite passes 60/60. Do not claim permanent flake elimination. Date/Author: 2026-10-10, Codex.
+
 ## Outcomes & Retrospective
 
-Implementation and active-consumer verification are complete. Four targeted cases extend the existing two tests instead of duplicating merge/update. Generation, unit tests, coverage, build and OpenSpec delta validation pass. Browser/backend verification and final specification synchronization remain pending.
+Implementation and active-consumer verification are complete. Four targeted cases extend the existing two tests instead of duplicating merge/update. Generation, lint/format, all four TypeScript projects, unit tests, coverage, build and OpenSpec delta/synchronized validation pass. Final browser results: Mock API 60, Demo 18, pinned API 14 and API main 14 passed. Earlier store keyboard-selection failures occurred before mutation submission and are recorded in the architecture document; no unrelated test/runtime changes were made. OpenSpec archival and final delivery checks remain pending.
 
 ## Context and Orientation
 
@@ -73,3 +77,5 @@ Use existing TanStack Query QueryClient, query-key factories, generated SDK type
 Revision note: Initial investigation and execution plan recorded before implementation.
 
 Revision note: Implementation, failure/retry evidence and sensitivity results recorded; browser verification remains in progress.
+
+Revision note: All browser/API suites passed; recorded initial execution issues, exact results and local proxy healthcheck accommodation. Specification synchronized; archive and delivery checks remain.
