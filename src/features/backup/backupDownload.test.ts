@@ -1,5 +1,7 @@
+import { vi } from "vitest";
 import {
   backupFilename,
+  downloadBackup,
   isJsonContentType,
   validateBackupRequestUrl,
 } from "./backupDownload";
@@ -63,5 +65,25 @@ describe("validateBackupRequestUrl", () => {
         false,
       );
     }).not.toThrow();
+  });
+});
+
+vi.mock("../../config", () => ({
+  isDemoMode: false,
+  apiBaseUrl: "https://api.example.com",
+}));
+
+describe("downloadBackup authentication", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  test.each([undefined, ""])("rejects a missing token (%s)", async (token) => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(
+      downloadBackup("snapshot", () => Promise.resolve(token)),
+    ).rejects.toThrow("アクセストークンを取得できませんでした");
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

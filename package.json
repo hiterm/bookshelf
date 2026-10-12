@@ -27,7 +27,7 @@
     "integration:down": "bash scripts/integration-down.sh"
   },
   "dependencies": {
-    "@auth0/auth0-react": "2.24.1",
+    "@auth0/auth0-react": "2.28.2",
     "@mantine/core": "9.5.2",
     "@mantine/form": "9.5.2",
     "@mantine/hooks": "9.5.2",
@@ -68,8 +68,8 @@
     "jsdom": "30.0.1",
     "msw": "2.15.0",
     "oxfmt": "0.68.0",
-    "oxlint": "1.83.0",
-    "oxlint-tsgolint": "7.0.2001",
+    "oxlint": "1.87.0",
+    "oxlint-tsgolint": "7.0.2003",
     "typescript": "7.0.2",
     "vite": "8.2.2",
     "vite-plugin-checker": "0.14.5",

@@ -48,7 +48,7 @@ export const validateBackupRequestUrl = (
 
 export const downloadBackup = async (
   scope: BackupScope,
-  getAccessTokenSilently: () => Promise<string>,
+  getAccessTokenSilently: () => Promise<string | undefined>,
 ): Promise<void> => {
   const requestUrl = new URL(
     `${apiBaseUrl}/v1/backup/${scope}`,
@@ -56,9 +56,13 @@ export const downloadBackup = async (
   );
   validateBackupRequestUrl(requestUrl, isDemoMode);
   const token = isDemoMode ? "" : await getAccessTokenSilently();
+  if (!isDemoMode && (token == null || token === "")) {
+    throw new Error("アクセストークンを取得できませんでした");
+  }
   const response = await fetch(requestUrl, {
     method: "GET",
-    headers: token === "" ? {} : { authorization: `Bearer ${token}` },
+    headers:
+      token == null || token === "" ? {} : { authorization: `Bearer ${token}` },
   });
   if (!response.ok) throw await responseError(response);
   if (!isJsonContentType(response.headers.get("content-type"))) {

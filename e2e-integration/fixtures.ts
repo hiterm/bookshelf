@@ -48,7 +48,7 @@ async function buildAccessToken(userId: string): Promise<string> {
     .sign(privateKey);
 }
 
-export const test = base.extend<Record<never, never>>({
+export const test = base.extend({
   page: async ({ page }, useFixture) => {
     const userId = crypto.randomUUID();
 
