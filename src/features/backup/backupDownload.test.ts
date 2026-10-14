@@ -68,13 +68,16 @@ describe("validateBackupRequestUrl", () => {
   });
 });
 
-vi.mock("../../config", () => ({
+const config = vi.hoisted(() => ({
   isDemoMode: false,
   apiBaseUrl: "https://api.example.com",
 }));
+vi.mock("../../config", () => config);
 
-describe("downloadBackup authentication", () => {
+describe("downloadBackup", () => {
   afterEach(() => {
+    config.isDemoMode = false;
+    vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });
 
@@ -86,4 +89,63 @@ describe("downloadBackup authentication", () => {
     ).rejects.toThrow("アクセストークンを取得できませんでした");
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  test.each([false, true])(
+    "downloads a backup with demo mode %s",
+    async (demoMode) => {
+      config.isDemoMode = demoMode;
+      const getToken = vi
+        .fn<() => Promise<string | undefined>>()
+        .mockResolvedValue("test-token");
+      const response = new Response(JSON.stringify({ books: [] }), {
+        headers: { "content-type": "application/json" },
+      });
+      const blob = new Blob([JSON.stringify({ books: [] })], {
+        type: "application/json",
+      });
+      const readBlob = vi.spyOn(response, "blob").mockResolvedValue(blob);
+      const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(response);
+      const createObjectURL = vi
+        .fn<typeof URL.createObjectURL>()
+        .mockReturnValue("blob:backup-download");
+      const revokeObjectURL = vi.fn<typeof URL.revokeObjectURL>();
+      vi.stubGlobal("fetch", fetchMock);
+      vi.stubGlobal(
+        "URL",
+        class extends URL {
+          static override createObjectURL = createObjectURL;
+          static override revokeObjectURL = revokeObjectURL;
+        },
+      );
+      vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(
+        function (this: HTMLAnchorElement) {
+          expect(this.isConnected).toBe(true);
+          expect(this.href).toBe("blob:backup-download");
+          expect(this.download).toMatch(/^bookshelf-backup-snapshot-.*\.json$/);
+        },
+      );
+
+      await downloadBackup("snapshot", getToken);
+
+      expect(getToken).toHaveBeenCalledTimes(demoMode ? 0 : 1);
+      expect(fetchMock).toHaveBeenCalledOnce();
+      const [url, options] = fetchMock.mock.calls[0];
+      expect(url).toBeInstanceOf(URL);
+      expect(url).toHaveProperty(
+        "href",
+        "https://api.example.com/v1/backup/snapshot",
+      );
+      expect(options?.method).toBe("GET");
+      expect(new Headers(options?.headers).get("authorization")).toBe(
+        demoMode ? null : "Bearer test-token",
+      );
+      expect(createObjectURL).toHaveBeenCalledOnce();
+      expect(readBlob).toHaveBeenCalledOnce();
+      expect(createObjectURL).toHaveBeenCalledWith(blob);
+      expect(
+        document.querySelector('a[href="blob:backup-download"]'),
+      ).toBeNull();
+      expect(revokeObjectURL).toHaveBeenCalledWith("blob:backup-download");
+    },
+  );
 });
