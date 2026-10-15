@@ -53,14 +53,16 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           branch="update/bookshelf-api"
-          echo "baseline=$(tr -d '[:space:]' < bookshelf-api.version)" >> "${GITHUB_OUTPUT}"
           gh auth setup-git
+          git fetch origin "refs/heads/main"
+          git switch --detach FETCH_HEAD
+          echo "baseline=$(tr -d '[:space:]' < bookshelf-api.version)" >> "${GITHUB_OUTPUT}"
           existing_pr=$(gh pr list \
             --state open \
             --base main \
             --head "${branch}" \
-            --json number \
-            --jq '.[0].number // empty')
+            --json number,headRepository \
+            --jq "[.[] | select(.headRepository.nameWithOwner == \"${GH_REPO}\")][0].number // empty")
           echo "pr=${existing_pr}" >> "${GITHUB_OUTPUT}"
 
           remote_sha=$(git ls-remote --heads origin "refs/heads/${branch}" | cut -f1)
@@ -69,7 +71,7 @@ jobs:
             git fetch origin "refs/heads/${branch}"
             git switch -C "${branch}" FETCH_HEAD
           else
-            git switch -C "${branch}"
+            git switch -C "${branch}" FETCH_HEAD
           fi
 
       - name: Update API version
