@@ -13,12 +13,15 @@ export const createGraphQLClient = (accessToken?: string): GraphQLSdk => {
 };
 
 export const createAuthenticatedSdk = async (
-  getAccessTokenSilently: () => Promise<string>,
+  getAccessTokenSilently: () => Promise<string | undefined>,
 ): Promise<GraphQLSdk> => {
   if (isDemoMode) {
     return createGraphQLClient();
   }
   const token = await getAccessTokenSilently();
+  if (token == null || token === "") {
+    throw new Error("アクセストークンを取得できませんでした");
+  }
   return createGraphQLClient(token);
 };
 
