@@ -6,7 +6,7 @@ on:
       - api-released
 
 concurrency:
-  group: api-release-${{ github.event.client_payload.version }}
+  group: api-release
   cancel-in-progress: false
 
 permissions: {}
@@ -46,46 +46,67 @@ jobs:
           ref: main
           token: ${{ steps.app-token.outputs.token }}
 
+      - name: Prepare update branch
+        id: branch
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          branch="update/bookshelf-api"
+          gh auth setup-git
+          git fetch origin "refs/heads/main"
+          git switch --detach FETCH_HEAD
+          echo "baseline=$(tr -d '[:space:]' < bookshelf-api.version)" >> "${GITHUB_OUTPUT}"
+          existing_pr=$(gh pr list \
+            --state open \
+            --base main \
+            --head "${branch}" \
+            --json number,headRepository \
+            --jq "[.[] | select(.headRepository.nameWithOwner == \"${GH_REPO}\")][0].number // empty")
+          echo "pr=${existing_pr}" >> "${GITHUB_OUTPUT}"
+
+          remote_sha=$(git ls-remote --heads origin "refs/heads/${branch}" | cut -f1)
+          echo "remote-sha=${remote_sha}" >> "${GITHUB_OUTPUT}"
+          if [[ -n "${existing_pr}" ]]; then
+            git fetch origin "refs/heads/${branch}"
+            git switch -C "${branch}" FETCH_HEAD
+          else
+            git switch -C "${branch}" FETCH_HEAD
+          fi
+
       - name: Update API version
         id: update
         env:
           API_VERSION: ${{ github.event.client_payload.version }}
-        run: scripts/update-api-version.sh "${API_VERSION}"
+          BASELINE_VERSION: ${{ steps.branch.outputs.baseline }}
+        run: scripts/update-api-version.sh "${API_VERSION}" bookshelf-api.version "${BASELINE_VERSION}"
 
-      - name: Create update pull request
+      - name: Create or update pull request
         if: steps.update.outputs.changed == 'true'
         env:
           API_VERSION: ${{ github.event.client_payload.version }}
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           GH_REPO: ${{ github.repository }}
+          EXISTING_PR: ${{ steps.branch.outputs.pr }}
+          REMOTE_SHA: ${{ steps.branch.outputs.remote-sha }}
         run: |
-          branch="update/bookshelf-api-${API_VERSION}"
+          branch="update/bookshelf-api"
           title="Update bookshelf-api to ${API_VERSION}"
+          body="Automated API version update triggered by the bookshelf-api release."
 
-          existing_pr=$(gh pr list \
-            --state open \
-            --head "${branch}" \
-            --json number \
-            --jq '.[0].number // empty')
-          if [[ -n "${existing_pr}" ]]; then
-            echo "Pull request #${existing_pr} already uses ${branch}; nothing to do."
-            exit 0
-          fi
+          git config user.name "bookshelf-delivery[bot]"
+          git config user.email "bookshelf-delivery[bot]@users.noreply.github.com"
+          git add bookshelf-api.version
+          git commit -m "${title}"
+          git push --force-with-lease="refs/heads/${branch}:${REMOTE_SHA}" \
+            origin "HEAD:refs/heads/${branch}"
 
-          if git ls-remote --exit-code --heads origin "refs/heads/${branch}" > /dev/null; then
-            echo "Reusing existing remote branch ${branch}."
+          if [[ -n "${EXISTING_PR}" ]]; then
+            gh pr edit "${EXISTING_PR}" --title "${title}" --body "${body}"
           else
-            git config user.name "bookshelf-delivery[bot]"
-            git config user.email "bookshelf-delivery[bot]@users.noreply.github.com"
-            gh auth setup-git
-            git switch -c "${branch}"
-            git add bookshelf-api.version
-            git commit -m "${title}"
-            git push origin "HEAD:refs/heads/${branch}"
+            gh pr create \
+              --base main \
+              --head "${branch}" \
+              --title "${title}" \
+              --body "${body}"
           fi
-
-          gh pr create \
-            --base main \
-            --head "${branch}" \
-            --title "${title}" \
-            --body "Automated API version update triggered by the bookshelf-api release."
