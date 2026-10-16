@@ -12,7 +12,7 @@ beforeEach(async () => {
   const { mockStore } = await import("./mockStore");
   store = mockStore;
   server = setupServer(...handlers);
-  server.listen({ onUnhandledRequest: "error" });
+  server.listen({ onUnhandledFrame: "error" });
 });
 afterEach(() => {
   server.close();
