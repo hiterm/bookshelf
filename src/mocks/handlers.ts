@@ -1,5 +1,6 @@
 import { GraphQLError } from "graphql";
-import { graphql, http, HttpResponse } from "msw";
+import { http, HttpResponse } from "msw";
+import { graphql } from "msw/graphql";
 import type { ImportBookInput } from "../generated/graphql-request";
 import { mockStore } from "./mockStore";
 import type { Author, Book } from "./mockStore";

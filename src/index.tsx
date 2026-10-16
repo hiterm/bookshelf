@@ -7,7 +7,7 @@ import "./index.css";
 async function main(): Promise<void> {
   if (isDemoMode) {
     const { worker } = await import("./mocks/browser");
-    await worker.start({ onUnhandledRequest: "bypass" });
+    await worker.start({ onUnhandledFrame: "bypass" });
   }
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const root = createRoot(document.getElementById("root")!);
