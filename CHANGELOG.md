@@ -1,5 +1,16 @@
 # Changelog
 
+## [v2.18.8](https://github.com/hiterm/bookshelf/compare/v2.18.7...v2.18.8) - 2026-10-16
+
+### Other Changes
+- Update Auth0 and Oxlint with compatibility fixes by @hiterm in https://github.com/hiterm/bookshelf/pull/417
+- Update npm non-major by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/348
+- Keep API updates in a single pull request by @hiterm in https://github.com/hiterm/bookshelf/pull/419
+- Update npm non-major by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/420
+- Update MSW to v3 and migrate mock APIs by @hiterm in https://github.com/hiterm/bookshelf/pull/422
+- Update github-actions non-major by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/340
+- Update bookshelf-api to 2.17.7 by @hiterm-bookshelf-delivery[bot] in https://github.com/hiterm/bookshelf/pull/416
+
 ## [v2.18.7](https://github.com/hiterm/bookshelf/compare/v2.18.6...v2.18.7) - 2026-10-10
 
 ### Other Changes
