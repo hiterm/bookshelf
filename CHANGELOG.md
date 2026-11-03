@@ -1,5 +1,10 @@
 # Changelog
 
+## [v2.18.9](https://github.com/hiterm/bookshelf/compare/v2.18.8...v2.18.9) - 2026-11-03
+
+### Other Changes
+- Update pnpm to v12 by @renovate[bot] in https://github.com/hiterm/bookshelf/pull/358
+
 ## [v2.18.8](https://github.com/hiterm/bookshelf/compare/v2.18.7...v2.18.8) - 2026-10-16
 
 ### Other Changes
