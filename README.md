@@ -13,7 +13,7 @@ The demo app requires no sign-in. Changes are stored locally only - they are not
 
 ## Backend
 
-- [Bookshelf API](https://github.com/hiterm/bookshelf-api) (for local development)
+- [Bookshelf API](https://github.com/hiterm/bookshelf-api)
 - MSW (Mock Service Worker) (for demo - set VITE_DEMO_MODE=true)
 
 ## Dependent platforms
