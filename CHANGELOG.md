@@ -1,5 +1,10 @@
 # Changelog
 
+## [v2.18.10](https://github.com/hiterm/bookshelf/compare/v2.18.9...v2.18.10) - 2026-11-05
+
+### Other Changes
+- docs: fix Bookshelf API description in README by @hiterm in https://github.com/hiterm/bookshelf/pull/429
+
 ## [v2.18.9](https://github.com/hiterm/bookshelf/compare/v2.18.8...v2.18.9) - 2026-11-03
 
 ### Other Changes
